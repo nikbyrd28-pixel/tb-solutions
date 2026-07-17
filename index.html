@@ -241,6 +241,14 @@
     .trust b{display:inline-flex;align-items:center;gap:8px;color:#dbe1f7;font-size:14px;font-weight:700}
     .trust b:before{content:"✓";display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--grad);color:#03040a;font-size:12px;font-weight:900}
 
+    /* free plan steps */
+    .plan-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:30px;text-align:left}
+    .plan-step{border:1px solid var(--line);border-radius:20px;background:rgba(3,4,10,.35);padding:22px}
+    .plan-step .pnum{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--grad);color:#03040a;font-weight:900;font-family:"Orbitron",sans-serif;margin-bottom:12px}
+    .plan-step b{display:block;font-size:18px;margin-bottom:6px}
+    .plan-step span{color:var(--muted);font-size:14px}
+    @media(max-width:760px){.plan-steps{grid-template-columns:1fr}}
+
     /* lead form */
     .lead-form{display:grid;gap:12px;margin-top:22px;max-width:560px}
     .lead-form .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -335,7 +343,7 @@
   <header class="top">
     <div class="wrap nav">
       <a class="brand" href="#">TB <span>Solutions</span></a>
-      <nav class="navlinks"><a href="#services">Services</a><a href="#ai-agent">AI Agent</a><a href="#pricing">Packages</a><a href="#portfolio">Work</a><a href="#faq">FAQ</a><a href="#contact">Contact</a></nav>
+      <nav class="navlinks"><a href="#services">Services</a><a href="#ai-agent">AI Agent</a><a href="#plan">Free Plan</a><a href="#pricing">Packages</a><a href="#portfolio">Work</a><a href="#contact">Contact</a></nav>
       <div class="actions" style="margin-top:0"><a class="btn primary" href="#" data-book>Book a Call</a></div>
     </div>
   </header>
@@ -469,6 +477,22 @@
             <div class="cred-row"><span class="check">✓</span><span><b>Creative add-ons</b><br>Short-form content angles and ad creative direction that make the brand feel alive.</span></div>
             <div class="cred-row"><span class="check">✓</span><span><b>Starter pricing</b><br>Designed to get work moving now, then expand into ads and monthly support.</span></div>
           </div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="plan">
+      <div class="wrap">
+        <div class="final glow-ring" style="text-align:center">
+          <div class="eyebrow" style="justify-content:center">Not sure where to start?</div>
+          <h2 class="section-title" style="margin-top:14px">Don’t know marketing? That’s literally my job.</h2>
+          <p class="muted" style="max-width:720px;margin:0 auto 8px">Most local business owners aren’t marketers — and you shouldn’t have to be. Book a free call and I’ll build you a simple, plain-English marketing plan for your business. No jargon, no pressure, no cost.</p>
+          <div class="plan-steps">
+            <div class="plan-step"><span class="pnum">1</span><b>What’s costing you customers now</b><span>A quick, honest look at your site and Google presence.</span></div>
+            <div class="plan-step"><span class="pnum">2</span><b>The 1–2 things to fix first</b><span>Where your money actually moves the needle — and what to skip.</span></div>
+            <div class="plan-step"><span class="pnum">3</span><b>A clear next step</b><span>A simple plan you can act on, whether we work together or not.</span></div>
+          </div>
+          <div class="actions" style="justify-content:center;margin-top:30px"><a class="btn primary" href="#" data-book>Book my free marketing plan</a></div>
         </div>
       </div>
     </section>
@@ -615,9 +639,9 @@
     <div class="modal">
       <button class="modal-close" id="bookClose" aria-label="Close">✕</button>
       <div id="bookFormWrap">
-        <div class="eyebrow">Free strategy call</div>
-        <h3 id="bookTitle">Book your call with Nick</h3>
-        <p class="sub">Pick a day and time that works. I’ll confirm your time and come ready with the highest-impact fix for your business — no cost, no pressure.</p>
+        <div class="eyebrow">Free marketing plan call</div>
+        <h3 id="bookTitle">Book your free plan with Nick</h3>
+        <p class="sub">Pick a day and time that works. You don’t need to know marketing — I’ll confirm your time and come ready with a simple plan for your business. No jargon, no cost, no pressure.</p>
         <form class="lead-form" id="bookForm" action="https://formsubmit.co/nikbyrd28@gmail.com" method="POST">
           <div class="row">
             <input type="text" name="name" placeholder="Your name" required autocomplete="name" />
@@ -792,8 +816,9 @@
     var greeted=false;
 
     var RULES=[
-      {k:['price','pricing','cost','how much','package'],a:"Packages start at $100 for a Local Presence Audit, $300 for the Premium One-Page Site, $400 for the AI Growth Agent, and go up from there for ads + follow-up systems. Want to book a quick call to go over it?"},
-      {k:['website','site','build','design'],a:"We build premium, mobile-first one-page sites with a strong first impression, local SEO baked in, and a clear call/text path. Starts at $300."},
+      {k:['not sure','dont know','don\'t know','unsure','confused','overwhelmed','where to start','help me','marketing plan','need a plan','no idea','plan'],a:"Totally normal — most owners aren't marketers. Book a free call and Nick will build you a simple, plain-English marketing plan: what's costing you customers, the 1–2 things to fix first, and a clear next step. No cost, no pressure. Tap any 'Book a Call' button."},
+      {k:['price','pricing','cost','how much','package'],a:"Packages start at $100 for a Local Presence Audit, $300 for the Premium One-Page Site, $400 for the AI Growth Agent, and go up from there for ads + follow-up systems. Not sure which fits? Book a free call and Nick will map out a simple plan for you."},
+      {k:['website','site','build','design'],a:"We build premium, mobile-first one-page sites with a strong first impression, local SEO baked in, and a clear path to book a call. Starts at $300."},
       {k:['seo','google','rank','search'],a:"Local SEO + GEO setup covers service-area copy, schema, sitemap, and Google Business Profile cleanup so you show up for Chester County searches."},
       {k:['ads','facebook','meta','instagram','google ads'],a:"Meta Ads Starter is $250, Google Ads Starter is $350 — both include campaign structure and creative direction. You cover ad spend."},
       {k:['ai','agent','aria','bot','chat'],a:"I'm ARIA — the AI agent that can ship with your site for $400. I qualify leads 24/7, answer FAQs instantly, and hand off hot leads straight to Nick by text."},
@@ -801,7 +826,7 @@
       {k:['contact','call','text','talk','human','nick','book','schedule'],a:"Easiest move: tap any 'Book a Call' button on this page, pick a day and time, and Nick will confirm and come ready with your free review."},
       {k:['area','location','chester','exton','malvern','downingtown','kennett','main line','west chester'],a:"We focus on Chester County and the Main Line — West Chester, Exton, Malvern, Downingtown, Kennett Square, and nearby suburbs."},
       {k:['time','long','fast','timeline','when'],a:"First drafts typically move fast — often within the week once the deposit and details are in. Bigger builds get a timeline on the intro call."},
-      {k:['hi','hello','hey'],a:"Hey there! Ask me about pricing, the AI agent, our work, or how to get in touch."}
+      {k:['hi','hello','hey'],a:"Hey there! Not sure what your business needs? Ask me anything — pricing, the AI agent, our work — or say “I need a plan” and I’ll point you to a free marketing plan call."}
     ];
 
     function botReply(text){
