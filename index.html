@@ -289,6 +289,19 @@
     .trust b{display:inline-flex;align-items:center;gap:8px;color:#dbe1f7;font-size:14px;font-weight:700}
     .trust b:before{content:"✓";display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--grad);color:#03040a;font-size:12px;font-weight:900}
 
+    /* premium interaction layer */
+    .scroll-progress{position:fixed;top:0;left:0;right:0;height:2px;background:var(--grad);transform-origin:0 50%;transform:scaleX(0);z-index:99;box-shadow:0 0 12px rgba(94,242,224,.5)}
+    .spot{position:relative}
+    .spot:after{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%),rgba(94,242,224,.10),transparent 55%);opacity:0;transition:opacity .3s;pointer-events:none}
+    .spot:hover:after{opacity:1}
+    main{counter-reset:sec}
+    section .section-title:before{counter-increment:sec;content:counter(sec,decimal-leading-zero);display:block;font-family:"Space Grotesk",sans-serif;font-size:13px;font-weight:700;letter-spacing:.34em;color:var(--cyan);opacity:.9;margin-bottom:16px}
+    .section-title{text-wrap:balance}
+    .console{transition:transform .18s ease-out;will-change:transform}
+    .btn{will-change:transform}
+    :focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:6px}
+    .card,.price,.seo-card,.compare-card,.cred-panel,.step,.plan-step,.mini-offer{box-shadow:0 18px 50px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.06)}
+
     /* free plan steps */
     .plan-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:30px;text-align:left}
     .plan-step{border:1px solid var(--line);border-radius:20px;background:rgba(3,4,10,.35);padding:22px}
@@ -459,7 +472,7 @@
       <div class="wrap split">
         <div><h2 class="section-title">The pieces that make a business look worth contacting.</h2><p class="muted">Most local businesses do not need a massive site or a bloated marketing retainer. They need a sharp first impression, a clear offer, local trust signals, an AI agent that never sleeps, and marketing follow-up that does not leak leads.</p></div>
         <div class="cards">
-          <article class="card reveal"><span class="num">01</span><h3>Premium websites</h3><p>Mobile-first pages with strong visuals, clear sections, fast loading, and direct call/text/email paths.</p></article>
+          <article class="card reveal"><span class="num">01</span><h3>Premium websites</h3><p>Mobile-first pages with strong visuals, clear sections, fast loading, and a direct path to book a call.</p></article>
           <article class="card reveal"><span class="num">02</span><h3>AI growth agent</h3><p>A live chat agent on your site that qualifies leads, answers questions instantly, and escalates hot leads to you.</p></article>
           <article class="card reveal"><span class="num">03</span><h3>Local SEO + GEO</h3><p>Service-area wording, metadata, schema, sitemap, Google profile direction, and local trust structure.</p></article>
         </div>
@@ -496,7 +509,7 @@
         <div class="seo-grid">
           <div class="seo-card reveal"><h3>Chester County positioning</h3><p>Copy for West Chester, Exton, Malvern, Downingtown, Kennett Square, Main Line, and nearby suburbs.</p></div>
           <div class="seo-card reveal"><h3>Google Business cleanup</h3><p>Profile wording, service categories, photo direction, and credibility improvements before prospects call.</p></div>
-          <div class="seo-card reveal"><h3>Conversion-first structure</h3><p>Hero, services, AI agent, proof, process, pricing, contact buttons, and a direct call/text/email flow.</p></div>
+          <div class="seo-card reveal"><h3>Conversion-first structure</h3><p>Hero, services, AI agent, proof, process, pricing, and a direct book-a-call flow on every screen.</p></div>
           <div class="seo-card reveal"><h3>Futuristic creative edge</h3><p>Fresh visuals, short-form content angles, and ad-ready creative direction that make the brand feel ahead of the competition.</p></div>
         </div>
       </div>
@@ -788,6 +801,58 @@
       addEventListener('mousemove',function(e){ gx=e.clientX; gy=e.clientY; glow.style.opacity='1'; });
       (function loop(){ cx+=(gx-cx)*.12; cy+=(gy-cy)*.12; glow.style.transform='translate('+cx+'px,'+cy+'px) translate(-50%,-50%)'; requestAnimationFrame(loop); })();
     }
+  })();
+
+  // Premium interaction layer: progress bar, card spotlight, 3D tilt, magnetic buttons
+  (function(){
+    var fine=matchMedia('(pointer:fine)').matches;
+    var reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // scroll progress bar
+    var bar=document.createElement('div');
+    bar.className='scroll-progress';
+    document.body.appendChild(bar);
+    var ticking=false;
+    addEventListener('scroll',function(){
+      if(ticking) return; ticking=true;
+      requestAnimationFrame(function(){
+        var h=document.documentElement;
+        var p=h.scrollTop/(h.scrollHeight-h.clientHeight||1);
+        bar.style.transform='scaleX('+p+')';
+        ticking=false;
+      });
+    },{passive:true});
+    if(!fine) return;
+    // cursor spotlight inside cards
+    document.querySelectorAll('.card,.price,.seo-card,.compare-card,.step,.plan-step,.agent-row,.mini-offer,.cred-panel').forEach(function(el){
+      el.classList.add('spot');
+      el.addEventListener('mousemove',function(e){
+        var r=el.getBoundingClientRect();
+        el.style.setProperty('--mx',(e.clientX-r.left)+'px');
+        el.style.setProperty('--my',(e.clientY-r.top)+'px');
+      });
+    });
+    if(reduced) return;
+    // 3D tilt on the hero console
+    var con=document.querySelector('.console');
+    var hero=document.querySelector('.hero');
+    if(con&&hero){
+      hero.addEventListener('mousemove',function(e){
+        var r=con.getBoundingClientRect();
+        var dx=(e.clientX-(r.left+r.width/2))/r.width;
+        var dy=(e.clientY-(r.top+r.height/2))/r.height;
+        con.style.transform='perspective(1100px) rotateY('+(dx*4).toFixed(2)+'deg) rotateX('+(-dy*4).toFixed(2)+'deg)';
+      });
+      hero.addEventListener('mouseleave',function(){ con.style.transform=''; });
+    }
+    // magnetic pull on primary buttons
+    document.querySelectorAll('.btn.primary').forEach(function(btn){
+      btn.addEventListener('mousemove',function(e){
+        var r=btn.getBoundingClientRect();
+        var dx=e.clientX-(r.left+r.width/2), dy=e.clientY-(r.top+r.height/2);
+        btn.style.transform='translate('+(dx*.15).toFixed(1)+'px,'+(dy*.25).toFixed(1)+'px)';
+      });
+      btn.addEventListener('mouseleave',function(){ btn.style.transform=''; });
+    });
   })();
 
   // Booking → Google Calendar + AJAX lead form
