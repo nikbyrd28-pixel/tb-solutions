@@ -42,6 +42,19 @@
     "sameAs":["https://github.com/nikbyrd28-pixel/tb-solutions"]
   }
   </script>
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"FAQPage",
+    "mainEntity":[
+      {"@type":"Question","name":"How fast can my site be ready?","acceptedAnswer":{"@type":"Answer","text":"Most one-page sites get a first draft within a few days of the deposit and your details. Revisions are quick because you talk to the builder directly."}},
+      {"@type":"Question","name":"What does the AI agent actually do?","acceptedAnswer":{"@type":"Answer","text":"It is a live chat concierge trained on your services. It answers pricing and FAQ questions instantly, qualifies visitors 24/7, and hands hot leads straight to you by text."}},
+      {"@type":"Question","name":"Do you run the ads too?","acceptedAnswer":{"@type":"Answer","text":"Yes. Meta and Google Ads setup includes campaign structure, targeting, and creative direction. You cover the ad spend directly."}},
+      {"@type":"Question","name":"What do I need to get started?","acceptedAnswer":{"@type":"Answer","text":"Just your business name, your current site or Instagram, and what you sell. Text or fill out the form and you get the single highest-impact fix for free."}},
+      {"@type":"Question","name":"How does payment work?","acceptedAnswer":{"@type":"Answer","text":"Half upfront, half on delivery for starter packages. Bigger builds and monthly support are quoted after a quick call. No long-term contracts."}}
+    ]
+  }
+  </script>
   <style>
     :root{
       --void:#03040a;--void2:#05070f;--panel:rgba(18,22,40,.55);--panel-solid:#0a0d1a;
@@ -209,12 +222,44 @@
 
     /* neon marquee */
     .marquee{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:linear-gradient(90deg,rgba(94,242,224,.05),rgba(185,139,255,.05));padding:18px 0;white-space:nowrap;-webkit-mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
-    .marquee-track{display:inline-flex;gap:44px;animation:scroll 26s linear infinite;will-change:transform}
+    .marquee-track{display:inline-flex;gap:44px;animation:scroll 16s linear infinite;will-change:transform}
     .marquee:hover .marquee-track{animation-play-state:paused}
-    .marquee-track span{font-family:"Orbitron",sans-serif;font-size:20px;font-weight:800;letter-spacing:.02em;color:var(--text);display:inline-flex;align-items:center;gap:44px}
-    .marquee-track span:after{content:"✦";color:var(--cyan)}
+    .marquee-track span{font-family:"Orbitron",sans-serif;font-size:20px;font-weight:800;letter-spacing:.02em;color:var(--text);display:inline-flex;align-items:center;gap:44px;text-shadow:0 0 22px rgba(94,242,224,.35)}
+    .marquee-track span:after{content:"✦";color:var(--cyan);text-shadow:0 0 16px var(--cyan)}
     @keyframes scroll{to{transform:translateX(-50%)}}
     @media(prefers-reduced-motion:reduce){.marquee-track{animation:none}}
+
+    /* trust strip */
+    .trust{display:flex;flex-wrap:wrap;gap:12px 26px;justify-content:center;align-items:center;padding:22px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(150,190,255,.03)}
+    .trust b{display:inline-flex;align-items:center;gap:8px;color:#dbe1f7;font-size:14px;font-weight:700}
+    .trust b:before{content:"✓";display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--grad);color:#03040a;font-size:12px;font-weight:900}
+
+    /* lead form */
+    .lead-form{display:grid;gap:12px;margin-top:22px;max-width:560px}
+    .lead-form .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .lead-form input,.lead-form select,.lead-form textarea{width:100%;background:rgba(3,4,10,.5);border:1px solid var(--line2);border-radius:14px;padding:13px 15px;color:var(--text);font-size:15px;font-family:inherit}
+    .lead-form textarea{min-height:92px;resize:vertical}
+    .lead-form input:focus,.lead-form select:focus,.lead-form textarea:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(94,242,224,.15)}
+    .lead-form option{color:#03040a}
+    .lead-form button{border:0;background:var(--grad);color:#03040a;border-radius:999px;padding:15px 22px;font-weight:900;font-size:16px;cursor:pointer;font-family:inherit}
+    .lead-form small{color:var(--muted);font-size:12px}
+
+    /* faq */
+    .faq{display:grid;gap:12px;margin-top:28px}
+    .faq details{border:1px solid var(--line);border-radius:18px;background:rgba(150,190,255,.04);padding:4px 20px;transition:border-color .2s}
+    .faq details[open]{border-color:var(--line2)}
+    .faq summary{cursor:pointer;list-style:none;padding:18px 0;font-size:18px;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:16px}
+    .faq summary::-webkit-details-marker{display:none}
+    .faq summary:after{content:"+";font-family:"Orbitron",sans-serif;color:var(--cyan);font-size:24px;transition:transform .2s}
+    .faq details[open] summary:after{transform:rotate(45deg)}
+    .faq p{margin:0 0 18px;color:var(--muted)}
+
+    /* sticky mobile CTA */
+    .mobile-cta{position:fixed;left:0;right:0;bottom:0;z-index:70;display:none;gap:10px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(3,4,10,.92);backdrop-filter:blur(18px);border-top:1px solid var(--line2)}
+    .mobile-cta a{flex:1;text-align:center;border-radius:999px;padding:14px 10px;font-weight:800;text-decoration:none;font-size:15px}
+    .mobile-cta a.call{border:1px solid var(--line2);color:var(--text);background:rgba(150,190,255,.08)}
+    .mobile-cta a.text{border:0;background:var(--grad);color:#03040a}
+    @media(max-width:760px){.mobile-cta{display:flex}.ai-fab{bottom:78px}.ai-panel{bottom:150px}body{padding-bottom:64px}.lead-form .row{grid-template-columns:1fr}}
 
     /* AI agent widget */
     .ai-fab{position:fixed;right:22px;bottom:22px;z-index:80;width:64px;height:64px;border-radius:50%;border:1px solid var(--line2);background:var(--grad);color:#03040a;display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 40px rgba(94,242,224,.35);font-family:"Orbitron",sans-serif;font-weight:900}
@@ -266,7 +311,7 @@
   <header class="top">
     <div class="wrap nav">
       <a class="brand" href="#">TB <span>Solutions</span></a>
-      <nav class="navlinks"><a href="#services">Services</a><a href="#ai-agent">AI Agent</a><a href="#pricing">Packages</a><a href="#portfolio">Work</a><a href="#contact">Contact</a></nav>
+      <nav class="navlinks"><a href="#services">Services</a><a href="#ai-agent">AI Agent</a><a href="#pricing">Packages</a><a href="#portfolio">Work</a><a href="#faq">FAQ</a><a href="#contact">Contact</a></nav>
       <div class="actions" style="margin-top:0"><a class="btn" href="tel:+14848418501">Call</a><a class="btn primary" href="sms:+14848418501?body=Hey Nick, I want help with my website.">Text Nick</a></div>
     </div>
   </header>
@@ -319,6 +364,14 @@
         <span>Premium Websites</span><span>AI Growth Agent</span><span>Local SEO</span><span>Google Business</span><span>Meta Ads</span><span>Google Ads</span><span>Lead Follow-Up</span>
         <span>Premium Websites</span><span>AI Growth Agent</span><span>Local SEO</span><span>Google Business</span><span>Meta Ads</span><span>Google Ads</span><span>Lead Follow-Up</span>
       </div>
+    </div>
+
+    <div class="trust" aria-label="Why work with TB Solutions">
+      <b>Direct access to the builder</b>
+      <b>Fast first draft</b>
+      <b>No long-term contracts</b>
+      <b>Built-in AI lead agent</b>
+      <b>Chester County local</b>
     </div>
 
     <section id="services">
@@ -456,18 +509,61 @@
       </div>
     </section>
 
+    <section id="faq">
+      <div class="wrap">
+        <h2 class="section-title">Questions before you reach out.</h2>
+        <p class="muted">Straight answers so you know exactly what you’re getting.</p>
+        <div class="faq">
+          <details><summary>How fast can my site be ready?</summary><p>Most one-page sites get a first draft within a few days of the deposit and your details. Revisions are quick because you talk to the builder directly — no agency back-and-forth.</p></details>
+          <details><summary>What does the AI agent actually do?</summary><p>It’s a live chat concierge trained on your services. It answers pricing and FAQ questions instantly, qualifies visitors 24/7, and hands hot leads straight to you by text — so you stop losing after-hours inquiries.</p></details>
+          <details><summary>Do you run the ads too?</summary><p>Yes. Meta and Google Ads setup includes campaign structure, targeting, and creative direction. You cover the ad spend directly; I build and manage the campaign around your site.</p></details>
+          <details><summary>What do I need to get started?</summary><p>Just your business name, your current site or Instagram, and what you sell. Text or fill out the form below and I’ll tell you the single highest-impact fix for free.</p></details>
+          <details><summary>How does payment work?</summary><p>Simple: half upfront, half on delivery for starter packages. Bigger builds and monthly support are quoted after a quick call. No long-term contracts.</p></details>
+        </div>
+      </div>
+    </section>
+
     <section id="contact">
       <div class="wrap">
         <div class="final">
-          <h2 class="section-title">Want your business to look like the premium option?</h2>
-          <p class="muted">Text or call with your business name and current site. I’ll tell you the first thing I’d improve to make it more trustworthy, clearer, and better built for leads — and whether the AI agent makes sense for you.</p>
-          <div class="actions"><a class="btn primary" href="sms:+14848418501?body=Hey Nick, can you review my business site?">Text Nick</a><a class="btn" href="tel:+14848418501">Call 484-841-8501</a><a class="btn" href="mailto:nikbyrd28@gmail.com?subject=Website review&body=Business name:%0ACurrent website/Instagram:%0AWhat you sell:%0A">Email</a></div>
+          <h2 class="section-title">Get your free website & Google review.</h2>
+          <p class="muted">Tell me about your business and I’ll reply with the first thing I’d improve to make it more trustworthy, clearer, and better built for leads — and whether the AI agent makes sense for you. No pressure, no cost.</p>
+          <form class="lead-form" id="leadForm" action="https://formsubmit.co/nikbyrd28@gmail.com" method="POST">
+            <div class="row">
+              <input type="text" name="name" placeholder="Your name" required autocomplete="name" />
+              <input type="tel" name="phone" placeholder="Best phone / text number" required autocomplete="tel" />
+            </div>
+            <div class="row">
+              <input type="text" name="business" placeholder="Business name" required />
+              <input type="text" name="website" placeholder="Current website or Instagram" />
+            </div>
+            <select name="interest" required>
+              <option value="" disabled selected>What do you need most?</option>
+              <option>Premium One-Page Website</option>
+              <option>AI Growth Agent</option>
+              <option>Local SEO / Google Business</option>
+              <option>Meta or Google Ads</option>
+              <option>Lead Follow-Up System</option>
+              <option>Not sure — need advice</option>
+            </select>
+            <textarea name="message" placeholder="What are you trying to get more of? (calls, bookings, orders...)"></textarea>
+            <input type="hidden" name="_subject" value="New TB Solutions website lead" />
+            <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
+            <button type="submit">Get my free review →</button>
+            <small>Prefer to talk now? Text or call <a href="tel:+14848418501" style="color:var(--cyan)">484-841-8501</a>. Your info is only used to reply to you.</small>
+          </form>
+          <div class="actions"><a class="btn primary" href="sms:+14848418501?body=Hey Nick, can you review my business site?">Text Nick</a><a class="btn" href="tel:+14848418501">Call 484-841-8501</a></div>
           <p class="fine">Serving Chester County, West Chester, Exton, Malvern, Downingtown, Kennett Square, Main Line, and nearby local businesses.</p>
         </div>
       </div>
     </section>
   </main>
   <footer class="footer"><div class="wrap">© TB Solutions — futuristic websites, AI growth agents, local SEO, ads, and lead systems for Chester County businesses.</div></footer>
+
+  <div class="mobile-cta" aria-label="Quick contact">
+    <a class="call" href="tel:+14848418501">Call</a>
+    <a class="text" href="sms:+14848418501?body=Hey Nick, I want help with my website.">Text Nick</a>
+  </div>
 
   <button class="ai-fab" id="aiFab" aria-expanded="false" aria-controls="aiPanel" aria-label="Open ARIA, the AI growth agent chat">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><rect x="4" y="8" width="16" height="12" rx="4"/><circle cx="9" cy="14" r="1.4" fill="currentColor" stroke="none"/><circle cx="15" cy="14" r="1.4" fill="currentColor" stroke="none"/><path d="M4 13H2M22 13h-2"/></svg>
