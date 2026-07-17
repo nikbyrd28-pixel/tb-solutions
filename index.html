@@ -56,12 +56,19 @@
     body{margin:0;font-family:"Space Grotesk",Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:var(--void);color:var(--text);line-height:1.5;overflow-x:hidden}
     a{color:inherit}
     .hud{font-family:"Orbitron","Space Grotesk",sans-serif}
-    body:before{content:"";position:fixed;inset:0;pointer-events:none;background:
-      radial-gradient(circle at 8% -8%,rgba(94,242,224,.14),transparent 32%),
-      radial-gradient(circle at 88% 6%,rgba(185,139,255,.13),transparent 34%),
-      radial-gradient(circle at 50% 100%,rgba(111,157,255,.14),transparent 42%),
-      linear-gradient(180deg,#03040a 0%,#05060d 46%,#020307 100%);z-index:-4}
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(180deg,#03040a 0%,#05060d 46%,#020307 100%);z-index:-4}
+    .aurora{position:fixed;inset:0;z-index:-4;pointer-events:none;overflow:hidden;filter:blur(60px)}
+    .aurora i{position:absolute;display:block;border-radius:50%;opacity:.5;mix-blend-mode:screen;will-change:transform}
+    .aurora i:nth-child(1){width:52vw;height:52vw;left:-10vw;top:-16vw;background:radial-gradient(circle,rgba(94,242,224,.55),transparent 68%);animation:drift1 22s ease-in-out infinite}
+    .aurora i:nth-child(2){width:46vw;height:46vw;right:-12vw;top:-6vw;background:radial-gradient(circle,rgba(185,139,255,.5),transparent 68%);animation:drift2 26s ease-in-out infinite}
+    .aurora i:nth-child(3){width:60vw;height:60vw;left:20vw;bottom:-28vw;background:radial-gradient(circle,rgba(111,157,255,.5),transparent 68%);animation:drift3 30s ease-in-out infinite}
+    .aurora i:nth-child(4){width:34vw;height:34vw;right:6vw;bottom:-6vw;background:radial-gradient(circle,rgba(255,143,214,.35),transparent 68%);animation:drift2 24s ease-in-out infinite reverse}
+    @keyframes drift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(8vw,6vw) scale(1.18)}}
+    @keyframes drift2{0%,100%{transform:translate(0,0) scale(1.1)}50%{transform:translate(-7vw,7vw) scale(.9)}}
+    @keyframes drift3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-6vw,-8vw) scale(1.2)}}
+    @media(prefers-reduced-motion:reduce){.aurora i{animation:none!important}}
     canvas#stars{position:fixed;inset:0;z-index:-3;pointer-events:none;opacity:.85}
+    .cursor-glow{position:fixed;top:0;left:0;width:520px;height:520px;border-radius:50%;pointer-events:none;z-index:-2;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(94,242,224,.1),rgba(185,139,255,.05) 40%,transparent 68%);opacity:0;transition:opacity .4s;will-change:transform}
     .scanline{position:fixed;inset:0;z-index:-2;pointer-events:none;opacity:.05;background:repeating-linear-gradient(0deg,rgba(120,200,255,.6) 0px,rgba(120,200,255,.6) 1px,transparent 1px,transparent 3px)}
     .noise{position:fixed;inset:0;pointer-events:none;opacity:.045;z-index:60;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E")}
     .wrap{width:min(1180px,92vw);margin:auto}
@@ -83,7 +90,14 @@
     .hero{position:relative;padding:104px 0 76px}
     .hero-grid{display:grid;grid-template-columns:1fr .95fr;gap:44px;align-items:center}
     h1{font-family:"Orbitron","Space Grotesk",sans-serif;font-size:clamp(42px,7vw,80px);line-height:.98;letter-spacing:-.02em;margin:18px 0 22px}
-    h1 .gradient{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 60px rgba(94,242,224,.25)}
+    h1 .gradient{background:linear-gradient(120deg,var(--cyan),var(--blue),var(--violet),var(--pink),var(--cyan));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:hue 9s linear infinite;text-shadow:0 0 70px rgba(94,242,224,.3)}
+    @keyframes hue{to{background-position:300% 0}}
+    /* animated conic glow ring for featured elements */
+    .glow-ring{position:relative;isolation:isolate}
+    .glow-ring:before{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;background:conic-gradient(from var(--a,0deg),var(--cyan),var(--violet),var(--pink),var(--blue),var(--cyan));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spin 6s linear infinite;z-index:-1;opacity:.9}
+    @property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
+    @keyframes spin{to{--a:360deg}}
+    @media(prefers-reduced-motion:reduce){.glow-ring:before,h1 .gradient{animation:none}}
     .lead{font-size:clamp(18px,2.1vw,22px);color:#cfd4ec;max-width:760px}
     .sublead{color:var(--muted);font-size:16px;max-width:680px}
     .hero-proof{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:30px}
@@ -188,6 +202,20 @@
     .fine{font-size:13px;color:var(--muted);margin-top:16px}
     .footer{padding:34px 0;color:var(--muted);font-size:14px;border-top:1px solid var(--line)}
 
+    /* scroll reveal */
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+    .reveal.in{opacity:1;transform:none}
+    @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+    /* neon marquee */
+    .marquee{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:linear-gradient(90deg,rgba(94,242,224,.05),rgba(185,139,255,.05));padding:18px 0;white-space:nowrap;-webkit-mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+    .marquee-track{display:inline-flex;gap:44px;animation:scroll 26s linear infinite;will-change:transform}
+    .marquee:hover .marquee-track{animation-play-state:paused}
+    .marquee-track span{font-family:"Orbitron",sans-serif;font-size:20px;font-weight:800;letter-spacing:.02em;color:var(--text);display:inline-flex;align-items:center;gap:44px}
+    .marquee-track span:after{content:"✦";color:var(--cyan)}
+    @keyframes scroll{to{transform:translateX(-50%)}}
+    @media(prefers-reduced-motion:reduce){.marquee-track{animation:none}}
+
     /* AI agent widget */
     .ai-fab{position:fixed;right:22px;bottom:22px;z-index:80;width:64px;height:64px;border-radius:50%;border:1px solid var(--line2);background:var(--grad);color:#03040a;display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 40px rgba(94,242,224,.35);font-family:"Orbitron",sans-serif;font-weight:900}
     .ai-fab:before{content:"";position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(94,242,224,.5);animation:pulse-ring 2.4s ease-out infinite}
@@ -229,7 +257,9 @@
   </style>
 </head>
 <body>
+  <div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
   <canvas id="stars" aria-hidden="true"></canvas>
+  <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
   <div class="scanline" aria-hidden="true"></div>
   <div class="noise"></div>
 
@@ -261,7 +291,7 @@
           </div>
           <div class="chips"><span class="chip">West Chester</span><span class="chip">Exton</span><span class="chip">Malvern</span><span class="chip">Downingtown</span><span class="chip">Kennett Square</span><span class="chip">Main Line</span></div>
         </div>
-        <aside class="console" aria-label="AI growth agent live preview">
+        <aside class="console glow-ring" aria-label="AI growth agent live preview">
           <div class="screen">
             <div class="browser-card">
               <div class="browser-top"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span style="margin-left:10px">ARIA — AI growth agent · live</span></div>
@@ -284,13 +314,20 @@
       </div>
     </section>
 
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>Premium Websites</span><span>AI Growth Agent</span><span>Local SEO</span><span>Google Business</span><span>Meta Ads</span><span>Google Ads</span><span>Lead Follow-Up</span>
+        <span>Premium Websites</span><span>AI Growth Agent</span><span>Local SEO</span><span>Google Business</span><span>Meta Ads</span><span>Google Ads</span><span>Lead Follow-Up</span>
+      </div>
+    </div>
+
     <section id="services">
       <div class="wrap split">
         <div><h2 class="section-title">The pieces that make a business look worth contacting.</h2><p class="muted">Most local businesses do not need a massive site. They need a sharp first impression, a clear offer, local trust signals, an AI agent that never sleeps, and follow-up that does not leak leads.</p></div>
         <div class="cards">
-          <article class="card"><span class="num">01</span><h3>Premium websites</h3><p>Mobile-first pages with strong visuals, clear sections, fast loading, and direct call/text/email paths.</p></article>
-          <article class="card"><span class="num">02</span><h3>AI growth agent</h3><p>A live chat agent on your site that qualifies leads, answers questions instantly, and escalates hot leads to you.</p></article>
-          <article class="card"><span class="num">03</span><h3>Local SEO + GEO</h3><p>Service-area wording, metadata, schema, sitemap, Google profile direction, and local trust structure.</p></article>
+          <article class="card reveal"><span class="num">01</span><h3>Premium websites</h3><p>Mobile-first pages with strong visuals, clear sections, fast loading, and direct call/text/email paths.</p></article>
+          <article class="card reveal"><span class="num">02</span><h3>AI growth agent</h3><p>A live chat agent on your site that qualifies leads, answers questions instantly, and escalates hot leads to you.</p></article>
+          <article class="card reveal"><span class="num">03</span><h3>Local SEO + GEO</h3><p>Service-area wording, metadata, schema, sitemap, Google profile direction, and local trust structure.</p></article>
         </div>
       </div>
     </section>
@@ -302,10 +339,10 @@
         <p class="muted">Every premium build ships with a live AI concierge — the same one running in the corner of this page right now. Click it and see for yourself.</p>
         <div class="agent-grid">
           <div class="agent-list">
-            <div class="agent-row"><span class="ico">24</span><div><b>Never sleeps</b><span>Answers pricing, service, and timeline questions the second a visitor lands, day or night.</span></div></div>
-            <div class="agent-row"><span class="ico">✓</span><div><b>Qualifies leads</b><span>Figures out what a visitor actually needs before they ever pick up the phone.</span></div></div>
-            <div class="agent-row"><span class="ico">→</span><div><b>Hands off to you</b><span>Hot leads get pointed straight to a call or text with Nick — no bot dead-ends.</span></div></div>
-            <div class="agent-row"><span class="ico">★</span><div><b>On-brand, not robotic</b><span>Styled and worded to match your site so it feels like part of the business.</span></div></div>
+            <div class="agent-row reveal"><span class="ico">24</span><div><b>Never sleeps</b><span>Answers pricing, service, and timeline questions the second a visitor lands, day or night.</span></div></div>
+            <div class="agent-row reveal"><span class="ico">✓</span><div><b>Qualifies leads</b><span>Figures out what a visitor actually needs before they ever pick up the phone.</span></div></div>
+            <div class="agent-row reveal"><span class="ico">→</span><div><b>Hands off to you</b><span>Hot leads get pointed straight to a call or text with Nick — no bot dead-ends.</span></div></div>
+            <div class="agent-row reveal"><span class="ico">★</span><div><b>On-brand, not robotic</b><span>Styled and worded to match your site so it feels like part of the business.</span></div></div>
           </div>
           <div class="agent-visual">
             <div class="browser-top" style="border-radius:16px 16px 0 0"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>ARIA · try the real thing bottom-right →</span></div>
@@ -323,10 +360,10 @@
         <h2 class="section-title">Built for people first. Structured for Google second.</h2>
         <p class="muted">The site gives customers enough confidence to call and gives search engines enough context to understand your service area.</p>
         <div class="seo-grid">
-          <div class="seo-card"><h3>Chester County positioning</h3><p>Copy for West Chester, Exton, Malvern, Downingtown, Kennett Square, Main Line, and nearby suburbs.</p></div>
-          <div class="seo-card"><h3>Google Business cleanup</h3><p>Profile wording, service categories, photo direction, and credibility improvements before prospects call.</p></div>
-          <div class="seo-card"><h3>Conversion-first structure</h3><p>Hero, services, AI agent, proof, process, pricing, contact buttons, and a direct call/text/email flow.</p></div>
-          <div class="seo-card"><h3>Futuristic creative edge</h3><p>Fresh visuals, short-form content angles, and ad-ready creative direction that make the brand feel ahead of the competition.</p></div>
+          <div class="seo-card reveal"><h3>Chester County positioning</h3><p>Copy for West Chester, Exton, Malvern, Downingtown, Kennett Square, Main Line, and nearby suburbs.</p></div>
+          <div class="seo-card reveal"><h3>Google Business cleanup</h3><p>Profile wording, service categories, photo direction, and credibility improvements before prospects call.</p></div>
+          <div class="seo-card reveal"><h3>Conversion-first structure</h3><p>Hero, services, AI agent, proof, process, pricing, contact buttons, and a direct call/text/email flow.</p></div>
+          <div class="seo-card reveal"><h3>Futuristic creative edge</h3><p>Fresh visuals, short-form content angles, and ad-ready creative direction that make the brand feel ahead of the competition.</p></div>
         </div>
       </div>
     </section>
@@ -336,9 +373,9 @@
         <h2 class="section-title">Built to beat the outdated local sites around you.</h2>
         <p class="muted">A lot of local competitors still look slow, generic, or forgotten. That is the opening. TB Solutions makes your business feel current, legitimate, and impossible to ignore.</p>
         <div class="compare">
-          <div class="compare-card feature"><b>High-end first impression</b><span>Sci-fi grade visuals that feel more expensive than the starter price.</span></div>
-          <div class="compare-card"><b>Live AI agent</b><span>A working AI concierge on the page, not just a mockup screenshot.</span></div>
-          <div class="compare-card"><b>Direct builder access</b><span>No account manager maze. You talk to the person building and revising the work.</span></div>
+          <div class="compare-card feature glow-ring reveal"><b>High-end first impression</b><span>Sci-fi grade visuals that feel more expensive than the starter price.</span></div>
+          <div class="compare-card reveal"><b>Live AI agent</b><span>A working AI concierge on the page, not just a mockup screenshot.</span></div>
+          <div class="compare-card reveal"><b>Direct builder access</b><span>No account manager maze. You talk to the person building and revising the work.</span></div>
         </div>
         <div class="areas"><span class="area">Chester County</span><span class="area">West Chester</span><span class="area">Exton</span><span class="area">Malvern</span><span class="area">Downingtown</span><span class="area">Kennett Square</span><span class="area">Main Line</span></div>
       </div>
@@ -364,9 +401,9 @@
         <h2 class="section-title">Starter packages built to close fast.</h2>
         <p class="muted">Clear scope. Half upfront, half on delivery. Bigger builds quoted after a quick call.</p>
         <div class="pricing">
-          <article class="price"><h3>Local Presence Audit</h3><div class="money">$100</div><p class="muted">A quick review and practical cleanup direction for your site or Google profile.</p><ul><li>Website/Google review</li><li>Top fixes prioritized</li><li>Simple action plan</li></ul><a class="btn btn-sm" href="tel:+14848418501">Call for details</a></article>
-          <article class="price featured"><span class="tag">Best starter</span><h3>Premium One-Page Site</h3><div class="money">$300</div><p class="muted">A polished landing page built to create inquiries and make the business feel trustworthy.</p><ul><li>Custom visual direction</li><li>Offer, services, proof, contact</li><li>SEO/GEO foundation</li></ul><a class="btn btn-sm primary" href="sms:+14848418501?body=Hey Nick, I want the Premium One-Page Site.">Text about this</a></article>
-          <article class="price"><h3>Creative Proof Pack</h3><div class="money">$150</div><p class="muted">Posts, captions, short-form hooks, and visual direction so the business looks active.</p><ul><li>10 branded graphics</li><li>Captions included</li><li>Website build content angle</li><li>Ad creative direction</li></ul><a class="btn btn-sm" href="tel:+14848418501">Call for details</a></article>
+          <article class="price reveal"><h3>Local Presence Audit</h3><div class="money">$100</div><p class="muted">A quick review and practical cleanup direction for your site or Google profile.</p><ul><li>Website/Google review</li><li>Top fixes prioritized</li><li>Simple action plan</li></ul><a class="btn btn-sm" href="tel:+14848418501">Call for details</a></article>
+          <article class="price featured glow-ring reveal"><span class="tag">Best starter</span><h3>Premium One-Page Site</h3><div class="money">$300</div><p class="muted">A polished landing page built to create inquiries and make the business feel trustworthy.</p><ul><li>Custom visual direction</li><li>Offer, services, proof, contact</li><li>SEO/GEO foundation</li></ul><a class="btn btn-sm primary" href="sms:+14848418501?body=Hey Nick, I want the Premium One-Page Site.">Text about this</a></article>
+          <article class="price reveal"><h3>Creative Proof Pack</h3><div class="money">$150</div><p class="muted">Posts, captions, short-form hooks, and visual direction so the business looks active.</p><ul><li>10 branded graphics</li><li>Captions included</li><li>Website build content angle</li><li>Ad creative direction</li></ul><a class="btn btn-sm" href="tel:+14848418501">Call for details</a></article>
         </div>
       </div>
     </section>
@@ -376,14 +413,14 @@
         <h2 class="section-title">Growth packages for businesses ready for leads.</h2>
         <p class="muted">Start with the website. Then add the AI agent, traffic, and follow-up. These packages give local businesses the pieces they actually need.</p>
         <div class="growth-grid">
-          <article class="price featured"><span class="tag">New</span><h3>AI Growth Agent</h3><div class="money">$400</div><p class="muted">A live AI concierge added to your site — qualifies leads 24/7, answers FAQs instantly, and texts you the hot ones.</p><ul><li>Custom-trained on your services</li><li>On-brand chat styling</li><li>Call/text escalation built in</li></ul><a class="btn btn-sm primary" href="sms:+14848418501?body=Hey Nick, I want the AI Growth Agent for my site.">Text about the AI agent</a></article>
-          <article class="price"><span class="tag">Traffic</span><h3>Meta Ads Starter</h3><div class="money">$250</div><p class="muted">Facebook/Instagram ad setup for local offers, promos, and service businesses.</p><ul><li>Campaign structure</li><li>Audience + offer angle</li><li>Client pays ad spend</li></ul><a class="btn btn-sm" href="tel:+14848418501">Call for details</a></article>
-          <article class="price"><span class="tag">High intent</span><h3>Google Ads Starter</h3><div class="money">$350</div><p class="muted">Search campaign setup for people already looking for the service.</p><ul><li>Keyword map</li><li>Search ad copy</li><li>Landing page alignment</li><li>Client pays ad spend</li></ul><a class="btn btn-sm" href="tel:+14848418501">Call for details</a></article>
-          <article class="price"><span class="tag">Follow-up</span><h3>Lead Follow-Up System</h3><div class="money">$500</div><p class="muted">Capture and follow-up system so interested leads do not disappear after the first click.</p><ul><li>Form/funnel setup</li><li>Pipeline basics</li><li>Text/email follow-up flow</li></ul><a class="btn btn-sm" href="tel:+14848418501">Call for details</a></article>
+          <article class="price featured glow-ring reveal"><span class="tag">New</span><h3>AI Growth Agent</h3><div class="money">$400</div><p class="muted">A live AI concierge added to your site — qualifies leads 24/7, answers FAQs instantly, and texts you the hot ones.</p><ul><li>Custom-trained on your services</li><li>On-brand chat styling</li><li>Call/text escalation built in</li></ul><a class="btn btn-sm primary" href="sms:+14848418501?body=Hey Nick, I want the AI Growth Agent for my site.">Text about the AI agent</a></article>
+          <article class="price reveal"><span class="tag">Traffic</span><h3>Meta Ads Starter</h3><div class="money">$250</div><p class="muted">Facebook/Instagram ad setup for local offers, promos, and service businesses.</p><ul><li>Campaign structure</li><li>Audience + offer angle</li><li>Client pays ad spend</li></ul><a class="btn btn-sm" href="tel:+14848418501">Call for details</a></article>
+          <article class="price reveal"><span class="tag">High intent</span><h3>Google Ads Starter</h3><div class="money">$350</div><p class="muted">Search campaign setup for people already looking for the service.</p><ul><li>Keyword map</li><li>Search ad copy</li><li>Landing page alignment</li><li>Client pays ad spend</li></ul><a class="btn btn-sm" href="tel:+14848418501">Call for details</a></article>
+          <article class="price reveal"><span class="tag">Follow-up</span><h3>Lead Follow-Up System</h3><div class="money">$500</div><p class="muted">Capture and follow-up system so interested leads do not disappear after the first click.</p><ul><li>Form/funnel setup</li><li>Pipeline basics</li><li>Text/email follow-up flow</li></ul><a class="btn btn-sm" href="tel:+14848418501">Call for details</a></article>
         </div>
         <div class="offer-strip">
-          <div class="mini-offer"><b>Fastest path:</b> start with the Premium One-Page Site, then add the AI Growth Agent once the page is live.</div>
-          <div class="mini-offer"><b>Best recurring path:</b> layer in ads, creative refreshes, and follow-up support around the AI agent for a full lead system.</div>
+          <div class="mini-offer reveal"><b>Fastest path:</b> start with the Premium One-Page Site, then add the AI Growth Agent once the page is live.</div>
+          <div class="mini-offer reveal"><b>Best recurring path:</b> layer in ads, creative refreshes, and follow-up support around the AI agent for a full lead system.</div>
         </div>
       </div>
     </section>
@@ -411,10 +448,10 @@
       <div class="wrap">
         <h2 class="section-title">Simple process.</h2>
         <div class="process">
-          <div class="step"><b>1.</b><p>Send your business, current site, or Instagram.</p></div>
-          <div class="step"><b>2.</b><p>I point out the highest-impact fix.</p></div>
-          <div class="step"><b>3.</b><p>You approve the package and deposit.</p></div>
-          <div class="step"><b>4.</b><p>I build, revise, and hand off cleanly — AI agent included.</p></div>
+          <div class="step reveal"><b>1.</b><p>Send your business, current site, or Instagram.</p></div>
+          <div class="step reveal"><b>2.</b><p>I point out the highest-impact fix.</p></div>
+          <div class="step reveal"><b>3.</b><p>You approve the package and deposit.</p></div>
+          <div class="step reveal"><b>4.</b><p>I build, revise, and hand off cleanly — AI agent included.</p></div>
         </div>
       </div>
     </section>
@@ -489,6 +526,27 @@
     window.addEventListener('resize', init);
     init();
     draw();
+  })();
+
+  (function(){
+    var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // scroll reveal
+    var revs=document.querySelectorAll('.reveal');
+    if('IntersectionObserver' in window && !reduced){
+      var io=new IntersectionObserver(function(entries){
+        entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+      },{threshold:.12,rootMargin:'0px 0px -8% 0px'});
+      revs.forEach(function(el,i){ el.style.transitionDelay=(Math.min(i%4,3)*70)+'ms'; io.observe(el); });
+    } else {
+      revs.forEach(function(el){ el.classList.add('in'); });
+    }
+    // cursor glow
+    var glow=document.getElementById('cursorGlow');
+    if(glow && !reduced && matchMedia('(pointer:fine)').matches){
+      var gx=innerWidth/2,gy=innerHeight/2,cx=gx,cy=gy;
+      addEventListener('mousemove',function(e){ gx=e.clientX; gy=e.clientY; glow.style.opacity='1'; });
+      (function loop(){ cx+=(gx-cx)*.12; cy+=(gy-cy)*.12; glow.style.transform='translate('+cx+'px,'+cy+'px) translate(-50%,-50%)'; requestAnimationFrame(loop); })();
+    }
   })();
 
   (function(){
