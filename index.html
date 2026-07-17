@@ -261,6 +261,23 @@
     .mobile-cta a.text{border:0;background:var(--grad);color:#03040a}
     @media(max-width:760px){.mobile-cta{display:flex}.ai-fab{bottom:78px}.ai-panel{bottom:150px}body{padding-bottom:64px}.lead-form .row{grid-template-columns:1fr}}
 
+    /* booking modal */
+    .modal-overlay{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(2,3,8,.74);backdrop-filter:blur(8px)}
+    .modal-overlay.open{display:flex;animation:fadeIn .25s ease}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    .modal{position:relative;width:min(520px,100%);max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line2);border-radius:24px;background:linear-gradient(160deg,rgba(12,14,26,.98),rgba(8,9,17,.99));box-shadow:var(--shadow),var(--glow);padding:26px}
+    .modal .eyebrow{margin-bottom:8px}
+    .modal h3{font-family:"Orbitron",sans-serif;font-size:26px;line-height:1.05;margin:0 0 8px}
+    .modal p.sub{color:var(--muted);font-size:15px;margin:0 0 6px}
+    .modal-close{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:rgba(150,190,255,.06);color:var(--muted);font-size:18px;cursor:pointer;line-height:1}
+    .modal-close:hover{color:var(--text);border-color:var(--line2)}
+    .modal .lead-form{margin-top:16px;max-width:none}
+    .modal label{font-size:13px;color:var(--muted);font-weight:700;margin-bottom:-4px}
+    .book-success{display:none;text-align:center;padding:20px 6px}
+    .book-success.show{display:block}
+    .book-success .tick{width:64px;height:64px;border-radius:50%;background:var(--grad);color:#03040a;display:grid;place-items:center;margin:0 auto 16px;font-size:32px;font-weight:900}
+    .book-success h3{margin:0 0 8px}
+
     /* AI agent widget */
     .ai-fab{position:fixed;right:22px;bottom:22px;z-index:80;width:64px;height:64px;border-radius:50%;border:1px solid var(--line2);background:var(--grad);color:#03040a;display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 40px rgba(94,242,224,.35);font-family:"Orbitron",sans-serif;font-weight:900}
     .ai-fab:before{content:"";position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(94,242,224,.5);animation:pulse-ring 2.4s ease-out infinite}
@@ -312,7 +329,7 @@
     <div class="wrap nav">
       <a class="brand" href="#">TB <span>Solutions</span></a>
       <nav class="navlinks"><a href="#services">Services</a><a href="#ai-agent">AI Agent</a><a href="#pricing">Packages</a><a href="#portfolio">Work</a><a href="#faq">FAQ</a><a href="#contact">Contact</a></nav>
-      <div class="actions" style="margin-top:0"><a class="btn" href="tel:+14848418501">Call</a><a class="btn primary" href="sms:+14848418501?body=Hey Nick, I want help with my website.">Text Nick</a></div>
+      <div class="actions" style="margin-top:0"><a class="btn" href="#" data-book>Book a Call</a><a class="btn primary" href="sms:+14848418501?body=Hey Nick, I want help with my website.">Text Nick</a></div>
     </div>
   </header>
 
@@ -325,8 +342,8 @@
           <p class="lead">TB Solutions builds sharp, futuristic websites with a live AI growth agent, local SEO foundations, ad funnels, and lead follow-up systems for Chester County businesses that need more calls, texts, and booked jobs.</p>
           <p class="sublead">No bloated agency process. Just a premium online presence, a 24/7 AI concierge qualifying your leads, and a direct path for customers to contact you.</p>
           <div class="actions">
-            <a class="btn primary" href="sms:+14848418501?body=Hey Nick, can you look at my business website?">Text Nick</a>
-            <a class="btn" href="tel:+14848418501">Call 484-841-8501</a>
+            <a class="btn primary" href="#" data-book>Book a Free Call</a>
+            <a class="btn" href="sms:+14848418501?body=Hey Nick, can you look at my business website?">Text Nick</a>
             <a class="btn" href="#ai-agent">Meet the AI agent</a>
           </div>
           <div class="hero-proof">
@@ -454,9 +471,9 @@
         <h2 class="section-title">Starter packages built to close fast.</h2>
         <p class="muted">Clear scope. Half upfront, half on delivery. Bigger builds quoted after a quick call.</p>
         <div class="pricing">
-          <article class="price reveal"><h3>Local Presence Audit</h3><div class="money">$100</div><p class="muted">A quick review and practical cleanup direction for your site or Google profile.</p><ul><li>Website/Google review</li><li>Top fixes prioritized</li><li>Simple action plan</li></ul><a class="btn btn-sm" href="tel:+14848418501">Call for details</a></article>
+          <article class="price reveal"><h3>Local Presence Audit</h3><div class="money">$100</div><p class="muted">A quick review and practical cleanup direction for your site or Google profile.</p><ul><li>Website/Google review</li><li>Top fixes prioritized</li><li>Simple action plan</li></ul><a class="btn btn-sm" href="#" data-book>Book a call</a></article>
           <article class="price featured glow-ring reveal"><span class="tag">Best starter</span><h3>Premium One-Page Site</h3><div class="money">$300</div><p class="muted">A polished landing page built to create inquiries and make the business feel trustworthy.</p><ul><li>Custom visual direction</li><li>Offer, services, proof, contact</li><li>SEO/GEO foundation</li></ul><a class="btn btn-sm primary" href="sms:+14848418501?body=Hey Nick, I want the Premium One-Page Site.">Text about this</a></article>
-          <article class="price reveal"><h3>Creative Proof Pack</h3><div class="money">$150</div><p class="muted">Posts, captions, short-form hooks, and visual direction so the business looks active.</p><ul><li>10 branded graphics</li><li>Captions included</li><li>Website build content angle</li><li>Ad creative direction</li></ul><a class="btn btn-sm" href="tel:+14848418501">Call for details</a></article>
+          <article class="price reveal"><h3>Creative Proof Pack</h3><div class="money">$150</div><p class="muted">Posts, captions, short-form hooks, and visual direction so the business looks active.</p><ul><li>10 branded graphics</li><li>Captions included</li><li>Website build content angle</li><li>Ad creative direction</li></ul><a class="btn btn-sm" href="#" data-book>Book a call</a></article>
         </div>
       </div>
     </section>
@@ -467,9 +484,9 @@
         <p class="muted">Start with the website. Then add the AI agent, traffic, and follow-up. These packages give local businesses the pieces they actually need.</p>
         <div class="growth-grid">
           <article class="price featured glow-ring reveal"><span class="tag">New</span><h3>AI Growth Agent</h3><div class="money">$400</div><p class="muted">A live AI concierge added to your site — qualifies leads 24/7, answers FAQs instantly, and texts you the hot ones.</p><ul><li>Custom-trained on your services</li><li>On-brand chat styling</li><li>Call/text escalation built in</li></ul><a class="btn btn-sm primary" href="sms:+14848418501?body=Hey Nick, I want the AI Growth Agent for my site.">Text about the AI agent</a></article>
-          <article class="price reveal"><span class="tag">Traffic</span><h3>Meta Ads Starter</h3><div class="money">$250</div><p class="muted">Facebook/Instagram ad setup for local offers, promos, and service businesses.</p><ul><li>Campaign structure</li><li>Audience + offer angle</li><li>Client pays ad spend</li></ul><a class="btn btn-sm" href="tel:+14848418501">Call for details</a></article>
-          <article class="price reveal"><span class="tag">High intent</span><h3>Google Ads Starter</h3><div class="money">$350</div><p class="muted">Search campaign setup for people already looking for the service.</p><ul><li>Keyword map</li><li>Search ad copy</li><li>Landing page alignment</li><li>Client pays ad spend</li></ul><a class="btn btn-sm" href="tel:+14848418501">Call for details</a></article>
-          <article class="price reveal"><span class="tag">Follow-up</span><h3>Lead Follow-Up System</h3><div class="money">$500</div><p class="muted">Capture and follow-up system so interested leads do not disappear after the first click.</p><ul><li>Form/funnel setup</li><li>Pipeline basics</li><li>Text/email follow-up flow</li></ul><a class="btn btn-sm" href="tel:+14848418501">Call for details</a></article>
+          <article class="price reveal"><span class="tag">Traffic</span><h3>Meta Ads Starter</h3><div class="money">$250</div><p class="muted">Facebook/Instagram ad setup for local offers, promos, and service businesses.</p><ul><li>Campaign structure</li><li>Audience + offer angle</li><li>Client pays ad spend</li></ul><a class="btn btn-sm" href="#" data-book>Book a call</a></article>
+          <article class="price reveal"><span class="tag">High intent</span><h3>Google Ads Starter</h3><div class="money">$350</div><p class="muted">Search campaign setup for people already looking for the service.</p><ul><li>Keyword map</li><li>Search ad copy</li><li>Landing page alignment</li><li>Client pays ad spend</li></ul><a class="btn btn-sm" href="#" data-book>Book a call</a></article>
+          <article class="price reveal"><span class="tag">Follow-up</span><h3>Lead Follow-Up System</h3><div class="money">$500</div><p class="muted">Capture and follow-up system so interested leads do not disappear after the first click.</p><ul><li>Form/funnel setup</li><li>Pipeline basics</li><li>Text/email follow-up flow</li></ul><a class="btn btn-sm" href="#" data-book>Book a call</a></article>
         </div>
         <div class="offer-strip">
           <div class="mini-offer reveal"><b>Fastest path:</b> start with the Premium One-Page Site, then add the AI Growth Agent once the page is live.</div>
@@ -550,9 +567,9 @@
             <input type="hidden" name="_subject" value="New TB Solutions website lead" />
             <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
             <button type="submit">Get my free review →</button>
-            <small>Prefer to talk now? Text or call <a href="tel:+14848418501" style="color:var(--cyan)">484-841-8501</a>. Your info is only used to reply to you.</small>
+            <small>Prefer to lock a time? <a href="#" data-book style="color:var(--cyan)">Book a call</a> or text 484-841-8501. Your info is only used to reply to you.</small>
           </form>
-          <div class="actions"><a class="btn primary" href="sms:+14848418501?body=Hey Nick, can you review my business site?">Text Nick</a><a class="btn" href="tel:+14848418501">Call 484-841-8501</a></div>
+          <div class="actions"><a class="btn primary" href="sms:+14848418501?body=Hey Nick, can you review my business site?">Text Nick</a><a class="btn" href="#" data-book>Book a Call</a></div>
           <p class="fine">Serving Chester County, West Chester, Exton, Malvern, Downingtown, Kennett Square, Main Line, and nearby local businesses.</p>
         </div>
       </div>
@@ -561,8 +578,55 @@
   <footer class="footer"><div class="wrap">© TB Solutions — futuristic websites, AI growth agents, local SEO, ads, and lead systems for Chester County businesses.</div></footer>
 
   <div class="mobile-cta" aria-label="Quick contact">
-    <a class="call" href="tel:+14848418501">Call</a>
+    <a class="call" href="#" data-book>Book a Call</a>
     <a class="text" href="sms:+14848418501?body=Hey Nick, I want help with my website.">Text Nick</a>
+  </div>
+
+  <div class="modal-overlay" id="bookModal" role="dialog" aria-modal="true" aria-labelledby="bookTitle">
+    <div class="modal">
+      <button class="modal-close" id="bookClose" aria-label="Close">✕</button>
+      <div id="bookFormWrap">
+        <div class="eyebrow">Free strategy call</div>
+        <h3 id="bookTitle">Book your call with Nick</h3>
+        <p class="sub">Pick a day and time that works. I’ll confirm by text and come ready with the highest-impact fix for your business — no cost, no pressure.</p>
+        <form class="lead-form" id="bookForm" action="https://formsubmit.co/nikbyrd28@gmail.com" method="POST">
+          <div class="row">
+            <input type="text" name="name" placeholder="Your name" required autocomplete="name" />
+            <input type="tel" name="phone" placeholder="Phone / text number" required autocomplete="tel" />
+          </div>
+          <input type="text" name="business" placeholder="Business name" required />
+          <div class="row">
+            <input type="date" name="preferred_day" required aria-label="Preferred day" />
+            <select name="preferred_time" required aria-label="Preferred time">
+              <option value="" disabled selected>Preferred time</option>
+              <option>Morning (8am–12pm)</option>
+              <option>Afternoon (12pm–5pm)</option>
+              <option>Evening (5pm–8pm)</option>
+            </select>
+          </div>
+          <select name="interest" required aria-label="What you need">
+            <option value="" disabled selected>What do you need most?</option>
+            <option>Premium One-Page Website</option>
+            <option>AI Growth Agent</option>
+            <option>Local SEO / Google Business</option>
+            <option>Meta or Google Ads</option>
+            <option>Lead Follow-Up System</option>
+            <option>Not sure — need advice</option>
+          </select>
+          <textarea name="message" placeholder="Anything I should know before the call? (optional)"></textarea>
+          <input type="hidden" name="_subject" value="New TB Solutions call booking" />
+          <input type="hidden" name="_template" value="table" />
+          <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
+          <button type="submit">Request my call time →</button>
+          <small>Rather not wait? <a href="sms:+14848418501?body=Hey Nick, I'd like to book a call." style="color:var(--cyan)">Text Nick</a> and we’ll lock a time now.</small>
+        </form>
+      </div>
+      <div class="book-success" id="bookSuccess">
+        <div class="tick">✓</div>
+        <h3>Request sent!</h3>
+        <p class="sub">Nick will text you shortly to confirm your call time. Talk soon.</p>
+      </div>
+    </div>
   </div>
 
   <button class="ai-fab" id="aiFab" aria-expanded="false" aria-controls="aiPanel" aria-label="Open ARIA, the AI growth agent chat">
@@ -643,6 +707,49 @@
       addEventListener('mousemove',function(e){ gx=e.clientX; gy=e.clientY; glow.style.opacity='1'; });
       (function loop(){ cx+=(gx-cx)*.12; cy+=(gy-cy)*.12; glow.style.transform='translate('+cx+'px,'+cy+'px) translate(-50%,-50%)'; requestAnimationFrame(loop); })();
     }
+  })();
+
+  // Booking modal + AJAX form submit
+  (function(){
+    var modal=document.getElementById('bookModal');
+    var closeBtn=document.getElementById('bookClose');
+    var lastFocus=null;
+    function open(e){ if(e) e.preventDefault(); lastFocus=document.activeElement; modal.classList.add('open'); document.body.style.overflow='hidden'; var f=modal.querySelector('input,select,textarea'); if(f) setTimeout(function(){f.focus();},60); }
+    function close(){ modal.classList.remove('open'); document.body.style.overflow=''; if(lastFocus) lastFocus.focus(); }
+    document.addEventListener('click', function(e){
+      var t=e.target.closest('[data-book]');
+      if(t){ open(e); }
+    });
+    if(closeBtn) closeBtn.addEventListener('click', close);
+    modal.addEventListener('click', function(e){ if(e.target===modal) close(); });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape' && modal.classList.contains('open')) close(); });
+
+    // AJAX submit for FormSubmit-backed forms
+    function ajaxForm(form, onSuccess){
+      if(!form) return;
+      form.addEventListener('submit', function(e){
+        if(form.querySelector('[name="_honey"]') && form.querySelector('[name="_honey"]').value) return; // bot
+        e.preventDefault();
+        var btn=form.querySelector('button[type="submit"]');
+        var label = btn ? btn.textContent : '';
+        if(btn){ btn.disabled=true; btn.textContent='Sending...'; }
+        var data={}; new FormData(form).forEach(function(v,k){ if(k[0]!=='_') data[k]=v; });
+        var action=form.getAttribute('action').replace('formsubmit.co/','formsubmit.co/ajax/');
+        fetch(action,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)})
+          .then(function(r){ return r.json(); })
+          .then(function(){ onSuccess(); })
+          .catch(function(){ form.submit(); })
+          .then(function(){ if(btn){ btn.disabled=false; btn.textContent=label; } });
+      });
+    }
+    ajaxForm(document.getElementById('bookForm'), function(){
+      var w=document.getElementById('bookFormWrap'), s=document.getElementById('bookSuccess');
+      if(w) w.style.display='none'; if(s) s.classList.add('show');
+    });
+    ajaxForm(document.getElementById('leadForm'), function(){
+      var lf=document.getElementById('leadForm');
+      lf.innerHTML='<div class="book-success show" style="text-align:left"><div class="tick">✓</div><h3>Thanks — got it!</h3><p class="sub">Nick will reply shortly with your free website & Google review. Check your phone.</p></div>';
+    });
   })();
 
   (function(){
