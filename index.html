@@ -910,6 +910,12 @@
   // Booking → Google Calendar + AJAX lead form
   (function(){
     var CAL_URL='https://calendar.app.google/SbFwfmkwTJoRPDBc9';
+    // n8n automation: every lead is also sent here (fire-and-forget). Production URL (/webhook/), workflow must be Active.
+    var N8N_WEBHOOK='https://n8n-fouz.srv1786777.hstgr.cloud/webhook/12eeac52-a592-4988-b61a-2c2a16baa388';
+    window.n8nSend=function(payload){
+      if(!N8N_WEBHOOK) return;
+      try{ fetch(N8N_WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)}).catch(function(){}); }catch(e){}
+    };
     document.addEventListener('click', function(e){
       var t=e.target.closest('[data-book]');
       if(t){ e.preventDefault(); window.open(CAL_URL,'_blank','noopener'); }
@@ -925,6 +931,7 @@
         var label = btn ? btn.textContent : '';
         if(btn){ btn.disabled=true; btn.textContent='Sending...'; }
         var data={}; new FormData(form).forEach(function(v,k){ if(k[0]!=='_') data[k]=v; });
+        if(window.n8nSend) window.n8nSend(Object.assign({source:'website form',ts:new Date().toISOString()}, data));
         var action=form.getAttribute('action').replace('formsubmit.co/','formsubmit.co/ajax/');
         fetch(action,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)})
           .then(function(r){ return r.json(); })

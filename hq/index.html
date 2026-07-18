@@ -157,6 +157,10 @@ var SUPA_KEY = '';   // your Supabase "anon public" key
 
 var supa=null, cloud=false, user=null, cache={leads:[],clients:[],tasks:[]};
 
+// n8n automation: new leads added here also fire to your n8n workflow (fire-and-forget).
+var N8N_WEBHOOK='https://n8n-fouz.srv1786777.hstgr.cloud/webhook/12eeac52-a592-4988-b61a-2c2a16baa388';
+function n8nSend(payload){ if(!N8N_WEBHOOK) return; try{ fetch(N8N_WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)}).catch(function(){}); }catch(e){} }
+
 /* ---------- storage layer: localStorage OR Supabase, same interface ---------- */
 var DB={
   read:function(k){
@@ -272,7 +276,7 @@ function editLead(id){ openModal(leadForm(state.leads.filter(function(x){return 
 function saveLead(id){
   var o={ name:val('l_name'),business:val('l_business'),phone:val('l_phone'),email:val('l_email'),stage:val('l_stage'),source:val('l_source'),followup:val('l_followup'),note:val('l_note') };
   if(id){ state.leads=state.leads.map(function(x){return x.id===id?Object.assign(x,o):x;}); }
-  else { o.id=uid(); o.createdAt=Date.now(); state.leads.unshift(o); }
+  else { o.id=uid(); o.createdAt=Date.now(); state.leads.unshift(o); n8nSend(Object.assign({source:'CRM new lead',ts:new Date().toISOString()},o)); }
   save('leads'); closeModal(); render();
 }
 function delLead(id){ if(!confirm('Delete this lead?'))return; state.leads=state.leads.filter(function(x){return x.id!==id;}); save('leads'); closeModal(); render(); }
