@@ -156,28 +156,34 @@
 var SUPA_URL = 'https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
 var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
 
-var supa=null, cloud=false, user=null, cache={leads:[],clients:[],tasks:[]};
+var supa=null, cloud=false, user=null;
 
 // n8n automation: new leads added here also fire to your n8n workflow (fire-and-forget).
 var N8N_WEBHOOK='https://n8n-fouz.srv1786777.hstgr.cloud/webhook/12eeac52-a592-4988-b61a-2c2a16baa388';
 function n8nSend(payload){ if(!N8N_WEBHOOK) return; try{ var b=new URLSearchParams(); Object.keys(payload).forEach(function(k){ b.append(k, payload[k]==null?'':payload[k]); }); fetch(N8N_WEBHOOK,{method:'POST',mode:'no-cors',body:b}).catch(function(){}); }catch(e){} }
 
-/* ---------- storage layer: localStorage OR Supabase, same interface ---------- */
-var DB={
-  read:function(k){
-    if(cloud) return cache[k]||[];
-    try{ return JSON.parse(localStorage.getItem('tb_'+k))||[]; }catch(e){ return []; }
-  },
-  write:function(k,v){
-    if(cloud){ cache[k]=v; supaSave(k,v); }
-    else { localStorage.setItem('tb_'+k, JSON.stringify(v)); }
-  }
+/* ---------- storage: localStorage (local mode) or real Supabase tables (cloud) ---------- */
+var COLS={
+  leads:['id','name','business','phone','email','stage','source','followup','note'],
+  clients:['id','business','name','phone','email','project','status','value','paylink','dep','bal','note'],
+  tasks:['id','title','due','done']
 };
-function supaSave(k,v){
-  if(!supa||!user) return;
-  supa.from('kv').upsert({user_id:user.id,key:k,value:v},{onConflict:'user_id,key'})
-    .then(function(r){ if(r.error) console.warn('sync error',r.error.message); });
+function rowFor(t,o){
+  var r={}; COLS[t].forEach(function(c){
+    var v=o[c];
+    if((c==='followup'||c==='due') && !v) v=null;
+    r[c]=(v===undefined)?null:v;
+  });
+  if(t==='tasks') r.done=!!o.done;
+  return r;
 }
+var DB={
+  read:function(k){ try{ return JSON.parse(localStorage.getItem('tb_'+k))||[]; }catch(e){ return []; } },
+  write:function(k,v){ localStorage.setItem('tb_'+k, JSON.stringify(v)); }
+};
+function upsertRow(t,o){ if(!cloud||!o) return; supa.from(t).upsert(rowFor(t,o)).then(function(r){ if(r.error) console.warn('sync',t,r.error.message); }); }
+function removeRow(t,id){ if(!cloud) return; supa.from(t).delete().eq('id',id).then(function(r){ if(r.error) console.warn('del',t,r.error.message); }); }
+function bulkUpsert(t,arr){ if(!cloud||!arr.length) return Promise.resolve({}); return supa.from(t).upsert(arr.map(function(o){return rowFor(t,o);})); }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 function esc(s){ return (s==null?'':(''+s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function todayISO(){ var d=new Date(); return d.toISOString().slice(0,10); }
@@ -188,7 +194,7 @@ var CLIENT_STATUS=['Onboarding','In progress','Review','Live','On hold','Done'];
 
 /* ---------- state ---------- */
 var state={ leads:[], clients:[], tasks:[] };
-function save(k){ DB.write(k, state[k]); }
+function save(k){ if(!cloud) DB.write(k, state[k]); }
 function loadState(){ state.leads=DB.read('leads'); state.clients=DB.read('clients'); state.tasks=DB.read('tasks'); }
 
 /* ---------- nav ---------- */
@@ -320,9 +326,10 @@ function saveLead(id){
   var o={ name:val('l_name'),business:val('l_business'),phone:val('l_phone'),email:val('l_email'),stage:val('l_stage'),source:val('l_source'),followup:val('l_followup'),note:val('l_note') };
   if(id){ state.leads=state.leads.map(function(x){return x.id===id?Object.assign(x,o):x;}); }
   else { o.id=uid(); o.createdAt=Date.now(); state.leads.unshift(o); n8nSend(Object.assign({source:'CRM new lead',ts:new Date().toISOString()},o)); }
-  save('leads'); closeModal(); render();
+  save('leads'); upsertRow('leads', state.leads.filter(function(x){return x.id===(id||o.id);})[0]);
+  closeModal(); render();
 }
-function delLead(id){ if(!confirm('Delete this lead?'))return; state.leads=state.leads.filter(function(x){return x.id!==id;}); save('leads'); closeModal(); render(); }
+function delLead(id){ if(!confirm('Delete this lead?'))return; state.leads=state.leads.filter(function(x){return x.id!==id;}); save('leads'); removeRow('leads',id); closeModal(); render(); }
 
 /* ---- Clients ---- */
 function vClients(){
@@ -360,16 +367,17 @@ function saveClient(id){
   var o={ business:val('c_business'),name:val('c_name'),phone:val('c_phone'),email:val('c_email'),project:val('c_project'),status:val('c_status'),value:val('c_value'),paylink:val('c_paylink'),dep:val('c_dep'),bal:val('c_bal'),note:val('c_note') };
   if(id){ state.clients=state.clients.map(function(x){return x.id===id?Object.assign(x,o):x;}); }
   else { o.id=uid(); o.createdAt=Date.now(); state.clients.unshift(o); }
-  save('clients'); closeModal(); render();
+  save('clients'); upsertRow('clients', state.clients.filter(function(x){return x.id===(id||o.id);})[0]);
+  closeModal(); render();
 }
-function setClientStatus(id,v){ state.clients=state.clients.map(function(x){return x.id===id?Object.assign(x,{status:v}):x;}); save('clients'); }
+function setClientStatus(id,v){ state.clients=state.clients.map(function(x){return x.id===id?Object.assign(x,{status:v}):x;}); save('clients'); upsertRow('clients', state.clients.filter(function(x){return x.id===id;})[0]); }
 function copyPayMsg(id){
   var c=state.clients.filter(function(x){return x.id===id;})[0]; if(!c||!c.paylink) return;
   var msg='Hi '+(c.name||'')+'! Here\'s your secure payment link for '+(c.project||'your project')+(c.value?' ($'+c.value+')':'')+':\n'+c.paylink+'\nThanks! — Nick, TB Solutions';
   if(navigator.clipboard) navigator.clipboard.writeText(msg);
   var b=event.target; var o=b.textContent; b.textContent='✓ Copied'; setTimeout(function(){b.textContent=o;},1400);
 }
-function delClient(id){ if(!confirm('Delete this client?'))return; state.clients=state.clients.filter(function(x){return x.id!==id;}); save('clients'); closeModal(); render(); }
+function delClient(id){ if(!confirm('Delete this client?'))return; state.clients=state.clients.filter(function(x){return x.id!==id;}); save('clients'); removeRow('clients',id); closeModal(); render(); }
 
 /* ---- Tasks ---- */
 function vTasks(){
@@ -390,9 +398,9 @@ function addTask(){
     +'<label class="f">Due date (optional)</label><input id="t_due" type="date">'
     +'<div class="modal-actions"><button class="btn primary" onclick="saveTask()">Add task</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>');
 }
-function saveTask(){ var t=val('t_title'); if(!t){return;} state.tasks.unshift({id:uid(),title:t,due:val('t_due'),done:false,createdAt:Date.now()}); save('tasks'); closeModal(); render(); }
-function toggleTask(id){ state.tasks=state.tasks.map(function(x){return x.id===id?Object.assign(x,{done:!x.done}):x;}); save('tasks'); render(); }
-function delTask(id){ state.tasks=state.tasks.filter(function(x){return x.id!==id;}); save('tasks'); render(); }
+function saveTask(){ var t=val('t_title'); if(!t){return;} var nt={id:uid(),title:t,due:val('t_due'),done:false,createdAt:Date.now()}; state.tasks.unshift(nt); save('tasks'); upsertRow('tasks',nt); closeModal(); render(); }
+function toggleTask(id){ state.tasks=state.tasks.map(function(x){return x.id===id?Object.assign(x,{done:!x.done}):x;}); save('tasks'); upsertRow('tasks', state.tasks.filter(function(x){return x.id===id;})[0]); render(); }
+function delTask(id){ state.tasks=state.tasks.filter(function(x){return x.id!==id;}); save('tasks'); removeRow('tasks',id); render(); }
 
 /* ---- Marketing Tools ---- */
 function vTools(){
@@ -487,10 +495,12 @@ function importData(){
   var f=document.getElementById('imp').files[0]; if(!f){alert('Choose a file first.');return;}
   var r=new FileReader(); r.onload=function(){ try{ var d=JSON.parse(r.result);
     state.leads=d.leads||[]; state.clients=d.clients||[]; state.tasks=d.tasks||[];
-    save('leads');save('clients');save('tasks'); alert('Restored!'); render();
+    save('leads');save('clients');save('tasks');
+    if(cloud){ Promise.all([bulkUpsert('leads',state.leads),bulkUpsert('clients',state.clients),bulkUpsert('tasks',state.tasks)]).then(function(){ alert('Restored to cloud!'); render(); }); }
+    else { alert('Restored!'); render(); }
   }catch(e){ alert('That file could not be read.'); } }; r.readAsText(f);
 }
-function wipe(){ if(!confirm('Erase ALL leads, clients and tasks? This cannot be undone.'))return; state.leads=[];state.clients=[];state.tasks=[]; save('leads');save('clients');save('tasks'); render(); }
+function wipe(){ if(!confirm('Erase ALL leads, clients and tasks? This cannot be undone.'))return; state.leads=[];state.clients=[];state.tasks=[]; save('leads');save('clients');save('tasks'); if(cloud){ ['leads','clients','tasks'].forEach(function(t){ supa.from(t).delete().neq('id','').then(function(){},function(){}); }); } render(); }
 
 function val(id){ var e=document.getElementById(id); return e?e.value.trim():''; }
 
@@ -502,8 +512,7 @@ function seedIfFirstLocal(){
   }
 }
 function startApp(){
-  loadState();
-  seedIfFirstLocal();
+  if(!cloud){ loadState(); seedIfFirstLocal(); }
   var foot=document.querySelector('.side .foot');
   if(foot){ foot.innerHTML = cloud
     ? '<b style="color:var(--text)"><span class="cloud-dot"></span>Cloud sync on</b><br>Synced across your devices.<br><button class="btn sm ghost" style="margin-top:10px" onclick="logout()">Log out</button>'
@@ -542,11 +551,35 @@ function doAuth(mode){
 function finishLogin(u){
   user=u; cloud=true;
   var w=document.getElementById('authwrap'); if(w) w.remove();
-  supa.from('kv').select('key,value').then(function(r){
-    cache={leads:[],clients:[],tasks:[]};
-    (r.data||[]).forEach(function(row){ cache[row.key]=row.value||[]; });
-    startApp();
+  Promise.all([
+    supa.from('leads').select('*').order('created_at',{ascending:false}),
+    supa.from('clients').select('*').order('created_at',{ascending:false}),
+    supa.from('tasks').select('*').order('created_at',{ascending:false})
+  ]).then(function(rs){
+    if(rs.some(function(r){return r.error;})){
+      alert('One-time setup needed: in Supabase, open SQL Editor and run the file hq/supabase-schema.sql, then reload this page.');
+      state.leads=[];state.clients=[];state.tasks=[]; startApp(); return;
+    }
+    state.leads=rs[0].data||[]; state.clients=rs[1].data||[]; state.tasks=rs[2].data||[];
+    normalizeState();
+    if(!state.leads.length && !state.clients.length && !state.tasks.length){ migrateOldKV(); }
+    else { startApp(); }
   });
+}
+function normalizeState(){
+  ['leads','clients','tasks'].forEach(function(t){
+    state[t]=state[t].map(function(o){ var c={}; for(var k in o){ c[k]=(o[k]===null)?'':o[k]; } if(t==='tasks') c.done=!!o.done; return c; });
+  });
+}
+function migrateOldKV(){
+  supa.from('kv').select('key,value').then(function(r){
+    var kv={}; ((r&&r.data)||[]).forEach(function(row){ kv[row.key]=row.value||[]; });
+    var l=kv.leads||[], c=kv.clients||[], t=kv.tasks||[];
+    if(!l.length && !c.length && !t.length){ startApp(); return; }
+    Promise.all([bulkUpsert('leads',l),bulkUpsert('clients',c),bulkUpsert('tasks',t)]).then(function(){
+      state.leads=l; state.clients=c; state.tasks=t; startApp();
+    });
+  }, function(){ startApp(); });
 }
 function logout(){ if(supa) supa.auth.signOut(); location.reload(); }
 

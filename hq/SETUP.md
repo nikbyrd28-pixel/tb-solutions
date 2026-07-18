@@ -9,10 +9,13 @@ steps once to sync everything across all your devices.
    password (save it somewhere). Pick the region closest to you. Create it.
 3. Wait ~1 minute for it to finish setting up.
 
-## 2. Create the table
+## 2. Create the tables
 1. In the left menu click **SQL Editor** → **New query**.
-2. Open the file **`hq/supabase-setup.sql`** (in this repo), copy all of it,
+2. Open the file **`hq/supabase-schema.sql`** (in this repo), copy all of it,
    paste it in, and click **Run**. You should see "Success".
+   This creates organized tables: **leads, clients, tasks, tickets, intakes**
+   — each secured so only your login can see your data. (The older
+   `supabase-setup.sql` is superseded; the app auto-migrates old data.)
 
 ## 3. Turn on email login
 1. Left menu → **Authentication** → **Providers** → make sure **Email** is on.
