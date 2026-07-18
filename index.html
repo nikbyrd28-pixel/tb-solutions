@@ -914,7 +914,8 @@
     var N8N_WEBHOOK='https://n8n-fouz.srv1786777.hstgr.cloud/webhook/12eeac52-a592-4988-b61a-2c2a16baa388';
     window.n8nSend=function(payload){
       if(!N8N_WEBHOOK) return;
-      try{ fetch(N8N_WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)}).catch(function(){}); }catch(e){}
+      try{ var b=new URLSearchParams(); Object.keys(payload).forEach(function(k){ b.append(k, payload[k]==null?'':payload[k]); });
+        fetch(N8N_WEBHOOK,{method:'POST',mode:'no-cors',body:b}).catch(function(){}); }catch(e){}
     };
     document.addEventListener('click', function(e){
       var t=e.target.closest('[data-book]');
