@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Support & Requests — TB Solutions</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%235df2e0'/%3E%3Cstop offset='.55' stop-color='%236f9dff'/%3E%3Cstop offset='1' stop-color='%23b98bff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='15' fill='%23070a12'/%3E%3Ctext x='50%25' y='53%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-weight='900' font-size='30' fill='url(%23g)'%3ETB%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--cyan:#5df2e0;--blue:#6f9dff;--violet:#b98bff;--text:#eef1ff;--muted:#96a0c4;--line:rgba(150,190,255,.18);--line2:rgba(150,195,255,.36);--grad:linear-gradient(120deg,var(--cyan),var(--blue) 55%,var(--violet))}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Space Grotesk",Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--text);min-height:100vh;
+    background:radial-gradient(circle at 12% -8%,rgba(94,242,224,.12),transparent 36%),radial-gradient(circle at 88% 4%,rgba(185,139,255,.12),transparent 38%),linear-gradient(180deg,#05070f,#03040a);
+    display:flex;align-items:flex-start;justify-content:center;padding:34px 16px}
+  .wrap{width:min(600px,100%)}
+  .brand{font-weight:900;font-size:20px;letter-spacing:-.02em;margin-bottom:18px}
+  .brand span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .eyebrow{color:var(--cyan);text-transform:uppercase;letter-spacing:.2em;font-size:12px;font-weight:800}
+  h1{font-size:clamp(26px,5vw,38px);line-height:1.05;letter-spacing:-.02em;margin:10px 0 8px}
+  .lead{color:var(--muted);font-size:16px;margin:0 0 22px}
+  .card{background:linear-gradient(160deg,rgba(150,190,255,.07),rgba(150,190,255,.02));border:1px solid var(--line2);border-radius:22px;padding:24px}
+  label{display:block;margin:14px 0 0;font-size:13px;color:var(--muted);font-weight:600}
+  label .req{color:var(--violet)}
+  input,select,textarea{width:100%;background:rgba(3,4,10,.5);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;color:var(--text);font:inherit;font-size:15px;margin-top:6px}
+  textarea{min-height:110px;resize:vertical}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(94,242,224,.14)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  option{color:#03040a}
+  .types{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .types label{margin:0;cursor:pointer}
+  .types input{display:none}
+  .types span{display:inline-block;border:1px solid var(--line2);border-radius:999px;padding:8px 13px;font-size:13px;font-weight:700;color:var(--muted)}
+  .types input:checked + span{background:var(--grad);color:#03040a;border:0}
+  button{width:100%;margin-top:20px;border:0;background:var(--grad);color:#03040a;border-radius:999px;padding:15px;font:inherit;font-weight:900;font-size:16px;cursor:pointer}
+  button:disabled{opacity:.6}
+  .fine{color:var(--muted);font-size:12px;margin-top:12px;text-align:center}
+  .ok{display:none;text-align:center;padding:20px 6px}
+  .ok.show{display:block}
+  .tick{width:66px;height:66px;border-radius:50%;background:var(--grad);color:#03040a;display:grid;place-items:center;font-size:32px;font-weight:900;margin:0 auto 16px}
+  @media(max-width:560px){.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">TB <span>Solutions</span></div>
+  <div class="eyebrow">Support &amp; requests</div>
+  <h1>Need something changed or fixed?</h1>
+  <p class="lead">Report a problem, request a change, or share an idea for your website. I'll get a notification the moment you submit.</p>
+  <div class="card">
+    <form id="f" action="https://formsubmit.co/nikbyrd28@gmail.com" method="POST">
+      <div class="row">
+        <div><label>Your name <span class="req">*</span></label><input name="name" required autocomplete="name"></div>
+        <div><label>Business <span class="req">*</span></label><input name="business" required></div>
+      </div>
+      <div class="row">
+        <div><label>Email <span class="req">*</span></label><input name="email" type="email" required autocomplete="email"></div>
+        <div><label>Website URL</label><input name="website" placeholder="yoursite.com"></div>
+      </div>
+      <label>What kind of request? <span class="req">*</span></label>
+      <div class="types">
+        <label><input type="radio" name="ticket_type" value="Problem / bug" required><span>🐞 Problem / bug</span></label>
+        <label><input type="radio" name="ticket_type" value="Change / edit"><span>✏️ Change / edit</span></label>
+        <label><input type="radio" name="ticket_type" value="New idea"><span>💡 New idea</span></label>
+        <label><input type="radio" name="ticket_type" value="SEO / Google"><span>🔍 SEO / Google</span></label>
+        <label><input type="radio" name="ticket_type" value="Hosting / down"><span>🖥️ Hosting / down</span></label>
+        <label><input type="radio" name="ticket_type" value="Question"><span>❓ Question</span></label>
+      </div>
+      <label>How urgent?</label>
+      <select name="priority"><option>Normal</option><option>Low — whenever</option><option>Urgent — site is down / broken</option></select>
+      <label>Describe it <span class="req">*</span></label>
+      <textarea name="details" required placeholder="What's happening, what you'd like changed, or your idea. The more detail the better."></textarea>
+      <label>Link to a screenshot or file (optional)</label><input name="attachment" placeholder="Paste a link (Google Drive, Dropbox, image URL)">
+      <input type="hidden" name="type" value="support-ticket">
+      <input type="hidden" name="status" value="New">
+      <input type="hidden" name="_subject" value="New support ticket — TB Solutions">
+      <input type="hidden" name="_template" value="table">
+      <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+      <button type="submit" id="btn">Submit request →</button>
+      <p class="fine">You'll get a reply as soon as it's reviewed. Urgent site-down issues get bumped to the top.</p>
+    </form>
+    <div class="ok" id="ok">
+      <div class="tick">✓</div>
+      <h1 style="font-size:26px">Request received!</h1>
+      <p class="lead">Thanks — it's logged and I've been notified. You'll hear back soon, and faster if you marked it urgent.</p>
+    </div>
+  </div>
+</div>
+<script>
+var N8N='https://n8n-fouz.srv1786777.hstgr.cloud/webhook/12eeac52-a592-4988-b61a-2c2a16baa388';
+var f=document.getElementById('f');
+f.addEventListener('submit',function(e){
+  if(f._honey.value) return;
+  e.preventDefault();
+  var btn=document.getElementById('btn'); btn.disabled=true; btn.textContent='Sending...';
+  var data={}; new FormData(f).forEach(function(v,k){ if(k[0]!=='_') data[k]=v; });
+  data.ts=new Date().toISOString(); data.source='support page';
+  try{ var b=new URLSearchParams(); Object.keys(data).forEach(function(k){ b.append(k,data[k]==null?'':data[k]); }); fetch(N8N,{method:'POST',mode:'no-cors',body:b}).catch(function(){}); }catch(e2){}
+  fetch('https://formsubmit.co/ajax/nikbyrd28@gmail.com',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(data)})
+    .then(function(r){return r.json();}).catch(function(){})
+    .then(function(){ f.style.display='none'; document.getElementById('ok').classList.add('show'); window.scrollTo(0,0); });
+});
+</script>
+</body>
+</html>

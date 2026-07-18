@@ -118,6 +118,7 @@
     <div class="brand">TB <span>Command</span></div>
     <nav class="navb" id="nav">
       <button data-view="dashboard" class="on"><span class="ic">◈</span> Dashboard</button>
+      <button data-view="links"><span class="ic">⚡</span> My Tools</button>
       <button data-view="leads"><span class="ic">◎</span> Leads</button>
       <button data-view="clients"><span class="ic">★</span> Clients</button>
       <button data-view="tasks"><span class="ic">✓</span> Tasks</button>
@@ -211,7 +212,45 @@ function overdue(d){ return d && d<todayISO(); }
 function dueToday(d){ return d===todayISO(); }
 
 /* ================= VIEWS ================= */
-function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,leads:vLeads,clients:vClients,tasks:vTasks,tools:vTools,data:vData}[cur])(); if(cur==='tools') initTools(); }
+function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,tools:vTools,data:vData}[cur])(); if(cur==='tools') initTools(); }
+
+/* ---- My Tools launchpad ---- */
+var TOOLGROUPS=[
+  ['Build &amp; Host', [
+    ['Your live site','https://tbsol.net','🌐'],
+    ['Vercel (hosting)','https://vercel.com/dashboard','▲'],
+    ['GitHub (code)','https://github.com/nikbyrd28-pixel/tb-solutions','🐙'],
+    ['Supabase (database)','https://supabase.com/dashboard/project/ewipzalkaybrsyxlhlob','🗄️'],
+    ['Hostinger (n8n server)','https://hpanel.hostinger.com','🖥️']
+  ]],
+  ['Automation &amp; AI', [
+    ['n8n (automations)','https://n8n-fouz.srv1786777.hstgr.cloud','🔗'],
+    ['Claude','https://claude.ai','✳️'],
+    ['Anthropic console (API + billing)','https://console.anthropic.com','🔑'],
+    ['Higgsfield','https://higgsfield.ai','🎬']
+  ]],
+  ['Marketing &amp; Google', [
+    ['Google Business Profile','https://business.google.com','📍'],
+    ['Google Search Console','https://search.google.com/search-console','🔍'],
+    ['Google Calendar (bookings)','https://calendar.google.com','📅'],
+    ['Google Analytics','https://analytics.google.com','📊']
+  ]],
+  ['Client-facing pages', [
+    ['Client intake form','https://tbsol.net/start','📝'],
+    ['Support &amp; ideas form','https://tbsol.net/support','🛟']
+  ]]
+];
+function vLinks(){
+  var groups=TOOLGROUPS.map(function(g){
+    return '<div class="section-h"><h2>'+g[0]+'</h2></div><div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr))">'
+      + g[1].map(function(t){
+          return '<a class="card" href="'+t[1]+'" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:12px">'
+            +'<span style="font-size:22px">'+t[2]+'</span><b style="font-weight:700;font-size:14px">'+t[0]+'</b></a>';
+        }).join('')
+      +'</div>';
+  }).join('');
+  return '<div class="topbar"><div><h1>My Tools</h1><p class="sub">Everything you use — one tap away. Log in / manage billing on each.</p></div></div>'+groups;
+}
 
 /* ---- Dashboard ---- */
 function vDash(){

@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /hq/
+Disallow: /support/
+Disallow: /start/
 Sitemap: https://tbsol.net/sitemap.xml

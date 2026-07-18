@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Start with TB Solutions — Client Intake</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%235df2e0'/%3E%3Cstop offset='.55' stop-color='%236f9dff'/%3E%3Cstop offset='1' stop-color='%23b98bff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='15' fill='%23070a12'/%3E%3Ctext x='50%25' y='53%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-weight='900' font-size='30' fill='url(%23g)'%3ETB%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--cyan:#5df2e0;--blue:#6f9dff;--violet:#b98bff;--text:#eef1ff;--muted:#96a0c4;--line:rgba(150,190,255,.18);--line2:rgba(150,195,255,.36);--grad:linear-gradient(120deg,var(--cyan),var(--blue) 55%,var(--violet))}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Space Grotesk",Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--text);min-height:100vh;
+    background:radial-gradient(circle at 12% -8%,rgba(94,242,224,.12),transparent 36%),radial-gradient(circle at 88% 4%,rgba(185,139,255,.12),transparent 38%),linear-gradient(180deg,#05070f,#03040a);
+    display:flex;align-items:flex-start;justify-content:center;padding:34px 16px}
+  .wrap{width:min(620px,100%)}
+  .brand{font-weight:900;font-size:20px;letter-spacing:-.02em;margin-bottom:18px}
+  .brand span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .eyebrow{color:var(--cyan);text-transform:uppercase;letter-spacing:.2em;font-size:12px;font-weight:800}
+  h1{font-size:clamp(26px,5vw,38px);line-height:1.05;letter-spacing:-.02em;margin:10px 0 8px}
+  .lead{color:var(--muted);font-size:16px;margin:0 0 22px}
+  .card{background:linear-gradient(160deg,rgba(150,190,255,.07),rgba(150,190,255,.02));border:1px solid var(--line2);border-radius:22px;padding:24px}
+  label{display:block;margin:14px 0 0;font-size:13px;color:var(--muted);font-weight:600}
+  label .req{color:var(--violet)}
+  input,select,textarea{width:100%;background:rgba(3,4,10,.5);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;color:var(--text);font:inherit;font-size:15px;margin-top:6px}
+  textarea{min-height:84px;resize:vertical}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(94,242,224,.14)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  option{color:#03040a}
+  button{width:100%;margin-top:20px;border:0;background:var(--grad);color:#03040a;border-radius:999px;padding:15px;font:inherit;font-weight:900;font-size:16px;cursor:pointer}
+  button:disabled{opacity:.6}
+  .fine{color:var(--muted);font-size:12px;margin-top:12px;text-align:center}
+  .ok{display:none;text-align:center;padding:20px 6px}
+  .ok.show{display:block}
+  .tick{width:66px;height:66px;border-radius:50%;background:var(--grad);color:#03040a;display:grid;place-items:center;font-size:32px;font-weight:900;margin:0 auto 16px}
+  @media(max-width:560px){.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">TB <span>Solutions</span></div>
+  <div class="eyebrow">New client intake</div>
+  <h1>Let's get your project started.</h1>
+  <p class="lead">Fill this out and I'll review it before our call — the more detail, the faster we move. Takes about 3 minutes.</p>
+  <div class="card">
+    <form id="f" action="https://formsubmit.co/nikbyrd28@gmail.com" method="POST">
+      <div class="row">
+        <div><label>Business name <span class="req">*</span></label><input name="business" required></div>
+        <div><label>Your name <span class="req">*</span></label><input name="name" required autocomplete="name"></div>
+      </div>
+      <div class="row">
+        <div><label>Email <span class="req">*</span></label><input name="email" type="email" required autocomplete="email"></div>
+        <div><label>Phone <span class="req">*</span></label><input name="phone" type="tel" required autocomplete="tel"></div>
+      </div>
+      <label>Current website or social (if any)</label><input name="website" placeholder="yoursite.com or @instagram">
+      <label>What does your business do? <span class="req">*</span></label><textarea name="about" required placeholder="Tell me about your business in a sentence or two"></textarea>
+      <label>What do you want more of?</label><input name="goal" placeholder="More calls, bookings, orders, foot traffic...">
+      <label>What are you interested in? <span class="req">*</span></label>
+      <select name="interest" required>
+        <option value="" disabled selected>Choose one</option>
+        <option>A new website</option>
+        <option>The smart chat assistant</option>
+        <option>Show up on Google</option>
+        <option>Facebook or Google ads</option>
+        <option>Automatic follow-up</option>
+        <option>The all-in-one monthly plan</option>
+        <option>Not sure — need advice</option>
+      </select>
+      <div class="row">
+        <div><label>Budget</label><select name="budget"><option value="" disabled selected>Pick a range</option><option>Under $300</option><option>$300–$500</option><option>$500–$1,000</option><option>$1,000+</option><option>Monthly plan</option><option>Not sure yet</option></select></div>
+        <div><label>How soon?</label><select name="timeline"><option value="" disabled selected>Timeline</option><option>ASAP</option><option>This month</option><option>Next 1–3 months</option><option>Just exploring</option></select></div>
+      </div>
+      <label>Style / look you like</label><input name="style" placeholder="Colors, vibe, any sites you love">
+      <label>Anything else I should know?</label><textarea name="notes"></textarea>
+      <input type="hidden" name="type" value="client-intake">
+      <input type="hidden" name="_subject" value="New client intake — TB Solutions">
+      <input type="hidden" name="_template" value="table">
+      <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+      <button type="submit" id="btn">Send my intake →</button>
+      <p class="fine">Your info is only used to work on your project. No spam, ever.</p>
+    </form>
+    <div class="ok" id="ok">
+      <div class="tick">✓</div>
+      <h1 style="font-size:26px">You're all set!</h1>
+      <p class="lead">Got your details. I'll review everything and reach out to schedule your kickoff. Talk soon! 🚀</p>
+      <a href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener" style="color:var(--cyan);font-weight:700">Want to book a time now? →</a>
+    </div>
+  </div>
+</div>
+<script>
+var N8N='https://n8n-fouz.srv1786777.hstgr.cloud/webhook/12eeac52-a592-4988-b61a-2c2a16baa388';
+var f=document.getElementById('f');
+f.addEventListener('submit',function(e){
+  if(f._honey.value) return;
+  e.preventDefault();
+  var btn=document.getElementById('btn'); btn.disabled=true; btn.textContent='Sending...';
+  var data={}; new FormData(f).forEach(function(v,k){ if(k[0]!=='_') data[k]=v; });
+  data.ts=new Date().toISOString(); data.source='intake page';
+  // fire to n8n (automation) — fire and forget
+  try{ var b=new URLSearchParams(); Object.keys(data).forEach(function(k){ b.append(k,data[k]==null?'':data[k]); }); fetch(N8N,{method:'POST',mode:'no-cors',body:b}).catch(function(){}); }catch(e2){}
+  // email backup via FormSubmit
+  fetch('https://formsubmit.co/ajax/nikbyrd28@gmail.com',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(data)})
+    .then(function(r){return r.json();}).catch(function(){})
+    .then(function(){ f.style.display='none'; document.getElementById('ok').classList.add('show'); window.scrollTo(0,0); });
+});
+</script>
+</body>
+</html>
