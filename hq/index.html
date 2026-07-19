@@ -645,6 +645,7 @@ function clientForm(c){ c=c||{};
     +'<div><label class="f">Balance</label><select id="c_bal"><option'+(c.bal!=='paid'?' selected':'')+' value="unpaid">Unpaid</option><option'+(c.bal==='paid'?' selected':'')+' value="paid">Paid ✓</option></select></div></div>'
     +'<label class="f">Notes</label><textarea id="c_note">'+esc(c.note)+'</textarea>'
     +'<div class="modal-actions" style="flex-wrap:wrap"><button class="btn primary" onclick="saveClient(\''+(c.id||'')+'\')">Save</button>'
+    +(c.id?'<button class="btn" onclick="openContractGen(\''+c.id+'\')">📄 Contract</button>':'')
     +(c.id&&c.email?'<button class="btn" onclick="openUpdateComposer(\''+c.id+'\')">📣 Post update</button>':'')
     +(c.id&&c.paylink?'<button class="btn" onclick="copyPayMsg(\''+c.id+'\')">💳 Copy payment text</button>':'')
     +(c.id?'<button class="btn danger" onclick="delClient(\''+c.id+'\')">Delete</button>':'')
@@ -715,6 +716,7 @@ function vTools(){
     +'<button data-t="kw" class="on">Local keyword ideas</button>'
     +'<button data-t="content">Content &amp; post ideas</button>'
     +'<button data-t="viral">Viral video finder</button>'
+    +'<button data-t="contract">Contract generator</button>'
     +'<button data-t="outreach">Outreach templates</button></div>'
     +'<div id="toolbody"></div>';
 }
@@ -741,6 +743,10 @@ function tool(t){
       +'<div class="card"><label class="f">Niche</label><input id="vf_n" placeholder="e.g. barber, landscaping, bakery, web design">'
       +'<div style="margin-top:14px"><button class="btn primary" onclick="genViral()">Find viral videos</button></div>'
       +'<div id="vf_out"></div></div>';
+  } else if(t==='contract'){
+    el.innerHTML='<p class="hint">Generate a clean, plain-English services agreement — deposit terms, revision limits, no-guaranteed-results clause, ownership, and liability cap built in. <b>Not legal advice:</b> have a local attorney look it over before you rely on it.</p>'
+      +'<div class="card"><button class="btn primary" onclick="openContractGen()">📄 Open contract generator</button>'
+      +'<p class="hint" style="margin:12px 0 0">Tip: you can also generate one pre-filled from any client — open the client and tap “📄 Contract.”</p></div>';
   } else {
     el.innerHTML='<p class="hint">Copy-and-fill templates for cold outreach. Swap the [brackets] for real details.</p>'
       +'<div class="card"><label class="f">Your name</label><input id="ot_n" placeholder="Nick" value="Nick">'
@@ -852,6 +858,82 @@ function fetchYT(n){
         });
     })
     .catch(function(){ box.innerHTML='<div class="section-h"><h2>Live YouTube results</h2></div><p class="hint">Could not reach YouTube right now.</p>'; });
+}
+
+/* ---- Contract generator ---- */
+function openContractGen(clientId){
+  var c = clientId ? state.clients.filter(function(x){return x.id===clientId;})[0]||{} : {};
+  var price = parseFloat((''+(c.value||'')).replace(/[^0-9.]/g,''))||'';
+  openModal('<h3>📄 Services agreement</h3><p class="sub">Fill it in, then Generate — you get a clean printable contract to sign or send. Not legal advice; have an attorney review.</p>'
+    +'<div class="row2"><div><label class="f">Client business</label><input id="k_biz" value="'+esc(c.business)+'"></div><div><label class="f">Client name (signer)</label><input id="k_name" value="'+esc(c.name)+'"></div></div>'
+    +'<label class="f">Client email</label><input id="k_email" value="'+esc(c.email)+'">'
+    +'<label class="f">Services (what you\'re building)</label><textarea id="k_scope" placeholder="One-page website with mobile design, local Google setup, and smart chat assistant...">'+esc(c.project)+'</textarea>'
+    +'<div class="row2"><div><label class="f">Total price ($)</label><input id="k_price" type="number" value="'+esc(price)+'" oninput="var d=document.getElementById(\'k_dep\'); if(d) d.value=Math.round((parseFloat(this.value)||0)/2);"></div>'
+    +'<div><label class="f">Deposit ($)</label><input id="k_dep" type="number" value="'+(price?Math.round(price/2):'')+'"></div></div>'
+    +'<div class="row2"><div><label class="f">Estimated delivery</label><input id="k_days" type="number" value="14"> <small style="color:var(--muted)">days from deposit + materials</small></div>'
+    +'<div><label class="f">Revision rounds included</label><input id="k_rev" type="number" value="2"></div></div>'
+    +'<label class="f">Monthly services (optional, $/mo — leave blank if none)</label><input id="k_mo" type="number" placeholder="">'
+    +'<div class="modal-actions"><button class="btn primary" onclick="genContractDoc()">Generate contract</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>');
+}
+function genContractDoc(){
+  var biz=val('k_biz')||'[Client business]', name=val('k_name')||'[Client name]', email=val('k_email')||'[client email]';
+  var scope=val('k_scope')||'[Describe the services]';
+  var price=parseFloat(val('k_price'))||0, dep=parseFloat(val('k_dep'))||Math.round(price/2);
+  var bal=Math.max(0,price-dep), days=val('k_days')||'14', rev=val('k_rev')||'2', mo=parseFloat(val('k_mo'))||0;
+  var today=new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});
+  function m(n){ return '$'+(n||0).toLocaleString(); }
+  var w=window.open('','_blank');
+  if(!w){ alert('Your browser blocked the popup — allow popups for this site and try again.'); return; }
+  var docHtml='<!doctype html><html><head><meta charset="utf-8"><title>Services Agreement — '+esc(biz)+'</title><style>'
+    +'body{font-family:Georgia,"Times New Roman",serif;color:#111;max-width:720px;margin:40px auto;padding:0 24px;line-height:1.65;font-size:15px}'
+    +'h1{font-size:24px;text-align:center;letter-spacing:.02em;margin-bottom:4px}'
+    +'.sub{text-align:center;color:#555;margin:0 0 28px;font-size:13px}'
+    +'h2{font-size:15px;margin:22px 0 6px;text-transform:uppercase;letter-spacing:.04em}'
+    +'p{margin:0 0 10px}'
+    +'.sig{display:flex;gap:40px;margin-top:44px}'
+    +'.sig div{flex:1}'
+    +'.line{border-bottom:1px solid #111;height:34px;margin-bottom:6px}'
+    +'.small{font-size:12px;color:#555}'
+    +'.noprint{position:fixed;top:14px;right:14px;display:flex;gap:8px}'
+    +'.noprint button{font:inherit;font-size:13px;padding:9px 16px;border-radius:8px;border:1px solid #bbb;background:#fff;cursor:pointer}'
+    +'.noprint button.p{background:#111;color:#fff;border-color:#111}'
+    +'@media print{.noprint{display:none}}'
+    +'</style></head><body>'
+    +'<div class="noprint"><button class="p" onclick="window.print()">🖨 Print / Save as PDF</button><button onclick="window.close()">Close</button></div>'
+    +'<h1>SERVICES AGREEMENT</h1>'
+    +'<p class="sub">Dated '+esc(today)+'</p>'
+    +'<p>This Services Agreement (the “Agreement”) is between <b>TB Solutions</b> (Nick Byrd, West Chester, Pennsylvania — “Provider”) and <b>'+esc(biz)+'</b> ('+esc(name)+', '+esc(email)+' — “Client”). By signing below, both parties agree to the following terms.</p>'
+    +'<h2>1. Services</h2>'
+    +'<p>Provider will perform the following services for Client (the “Services”): '+esc(scope)+'. Work not listed here is outside the scope of this Agreement and may be quoted separately.</p>'
+    +'<h2>2. Price &amp; Payment</h2>'
+    +'<p>The total fee for the Services is <b>'+m(price)+'</b>, payable as: a deposit of <b>'+m(dep)+'</b> due before work begins, and the remaining balance of <b>'+m(bal)+'</b> due upon Client approval of the final deliverables and before final handoff. The deposit is non-refundable once work has begun. Invoices unpaid more than 14 days after the due date may pause ongoing work and accrue a late charge of 1.5% per month.'
+    +(mo?' In addition, Client agrees to ongoing monthly services at <b>'+m(mo)+' per month</b>, billed monthly and cancelable by either party with 30 days\' written notice.':'')+'</p>'
+    +'<h2>3. Timeline</h2>'
+    +'<p>Provider estimates delivery of a first version within approximately <b>'+esc(days)+' days</b> of receiving the deposit and all materials reasonably needed from Client (content, photos, account access). Timelines are good-faith estimates, not guarantees, and extend day-for-day where Client feedback or materials are delayed.</p>'
+    +'<h2>4. Revisions &amp; Changes</h2>'
+    +'<p>The fee includes up to <b>'+esc(rev)+' rounds of revisions</b> to the deliverables. Additional revision rounds, added pages or features, or material changes in scope will be quoted and billed separately upon Client approval.</p>'
+    +'<h2>5. Client Responsibilities</h2>'
+    +'<p>Client will provide timely feedback, accurate business information, and any content or account access needed. Client is responsible for the accuracy and legality of materials Client supplies (including images, claims, and offers).</p>'
+    +'<h2>6. No Guarantee of Results</h2>'
+    +'<p>Marketing outcomes depend on factors outside anyone\'s control. Provider does not guarantee any specific business result — including search-engine rankings, traffic volumes, lead counts, ad performance, or revenue — and Client agrees results may vary.</p>'
+    +'<h2>7. Third-Party Costs</h2>'
+    +'<p>Ad spend (Google, Meta, etc.), domain registration, hosting, software subscriptions, and similar third-party fees are Client\'s responsibility and are paid by Client directly to those providers, unless expressly stated otherwise in Section 1.</p>'
+    +'<h2>8. Ownership &amp; Portfolio</h2>'
+    +'<p>Upon full payment, Client owns the final deliverables created specifically for Client. Provider retains ownership of pre-existing tools, code libraries, and know-how used to build them, licensed to Client for use in the deliverables. Third-party assets (fonts, stock images, plugins) remain subject to their own licenses. Provider may display the completed, public-facing work in Provider\'s portfolio and marketing.</p>'
+    +'<h2>9. Confidentiality</h2>'
+    +'<p>Each party will keep the other\'s non-public business information confidential and use it only for purposes of this Agreement.</p>'
+    +'<h2>10. Limitation of Liability</h2>'
+    +'<p>To the maximum extent permitted by law, neither party is liable for indirect, incidental, or consequential damages, and Provider\'s total liability under this Agreement is capped at the fees actually paid by Client to Provider under this Agreement.</p>'
+    +'<h2>11. Termination</h2>'
+    +'<p>Either party may terminate with written notice. On termination, Client pays for all work completed to date; amounts already paid for completed work are non-refundable; and Provider will deliver work completed through the termination date upon payment.</p>'
+    +'<h2>12. General</h2>'
+    +'<p>Provider is an independent contractor, not an employee. This Agreement is governed by the laws of the Commonwealth of Pennsylvania. It is the entire agreement between the parties regarding the Services and may be amended only in a writing (email acceptance suffices) agreed by both parties. If any provision is unenforceable, the rest remains in effect.</p>'
+    +'<div class="sig"><div><div class="line"></div><p class="small">TB Solutions — Nick Byrd &nbsp;·&nbsp; Date</p></div>'
+    +'<div><div class="line"></div><p class="small">'+esc(biz)+' — '+esc(name)+' &nbsp;·&nbsp; Date</p></div></div>'
+    +'<p class="small" style="margin-top:30px;text-align:center">Template generated by TB Command. This document is a general template and not legal advice; consult an attorney for advice on your specific situation.</p>'
+    +'</body></html>';
+  w.document.write(docHtml); w.document.close();
+  closeModal();
 }
 
 /* ---- Data / backup ---- */
