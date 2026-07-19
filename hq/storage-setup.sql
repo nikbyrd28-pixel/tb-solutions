@@ -28,3 +28,33 @@ create policy "admin manages intakes" on public.intakes
   for update to authenticated
   using ((auth.jwt()->>'email') = 'nikbyrd28@gmail.com')
   with check ((auth.jwt()->>'email') = 'nikbyrd28@gmail.com');
+
+-- ============================================================
+-- PROSPECTS — every new client-portal signup lands here so the
+-- admin sees who created an account (a "prospect" before they're a
+-- full client). Public/authenticated INSERT + admin read/manage.
+-- ============================================================
+create table if not exists public.prospects (
+  id         bigint generated always as identity primary key,
+  email      text,
+  name       text,
+  source     text default 'portal signup',
+  status     text default 'New',
+  created_at timestamptz not null default now()
+);
+alter table public.prospects enable row level security;
+
+drop policy if exists "anyone can create a prospect" on public.prospects;
+create policy "anyone can create a prospect" on public.prospects
+  for insert to anon, authenticated with check (true);
+
+drop policy if exists "admin reads prospects" on public.prospects;
+create policy "admin reads prospects" on public.prospects
+  for select to authenticated
+  using ((auth.jwt()->>'email') = 'nikbyrd28@gmail.com');
+
+drop policy if exists "admin manages prospects" on public.prospects;
+create policy "admin manages prospects" on public.prospects
+  for update to authenticated
+  using ((auth.jwt()->>'email') = 'nikbyrd28@gmail.com')
+  with check ((auth.jwt()->>'email') = 'nikbyrd28@gmail.com');

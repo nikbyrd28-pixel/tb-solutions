@@ -130,9 +130,17 @@ function doAuth(){
   var p = mode==='up' ? supa.auth.signUp({email:em,password:pw}) : supa.auth.signInWithPassword({email:em,password:pw});
   p.then(function(r){
     if(r.error){ msg('authMsg',r.error.message); return; }
-    if(mode==='up' && !r.data.session){ msg('authMsg','Account made! Check your email to confirm, then log in.',true); return; }
+    if(mode==='up'){ recordProspect(em); }
+    if(mode==='up' && !r.data.session){ msg('authMsg','Account created! ✓ Check your email to confirm, then log in — Nick has been notified.',true); return; }
     enter(r.data.user||r.data.session.user);
   });
+}
+// Every new signup becomes a prospect the admin can see — captured even if
+// email confirmation is pending. Fires the CRM database + the n8n webhook.
+function recordProspect(email){
+  try{ supa.from('prospects').insert({ email:email, source:'portal signup' }).then(function(){},function(){}); }catch(e){}
+  try{ var b=new URLSearchParams(); b.append('type','portal-signup'); b.append('email',email); b.append('source','portal signup'); b.append('ts',new Date().toISOString());
+    fetch('https://n8n-fouz.srv1786777.hstgr.cloud/webhook/12eeac52-a592-4988-b61a-2c2a16baa388',{method:'POST',mode:'no-cors',body:b}).catch(function(){}); }catch(e){}
 }
 function logout(){ if(supa) supa.auth.signOut(); location.reload(); }
 
@@ -145,7 +153,15 @@ function loadProject(){
     var el=document.getElementById('projBody');
     if(r.error){ el.textContent='Could not load right now.'; return; }
     var c=(r.data||[])[0];
-    if(!c){ el.innerHTML='Your project hasn\'t been linked to this email yet — Nick will hook it up. Meanwhile you can still send requests below.'; return; }
+    if(!c){
+      el.innerHTML='<div style="text-align:center;padding:6px 4px">'
+        +'<div style="font-size:34px;margin-bottom:6px">👋</div>'
+        +'<b style="font-size:18px">Welcome — your account is set up!</b>'
+        +'<p class="hint" style="margin:8px 0 16px">The next step is a quick free call so Nick can build your plan and set up your project. Once that\'s done, your project, updates, and payments show up right here.</p>'
+        +'<a class="btn full" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener">📅 Book your appointment</a>'
+        +'<p class="hint" style="margin-top:10px">Already talked to Nick? Give it a moment — he\'ll link your project shortly.</p></div>';
+      return;
+    }
     myClient=c;
     document.getElementById('who').textContent=c.name?(' '+c.name.split(' ')[0]):'';
     el.innerHTML='<div class="kv"><span>Business</span><b>'+esc(c.business)+'</b></div>'

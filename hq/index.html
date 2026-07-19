@@ -122,6 +122,7 @@
       <button data-view="leads"><span class="ic">◎</span> Leads</button>
       <button data-view="clients"><span class="ic">★</span> Clients</button>
       <button data-view="tasks"><span class="ic">✓</span> Tasks</button>
+      <button data-view="prospects"><span class="ic">🌱</span> Prospects</button>
       <button data-view="intakes"><span class="ic">📥</span> Intakes</button>
       <button data-view="requests"><span class="ic">🛟</span> Requests</button>
       <button data-view="analytics"><span class="ic">📈</span> Analytics</button>
@@ -227,7 +228,44 @@ function overdue(d){ return d && d<todayISO(); }
 function dueToday(d){ return d===todayISO(); }
 
 /* ================= VIEWS ================= */
-function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,intakes:vIntakes,requests:vRequests,analytics:vAnalytics,social:vSocial,tools:vTools,data:vData}[cur])(); if(cur==='tools') initTools(); if(cur==='requests') loadRequests(); if(cur==='analytics') loadAnalytics(); if(cur==='intakes') loadIntakes(); }
+function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,prospects:vProspects,intakes:vIntakes,requests:vRequests,analytics:vAnalytics,social:vSocial,tools:vTools,data:vData}[cur])(); if(cur==='tools') initTools(); if(cur==='requests') loadRequests(); if(cur==='analytics') loadAnalytics(); if(cur==='intakes') loadIntakes(); if(cur==='prospects') loadProspects(); }
+
+/* ---- Prospects (people who created a portal account) ---- */
+var _prospects=[];
+function vProspects(){
+  if(!cloud) return '<div class="topbar"><div><h1>Prospects</h1></div></div><div class="empty">Log in with cloud sync to see people who signed up on the client portal.</div>';
+  return '<div class="topbar"><div><h1>Prospects</h1><p class="sub">Everyone who created a portal account — add them to your pipeline in one tap</p></div></div><div id="prBody"><div class="empty">Loading…</div></div>';
+}
+function loadProspects(){
+  if(!cloud) return;
+  supa.from('prospects').select('*').order('created_at',{ascending:false}).limit(200).then(function(r){
+    var el=document.getElementById('prBody'); if(!el) return;
+    if(r.error){ el.innerHTML='<div class="empty">Could not load — run hq/storage-setup.sql in Supabase, then reload.</div>'; return; }
+    _prospects=r.data||[];
+    if(!_prospects.length){ el.innerHTML='<div class="empty">No prospects yet. When someone creates an account at tbsol.net/portal, they appear here.</div>'; return; }
+    el.innerHTML='<div class="card" style="padding:4px 4px"><table><thead><tr><th>Email</th><th class="hide-sm">Signed up</th><th>Status</th><th></th></tr></thead><tbody>'
+      + _prospects.map(function(x){
+          var done=x.status==='Added';
+          return '<tr'+(done?' class="done"':'')+'><td><b>'+esc(x.email||'—')+'</b>'+(x.name?'<br><small style="color:var(--muted)">'+esc(x.name)+'</small>':'')+'</td>'
+            +'<td class="hide-sm" style="color:var(--muted)">'+(x.created_at?new Date(x.created_at).toLocaleDateString():'')+'</td>'
+            +'<td><span class="pill'+(done?'':' due')+'">'+esc(x.status||'New')+'</span></td>'
+            +'<td style="text-align:right">'+(done?'':'<button class="btn sm primary" onclick="convertProspect('+x.id+')">→ Add as lead</button>')+'</td></tr>';
+        }).join('')
+      +'</tbody></table></div>';
+  });
+}
+function convertProspect(id){
+  var x=_prospects.filter(function(i){return i.id===id;})[0]; if(!x) return;
+  if(state.leads.some(function(l){return l.email && l.email===x.email;}) || state.clients.some(function(c){return c.email && c.email===x.email;})){
+    if(!confirm('Someone with this email is already in your pipeline. Add another lead anyway?')) return;
+  }
+  var o={ id:uid(), name:x.name||'', business:'', phone:'', email:x.email||'', stage:'New',
+    source:'Portal signup', followup:new Date(Date.now()+2*864e5).toISOString().slice(0,10),
+    note:'Created a client portal account on '+(x.created_at?new Date(x.created_at).toLocaleDateString():'the site')+'.', createdAt:Date.now() };
+  state.leads.unshift(o); save('leads'); upsertRow('leads',o);
+  supa.from('prospects').update({status:'Added'}).eq('id',id).then(function(){ loadProspects(); });
+  alert('Added '+(x.email)+' to your Leads pipeline as a new prospect. Follow up in 2 days!');
+}
 
 /* ---- Intakes inbox (new-client forms → one-tap onboarding) ---- */
 var _intakes=[];
