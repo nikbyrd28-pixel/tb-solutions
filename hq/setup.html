@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>TB Command — 2-Tap Database Setup</title>
+<style>
+  :root{--cyan:#5df2e0;--blue:#6f9dff;--violet:#b98bff;--text:#eef1ff;--muted:#96a0c4;--line2:rgba(150,195,255,.36);--grad:linear-gradient(120deg,var(--cyan),var(--blue) 55%,var(--violet))}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Space Grotesk",Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--text);min-height:100vh;
+    background:radial-gradient(circle at 12% -8%,rgba(94,242,224,.12),transparent 36%),radial-gradient(circle at 88% 4%,rgba(185,139,255,.12),transparent 38%),linear-gradient(180deg,#05070f,#03040a);
+    display:flex;align-items:flex-start;justify-content:center;padding:30px 16px}
+  .wrap{width:min(560px,100%)}
+  h1{font-size:clamp(24px,5vw,32px);letter-spacing:-.02em;margin:0 0 8px}
+  .lead{color:var(--muted);margin:0 0 24px}
+  .step{background:linear-gradient(160deg,rgba(150,190,255,.07),rgba(150,190,255,.02));border:1px solid var(--line2);border-radius:20px;padding:20px;margin-bottom:14px}
+  .step h2{display:flex;align-items:center;gap:12px;font-size:17px;margin:0 0 10px}
+  .n{flex:0 0 32px;height:32px;border-radius:50%;background:var(--grad);color:#03040a;display:grid;place-items:center;font-weight:900}
+  .step p{color:var(--muted);font-size:14px;margin:0 0 14px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;background:var(--grad);color:#03040a;border-radius:999px;padding:15px;font:inherit;font-weight:900;font-size:16px;cursor:pointer;text-decoration:none}
+  .btn.ghost{background:none;border:1px solid var(--line2);color:var(--text)}
+  .ok{color:#7CFCC6;font-weight:700;font-size:14px;display:none;margin-top:10px;text-align:center}
+  .fine{color:var(--muted);font-size:13px;text-align:center;margin-top:18px;line-height:1.6}
+  textarea{position:absolute;left:-9999px;top:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Database setup — 2 taps + 1 paste</h1>
+  <p class="lead">This creates your organized tables (leads, clients, tasks, tickets, intakes) in your Supabase. You only ever do this once.</p>
+
+  <div class="step">
+    <h2><span class="n">1</span> Copy the setup code</h2>
+    <p>One tap — it grabs the whole thing.</p>
+    <button class="btn" id="copyBtn">📋 Copy setup code</button>
+    <div class="ok" id="copied">✓ Copied! Now do step 2.</div>
+  </div>
+
+  <div class="step">
+    <h2><span class="n">2</span> Open your database &amp; paste</h2>
+    <p>This opens your Supabase SQL editor. Tap in the big empty box, <b>paste</b>, then press the green <b>Run</b> button (bottom right).</p>
+    <a class="btn" href="https://supabase.com/dashboard/project/qgbjiqdwzgkjkmqyjsmc/sql/new" target="_blank" rel="noopener">🗄️ Open my Supabase editor</a>
+  </div>
+
+  <div class="step">
+    <h2><span class="n">3</span> Done — open your CRM</h2>
+    <p>It should say “Success. No rows returned.” Then just come back here:</p>
+    <a class="btn ghost" href="/hq/">→ Open TB Command</a>
+  </div>
+
+  <p class="fine">Saw a red error in Supabase? Screenshot it and send it to your builder.<br>This page can be deleted after setup.</p>
+</div>
+<textarea id="sqlbox" readonly></textarea>
+<script>
+var SQL_URL='https://raw.githubusercontent.com/nikbyrd28-pixel/tb-solutions/main/hq/supabase-schema.sql';
+var sqlText='';
+fetch(SQL_URL).then(function(r){return r.text();}).then(function(t){ sqlText=t; }).catch(function(){});
+document.getElementById('copyBtn').addEventListener('click', function(){
+  var done=function(){ document.getElementById('copied').style.display='block'; };
+  var fallback=function(){
+    var ta=document.getElementById('sqlbox'); ta.value=sqlText; ta.style.position='fixed'; ta.style.left='0';
+    ta.focus(); ta.select(); try{ document.execCommand('copy'); }catch(e){}
+    ta.style.position='absolute'; ta.style.left='-9999px'; done();
+  };
+  var finish=function(){
+    if(navigator.clipboard && sqlText){ navigator.clipboard.writeText(sqlText).then(done, fallback); }
+    else fallback();
+  };
+  if(sqlText){ finish(); }
+  else { fetch(SQL_URL).then(function(r){return r.text();}).then(function(t){ sqlText=t; finish(); }).catch(function(){ alert('Could not load the code — check your internet and try again.'); }); }
+});
+</script>
+</body>
+</html>
