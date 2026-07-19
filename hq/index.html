@@ -122,6 +122,9 @@
       <button data-view="leads"><span class="ic">◎</span> Leads</button>
       <button data-view="clients"><span class="ic">★</span> Clients</button>
       <button data-view="tasks"><span class="ic">✓</span> Tasks</button>
+      <button data-view="requests"><span class="ic">🛟</span> Requests</button>
+      <button data-view="analytics"><span class="ic">📈</span> Analytics</button>
+      <button data-view="social"><span class="ic">📣</span> Social</button>
       <button data-view="tools"><span class="ic">✦</span> Marketing Tools</button>
       <button data-view="data"><span class="ic">⤓</span> Backup / Data</button>
     </nav>
@@ -166,12 +169,13 @@ function n8nSend(payload){ if(!N8N_WEBHOOK) return; try{ var b=new URLSearchPara
 var COLS={
   leads:['id','name','business','phone','email','stage','source','followup','note'],
   clients:['id','business','name','phone','email','project','status','value','paylink','dep','bal','note'],
-  tasks:['id','title','due','done']
+  tasks:['id','title','due','done'],
+  posts:['id','content','platform','status','post_date']
 };
 function rowFor(t,o){
   var r={}; COLS[t].forEach(function(c){
     var v=o[c];
-    if((c==='followup'||c==='due') && !v) v=null;
+    if((c==='followup'||c==='due'||c==='post_date') && !v) v=null;
     r[c]=(v===undefined)?null:v;
   });
   if(t==='tasks') r.done=!!o.done;
@@ -193,9 +197,9 @@ var STAGES=['New','Contacted','Interested','Booked','Won','Lost'];
 var CLIENT_STATUS=['Onboarding','In progress','Review','Live','On hold','Done'];
 
 /* ---------- state ---------- */
-var state={ leads:[], clients:[], tasks:[] };
+var state={ leads:[], clients:[], tasks:[], posts:[] };
 function save(k){ if(!cloud) DB.write(k, state[k]); }
-function loadState(){ state.leads=DB.read('leads'); state.clients=DB.read('clients'); state.tasks=DB.read('tasks'); }
+function loadState(){ state.leads=DB.read('leads'); state.clients=DB.read('clients'); state.tasks=DB.read('tasks'); state.posts=DB.read('posts'); }
 
 /* ---------- nav ---------- */
 var cur='dashboard';
@@ -218,7 +222,120 @@ function overdue(d){ return d && d<todayISO(); }
 function dueToday(d){ return d===todayISO(); }
 
 /* ================= VIEWS ================= */
-function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,tools:vTools,data:vData}[cur])(); if(cur==='tools') initTools(); }
+function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,requests:vRequests,analytics:vAnalytics,social:vSocial,tools:vTools,data:vData}[cur])(); if(cur==='tools') initTools(); if(cur==='requests') loadRequests(); if(cur==='analytics') loadAnalytics(); }
+
+/* ---- Requests (client tickets) ---- */
+var TICKET_STATUS=['New','In progress','Waiting on client','Done'];
+function vRequests(){
+  if(!cloud) return '<div class="topbar"><div><h1>Requests</h1></div></div><div class="empty">Log in with cloud sync to see client requests. Tickets from tbsol.net/support and the client portal land here.</div>';
+  return '<div class="topbar"><div><h1>Requests</h1><p class="sub">Everything clients send from /support and the portal</p></div></div><div id="reqBody"><div class="empty">Loading…</div></div>';
+}
+function loadRequests(){
+  if(!cloud) return;
+  supa.from('tickets').select('*').order('created_at',{ascending:false}).limit(200).then(function(r){
+    var el=document.getElementById('reqBody'); if(!el) return;
+    if(r.error){ el.innerHTML='<div class="empty">Could not load — run hq/portal-analytics.sql in Supabase, then reload.</div>'; return; }
+    var rows=(r.data||[]);
+    if(!rows.length){ el.innerHTML='<div class="empty">No requests yet. When a client submits one, it shows up here.</div>'; return; }
+    el.innerHTML='<div class="card" style="padding:4px 4px"><table><thead><tr><th>From</th><th>Type</th><th class="hide-sm">Details</th><th>Priority</th><th>Status</th></tr></thead><tbody>'
+      + rows.map(function(t){
+          var urgent=/urgent/i.test(t.priority||'');
+          return '<tr><td><b>'+esc(t.business||t.name||'—')+'</b><br><small style="color:var(--muted)">'+esc(t.email||'')+'</small></td>'
+            +'<td>'+esc(t.ticket_type||'')+'</td>'
+            +'<td class="hide-sm" style="max-width:320px">'+esc((t.details||'').slice(0,140))+((t.details||'').length>140?'…':'')+(t.attachment?'<br><a href="'+esc(t.attachment)+'" target="_blank" rel="noopener">attachment</a>':'')+'</td>'
+            +'<td><span class="pill '+(urgent?'over':'')+'">'+esc(t.priority||'Normal')+'</span></td>'
+            +'<td><select class="status-sel" onchange="setTicketStatus('+t.id+',this.value)">'+TICKET_STATUS.map(function(s){return '<option'+(t.status===s?' selected':'')+'>'+s+'</option>';}).join('')+'</select></td></tr>';
+        }).join('')
+      +'</tbody></table></div>';
+  });
+}
+function setTicketStatus(id,v){ if(!cloud) return; supa.from('tickets').update({status:v}).eq('id',id).then(function(r){ if(r.error) alert('Could not update: '+r.error.message); }); }
+
+/* ---- Analytics ---- */
+function vAnalytics(){
+  if(!cloud) return '<div class="topbar"><div><h1>Analytics</h1></div></div><div class="empty">Log in with cloud sync to see your website analytics.</div>';
+  return '<div class="topbar"><div><h1>Analytics</h1><p class="sub">Visits to tbsol.net — tracked in your own database</p></div></div><div id="anBody"><div class="empty">Loading…</div></div>';
+}
+function loadAnalytics(){
+  if(!cloud) return;
+  var since=new Date(Date.now()-30*864e5).toISOString();
+  supa.from('pageviews').select('path,ref,w,ts').gte('ts',since).order('ts',{ascending:false}).limit(5000).then(function(r){
+    var el=document.getElementById('anBody'); if(!el) return;
+    if(r.error){ el.innerHTML='<div class="empty">Could not load — run hq/portal-analytics.sql in Supabase, then reload.</div>'; return; }
+    var rows=r.data||[];
+    if(!rows.length){ el.innerHTML='<div class="empty">No visits recorded yet. Tracking is live on tbsol.net — check back after some traffic (your own visits count too).</div>'; return; }
+    var now=Date.now(), day=864e5;
+    var today=0,week=0,mobile=0, byDay={}, byPath={}, byRef={};
+    rows.forEach(function(v){
+      var t=new Date(v.ts).getTime();
+      if(now-t<day) today++;
+      if(now-t<7*day) week++;
+      if((v.w||999)<760) mobile++;
+      var dkey=new Date(v.ts).toISOString().slice(0,10);
+      byDay[dkey]=(byDay[dkey]||0)+1;
+      var p=v.path||'/'; byPath[p]=(byPath[p]||0)+1;
+      var ref=(v.ref||'').replace(/^https?:\/\//,'').split('/')[0]||'direct / typed in';
+      if(ref.indexOf('tbsol.net')===-1) byRef[ref]=(byRef[ref]||0)+1;
+    });
+    var days=[]; for(var i=13;i>=0;i--){ var d=new Date(now-i*day).toISOString().slice(0,10); days.push([d.slice(5), byDay[d]||0]); }
+    var max=Math.max.apply(null,days.map(function(x){return x[1];}).concat([1]));
+    var bars=days.map(function(x){ return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px"><div style="width:70%;max-width:26px;height:'+Math.max(3,Math.round(x[1]/max*110))+'px;border-radius:6px 6px 2px 2px;background:var(--grad)"></div><small style="color:var(--muted);font-size:9px">'+x[0]+'</small></div>'; }).join('');
+    function topList(obj){ return Object.keys(obj).map(function(k){return [k,obj[k]];}).sort(function(a,b){return b[1]-a[1];}).slice(0,6)
+      .map(function(x){return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:75%">'+esc(x[0])+'</span><b>'+x[1]+'</b></div>';}).join('')||'<p class="hint">Nothing yet</p>'; }
+    el.innerHTML='<div class="grid stat-row">'
+      +'<div class="card stat"><b>'+today+'</b><span>Visits today</span></div>'
+      +'<div class="card stat"><b>'+week+'</b><span>Last 7 days</span></div>'
+      +'<div class="card stat"><b>'+rows.length+'</b><span>Last 30 days</span></div>'
+      +'<div class="card stat"><b>'+Math.round(mobile/rows.length*100)+'%</b><span>On phones</span></div></div>'
+      +'<div class="section-h"><h2>Daily visits (14 days)</h2></div>'
+      +'<div class="card"><div style="display:flex;align-items:flex-end;gap:4px;height:150px">'+bars+'</div></div>'
+      +'<div class="grid" style="grid-template-columns:1fr 1fr;margin-top:14px">'
+      +'<div class="card"><h3 style="margin:0 0 8px;font-size:15px">Top pages</h3>'+topList(byPath)+'</div>'
+      +'<div class="card"><h3 style="margin:0 0 8px;font-size:15px">Where visitors came from</h3>'+topList(byRef)+'</div></div>';
+  });
+}
+
+/* ---- Social planner ---- */
+var POST_STATUS=['Idea','Drafted','Scheduled','Posted'];
+var PLATFORMS=['Instagram','Facebook','TikTok','Google Business','LinkedIn','X'];
+function vSocial(){
+  var rows=state.posts.slice().sort(function(a,b){return (a.post_date||'9')<(b.post_date||'9')?-1:1;});
+  return '<div class="topbar"><div><h1>Social</h1><p class="sub">Plan posts → draft → schedule → mark posted. Need ideas? Use Marketing Tools → Content ideas.</p></div>'
+    +'<button class="btn primary" onclick="addPost()">+ New post</button></div>'
+    +(rows.length? '<div class="card" style="padding:4px 4px"><table><thead><tr><th>Post</th><th class="hide-sm">Platform</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody>'
+      + rows.map(function(p){
+          return '<tr><td style="max-width:340px"><b>'+esc((p.content||'').slice(0,90))+((p.content||'').length>90?'…':'')+'</b></td>'
+            +'<td class="hide-sm">'+esc(p.platform||'')+'</td>'
+            +'<td>'+(p.post_date?fmtDate(p.post_date):'<span style="color:var(--muted)">—</span>')+'</td>'
+            +'<td><select class="status-sel" onchange="setPostStatus(\''+p.id+'\',this.value)">'+POST_STATUS.map(function(s){return '<option'+(p.status===s?' selected':'')+'>'+s+'</option>';}).join('')+'</select></td>'
+            +'<td style="text-align:right;white-space:nowrap"><button class="btn sm ghost" onclick="copyPost(\''+p.id+'\')">📋</button> <button class="btn sm ghost" onclick="editPost(\''+p.id+'\')">Open</button></td></tr>';
+        }).join('')
+      +'</tbody></table></div>'
+      : '<div class="empty">No posts planned yet. Tap “+ New post”, or grab ideas from Marketing Tools → Content ideas.</div>');
+}
+function postForm(p){ p=p||{};
+  return '<h3>'+(p.id?'Edit post':'New post')+'</h3>'
+    +'<label class="f">The post (caption text)</label><textarea id="p_content" style="min-height:110px" placeholder="Write the caption...">'+esc(p.content)+'</textarea>'
+    +'<div class="row2"><div><label class="f">Platform</label><select id="p_platform">'+PLATFORMS.map(function(s){return '<option'+(p.platform===s?' selected':'')+'>'+s+'</option>';}).join('')+'</select></div>'
+    +'<div><label class="f">Post date</label><input id="p_date" type="date" value="'+esc(p.post_date)+'"></div></div>'
+    +'<label class="f">Status</label><select id="p_status">'+POST_STATUS.map(function(s){return '<option'+((p.status||'Idea')===s?' selected':'')+'>'+s+'</option>';}).join('')+'</select>'
+    +'<div class="modal-actions"><button class="btn primary" onclick="savePost(\''+(p.id||'')+'\')">Save</button>'
+    +(p.id?'<button class="btn danger" onclick="delPost(\''+p.id+'\')">Delete</button>':'')
+    +'<button class="btn ghost" onclick="closeModal()">Cancel</button></div>';
+}
+function addPost(){ openModal(postForm()); }
+function editPost(id){ openModal(postForm(state.posts.filter(function(x){return x.id===id;})[0])); }
+function savePost(id){
+  var o={ content:val('p_content'), platform:val('p_platform'), status:val('p_status'), post_date:val('p_date') };
+  if(!o.content){ return; }
+  if(id){ state.posts=state.posts.map(function(x){return x.id===id?Object.assign(x,o):x;}); }
+  else { o.id=uid(); state.posts.unshift(o); }
+  save('posts'); upsertRow('posts', state.posts.filter(function(x){return x.id===(id||o.id);})[0]);
+  closeModal(); render();
+}
+function setPostStatus(id,v){ state.posts=state.posts.map(function(x){return x.id===id?Object.assign(x,{status:v}):x;}); save('posts'); upsertRow('posts', state.posts.filter(function(x){return x.id===id;})[0]); }
+function delPost(id){ if(!confirm('Delete this post?'))return; state.posts=state.posts.filter(function(x){return x.id!==id;}); save('posts'); removeRow('posts',id); closeModal(); render(); }
+function copyPost(id){ var p=state.posts.filter(function(x){return x.id===id;})[0]; if(p&&navigator.clipboard) navigator.clipboard.writeText(p.content||''); var b=event.target; var o=b.textContent; b.textContent='✓'; setTimeout(function(){b.textContent=o;},1200); }
 
 /* ---- My Tools launchpad ---- */
 var TOOLGROUPS=[
@@ -246,6 +363,7 @@ var TOOLGROUPS=[
     ['Google Analytics','https://analytics.google.com','📊']
   ]],
   ['Client-facing pages', [
+    ['Client portal','https://tbsol.net/portal','🚪'],
     ['Client intake form','https://tbsol.net/start','📝'],
     ['Support &amp; ideas form','https://tbsol.net/support','🛟']
   ]]
@@ -554,20 +672,21 @@ function finishLogin(u){
   Promise.all([
     supa.from('leads').select('*').order('created_at',{ascending:false}),
     supa.from('clients').select('*').order('created_at',{ascending:false}),
-    supa.from('tasks').select('*').order('created_at',{ascending:false})
+    supa.from('tasks').select('*').order('created_at',{ascending:false}),
+    supa.from('posts').select('*').order('created_at',{ascending:false})
   ]).then(function(rs){
-    if(rs.some(function(r){return r.error;})){
+    if(rs.slice(0,3).some(function(r){return r.error;})){
       alert('One-time setup needed: in Supabase, open SQL Editor and run the file hq/supabase-schema.sql, then reload this page.');
-      state.leads=[];state.clients=[];state.tasks=[]; startApp(); return;
+      state.leads=[];state.clients=[];state.tasks=[];state.posts=[]; startApp(); return;
     }
-    state.leads=rs[0].data||[]; state.clients=rs[1].data||[]; state.tasks=rs[2].data||[];
+    state.leads=rs[0].data||[]; state.clients=rs[1].data||[]; state.tasks=rs[2].data||[]; state.posts=(rs[3]&&rs[3].data)||[];
     normalizeState();
     if(!state.leads.length && !state.clients.length && !state.tasks.length){ migrateOldKV(); }
     else { startApp(); }
   });
 }
 function normalizeState(){
-  ['leads','clients','tasks'].forEach(function(t){
+  ['leads','clients','tasks','posts'].forEach(function(t){
     state[t]=state[t].map(function(o){ var c={}; for(var k in o){ c[k]=(o[k]===null)?'':o[k]; } if(t==='tasks') c.done=!!o.done; return c; });
   });
 }

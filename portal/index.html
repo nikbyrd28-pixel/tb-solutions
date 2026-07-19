@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Client Portal — TB Solutions</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%235df2e0'/%3E%3Cstop offset='.55' stop-color='%236f9dff'/%3E%3Cstop offset='1' stop-color='%23b98bff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='15' fill='%23070a12'/%3E%3Ctext x='50%25' y='53%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-weight='900' font-size='30' fill='url(%23g)'%3ETB%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--cyan:#5df2e0;--blue:#6f9dff;--violet:#b98bff;--green:#7CFCC6;--red:#ff8a8a;--text:#eef1ff;--muted:#96a0c4;--line:rgba(150,190,255,.16);--line2:rgba(150,195,255,.36);--grad:linear-gradient(120deg,var(--cyan),var(--blue) 55%,var(--violet))}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Space Grotesk",Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--text);min-height:100vh;
+    background:radial-gradient(circle at 12% -8%,rgba(94,242,224,.12),transparent 36%),radial-gradient(circle at 88% 4%,rgba(185,139,255,.12),transparent 38%),linear-gradient(180deg,#05070f,#03040a);
+    display:flex;align-items:flex-start;justify-content:center;padding:30px 16px}
+  .wrap{width:min(640px,100%)}
+  .brand{font-weight:900;font-size:20px;letter-spacing:-.02em;margin-bottom:6px}
+  .brand span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .eyebrow{color:var(--cyan);text-transform:uppercase;letter-spacing:.2em;font-size:12px;font-weight:800;margin-bottom:14px}
+  h1{font-size:clamp(24px,5vw,34px);letter-spacing:-.02em;margin:8px 0}
+  .lead{color:var(--muted);margin:0 0 20px}
+  .card{background:linear-gradient(160deg,rgba(150,190,255,.07),rgba(150,190,255,.02));border:1px solid var(--line2);border-radius:20px;padding:22px;margin-bottom:14px}
+  .card h2{font-size:16px;margin:0 0 12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  label{display:block;margin:12px 0 0;font-size:13px;color:var(--muted);font-weight:600}
+  input,select,textarea{width:100%;background:rgba(3,4,10,.5);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;color:var(--text);font:inherit;font-size:15px;margin-top:6px}
+  textarea{min-height:90px;resize:vertical}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--cyan)}
+  option{color:#03040a}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;background:var(--grad);color:#03040a;border-radius:999px;padding:13px 20px;font:inherit;font-weight:900;font-size:15px;cursor:pointer;text-decoration:none}
+  .btn.full{width:100%;margin-top:16px}
+  .btn.ghost{background:none;border:1px solid var(--line2);color:var(--text);font-weight:700}
+  .msg{font-size:13px;min-height:18px;margin-top:8px}
+  .msg.err{color:var(--red)} .msg.ok{color:var(--green)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .kv{display:flex;justify-content:space-between;gap:14px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .kv:last-child{border-bottom:0}
+  .kv span{color:var(--muted)} .kv b{text-align:right}
+  .pill{display:inline-block;font-size:12px;border-radius:999px;padding:3px 10px;border:1px solid var(--line2)}
+  .pill.g{border-color:rgba(124,252,198,.5);color:var(--green)}
+  .update{border-top:1px solid var(--line);padding:12px 0}
+  .update:first-of-type{border-top:0}
+  .update b{display:block}
+  .update small{color:var(--muted)}
+  .update p{margin:6px 0 0;color:#d8ddf2;font-size:14px}
+  .tk{border-top:1px solid var(--line);padding:12px 0;font-size:14px}
+  .tk:first-of-type{border-top:0}
+  .topline{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px}
+  .hint{color:var(--muted);font-size:13px;line-height:1.5}
+  #app,#login{display:none}
+  @media(max-width:560px){.row{grid-template-columns:1fr}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="topline">
+    <div><div class="brand">TB <span>Solutions</span></div><div class="eyebrow">Client portal</div></div>
+    <button class="btn ghost" id="outBtn" style="display:none" onclick="logout()">Log out</button>
+  </div>
+
+  <div id="login">
+    <h1 id="loginTitle">Welcome back.</h1>
+    <p class="lead" id="loginSub">Log in to see your project, updates, and requests.</p>
+    <div class="card">
+      <label>Email</label><input id="em" type="email" autocomplete="username" placeholder="you@business.com">
+      <label>Password</label><input id="pw" type="password" autocomplete="current-password">
+      <button class="btn full" id="goBtn">Log in</button>
+      <p class="msg" id="authMsg"></p>
+      <p class="hint" style="margin-top:12px" id="swapLine">First time here? <a href="#" id="swap" style="color:var(--cyan)">Create your account</a> — use the same email you gave Nick.</p>
+    </div>
+  </div>
+
+  <div id="app">
+    <h1>Hey<span id="who"></span> 👋</h1>
+    <p class="lead">Here's where your project stands.</p>
+
+    <div class="card" id="projCard"><h2>Your project</h2><div id="projBody" class="hint">Loading…</div></div>
+    <div class="card"><h2>Updates from Nick</h2><div id="updBody" class="hint">Loading…</div></div>
+
+    <div class="card">
+      <h2>Send a request</h2>
+      <p class="hint" style="margin:0 0 4px">Something broken? Want a change? An idea? Send it straight to Nick.</p>
+      <div class="row">
+        <div><label>Type</label><select id="t_type"><option>Change / edit</option><option>Problem / bug</option><option>New idea</option><option>SEO / Google</option><option>Hosting / down</option><option>Question</option></select></div>
+        <div><label>How urgent?</label><select id="t_pri"><option>Normal</option><option>Low — whenever</option><option>Urgent — site is down / broken</option></select></div>
+      </div>
+      <label>Describe it</label><textarea id="t_details" placeholder="Tell me what you need..."></textarea>
+      <label>Link to a screenshot (optional)</label><input id="t_att" placeholder="Paste a link">
+      <button class="btn full" id="tkBtn" onclick="sendTicket()">Send to Nick →</button>
+      <p class="msg" id="tkMsg"></p>
+    </div>
+
+    <div class="card"><h2>Your requests</h2><div id="tkBody" class="hint">Loading…</div></div>
+
+    <div class="card" style="text-align:center">
+      <h2>Need to talk?</h2>
+      <a class="btn" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener">📅 Book a call with Nick</a>
+    </div>
+  </div>
+</div>
+
+<script>
+var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+var supa=null, user=null, mode='in', myClient=null;
+
+function esc(s){ return (s==null?'':(''+s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function show(id){ document.getElementById(id).style.display='block'; }
+function hide(id){ document.getElementById(id).style.display='none'; }
+function msg(id,t,ok){ var m=document.getElementById(id); m.textContent=t; m.className='msg '+(ok?'ok':'err'); }
+
+function boot(){
+  if(!window.supabase){ document.body.innerHTML='<p style="padding:40px;text-align:center;color:#96a0c4">Could not load — check your internet and refresh.</p>'; return; }
+  supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+  supa.auth.getSession().then(function(r){
+    if(r.data&&r.data.session){ enter(r.data.session.user); } else { show('login'); }
+  });
+  document.getElementById('goBtn').onclick=doAuth;
+  document.getElementById('pw').addEventListener('keydown',function(e){ if(e.key==='Enter') doAuth(); });
+  document.getElementById('swap').onclick=function(e){ e.preventDefault();
+    mode=(mode==='in')?'up':'in';
+    document.getElementById('goBtn').textContent = mode==='up'?'Create account':'Log in';
+    document.getElementById('loginTitle').textContent = mode==='up'?'Create your account.':'Welcome back.';
+    document.getElementById('swap').textContent = mode==='up'?'Log in instead':'Create your account';
+  };
+}
+function doAuth(){
+  var em=document.getElementById('em').value.trim(), pw=document.getElementById('pw').value;
+  if(!em||!pw){ msg('authMsg','Enter your email and password.'); return; }
+  var p = mode==='up' ? supa.auth.signUp({email:em,password:pw}) : supa.auth.signInWithPassword({email:em,password:pw});
+  p.then(function(r){
+    if(r.error){ msg('authMsg',r.error.message); return; }
+    if(mode==='up' && !r.data.session){ msg('authMsg','Account made! Check your email to confirm, then log in.',true); return; }
+    enter(r.data.user||r.data.session.user);
+  });
+}
+function logout(){ if(supa) supa.auth.signOut(); location.reload(); }
+
+function enter(u){
+  user=u; hide('login'); show('app'); document.getElementById('outBtn').style.display='inline-flex';
+  loadProject(); loadUpdates(); loadTickets();
+}
+function loadProject(){
+  supa.from('clients').select('business,name,project,status,value,dep,bal,paylink').limit(1).then(function(r){
+    var el=document.getElementById('projBody');
+    if(r.error){ el.textContent='Could not load right now.'; return; }
+    var c=(r.data||[])[0];
+    if(!c){ el.innerHTML='Your project hasn\'t been linked to this email yet — Nick will hook it up. Meanwhile you can still send requests below.'; return; }
+    myClient=c;
+    document.getElementById('who').textContent=c.name?(' '+c.name.split(' ')[0]):'';
+    el.innerHTML='<div class="kv"><span>Business</span><b>'+esc(c.business)+'</b></div>'
+      +'<div class="kv"><span>Project</span><b>'+esc(c.project||'—')+'</b></div>'
+      +'<div class="kv"><span>Status</span><b><span class="pill g">'+esc(c.status||'—')+'</span></b></div>'
+      +(c.value?'<div class="kv"><span>Project total</span><b>$'+esc(c.value)+'</b></div>':'')
+      +'<div class="kv"><span>Deposit</span><b>'+(c.dep==='paid'?'<span class="pill g">Paid ✓</span>':'<span class="pill">Due</span>')+'</b></div>'
+      +'<div class="kv"><span>Balance</span><b>'+(c.bal==='paid'?'<span class="pill g">Paid ✓</span>':'<span class="pill">Due at handoff</span>')+'</b></div>'
+      +((c.paylink && (c.dep!=='paid'||c.bal!=='paid'))?'<a class="btn full" href="'+esc(c.paylink)+'" target="_blank" rel="noopener">💳 Make a payment</a>':'');
+  });
+}
+function loadUpdates(){
+  supa.from('updates').select('title,body,created_at').order('created_at',{ascending:false}).limit(10).then(function(r){
+    var el=document.getElementById('updBody');
+    if(r.error||!(r.data||[]).length){ el.textContent='No updates yet — they\'ll show up here as your project moves.'; return; }
+    el.innerHTML=r.data.map(function(u){
+      return '<div class="update"><b>'+esc(u.title||'Update')+'</b><small>'+new Date(u.created_at).toLocaleDateString()+'</small><p>'+esc(u.body||'')+'</p></div>';
+    }).join('');
+  });
+}
+function loadTickets(){
+  supa.from('tickets').select('ticket_type,priority,status,details,created_at').order('created_at',{ascending:false}).limit(20).then(function(r){
+    var el=document.getElementById('tkBody');
+    if(r.error||!(r.data||[]).length){ el.textContent='Nothing yet. Anything you send shows up here with its status.'; return; }
+    el.innerHTML=r.data.map(function(t){
+      return '<div class="tk"><b>'+esc(t.ticket_type)+'</b> · <span class="pill '+(t.status==='Done'?'g':'')+'">'+esc(t.status||'New')+'</span><br><small style="color:var(--muted)">'+new Date(t.created_at).toLocaleDateString()+'</small><br>'+esc((t.details||'').slice(0,160))+'</div>';
+    }).join('');
+  });
+}
+function sendTicket(){
+  var details=document.getElementById('t_details').value.trim();
+  if(!details){ msg('tkMsg','Tell me what you need first.'); return; }
+  var btn=document.getElementById('tkBtn'); btn.disabled=true; btn.textContent='Sending...';
+  var row={ name:(myClient&&myClient.name)||'', business:(myClient&&myClient.business)||'', email:user.email, website:'',
+    ticket_type:document.getElementById('t_type').value, priority:document.getElementById('t_pri').value,
+    details:details, attachment:document.getElementById('t_att').value.trim() };
+  supa.from('tickets').insert(row).then(function(r){
+    btn.disabled=false; btn.textContent='Send to Nick →';
+    if(r.error){ msg('tkMsg','Could not send — try again in a minute.'); return; }
+    msg('tkMsg','Sent! Nick has been notified. ✓',true);
+    document.getElementById('t_details').value=''; document.getElementById('t_att').value='';
+    // also fire n8n so Nick gets the instant email
+    try{ var b=new URLSearchParams(); var d=Object.assign({type:'support-ticket',source:'client portal',ts:new Date().toISOString()},row);
+      Object.keys(d).forEach(function(k){ b.append(k,d[k]==null?'':d[k]); });
+      fetch('https://n8n-fouz.srv1786777.hstgr.cloud/webhook/12eeac52-a592-4988-b61a-2c2a16baa388',{method:'POST',mode:'no-cors',body:b}).catch(function(){}); }catch(e){}
+    loadTickets();
+  });
+}
+boot();
+</script>
+</body>
+</html>

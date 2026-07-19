@@ -97,11 +97,16 @@ f.addEventListener('submit',function(e){
   data.ts=new Date().toISOString(); data.source='intake page';
   // fire to n8n (automation) — fire and forget
   try{ var b=new URLSearchParams(); Object.keys(data).forEach(function(k){ b.append(k,data[k]==null?'':data[k]); }); fetch(N8N,{method:'POST',mode:'no-cors',body:b}).catch(function(){}); }catch(e2){}
+  // save intake into the TB Command database
+  try{ var K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+    fetch('https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/intakes',{method:'POST',headers:{apikey:K,Authorization:'Bearer '+K,'Content-Type':'application/json',Prefer:'return=minimal'},
+      body:JSON.stringify({business:data.business||'',name:data.name||'',email:data.email||'',phone:data.phone||'',website:data.website||'',about:data.about||'',goal:data.goal||'',interest:data.interest||'',budget:data.budget||'',timeline:data.timeline||'',style:data.style||'',notes:data.notes||''})}).catch(function(){}); }catch(e3){}
   // email backup via FormSubmit
   fetch('https://formsubmit.co/ajax/nikbyrd28@gmail.com',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(data)})
     .then(function(r){return r.json();}).catch(function(){})
     .then(function(){ f.style.display='none'; document.getElementById('ok').classList.add('show'); window.scrollTo(0,0); });
 });
 </script>
+<script>(function(){try{var K="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro";fetch("https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/pageviews",{method:"POST",headers:{apikey:K,Authorization:"Bearer "+K,"Content-Type":"application/json",Prefer:"return=minimal"},body:JSON.stringify({path:location.pathname,ref:document.referrer||"",ua:(navigator.userAgent||"").slice(0,120),w:innerWidth})}).catch(function(){});}catch(e){}})();</script>
 </body>
 </html>
