@@ -122,6 +122,7 @@
       <button data-view="leads"><span class="ic">◎</span> Leads</button>
       <button data-view="clients"><span class="ic">★</span> Clients</button>
       <button data-view="tasks"><span class="ic">✓</span> Tasks</button>
+      <button data-view="intakes"><span class="ic">📥</span> Intakes</button>
       <button data-view="requests"><span class="ic">🛟</span> Requests</button>
       <button data-view="analytics"><span class="ic">📈</span> Analytics</button>
       <button data-view="social"><span class="ic">📣</span> Social</button>
@@ -222,7 +223,44 @@ function overdue(d){ return d && d<todayISO(); }
 function dueToday(d){ return d===todayISO(); }
 
 /* ================= VIEWS ================= */
-function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,requests:vRequests,analytics:vAnalytics,social:vSocial,tools:vTools,data:vData}[cur])(); if(cur==='tools') initTools(); if(cur==='requests') loadRequests(); if(cur==='analytics') loadAnalytics(); }
+function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,intakes:vIntakes,requests:vRequests,analytics:vAnalytics,social:vSocial,tools:vTools,data:vData}[cur])(); if(cur==='tools') initTools(); if(cur==='requests') loadRequests(); if(cur==='analytics') loadAnalytics(); if(cur==='intakes') loadIntakes(); }
+
+/* ---- Intakes inbox (new-client forms → one-tap onboarding) ---- */
+var _intakes=[];
+function vIntakes(){
+  if(!cloud) return '<div class="topbar"><div><h1>Intakes</h1></div></div><div class="empty">Log in with cloud sync to see client intakes from tbsol.net/start.</div>';
+  return '<div class="topbar"><div><h1>Intakes</h1><p class="sub">New-client forms from /start — convert them to clients in one tap</p></div></div><div id="inkBody"><div class="empty">Loading…</div></div>';
+}
+function loadIntakes(){
+  if(!cloud) return;
+  supa.from('intakes').select('*').order('created_at',{ascending:false}).limit(100).then(function(r){
+    var el=document.getElementById('inkBody'); if(!el) return;
+    if(r.error){ el.innerHTML='<div class="empty">Could not load — run hq/storage-setup.sql in Supabase, then reload.</div>'; return; }
+    _intakes=r.data||[];
+    if(!_intakes.length){ el.innerHTML='<div class="empty">No intakes yet. Send new clients to tbsol.net/start — their form lands here.</div>'; return; }
+    el.innerHTML='<div class="card" style="padding:4px 4px"><table><thead><tr><th>Business</th><th class="hide-sm">Wants</th><th class="hide-sm">Budget</th><th>Status</th><th></th></tr></thead><tbody>'
+      + _intakes.map(function(x){
+          var done=x.status==='Converted';
+          return '<tr'+(done?' class="done"':'')+'><td><b>'+esc(x.business||x.name||'—')+'</b><br><small style="color:var(--muted)">'+esc(x.name||'')+' · '+esc(x.email||'')+'</small></td>'
+            +'<td class="hide-sm">'+esc(x.interest||'')+'<br><small style="color:var(--muted)">'+esc((x.about||'').slice(0,80))+'</small></td>'
+            +'<td class="hide-sm">'+esc(x.budget||'')+'<br><small style="color:var(--muted)">'+esc(x.timeline||'')+'</small></td>'
+            +'<td><span class="pill'+(done?'':' due')+'">'+esc(x.status||'New')+'</span></td>'
+            +'<td style="text-align:right">'+(done?'':'<button class="btn sm primary" onclick="convertIntake('+x.id+')">→ Client</button>')+'</td></tr>';
+        }).join('')
+      +'</tbody></table></div>';
+  });
+}
+function convertIntake(id){
+  var x=_intakes.filter(function(i){return i.id===id;})[0]; if(!x) return;
+  if(state.clients.some(function(c){return c.email && c.email===x.email;})){ alert('A client with this email already exists.'); return; }
+  var o={ id:uid(), business:x.business||'', name:x.name||'', phone:x.phone||'', email:x.email||'',
+    project:x.interest||'', status:'Onboarding', value:'', paylink:'', dep:'unpaid', bal:'unpaid',
+    note:['About: '+(x.about||''),'Wants: '+(x.goal||''),'Budget: '+(x.budget||''),'Timeline: '+(x.timeline||''),'Style: '+(x.style||''),'Notes: '+(x.notes||'')].join('\n'),
+    createdAt:Date.now() };
+  state.clients.unshift(o); save('clients'); upsertRow('clients',o);
+  supa.from('intakes').update({status:'Converted'}).eq('id',id).then(function(){ loadIntakes(); });
+  alert('Client created for '+(x.business||x.name)+'! They can now log into the portal with '+x.email+'. Open Clients to add their payment link.');
+}
 
 /* ---- Requests (client tickets) ---- */
 var TICKET_STATUS=['New','In progress','Waiting on client','Done'];
@@ -305,7 +343,7 @@ var PLATFORMS=['Instagram','Facebook','TikTok','Google Business','LinkedIn','X']
 function vSocial(){
   var rows=state.posts.slice().sort(function(a,b){return (a.post_date||'9')<(b.post_date||'9')?-1:1;});
   return '<div class="topbar"><div><h1>Social</h1><p class="sub">Plan posts → draft → schedule → mark posted. Need ideas? Use Marketing Tools → Content ideas.</p></div>'
-    +'<button class="btn primary" onclick="addPost()">+ New post</button></div>'
+    +'<div style="display:flex;gap:10px"><button class="btn" onclick="openAutoPlan()">⚡ Plan my month</button><button class="btn primary" onclick="addPost()">+ New post</button></div></div>'
     +(rows.length? '<div class="card" style="padding:4px 4px"><table><thead><tr><th>Post</th><th class="hide-sm">Platform</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody>'
       + rows.map(function(p){
           return '<tr><td style="max-width:340px"><b>'+esc((p.content||'').slice(0,90))+((p.content||'').length>90?'…':'')+'</b></td>'
@@ -340,6 +378,23 @@ function savePost(id){
 function setPostStatus(id,v){ state.posts=state.posts.map(function(x){return x.id===id?Object.assign(x,{status:v}):x;}); save('posts'); upsertRow('posts', state.posts.filter(function(x){return x.id===id;})[0]); }
 function delPost(id){ if(!confirm('Delete this post?'))return; state.posts=state.posts.filter(function(x){return x.id!==id;}); save('posts'); removeRow('posts',id); closeModal(); render(); }
 function copyPost(id){ var p=state.posts.filter(function(x){return x.id===id;})[0]; if(p&&navigator.clipboard) navigator.clipboard.writeText(p.content||''); var b=event.target; var o=b.textContent; b.textContent='✓'; setTimeout(function(){b.textContent=o;},1200); }
+function openAutoPlan(){
+  openModal('<h3>⚡ Plan a month of posts</h3><p class="sub">Creates 12 drafted posts, spread over the next 30 days across Instagram, Facebook, and Google — then you just tweak and post.</p>'
+    +'<label class="f">Whose posts? (business name for the captions)</label><input id="ap_b" placeholder="e.g. TB Solutions, Joe\'s Pizza...">'
+    +'<div class="modal-actions"><button class="btn primary" onclick="runAutoPlan()">Generate my month</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>');
+}
+function runAutoPlan(){
+  var b=val('ap_b')||'my business';
+  var ideas=ideasFor(b);
+  var platforms=['Instagram','Facebook','Google Business'];
+  var start=Date.now()+864e5;
+  ideas.forEach(function(x,i){
+    var o={ id:uid(), content:x[1].replace(/^.*?Caption: /,'').replace(/[“”]/g,''), platform:platforms[i%3], status:'Drafted',
+      post_date:new Date(start+Math.round(i*2.5)*864e5).toISOString().slice(0,10) };
+    state.posts.unshift(o); upsertRow('posts',o);
+  });
+  save('posts'); closeModal(); render();
+}
 
 /* ---- My Tools launchpad ---- */
 var TOOLGROUPS=[
@@ -446,10 +501,21 @@ function addLead(){ openModal(leadForm({stage:'New'})); }
 function editLead(id){ openModal(leadForm(state.leads.filter(function(x){return x.id===id;})[0])); }
 function saveLead(id){
   var o={ name:val('l_name'),business:val('l_business'),phone:val('l_phone'),email:val('l_email'),stage:val('l_stage'),source:val('l_source'),followup:val('l_followup'),note:val('l_note') };
+  // automation: new leads that aren't closed get a follow-up date 2 days out so nothing slips
+  if(!id && !o.followup && o.stage!=='Won' && o.stage!=='Lost'){ o.followup=new Date(Date.now()+2*864e5).toISOString().slice(0,10); }
   if(id){ state.leads=state.leads.map(function(x){return x.id===id?Object.assign(x,o):x;}); }
   else { o.id=uid(); o.createdAt=Date.now(); state.leads.unshift(o); n8nSend(Object.assign({source:'CRM new lead',ts:new Date().toISOString()},o)); }
   save('leads'); upsertRow('leads', state.leads.filter(function(x){return x.id===(id||o.id);})[0]);
   closeModal(); render();
+  // automation: a lead marked Won becomes a client in one tap
+  if(o.stage==='Won' && !state.clients.some(function(c){return (o.email&&c.email===o.email)||(o.business&&c.business===o.business);})){
+    if(confirm('🎉 '+(o.business||o.name||'This lead')+' is Won! Create their client record now?')){
+      var nc={ id:uid(), business:o.business||'', name:o.name||'', phone:o.phone||'', email:o.email||'',
+        project:'', status:'Onboarding', value:'', paylink:'', dep:'unpaid', bal:'unpaid', note:o.note||'', createdAt:Date.now() };
+      state.clients.unshift(nc); save('clients'); upsertRow('clients',nc);
+      alert('Client created. Open Clients to add their project, value, and payment link.');
+    }
+  }
 }
 function delLead(id){ if(!confirm('Delete this lead?'))return; state.leads=state.leads.filter(function(x){return x.id!==id;}); save('leads'); removeRow('leads',id); closeModal(); render(); }
 
@@ -478,7 +544,8 @@ function clientForm(c){ c=c||{};
     +'<div class="row2"><div><label class="f">Deposit</label><select id="c_dep"><option'+(c.dep!=='paid'?' selected':'')+' value="unpaid">Unpaid</option><option'+(c.dep==='paid'?' selected':'')+' value="paid">Paid ✓</option></select></div>'
     +'<div><label class="f">Balance</label><select id="c_bal"><option'+(c.bal!=='paid'?' selected':'')+' value="unpaid">Unpaid</option><option'+(c.bal==='paid'?' selected':'')+' value="paid">Paid ✓</option></select></div></div>'
     +'<label class="f">Notes</label><textarea id="c_note">'+esc(c.note)+'</textarea>'
-    +'<div class="modal-actions"><button class="btn primary" onclick="saveClient(\''+(c.id||'')+'\')">Save</button>'
+    +'<div class="modal-actions" style="flex-wrap:wrap"><button class="btn primary" onclick="saveClient(\''+(c.id||'')+'\')">Save</button>'
+    +(c.id&&c.email?'<button class="btn" onclick="openUpdateComposer(\''+c.id+'\')">📣 Post update</button>':'')
     +(c.id&&c.paylink?'<button class="btn" onclick="copyPayMsg(\''+c.id+'\')">💳 Copy payment text</button>':'')
     +(c.id?'<button class="btn danger" onclick="delClient(\''+c.id+'\')">Delete</button>':'')
     +'<button class="btn ghost" onclick="closeModal()">Cancel</button></div>';
@@ -493,6 +560,23 @@ function saveClient(id){
   closeModal(); render();
 }
 function setClientStatus(id,v){ state.clients=state.clients.map(function(x){return x.id===id?Object.assign(x,{status:v}):x;}); save('clients'); upsertRow('clients', state.clients.filter(function(x){return x.id===id;})[0]); }
+function openUpdateComposer(id){
+  var c=state.clients.filter(function(x){return x.id===id;})[0]; if(!c) return;
+  if(!cloud){ alert('Log in with cloud sync to post portal updates.'); return; }
+  openModal('<h3>📣 Update for '+esc(c.business||c.name)+'</h3><p class="sub">Shows up instantly in their client portal under “Updates from Nick.”</p>'
+    +'<label class="f">Title</label><input id="u_title" placeholder="Design draft is ready!">'
+    +'<label class="f">The update</label><textarea id="u_body" style="min-height:100px" placeholder="Quick plain-English progress note..."></textarea>'
+    +'<div class="modal-actions"><button class="btn primary" onclick="postUpdate(\''+id+'\')">Post to portal</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>');
+}
+function postUpdate(id){
+  var c=state.clients.filter(function(x){return x.id===id;})[0]; if(!c||!cloud) return;
+  var t=val('u_title'), b=val('u_body');
+  if(!b){ return; }
+  supa.from('updates').insert({client_email:c.email, title:t||'Update', body:b}).then(function(r){
+    if(r.error){ alert('Could not post: '+r.error.message); return; }
+    closeModal(); alert('Posted! '+(c.name||'They')+' will see it in the portal.');
+  });
+}
 function copyPayMsg(id){
   var c=state.clients.filter(function(x){return x.id===id;})[0]; if(!c||!c.paylink) return;
   var msg='Hi '+(c.name||'')+'! Here\'s your secure payment link for '+(c.project||'your project')+(c.value?' ($'+c.value+')':'')+':\n'+c.paylink+'\nThanks! — Nick, TB Solutions';
@@ -571,9 +655,8 @@ function genKW(){
   out=out.filter(function(v,i,a){return a.indexOf(v)===i;});
   document.getElementById('kw_out').innerHTML='<div class="out" id="kw_res">'+out.join('\n')+'</div>'+copyBtn('kw_res');
 }
-function genContent(){
-  var b=(val('ct_b')||'your business').trim();
-  var ideas=[
+function ideasFor(b){
+  return [
     ['Before & after','Show a before/after of your work. Caption: “Swipe to see the transformation 👀 This is what a fresh look does for '+b+'.”'],
     ['Meet the owner','A photo of you + your story. Caption: “Hi, I’m the face behind '+b+'. Here’s why I do what I do.”'],
     ['Quick tip','One helpful tip your customers don’t know. Caption: “Save this 📌 One thing most people get wrong…”'],
@@ -587,6 +670,10 @@ function genContent(){
     ['This or that','Fun poll for your audience. Caption: “Help me settle this 👇 Which do you prefer?”'],
     ['Call to action','Straight ask. Caption: “Ready to get started? Book a free call — link in bio.”']
   ];
+}
+function genContent(){
+  var b=(val('ct_b')||'your business').trim();
+  var ideas=ideasFor(b);
   document.getElementById('ct_out').innerHTML='<div class="out" id="ct_res">'+ideas.map(function(x,i){return (i+1)+'. '+x[0]+'\n   '+x[1];}).join('\n\n')+'</div>'+copyBtn('ct_res');
 }
 function genOutreach(){

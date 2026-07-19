@@ -1,0 +1,77 @@
+{
+  "name": "TB — Daily follow-up reminder (8am)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Daily follow-up reminder\nEvery morning at 8am this checks your CRM for leads whose follow-up date is today or overdue, and emails you the call list.\n\n### Setup\n1. Open the **Get due leads** node → in Header Auth, replace PASTE_SERVICE_KEY (both headers) with your Supabase **service_role** key (Supabase → Settings → API Keys). It lives ONLY here in n8n.\n2. Open the **Email the list** node → attach your email credential.\n3. Save → flip **Active**.",
+        "height": 300,
+        "width": 360
+      },
+      "id": "note1",
+      "name": "Read me",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-120, 40]
+    },
+    {
+      "parameters": {
+        "rule": { "interval": [ { "field": "days", "triggerAtHour": 8 } ] }
+      },
+      "id": "sched1",
+      "name": "Every day 8am",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [280, 300]
+    },
+    {
+      "parameters": {
+        "url": "=https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/leads?select=name,business,phone,email,stage,followup&followup=lte.{{ $now.toFormat('yyyy-MM-dd') }}&stage=not.in.(Won,Lost)&order=followup.asc",
+        "options": {},
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "PASTE_SERVICE_KEY" },
+            { "name": "Authorization", "value": "Bearer PASTE_SERVICE_KEY" }
+          ]
+        }
+      },
+      "id": "http1",
+      "name": "Get due leads",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nif (!items.length || !items[0].json || (items.length===1 && Object.keys(items[0].json).length===0)) {\n  return [];\n}\nconst lines = items.map(i => {\n  const l = i.json;\n  return `• ${l.name || '?'} (${l.business || '—'}) — ${l.phone || l.email || 'no contact'} — stage: ${l.stage} — due: ${l.followup}`;\n});\nreturn [{ json: { count: lines.length, list: lines.join('\\n') } }];"
+      },
+      "id": "code1",
+      "name": "Build the list",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [760, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "nikbyrd28@gmail.com",
+        "toEmail": "nikbyrd28@gmail.com",
+        "subject": "=☎️ {{ $json.count }} follow-up{{ $json.count == 1 ? '' : 's' }} due today",
+        "emailFormat": "text",
+        "text": "=Good morning! These leads are due (or overdue) for a follow-up today:\n\n{{ $json.list }}\n\nOpen the CRM: https://tbsol.net/hq\n\nSpeed wins local leads — happy dialing! 🚀",
+        "options": {}
+      },
+      "id": "em1",
+      "name": "Email the list",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1000, 300]
+    }
+  ],
+  "connections": {
+    "Every day 8am": { "main": [[{ "node": "Get due leads", "type": "main", "index": 0 }]] },
+    "Get due leads": { "main": [[{ "node": "Build the list", "type": "main", "index": 0 }]] },
+    "Build the list": { "main": [[{ "node": "Email the list", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {}
+}

@@ -21,3 +21,10 @@ create policy "public read uploads" on storage.objects
   using (bucket_id = 'uploads');
 
 -- No one can overwrite or delete via the public key (immutable uploads).
+
+-- ---------- also: let the admin update intakes (convert / mark done) ----------
+drop policy if exists "admin manages intakes" on public.intakes;
+create policy "admin manages intakes" on public.intakes
+  for update to authenticated
+  using ((auth.jwt()->>'email') = 'nikbyrd28@gmail.com')
+  with check ((auth.jwt()->>'email') = 'nikbyrd28@gmail.com');
