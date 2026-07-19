@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "content": "## VoomLux lead machine\nLeads come from tbsol.net/clients/voomlux (or any form posting to this webhook).\n\nWhat happens automatically:\n1. VoomLux gets an instant lead alert (you're CC'd)\n2. The lead gets an instant \"got it\" reply\n3. 2 days later the lead gets a friendly follow-up nudge\n\n### Setup\n1. Replace CLIENT_EMAIL_HERE in the two marked nodes with VoomLux's real email.\n2. Attach your email credential on all 3 Email nodes.\n3. Save → flip **Active**.\n\nLead page to give the client: https://tbsol.net/clients/voomlux",
+        "content": "## VoomLux lead machine\nRide requests come from tbsol.net/clients/voomlux (or any form posting to this webhook).\n\nWhat happens automatically:\n1. VoomLux gets an instant lead alert (you're CC'd)\n2. The lead gets an instant \"got it\" reply\n3. 2 days later the lead gets a friendly follow-up nudge\n\n### Setup\n1. Replace CLIENT_EMAIL_HERE in the two marked nodes with VoomLux's real email.\n2. Attach your email credential on all 3 Email nodes.\n3. Save → flip **Active**.\n\nLead page to give the client: https://tbsol.net/clients/voomlux",
         "height": 360,
         "width": 380
       },
@@ -31,9 +31,9 @@
         "fromEmail": "nikbyrd28@gmail.com",
         "toEmail": "CLIENT_EMAIL_HERE",
         "ccEmail": "nikbyrd28@gmail.com",
-        "subject": "=🔥 New VoomLux lead: {{ $json.body.name }} — {{ $json.body.service }}",
+        "subject": "=🚘 New ride request: {{ $json.body.name }} — {{ $json.body.service }}",
         "emailFormat": "text",
-        "text": "=New quote request from your website!\n\nName: {{ $json.body.name }}\nPhone: {{ $json.body.phone }}\nEmail: {{ $json.body.email }}\nVehicle: {{ $json.body.vehicle }}\nService: {{ $json.body.service }}\nNotes: {{ $json.body.message }}\n\nReceived: {{ $json.body.ts }}\n\n👉 Call or text them back fast — leads answered within minutes book at much higher rates.\n\n— Automated by TB Solutions",
+        "text": "=New ride request from your booking page!\n\nName: {{ $json.body.name }}\nPhone: {{ $json.body.phone }}\nEmail: {{ $json.body.email }}\nTrip: {{ $json.body.service }}\nPickup: {{ $json.body.pickup }}\nDrop-off: {{ $json.body.dropoff }}\nWhen: {{ $json.body.date }}\nPassengers: {{ $json.body.passengers }}\nNotes: {{ $json.body.message }}\n\nReceived: {{ $json.body.ts }}\n\n👉 Call or text them back fast — riders book whoever confirms first.\n\n— Automated by TB Solutions",
         "options": {}
       },
       "id": "em_client",
@@ -65,7 +65,7 @@
         "toEmail": "={{ $json.body.email }}",
         "subject": "=Got your request, {{ $json.body.name }} ✅ — VoomLux",
         "emailFormat": "text",
-        "text": "=Hi {{ $json.body.name }},\n\nThanks for reaching out to VoomLux! We got your request:\n\nService: {{ $json.body.service }}\nVehicle: {{ $json.body.vehicle }}\n\nWe'll get back to you shortly with your quote and available times. If it's urgent, just reply to this email.\n\nTalk soon,\nThe VoomLux Team",
+        "text": "=Hi {{ $json.body.name }},\n\nThanks for choosing VoomLux! We got your ride request:\n\nTrip: {{ $json.body.service }}\nPickup: {{ $json.body.pickup }}\nDrop-off: {{ $json.body.dropoff }}\nWhen: {{ $json.body.date }}\n\nWe'll confirm your ride and price shortly. If it's urgent, just reply to this email.\n\nRide in style,\nThe VoomLux Team",
         "options": {}
       },
       "id": "em_lead_now",
@@ -91,9 +91,9 @@
       "parameters": {
         "fromEmail": "nikbyrd28@gmail.com",
         "toEmail": "={{ $json.body.email }}",
-        "subject": "=Still want that quote, {{ $json.body.name }}? — VoomLux",
+        "subject": "=Still need that ride, {{ $json.body.name }}? — VoomLux",
         "emailFormat": "text",
-        "text": "=Hi {{ $json.body.name }},\n\nJust circling back on your {{ $json.body.service }} request — spots fill up, and we'd love to get your {{ $json.body.vehicle || 'vehicle' }} taken care of.\n\nReply to this email or give us a call and we'll lock in a time that works.\n\n— The VoomLux Team\n(If you've already booked or changed your mind, no worries — just ignore this!)",
+        "text": "=Hi {{ $json.body.name }},\n\nJust circling back on your {{ $json.body.service }} request — our calendar fills up, and we'd love to lock in your ride{{ $json.body.date ? ' for ' + $json.body.date : '' }}.\n\nReply to this email or give us a call and we'll get you confirmed.\n\n— The VoomLux Team\n(Already sorted? No worries — just ignore this!)",
         "options": {}
       },
       "id": "em_lead_followup",

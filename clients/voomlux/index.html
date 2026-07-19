@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex" />
-<title>Get a Quote — VoomLux</title>
+<title>Book Your Ride — VoomLux Luxury Transport</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230a0a0a'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-weight='900' font-size='26' fill='%23d8b96a'%3EVL%3C/text%3E%3C/svg%3E" />
 <style>
   :root{--gold:#d8b96a;--gold2:#f0d79a;--text:#f5f2ea;--muted:#9a958a;--line:rgba(216,185,106,.25);--bg:#0a0a0a}
@@ -39,9 +39,9 @@
 <body>
 <div class="wrap">
   <div class="brand">VOOM<span>LUX</span></div>
-  <div class="tag">Premium detailing &amp; care</div>
-  <h1>Get your <em>free quote</em>.</h1>
-  <p class="lead">Tell us about your vehicle and what you're looking for — you'll hear back fast with a price and available times.</p>
+  <div class="tag">Luxury black car &amp; transport service</div>
+  <h1>Book your <em>ride</em>.</h1>
+  <p class="lead">Tell us where you're headed — you'll hear back fast with your price and confirmation.</p>
   <div class="card">
     <form id="f">
       <div class="row">
@@ -49,26 +49,33 @@
         <div><label>Phone <span class="req">*</span></label><input name="phone" type="tel" required autocomplete="tel"></div>
       </div>
       <label>Email</label><input name="email" type="email" autocomplete="email">
-      <label>Vehicle</label><input name="vehicle" placeholder="Year, make & model">
-      <label>Service <span class="req">*</span></label>
+      <label>Trip type <span class="req">*</span></label>
       <select name="service" required>
-        <option value="" disabled selected>What do you need?</option>
-        <option>Full detail (interior + exterior)</option>
-        <option>Interior detail</option>
-        <option>Exterior detail</option>
-        <option>Ceramic coating</option>
-        <option>Paint correction</option>
-        <option>Something else / not sure</option>
+        <option value="" disabled selected>What kind of ride?</option>
+        <option>Airport transfer</option>
+        <option>Corporate / executive travel</option>
+        <option>Wedding / special event</option>
+        <option>Night out</option>
+        <option>Long distance trip</option>
+        <option>Hourly / as-directed</option>
       </select>
-      <label>Anything else?</label><textarea name="message" placeholder="Condition, timing, questions..."></textarea>
+      <div class="row">
+        <div><label>Pickup location</label><input name="pickup" placeholder="Address or area"></div>
+        <div><label>Drop-off</label><input name="dropoff" placeholder="Where to?"></div>
+      </div>
+      <div class="row">
+        <div><label>Date &amp; time</label><input name="date" placeholder="e.g. Fri 7/25, 6pm"></div>
+        <div><label>Passengers</label><input name="passengers" type="number" min="1" placeholder="How many?"></div>
+      </div>
+      <label>Anything else?</label><textarea name="message" placeholder="Flight number, special requests, questions..."></textarea>
       <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
-      <button type="submit" id="btn">Request my quote</button>
+      <button type="submit" id="btn">Request my ride</button>
       <p class="fine">No spam — your info goes straight to the VoomLux team.</p>
     </form>
     <div class="ok" id="ok">
       <div class="tick">✓</div>
       <h1 style="font-size:24px">Request received!</h1>
-      <p class="lead">The VoomLux team has your details and will reach out shortly with your quote. Talk soon!</p>
+      <p class="lead">The VoomLux team has your trip details and will confirm your ride and price shortly.</p>
     </div>
   </div>
 </div>
