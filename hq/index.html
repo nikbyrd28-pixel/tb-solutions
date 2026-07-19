@@ -242,7 +242,11 @@ function loadRequests(){
           var urgent=/urgent/i.test(t.priority||'');
           return '<tr><td><b>'+esc(t.business||t.name||'—')+'</b><br><small style="color:var(--muted)">'+esc(t.email||'')+'</small></td>'
             +'<td>'+esc(t.ticket_type||'')+'</td>'
-            +'<td class="hide-sm" style="max-width:320px">'+esc((t.details||'').slice(0,140))+((t.details||'').length>140?'…':'')+(t.attachment?'<br><a href="'+esc(t.attachment)+'" target="_blank" rel="noopener">attachment</a>':'')+'</td>'
+            +'<td class="hide-sm" style="max-width:320px">'+esc((t.details||'').slice(0,140))+((t.details||'').length>140?'…':'')
+            +(t.attachment? (/\.(png|jpe?g|gif|webp)(\?|$)/i.test(t.attachment)
+                ? '<br><a href="'+esc(t.attachment)+'" target="_blank" rel="noopener"><img src="'+esc(t.attachment)+'" style="max-width:120px;max-height:90px;border-radius:8px;margin-top:6px;border:1px solid var(--line2)" loading="lazy"></a>'
+                : '<br><a href="'+esc(t.attachment)+'" target="_blank" rel="noopener">📎 attachment</a>') : '')
+            +'</td>'
             +'<td><span class="pill '+(urgent?'over':'')+'">'+esc(t.priority||'Normal')+'</span></td>'
             +'<td><select class="status-sel" onchange="setTicketStatus('+t.id+',this.value)">'+TICKET_STATUS.map(function(s){return '<option'+(t.status===s?' selected':'')+'>'+s+'</option>';}).join('')+'</select></td></tr>';
         }).join('')

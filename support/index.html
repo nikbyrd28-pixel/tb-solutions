@@ -69,7 +69,8 @@
       <select name="priority"><option>Normal</option><option>Low — whenever</option><option>Urgent — site is down / broken</option></select>
       <label>Describe it <span class="req">*</span></label>
       <textarea name="details" required placeholder="What's happening, what you'd like changed, or your idea. The more detail the better."></textarea>
-      <label>Link to a screenshot or file (optional)</label><input name="attachment" placeholder="Paste a link (Google Drive, Dropbox, image URL)">
+      <label>Add a picture or file (optional)</label><input type="file" id="fileInp" accept="image/*,.pdf,.doc,.docx,.txt,.zip">
+      <label>…or paste a link (optional)</label><input name="attachment" placeholder="Google Drive, Dropbox, image URL">
       <input type="hidden" name="type" value="support-ticket">
       <input type="hidden" name="status" value="New">
       <input type="hidden" name="_subject" value="New support ticket — TB Solutions">
@@ -88,12 +89,27 @@
 <script>
 var N8N='https://n8n-fouz.srv1786777.hstgr.cloud/webhook/12eeac52-a592-4988-b61a-2c2a16baa388';
 var f=document.getElementById('f');
+var SUPA='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var AKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+function uploadFile(file){
+  if(!file) return Promise.resolve('');
+  if(file.size>10*1024*1024){ alert('File is over 10MB — please pick a smaller one or paste a link instead.'); return Promise.resolve(''); }
+  var safe=(file.name||'file').replace(/[^a-zA-Z0-9._-]/g,'_').slice(-60);
+  var path='tickets/'+Date.now()+'-'+Math.random().toString(36).slice(2,7)+'-'+safe;
+  return fetch(SUPA+'/storage/v1/object/uploads/'+path,{method:'POST',headers:{apikey:AKEY,Authorization:'Bearer '+AKEY,'Content-Type':file.type||'application/octet-stream','x-upsert':'false'},body:file})
+    .then(function(r){ return r.ok ? SUPA+'/storage/v1/object/public/uploads/'+path : ''; })
+    .catch(function(){ return ''; });
+}
 f.addEventListener('submit',function(e){
   if(f._honey.value) return;
   e.preventDefault();
   var btn=document.getElementById('btn'); btn.disabled=true; btn.textContent='Sending...';
   var data={}; new FormData(f).forEach(function(v,k){ if(k[0]!=='_') data[k]=v; });
   data.ts=new Date().toISOString(); data.source='support page';
+  var fileEl=document.getElementById('fileInp');
+  uploadFile(fileEl&&fileEl.files[0]).then(function(url){ if(url) data.attachment=url; finishSubmit(data); });
+});
+function finishSubmit(data){
   try{ var b=new URLSearchParams(); Object.keys(data).forEach(function(k){ b.append(k,data[k]==null?'':data[k]); }); fetch(N8N,{method:'POST',mode:'no-cors',body:b}).catch(function(){}); }catch(e2){}
   // save ticket into the TB Command database
   try{ var K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
@@ -102,7 +118,7 @@ f.addEventListener('submit',function(e){
   fetch('https://formsubmit.co/ajax/nikbyrd28@gmail.com',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(data)})
     .then(function(r){return r.json();}).catch(function(){})
     .then(function(){ f.style.display='none'; document.getElementById('ok').classList.add('show'); window.scrollTo(0,0); });
-});
+}
 </script>
 <script>(function(){try{var K="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro";fetch("https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/pageviews",{method:"POST",headers:{apikey:K,Authorization:"Bearer "+K,"Content-Type":"application/json",Prefer:"return=minimal"},body:JSON.stringify({path:location.pathname,ref:document.referrer||"",ua:(navigator.userAgent||"").slice(0,120),w:innerWidth})}).catch(function(){});}catch(e){}})();</script>
 </body>

@@ -84,7 +84,8 @@
         <div><label>How urgent?</label><select id="t_pri"><option>Normal</option><option>Low — whenever</option><option>Urgent — site is down / broken</option></select></div>
       </div>
       <label>Describe it</label><textarea id="t_details" placeholder="Tell me what you need..."></textarea>
-      <label>Link to a screenshot (optional)</label><input id="t_att" placeholder="Paste a link">
+      <label>Add a picture or file (optional)</label><input type="file" id="t_file" accept="image/*,.pdf,.doc,.docx,.txt,.zip">
+      <label>…or paste a link (optional)</label><input id="t_att" placeholder="Paste a link">
       <button class="btn full" id="tkBtn" onclick="sendTicket()">Send to Nick →</button>
       <p class="msg" id="tkMsg"></p>
     </div>
@@ -174,18 +175,34 @@ function loadTickets(){
     }).join('');
   });
 }
+function uploadFile(file){
+  if(!file) return Promise.resolve('');
+  if(file.size>10*1024*1024){ msg('tkMsg','File is over 10MB — pick a smaller one or paste a link.'); return Promise.resolve(''); }
+  var safe=(file.name||'file').replace(/[^a-zA-Z0-9._-]/g,'_').slice(-60);
+  var path='tickets/'+Date.now()+'-'+Math.random().toString(36).slice(2,7)+'-'+safe;
+  return supa.storage.from('uploads').upload(path,file).then(function(r){
+    if(r.error) return '';
+    return supa.storage.from('uploads').getPublicUrl(path).data.publicUrl||'';
+  }).catch(function(){ return ''; });
+}
 function sendTicket(){
   var details=document.getElementById('t_details').value.trim();
   if(!details){ msg('tkMsg','Tell me what you need first.'); return; }
   var btn=document.getElementById('tkBtn'); btn.disabled=true; btn.textContent='Sending...';
+  var fileEl=document.getElementById('t_file');
+  uploadFile(fileEl&&fileEl.files[0]).then(function(url){ sendTicket2(url); });
+}
+function sendTicket2(fileUrl){
+  var details=document.getElementById('t_details').value.trim();
+  var btn=document.getElementById('tkBtn');
   var row={ name:(myClient&&myClient.name)||'', business:(myClient&&myClient.business)||'', email:user.email, website:'',
     ticket_type:document.getElementById('t_type').value, priority:document.getElementById('t_pri').value,
-    details:details, attachment:document.getElementById('t_att').value.trim() };
+    details:details, attachment:fileUrl||document.getElementById('t_att').value.trim() };
   supa.from('tickets').insert(row).then(function(r){
     btn.disabled=false; btn.textContent='Send to Nick →';
     if(r.error){ msg('tkMsg','Could not send — try again in a minute.'); return; }
     msg('tkMsg','Sent! Nick has been notified. ✓',true);
-    document.getElementById('t_details').value=''; document.getElementById('t_att').value='';
+    document.getElementById('t_details').value=''; document.getElementById('t_att').value=''; var fe=document.getElementById('t_file'); if(fe) fe.value='';
     // also fire n8n so Nick gets the instant email
     try{ var b=new URLSearchParams(); var d=Object.assign({type:'support-ticket',source:'client portal',ts:new Date().toISOString()},row);
       Object.keys(d).forEach(function(k){ b.append(k,d[k]==null?'':d[k]); });
