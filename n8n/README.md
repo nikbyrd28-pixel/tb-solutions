@@ -1,36 +1,57 @@
 # n8n automations for TB Solutions
 
-Ready-to-import workflows. Import → attach your email → flip Active.
+Your full automation suite — import each file, do the small setup, flip Active.
 
-## Workflow 1: Lead Router (`lead-router.json`)
+## The suite (3 workflows)
 
-**What it does automatically, 24/7:**
-- Website lead → emails you instantly ("🔥 New lead")
-- Client intake (`tbsol.net/start`) → emails you + sends the client a welcome email with your booking link
-- Support ticket (`tbsol.net/support`) → emails you (urgent tickets flagged 🔴) + sends the client a "got it" confirmation
+| File | What it does automatically | Runs |
+|---|---|---|
+| **`crm-autopilot.json`** ⭐ | Every website submission handled: leads **saved straight into your CRM** (stage New, follow-up in 2 days) + instant email to you; intakes → email you + welcome email to the client; tickets → email you (urgent flagged) + "got it" to the client; portal signups → prospect alert | On every submission |
+| **`daily-followups.json`** | Emails you the call list — every lead due (or overdue) for follow-up | Daily 8am |
+| **`weekly-report.json`** | "Your week at TB Solutions": new leads, open requests, website visits + a tip | Mondays 8am |
 
-**How to install (5 minutes):**
-1. Open your n8n → **Workflows** → **⋯ (three dots) → Import from File** →
-   pick `lead-router.json` (download it from GitHub first: repo → n8n folder →
-   the file → Download raw).
-2. Your old webhook workflow uses the same address — **deactivate or delete
-   the old one** so they don't clash.
-3. Open each of the 5 **Email** nodes → under *Credential*, click
-   **Create new credential** → easiest is **SMTP with Gmail**:
-   - Host: `smtp.gmail.com`, Port: `465`, SSL: on
-   - User: `nikbyrd28@gmail.com`
-   - Password: a Gmail **App Password** (Google Account → Security →
-     2-Step Verification → App passwords → make one for "n8n")
-   - Save once — then just select that same credential on the other email nodes.
-4. **Save** the workflow, then flip it **Active** (top-right toggle).
-5. Test: submit the form on tbsol.net → you should get the email within seconds.
+> `lead-router.json` is the older version of the autopilot — if you imported
+> it before, **deactivate/delete it** (same webhook address, they'd clash).
 
-> Tip: don't use your normal Gmail password — it won't work. It must be an
-> **App Password** (16 letters, Google generates it).
+## One-time setup (~15 min total)
 
-## Coming next (as you're ready)
-- Save every intake/ticket into Supabase tables automatically (needs your
-  Supabase service key added as an n8n credential — paste it in n8n only,
-  never in chat or code).
-- Follow-up reminder emails on a schedule.
-- Weekly "what happened" digest.
+### 0. Database unlock (2 min)
+Run **`hq/automation-setup.sql`** in Supabase (SQL Editor → paste → Run).
+This lets the autopilot write leads into your CRM.
+
+### 1. Import the workflows
+Download each `.json` from GitHub (repo → n8n folder → file → Download raw).
+In n8n: **Workflows → ⋯ → Import from File** → pick the file. Repeat for all 3.
+
+### 2. Paste your service key (the "master key" — n8n only, never a website)
+Supabase → **Settings → API keys** → copy the **service_role** key.
+Paste it over every `PASTE_SERVICE_KEY` (they're in node headers):
+- crm-autopilot → **Save lead to CRM** node (2 headers)
+- daily-followups → **Get due leads** node (2 headers)
+- weekly-report → all three **Get…** nodes (2 headers each)
+
+### 3. Connect your email (once, reused everywhere)
+Open any Email node → Credential → **Create new (SMTP)**:
+- Host `smtp.gmail.com` · Port `465` · SSL on · User `nikbyrd28@gmail.com`
+- Password = a Gmail **App Password** (Google Account → Security →
+  2-Step Verification → App passwords → create one named "n8n").
+  Your normal Gmail password will NOT work.
+Then select that same credential on every Email node in all 3 workflows.
+
+### 4. Activate
+Save each workflow → flip the **Active** toggle (top-right) on all 3.
+
+## Test it end-to-end (2 min)
+1. Submit the form at the bottom of **tbsol.net** with test info.
+2. Within seconds: email in your inbox ✅
+3. Open **tbsol.net/hq → Leads**: the test lead is sitting in "New" with a
+   follow-up date ✅
+4. n8n → **Executions** tab shows the run ✅ (this is where you "see your
+   automation" working — every firing is logged there)
+
+## Troubleshooting
+- **No email:** Email node credential missing, or Gmail App Password wrong.
+- **Email but no lead in CRM:** service key not pasted in *Save lead to CRM*,
+  or `hq/automation-setup.sql` not run.
+- **Nothing at all:** workflow not Active, or the old lead-router is still
+  Active and stealing the webhook.

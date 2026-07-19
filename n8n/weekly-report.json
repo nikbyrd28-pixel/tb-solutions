@@ -1,0 +1,115 @@
+{
+  "name": "TB — Weekly business report (Mon 8am)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Weekly business report\nEvery Monday 8am: new leads, new intakes, open tickets, and website visits from the last 7 days — one email, plain English.\n\n### Setup\n1. In ALL THREE 'Get…' nodes, replace PASTE_SERVICE_KEY (both headers each) with your Supabase service_role key.\n2. Attach your email credential on the Email node.\n3. Save → flip **Active**.",
+        "height": 280,
+        "width": 360
+      },
+      "id": "note1",
+      "name": "Read me",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-140, 60]
+    },
+    {
+      "parameters": {
+        "rule": { "interval": [ { "field": "weeks", "triggerAtDay": [1], "triggerAtHour": 8 } ] }
+      },
+      "id": "sched1",
+      "name": "Mondays 8am",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "url": "=https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/leads?select=stage&created_at=gte.{{ new Date(Date.now()-7*86400000).toISOString() }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "PASTE_SERVICE_KEY" },
+            { "name": "Authorization", "value": "Bearer PASTE_SERVICE_KEY" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "http_leads",
+      "name": "Get new leads",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/tickets?select=status,priority&status=neq.Done",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "PASTE_SERVICE_KEY" },
+            { "name": "Authorization", "value": "Bearer PASTE_SERVICE_KEY" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "http_tickets",
+      "name": "Get open tickets",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [700, 300]
+    },
+    {
+      "parameters": {
+        "url": "=https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/pageviews?select=id&ts=gte.{{ new Date(Date.now()-7*86400000).toISOString() }}&limit=1000",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "PASTE_SERVICE_KEY" },
+            { "name": "Authorization", "value": "Bearer PASTE_SERVICE_KEY" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "http_views",
+      "name": "Get pageviews",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [920, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "function items(name){ try { return $(name).all().filter(i => i.json && Object.keys(i.json).length); } catch(e){ return []; } }\nconst leads = items('Get new leads');\nconst tickets = items('Get open tickets');\nconst views = items('Get pageviews');\nconst urgent = tickets.filter(t => /urgent/i.test(t.json.priority || '')).length;\nconst lines = [];\nlines.push(`🔥 New leads this week: ${leads.length}`);\nlines.push(`🛟 Open requests: ${tickets.length}${urgent ? ` (⚠️ ${urgent} urgent)` : ''}`);\nlines.push(`👀 Website visits (7 days): ${views.length}${views.length >= 1000 ? '+' : ''}`);\nconst tip = leads.length === 0\n  ? 'No new leads this week — worth a round of outreach or a fresh post. Marketing Tools in your CRM has templates ready.'\n  : 'Leads are coming in — make sure every one gets a fast follow-up. Speed wins.';\nreturn [{ json: { report: lines.join('\\n'), tip } }];"
+      },
+      "id": "code1",
+      "name": "Build report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1140, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "nikbyrd28@gmail.com",
+        "toEmail": "nikbyrd28@gmail.com",
+        "subject": "📊 Your week at TB Solutions",
+        "emailFormat": "text",
+        "text": "=Good morning! Here's your week in numbers:\n\n{{ $json.report }}\n\n💡 {{ $json.tip }}\n\nFull details: https://tbsol.net/hq\n\nHave a great week! 🚀",
+        "options": {}
+      },
+      "id": "em1",
+      "name": "Email the report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1360, 300]
+    }
+  ],
+  "connections": {
+    "Mondays 8am": { "main": [[{ "node": "Get new leads", "type": "main", "index": 0 }]] },
+    "Get new leads": { "main": [[{ "node": "Get open tickets", "type": "main", "index": 0 }]] },
+    "Get open tickets": { "main": [[{ "node": "Get pageviews", "type": "main", "index": 0 }]] },
+    "Get pageviews": { "main": [[{ "node": "Build report", "type": "main", "index": 0 }]] },
+    "Build report": { "main": [[{ "node": "Email the report", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {}
+}
