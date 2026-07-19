@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Finish Setup — TB Solutions</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%235df2e0'/%3E%3Cstop offset='.55' stop-color='%236f9dff'/%3E%3Cstop offset='1' stop-color='%23b98bff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='15' fill='%23070a12'/%3E%3Ctext x='50%25' y='53%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-weight='900' font-size='30' fill='url(%23g)'%3ETB%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--cyan:#5df2e0;--blue:#6f9dff;--violet:#b98bff;--green:#7CFCC6;--text:#eef1ff;--muted:#96a0c4;--line:rgba(150,190,255,.16);--line2:rgba(150,195,255,.36);--grad:linear-gradient(120deg,var(--cyan),var(--blue) 55%,var(--violet))}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Space Grotesk",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.6;
+    background:radial-gradient(circle at 12% -8%,rgba(94,242,224,.10),transparent 36%),radial-gradient(circle at 88% 4%,rgba(185,139,255,.10),transparent 38%),linear-gradient(180deg,#05070f,#03040a);min-height:100vh;padding:26px 16px 60px}
+  .wrap{width:min(560px,100%);margin:auto}
+  h1{font-size:clamp(26px,5vw,34px);letter-spacing:-.02em;margin:0 0 6px}
+  .lead{color:var(--muted);margin:0 0 8px;font-size:15px}
+  .bar{height:10px;border-radius:999px;background:rgba(150,190,255,.1);margin:16px 0 26px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--grad);width:0%;transition:width .4s;border-radius:999px}
+  .step{background:linear-gradient(160deg,rgba(150,190,255,.07),rgba(150,190,255,.02));border:1px solid var(--line2);border-radius:20px;padding:20px;margin-bottom:14px}
+  .step.done{opacity:.55}
+  .step h2{display:flex;align-items:center;gap:12px;font-size:17px;margin:0 0 8px}
+  .n{flex:0 0 30px;height:30px;border-radius:50%;background:var(--grad);color:#03040a;display:grid;place-items:center;font-weight:900;font-size:14px}
+  .step.done .n{background:var(--green)}
+  .step p{color:var(--muted);font-size:14px;margin:0 0 12px}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;background:var(--grad);color:#03040a;border-radius:999px;padding:14px;font:inherit;font-weight:800;font-size:15px;cursor:pointer;text-decoration:none;margin-bottom:8px}
+  .btn.ghost{background:none;border:1px solid var(--line2);color:var(--text);font-weight:700}
+  .ok{color:var(--green);font-weight:700;font-size:13px;display:none;text-align:center;margin:4px 0}
+  .donebox{display:flex;align-items:center;gap:10px;margin-top:10px;color:var(--muted);font-size:14px;cursor:pointer;user-select:none}
+  .donebox input{width:20px;height:20px;accent-color:#5df2e0}
+  .mini{font-size:13px;color:var(--muted);margin:10px 0 0;line-height:1.6}
+  .mini b{color:var(--text)}
+  .tag{display:inline-block;font-size:11px;font-weight:800;border-radius:999px;padding:2px 9px;background:rgba(94,242,224,.14);color:var(--cyan);margin-left:6px}
+  .foot{text-align:center;color:var(--muted);font-size:13px;margin-top:24px}
+  .foot a{color:var(--cyan)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Finish setup 🏁</h1>
+  <p class="lead">One step at a time. Do a step, tap “Mark done,” move on. Your progress saves on this phone.</p>
+  <div class="bar"><i id="prog"></i></div>
+
+  <div class="step" data-s="1">
+    <h2><span class="n">1</span> Set up the database <span class="tag">5 min</span></h2>
+    <p>Two taps and one paste. This turns on file uploads, prospects, and lead automation.</p>
+    <button class="btn" onclick="copySql(this)">📋 Copy the code</button>
+    <div class="ok" id="copied">✓ Copied! Now open the database below, tap in the big box, paste, and hit RUN.</div>
+    <a class="btn ghost" href="https://supabase.com/dashboard/project/qgbjiqdwzgkjkmqyjsmc/sql/new" target="_blank" rel="noopener">🗄️ Open my database → paste → RUN</a>
+    <label class="donebox"><input type="checkbox" onchange="mark(1,this.checked)"> Mark done</label>
+  </div>
+
+  <div class="step" data-s="2">
+    <h2><span class="n">2</span> Make login instant <span class="tag">1 min</span></h2>
+    <p>So clients don't need a confirmation email to get into the portal.</p>
+    <a class="btn ghost" href="https://supabase.com/dashboard/project/qgbjiqdwzgkjkmqyjsmc/auth/providers" target="_blank" rel="noopener">🔓 Open settings</a>
+    <p class="mini">On that page: tap <b>Email</b> → turn <b>OFF</b> “Confirm email” → Save.</p>
+    <label class="donebox"><input type="checkbox" onchange="mark(2,this.checked)"> Mark done</label>
+  </div>
+
+  <div class="step" data-s="3">
+    <h2><span class="n">3</span> Turn on your automations <span class="tag">15 min</span></h2>
+    <p>This is the longest one — worth it. Emails + leads saved automatically, forever.</p>
+    <p class="mini"><b>A.</b> Download these 3 files (tap → then use your browser's Save/Download):</p>
+    <a class="btn ghost" href="https://raw.githubusercontent.com/nikbyrd28-pixel/tb-solutions/main/n8n/crm-autopilot.json" target="_blank" rel="noopener">⬇️ File 1 — CRM Autopilot</a>
+    <a class="btn ghost" href="https://raw.githubusercontent.com/nikbyrd28-pixel/tb-solutions/main/n8n/daily-followups.json" target="_blank" rel="noopener">⬇️ File 2 — Daily follow-ups</a>
+    <a class="btn ghost" href="https://raw.githubusercontent.com/nikbyrd28-pixel/tb-solutions/main/n8n/weekly-report.json" target="_blank" rel="noopener">⬇️ File 3 — Weekly report</a>
+    <p class="mini"><b>B.</b> Open n8n → Workflows → <b>⋯ → Import from File</b> → import each file. Delete the old “Lead Router” workflow if you see one.</p>
+    <a class="btn ghost" href="https://n8n-fouz.srv1786777.hstgr.cloud" target="_blank" rel="noopener">🔗 Open my n8n</a>
+    <p class="mini"><b>C.</b> Get your master key and paste it wherever you see <b>PASTE_SERVICE_KEY</b> (in the “Save lead to CRM” and “Get…” nodes):</p>
+    <a class="btn ghost" href="https://supabase.com/dashboard/project/qgbjiqdwzgkjkmqyjsmc/settings/api-keys" target="_blank" rel="noopener">🔑 Get my service_role key</a>
+    <p class="mini"><b>D.</b> Make a Gmail App Password (needed so n8n can send email — your normal password won't work):</p>
+    <a class="btn ghost" href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener">📧 Make a Gmail App Password</a>
+    <p class="mini">In n8n, open any <b>Email</b> node → Credential → Create new (SMTP): Host <b>smtp.gmail.com</b>, Port <b>465</b>, SSL on, user <b>nikbyrd28@gmail.com</b>, password = the App Password. Then pick that credential on every Email node.</p>
+    <p class="mini"><b>E.</b> Save each workflow and flip <b>Active</b> (top-right toggle) on all 3.</p>
+    <label class="donebox"><input type="checkbox" onchange="mark(3,this.checked)"> Mark done</label>
+  </div>
+
+  <div class="step" data-s="4">
+    <h2><span class="n">4</span> Put your business on Google <span class="tag">30 min</span></h2>
+    <p>The #1 thing for showing up when Chester County searches. Free.</p>
+    <a class="btn ghost" href="https://business.google.com" target="_blank" rel="noopener">📍 Set up Google Business Profile</a>
+    <p class="mini">Add: TB Solutions · West Chester, PA · website <b>tbsol.net</b> · your phone. Then verify when Google asks.</p>
+    <label class="donebox"><input type="checkbox" onchange="mark(4,this.checked)"> Mark done</label>
+  </div>
+
+  <div class="step" data-s="5">
+    <h2><span class="n">5</span> Tell Google about your site <span class="tag">10 min</span></h2>
+    <p>Gets your homepage and guides into Google search.</p>
+    <a class="btn ghost" href="https://search.google.com/search-console" target="_blank" rel="noopener">🔍 Open Search Console</a>
+    <p class="mini">Add property <b>tbsol.net</b> → verify → left menu <b>Sitemaps</b> → type <b>sitemap.xml</b> → Submit.</p>
+    <label class="donebox"><input type="checkbox" onchange="mark(5,this.checked)"> Mark done</label>
+  </div>
+
+  <div class="step" data-s="6">
+    <h2><span class="n">6</span> Safety: reset 4 keys <span class="tag">5 min</span></h2>
+    <p>Some secret keys got shared in chat during the build — reset them so only you hold them.</p>
+    <a class="btn ghost" href="https://dashboard.stripe.com/apikeys" target="_blank" rel="noopener">💳 Stripe → roll the rk_live key</a>
+    <a class="btn ghost" href="https://supabase.com/dashboard/project/qgbjiqdwzgkjkmqyjsmc/settings/api-keys" target="_blank" rel="noopener">🗄️ Supabase → roll the secret key</a>
+    <a class="btn ghost" href="https://supabase.com/dashboard/account/tokens" target="_blank" rel="noopener">🔑 Supabase → delete the access token</a>
+    <a class="btn ghost" href="https://github.com/settings/tokens" target="_blank" rel="noopener">🐙 GitHub → delete the token</a>
+    <label class="donebox"><input type="checkbox" onchange="mark(6,this.checked)"> Mark done</label>
+  </div>
+
+  <div class="step" data-s="7">
+    <h2><span class="n">7</span> The victory lap 🏆 <span class="tag">2 min</span></h2>
+    <p>Prove the whole machine works:</p>
+    <p class="mini">1. Fill out the form at the bottom of <a href="https://tbsol.net" target="_blank" rel="noopener" style="color:var(--cyan)">tbsol.net</a> with test info.<br>
+    2. Check your email — the 🔥 alert should arrive in seconds.<br>
+    3. Open <a href="https://tbsol.net/hq" target="_blank" rel="noopener" style="color:var(--cyan)">your CRM</a> → Leads — the test lead is sitting there.<br>
+    That's your business running itself.</p>
+    <label class="donebox"><input type="checkbox" onchange="mark(7,this.checked)"> Mark done</label>
+  </div>
+
+  <p class="foot">Stuck on a step? Screenshot what you see and send it to your builder.<br><a href="/hq/">← Back to TB Command</a></p>
+</div>
+<textarea id="sqlbox" readonly style="position:absolute;left:-9999px"></textarea>
+<script>
+var SQL_URL='https://raw.githubusercontent.com/nikbyrd28-pixel/tb-solutions/main/hq/finish.sql';
+var sqlText='';
+fetch(SQL_URL).then(function(r){return r.text();}).then(function(t){sqlText=t;}).catch(function(){});
+function copySql(btn){
+  var show=function(){ document.getElementById('copied').style.display='block'; btn.textContent='✓ Copied'; };
+  var fb=function(){ var ta=document.getElementById('sqlbox'); ta.value=sqlText; ta.style.position='fixed'; ta.style.left='0'; ta.focus(); ta.select(); try{document.execCommand('copy');}catch(e){} ta.style.position='absolute'; ta.style.left='-9999px'; show(); };
+  var go=function(){ if(navigator.clipboard&&sqlText){ navigator.clipboard.writeText(sqlText).then(show,fb); } else fb(); };
+  if(sqlText) go(); else fetch(SQL_URL).then(function(r){return r.text();}).then(function(t){sqlText=t;go();}).catch(function(){alert('Could not load — check your internet and try again.');});
+}
+function mark(n,on){
+  try{ localStorage.setItem('tbsetup_'+n, on?'1':''); }catch(e){}
+  paint();
+}
+function paint(){
+  var total=7, done=0;
+  for(var i=1;i<=total;i++){
+    var on=false; try{ on=!!localStorage.getItem('tbsetup_'+i); }catch(e){}
+    var el=document.querySelector('.step[data-s="'+i+'"]');
+    if(el){ el.classList.toggle('done',on); var cb=el.querySelector('input'); if(cb) cb.checked=on; }
+    if(on) done++;
+  }
+  document.getElementById('prog').style.width=Math.round(done/total*100)+'%';
+}
+paint();
+</script>
+</body>
+</html>

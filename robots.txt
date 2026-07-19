@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /hq/
+Disallow: /setup/
 Disallow: /portal/
 Disallow: /support/
 Disallow: /start/
