@@ -4,26 +4,30 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex" />
-<title>Book Your Ride — VoomLux Luxury Transport</title>
+<title>Corporate & Partner Accounts — VoomLux Luxury Transport</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230a0a0a'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-weight='900' font-size='26' fill='%23d8b96a'%3EVL%3C/text%3E%3C/svg%3E" />
 <style>
-  :root{--gold:#d8b96a;--gold2:#f0d79a;--text:#f5f2ea;--muted:#9a958a;--line:rgba(216,185,106,.25);--bg:#0a0a0a}
+  :root{--gold:#d8b96a;--gold2:#f0d79a;--text:#f5f2ea;--muted:#9a958a;--line:rgba(216,185,106,.25)}
   *{box-sizing:border-box}
   body{margin:0;font-family:"Helvetica Neue",Arial,sans-serif;color:var(--text);line-height:1.6;min-height:100vh;
     background:radial-gradient(circle at 20% -10%,rgba(216,185,106,.14),transparent 40%),radial-gradient(circle at 90% 110%,rgba(216,185,106,.10),transparent 40%),linear-gradient(180deg,#0d0d0d,#070707);
     display:flex;align-items:flex-start;justify-content:center;padding:34px 16px}
-  .wrap{width:min(520px,100%)}
+  .wrap{width:min(560px,100%)}
   .brand{font-weight:900;letter-spacing:.22em;text-transform:uppercase;font-size:18px;margin-bottom:4px}
   .brand span{color:var(--gold)}
   .tag{color:var(--muted);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:26px}
-  h1{font-size:clamp(26px,5.5vw,36px);line-height:1.1;letter-spacing:-.01em;margin:0 0 10px}
+  h1{font-size:clamp(26px,5.5vw,36px);line-height:1.12;letter-spacing:-.01em;margin:0 0 10px}
   h1 em{font-style:normal;color:var(--gold)}
-  .lead{color:var(--muted);margin:0 0 24px;font-size:15px}
+  .lead{color:var(--muted);margin:0 0 20px;font-size:15px}
+  .perks{display:grid;gap:10px;margin:0 0 24px}
+  .perk{display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:13px 16px;font-size:14px}
+  .perk b{color:var(--gold);flex:0 0 auto}
   .card{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:18px;padding:24px}
+  .card h2{font-size:16px;letter-spacing:.1em;text-transform:uppercase;margin:0 0 4px;color:var(--gold)}
   label{display:block;margin:14px 0 0;font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
   label .req{color:var(--gold)}
   input,select,textarea{width:100%;background:rgba(0,0,0,.45);border:1px solid rgba(216,185,106,.3);border-radius:12px;padding:13px 14px;color:var(--text);font:inherit;font-size:15px;margin-top:6px}
-  textarea{min-height:84px;resize:vertical}
+  textarea{min-height:80px;resize:vertical}
   input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(216,185,106,.15)}
   option{color:#0a0a0a}
   .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -39,43 +43,48 @@
 <body>
 <div class="wrap">
   <div class="brand">VOOM<span>LUX</span></div>
-  <div class="tag">Luxury black car &amp; transport service</div>
-  <h1>Book your <em>ride</em>.</h1>
-  <p class="lead">Tell us where you're headed — you'll hear back fast with your price and confirmation.</p>
+  <div class="tag">Corporate &amp; partner accounts</div>
+  <h1>Your clients deserve a <em>flawless arrival</em>.</h1>
+  <p class="lead">VoomLux partners with businesses that can't afford a late car or a shabby first impression — executive travel, guest transport, and event logistics, handled.</p>
+  <div class="perks">
+    <div class="perk"><b>✦</b><span><b style="color:var(--text)">Priority dispatch</b> — partner accounts jump the queue, every time.</span></div>
+    <div class="perk"><b>✦</b><span><b style="color:var(--text)">One monthly invoice</b> — no per-ride cards; clean billing your accounting team will love.</span></div>
+    <div class="perk"><b>✦</b><span><b style="color:var(--text)">Professional chauffeurs</b> — on time, discreet, immaculate vehicles for guests and executives.</span></div>
+    <div class="perk"><b>✦</b><span><b style="color:var(--text)">A direct line</b> — one contact who knows your account, not a call center.</span></div>
+  </div>
   <div class="card">
+    <h2>Open a corporate account</h2>
+    <p class="lead" style="margin-bottom:4px">Tell us about your needs — we'll follow up same-day.</p>
     <form id="f">
       <div class="row">
-        <div><label>Name <span class="req">*</span></label><input name="name" required autocomplete="name"></div>
-        <div><label>Phone <span class="req">*</span></label><input name="phone" type="tel" required autocomplete="tel"></div>
+        <div><label>Company <span class="req">*</span></label><input name="company" required></div>
+        <div><label>Your name <span class="req">*</span></label><input name="name" required autocomplete="name"></div>
       </div>
-      <label>Email</label><input name="email" type="email" autocomplete="email">
-      <label>Trip type <span class="req">*</span></label>
+      <div class="row">
+        <div><label>Email <span class="req">*</span></label><input name="email" type="email" required autocomplete="email"></div>
+        <div><label>Phone</label><input name="phone" type="tel" autocomplete="tel"></div>
+      </div>
+      <label>What do you need? <span class="req">*</span></label>
       <select name="service" required>
-        <option value="" disabled selected>What kind of ride?</option>
-        <option>Airport transfer</option>
-        <option>Corporate / executive travel</option>
-        <option>Wedding / special event</option>
-        <option>Night out</option>
-        <option>Long distance trip</option>
-        <option>Hourly / as-directed</option>
+        <option value="" disabled selected>Choose one</option>
+        <option>Executive / employee travel</option>
+        <option>Client &amp; guest transport</option>
+        <option>Hotel / hospitality partnership</option>
+        <option>Events &amp; weddings</option>
+        <option>Airport program</option>
+        <option>Other / not sure</option>
       </select>
-      <div class="row">
-        <div><label>Pickup location</label><input name="pickup" placeholder="Address or area"></div>
-        <div><label>Drop-off</label><input name="dropoff" placeholder="Where to?"></div>
-      </div>
-      <div class="row">
-        <div><label>Date &amp; time</label><input name="date" placeholder="e.g. Fri 7/25, 6pm"></div>
-        <div><label>Passengers</label><input name="passengers" type="number" min="1" placeholder="How many?"></div>
-      </div>
-      <label>Anything else?</label><textarea name="message" placeholder="Flight number, special requests, questions..."></textarea>
+      <label>Estimated rides per month</label>
+      <select name="passengers"><option value="" disabled selected>Rough guess is fine</option><option>1–5</option><option>5–15</option><option>15–50</option><option>50+</option></select>
+      <label>Anything else?</label><textarea name="message" placeholder="Locations, schedules, special requirements..."></textarea>
       <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
-      <button type="submit" id="btn">Request my ride</button>
-      <p class="fine">No spam — your info goes straight to the VoomLux team.</p>
+      <button type="submit" id="btn">Request account setup</button>
+      <p class="fine">Same-day response, no obligation.</p>
     </form>
     <div class="ok" id="ok">
       <div class="tick">✓</div>
       <h1 style="font-size:24px">Request received!</h1>
-      <p class="lead">The VoomLux team has your trip details and will confirm your ride and price shortly.</p>
+      <p class="lead">The VoomLux team will reach out today to set up your account. Thank you!</p>
     </div>
   </div>
 </div>
@@ -87,12 +96,13 @@ f.addEventListener('submit',function(e){
   if(f._honey.value) return;
   var btn=document.getElementById('btn'); btn.disabled=true; btn.textContent='Sending…';
   var data={}; new FormData(f).forEach(function(v,k){ if(k[0]!=='_') data[k]=v; });
-  data.ts=new Date().toISOString(); data.source='voomlux quote page';
-  var b=new URLSearchParams(); Object.keys(data).forEach(function(k){ b.append(k,data[k]==null?'':data[k]); });
-  // save into TB Command client-CRM
+  data.ts=new Date().toISOString(); data.source='voomlux corporate page';
+  data.service='Corporate: '+(data.service||'');
+  data.message='Company: '+(data.company||'')+' | Est rides/mo: '+(data.passengers||'?')+' | '+(data.message||'');
   try{ var K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
     fetch('https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/client_leads',{method:'POST',headers:{apikey:K,Authorization:'Bearer '+K,'Content-Type':'application/json',Prefer:'return=minimal'},
-      body:JSON.stringify({client:'voomlux',kind:'ride',name:data.name||'',phone:data.phone||'',email:data.email||'',service:data.service||'',pickup:data.pickup||'',dropoff:data.dropoff||'',ride_date:data.date||'',passengers:data.passengers||'',message:data.message||''})}).catch(function(){}); }catch(e3){}
+      body:JSON.stringify({client:'voomlux',kind:'b2b',name:data.name||'',phone:data.phone||'',email:data.email||'',company:data.company||'',service:data.service||'',passengers:data.passengers||'',message:data.message||''})}).catch(function(){}); }catch(e2){}
+  var b=new URLSearchParams(); Object.keys(data).forEach(function(k){ b.append(k,data[k]==null?'':data[k]); });
   fetch(N8N,{method:'POST',mode:'no-cors',body:b}).catch(function(){})
     .then(function(){ f.style.display='none'; document.getElementById('ok').classList.add('show'); window.scrollTo(0,0); });
 });

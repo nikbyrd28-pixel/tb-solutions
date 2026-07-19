@@ -1,0 +1,102 @@
+{
+  "name": "CLIENT: VoomLux — B2B outreach drip (3 emails)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## VoomLux B2B campaign drip\nFeed it one prospect (company, first_name, email) and it runs a 3-touch outreach sequence automatically:\n\n• Day 0 — intro\n• Day 3 — follow-up\n• Day 7 — polite breakup\n\n### How to feed it\nUse the **B2B Campaign** button in TB Command → Client Leads (it posts here), or POST to this webhook:\ncompany, first_name, email\n\n### Setup\n1. Attach your email credential on the 3 Email nodes.\n2. Emails send from the connected mailbox — for best results connect a VoomLux mailbox (or add 'on behalf of VoomLux' stays in the copy).\n3. Save → **Active**.\n\n⚠️ Keep lists small + relevant (hotels, venues, planners, offices). Cold email works when it's personal, not bulk.",
+        "height": 420,
+        "width": 400
+      },
+      "id": "note1",
+      "name": "Read me",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-180, 40]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "voomlux-b2b-drip",
+        "options": {}
+      },
+      "id": "wh1",
+      "name": "Prospect In",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [280, 300],
+      "webhookId": "voomlux-b2b-drip"
+    },
+    {
+      "parameters": {
+        "fromEmail": "nikbyrd28@gmail.com",
+        "toEmail": "={{ $json.body.email }}",
+        "subject": "=A reliable black-car partner for {{ $json.body.company }}",
+        "emailFormat": "text",
+        "text": "=Hi {{ $json.body.first_name }},\n\nQuick intro — I'm with VoomLux, a luxury black-car and transport service. We partner with a small number of businesses like {{ $json.body.company }} that need guest and executive transport handled flawlessly:\n\n• Priority dispatch for partner accounts — never waiting on a car\n• Professional chauffeurs, immaculate vehicles, on time\n• One clean monthly invoice instead of per-ride receipts\n• A direct line to someone who knows your account\n\nWould it be worth a quick call to see if we'd be a fit for {{ $json.body.company }}? Happy to set up a complimentary first ride so you can judge the service yourself.\n\nBest,\nThe VoomLux Team\nvoomlux.com",
+        "options": {}
+      },
+      "id": "em1",
+      "name": "Day 0: intro",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [540, 300]
+    },
+    {
+      "parameters": { "resume": "timeInterval", "amount": 3, "unit": "days" },
+      "id": "w1",
+      "name": "Wait 3 days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [780, 300],
+      "webhookId": "voomlux-b2b-w1"
+    },
+    {
+      "parameters": {
+        "fromEmail": "nikbyrd28@gmail.com",
+        "toEmail": "={{ $json.body.email }}",
+        "subject": "=Re: black-car partner for {{ $json.body.company }}",
+        "emailFormat": "text",
+        "text": "=Hi {{ $json.body.first_name }},\n\nFloating this back up — I know transport is one of those things nobody thinks about until a car is late with a client in it.\n\nThe short version of what partners get with VoomLux: priority dispatch, chauffeurs you'd trust with your best client, and one monthly invoice.\n\nIf there's a better person at {{ $json.body.company }} to talk to about guest or executive travel, point me their way and I'll keep it brief.\n\nBest,\nThe VoomLux Team",
+        "options": {}
+      },
+      "id": "em2",
+      "name": "Day 3: follow-up",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1020, 300]
+    },
+    {
+      "parameters": { "resume": "timeInterval", "amount": 4, "unit": "days" },
+      "id": "w2",
+      "name": "Wait 4 days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1260, 300],
+      "webhookId": "voomlux-b2b-w2"
+    },
+    {
+      "parameters": {
+        "fromEmail": "nikbyrd28@gmail.com",
+        "toEmail": "={{ $json.body.email }}",
+        "subject": "=Closing the loop — {{ $json.body.company }}",
+        "emailFormat": "text",
+        "text": "=Hi {{ $json.body.first_name }},\n\nI'll take the hint and close this out 🙂\n\nIf guest or executive transport ever becomes a headache at {{ $json.body.company }} — a late car, a no-show, a big event to move — keep us in your back pocket: voomlux.com. Partner accounts get priority dispatch and one monthly invoice.\n\nEither way, wishing you a smooth season.\n\nBest,\nThe VoomLux Team",
+        "options": {}
+      },
+      "id": "em3",
+      "name": "Day 7: breakup",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1500, 300]
+    }
+  ],
+  "connections": {
+    "Prospect In": { "main": [[{ "node": "Day 0: intro", "type": "main", "index": 0 }]] },
+    "Day 0: intro": { "main": [[{ "node": "Wait 3 days", "type": "main", "index": 0 }]] },
+    "Wait 3 days": { "main": [[{ "node": "Day 3: follow-up", "type": "main", "index": 0 }]] },
+    "Day 3: follow-up": { "main": [[{ "node": "Wait 4 days", "type": "main", "index": 0 }]] },
+    "Wait 4 days": { "main": [[{ "node": "Day 7: breakup", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {}
+}
