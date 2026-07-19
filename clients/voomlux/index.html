@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Get a Quote — VoomLux</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230a0a0a'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-weight='900' font-size='26' fill='%23d8b96a'%3EVL%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--gold:#d8b96a;--gold2:#f0d79a;--text:#f5f2ea;--muted:#9a958a;--line:rgba(216,185,106,.25);--bg:#0a0a0a}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Helvetica Neue",Arial,sans-serif;color:var(--text);line-height:1.6;min-height:100vh;
+    background:radial-gradient(circle at 20% -10%,rgba(216,185,106,.14),transparent 40%),radial-gradient(circle at 90% 110%,rgba(216,185,106,.10),transparent 40%),linear-gradient(180deg,#0d0d0d,#070707);
+    display:flex;align-items:flex-start;justify-content:center;padding:34px 16px}
+  .wrap{width:min(520px,100%)}
+  .brand{font-weight:900;letter-spacing:.22em;text-transform:uppercase;font-size:18px;margin-bottom:4px}
+  .brand span{color:var(--gold)}
+  .tag{color:var(--muted);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:26px}
+  h1{font-size:clamp(26px,5.5vw,36px);line-height:1.1;letter-spacing:-.01em;margin:0 0 10px}
+  h1 em{font-style:normal;color:var(--gold)}
+  .lead{color:var(--muted);margin:0 0 24px;font-size:15px}
+  .card{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:18px;padding:24px}
+  label{display:block;margin:14px 0 0;font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+  label .req{color:var(--gold)}
+  input,select,textarea{width:100%;background:rgba(0,0,0,.45);border:1px solid rgba(216,185,106,.3);border-radius:12px;padding:13px 14px;color:var(--text);font:inherit;font-size:15px;margin-top:6px}
+  textarea{min-height:84px;resize:vertical}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(216,185,106,.15)}
+  option{color:#0a0a0a}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  button{width:100%;margin-top:20px;border:0;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#0a0a0a;border-radius:999px;padding:15px;font:inherit;font-weight:900;font-size:15px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+  button:disabled{opacity:.6}
+  .fine{color:var(--muted);font-size:12px;margin-top:12px;text-align:center}
+  .ok{display:none;text-align:center;padding:24px 6px}
+  .ok.show{display:block}
+  .tick{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#0a0a0a;display:grid;place-items:center;font-size:30px;font-weight:900;margin:0 auto 16px}
+  @media(max-width:520px){.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">VOOM<span>LUX</span></div>
+  <div class="tag">Premium detailing &amp; care</div>
+  <h1>Get your <em>free quote</em>.</h1>
+  <p class="lead">Tell us about your vehicle and what you're looking for — you'll hear back fast with a price and available times.</p>
+  <div class="card">
+    <form id="f">
+      <div class="row">
+        <div><label>Name <span class="req">*</span></label><input name="name" required autocomplete="name"></div>
+        <div><label>Phone <span class="req">*</span></label><input name="phone" type="tel" required autocomplete="tel"></div>
+      </div>
+      <label>Email</label><input name="email" type="email" autocomplete="email">
+      <label>Vehicle</label><input name="vehicle" placeholder="Year, make & model">
+      <label>Service <span class="req">*</span></label>
+      <select name="service" required>
+        <option value="" disabled selected>What do you need?</option>
+        <option>Full detail (interior + exterior)</option>
+        <option>Interior detail</option>
+        <option>Exterior detail</option>
+        <option>Ceramic coating</option>
+        <option>Paint correction</option>
+        <option>Something else / not sure</option>
+      </select>
+      <label>Anything else?</label><textarea name="message" placeholder="Condition, timing, questions..."></textarea>
+      <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+      <button type="submit" id="btn">Request my quote</button>
+      <p class="fine">No spam — your info goes straight to the VoomLux team.</p>
+    </form>
+    <div class="ok" id="ok">
+      <div class="tick">✓</div>
+      <h1 style="font-size:24px">Request received!</h1>
+      <p class="lead">The VoomLux team has your details and will reach out shortly with your quote. Talk soon!</p>
+    </div>
+  </div>
+</div>
+<script>
+var N8N='https://n8n-fouz.srv1786777.hstgr.cloud/webhook/voomlux-leads';
+var f=document.getElementById('f');
+f.addEventListener('submit',function(e){
+  e.preventDefault();
+  if(f._honey.value) return;
+  var btn=document.getElementById('btn'); btn.disabled=true; btn.textContent='Sending…';
+  var data={}; new FormData(f).forEach(function(v,k){ if(k[0]!=='_') data[k]=v; });
+  data.ts=new Date().toISOString(); data.source='voomlux quote page';
+  var b=new URLSearchParams(); Object.keys(data).forEach(function(k){ b.append(k,data[k]==null?'':data[k]); });
+  fetch(N8N,{method:'POST',mode:'no-cors',body:b}).catch(function(){})
+    .then(function(){ f.style.display='none'; document.getElementById('ok').classList.add('show'); window.scrollTo(0,0); });
+});
+</script>
+</body>
+</html>

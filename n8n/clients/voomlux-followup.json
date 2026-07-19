@@ -1,0 +1,124 @@
+{
+  "name": "CLIENT: VoomLux — lead capture + auto follow-up",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## VoomLux lead machine\nLeads come from tbsol.net/clients/voomlux (or any form posting to this webhook).\n\nWhat happens automatically:\n1. VoomLux gets an instant lead alert (you're CC'd)\n2. The lead gets an instant \"got it\" reply\n3. 2 days later the lead gets a friendly follow-up nudge\n\n### Setup\n1. Replace CLIENT_EMAIL_HERE in the two marked nodes with VoomLux's real email.\n2. Attach your email credential on all 3 Email nodes.\n3. Save → flip **Active**.\n\nLead page to give the client: https://tbsol.net/clients/voomlux",
+        "height": 360,
+        "width": 380
+      },
+      "id": "note1",
+      "name": "Read me",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-160, 60]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "voomlux-leads",
+        "options": {}
+      },
+      "id": "wh1",
+      "name": "VoomLux Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [280, 300],
+      "webhookId": "voomlux-leads"
+    },
+    {
+      "parameters": {
+        "fromEmail": "nikbyrd28@gmail.com",
+        "toEmail": "CLIENT_EMAIL_HERE",
+        "ccEmail": "nikbyrd28@gmail.com",
+        "subject": "=🔥 New VoomLux lead: {{ $json.body.name }} — {{ $json.body.service }}",
+        "emailFormat": "text",
+        "text": "=New quote request from your website!\n\nName: {{ $json.body.name }}\nPhone: {{ $json.body.phone }}\nEmail: {{ $json.body.email }}\nVehicle: {{ $json.body.vehicle }}\nService: {{ $json.body.service }}\nNotes: {{ $json.body.message }}\n\nReceived: {{ $json.body.ts }}\n\n👉 Call or text them back fast — leads answered within minutes book at much higher rates.\n\n— Automated by TB Solutions",
+        "options": {}
+      },
+      "id": "em_client",
+      "name": "Alert VoomLux (EDIT EMAIL)",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [560, 160]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "loose" },
+          "conditions": [
+            { "leftValue": "={{ $json.body.email }}", "rightValue": "", "operator": { "type": "string", "operation": "notEmpty", "singleValue": true } }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if_email",
+      "name": "Lead left an email?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [560, 420]
+    },
+    {
+      "parameters": {
+        "fromEmail": "nikbyrd28@gmail.com",
+        "toEmail": "={{ $json.body.email }}",
+        "subject": "=Got your request, {{ $json.body.name }} ✅ — VoomLux",
+        "emailFormat": "text",
+        "text": "=Hi {{ $json.body.name }},\n\nThanks for reaching out to VoomLux! We got your request:\n\nService: {{ $json.body.service }}\nVehicle: {{ $json.body.vehicle }}\n\nWe'll get back to you shortly with your quote and available times. If it's urgent, just reply to this email.\n\nTalk soon,\nThe VoomLux Team",
+        "options": {}
+      },
+      "id": "em_lead_now",
+      "name": "Instant reply to lead",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [820, 340]
+    },
+    {
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 2,
+        "unit": "days"
+      },
+      "id": "wait1",
+      "name": "Wait 2 days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1060, 340],
+      "webhookId": "voomlux-wait"
+    },
+    {
+      "parameters": {
+        "fromEmail": "nikbyrd28@gmail.com",
+        "toEmail": "={{ $json.body.email }}",
+        "subject": "=Still want that quote, {{ $json.body.name }}? — VoomLux",
+        "emailFormat": "text",
+        "text": "=Hi {{ $json.body.name }},\n\nJust circling back on your {{ $json.body.service }} request — spots fill up, and we'd love to get your {{ $json.body.vehicle || 'vehicle' }} taken care of.\n\nReply to this email or give us a call and we'll lock in a time that works.\n\n— The VoomLux Team\n(If you've already booked or changed your mind, no worries — just ignore this!)",
+        "options": {}
+      },
+      "id": "em_lead_followup",
+      "name": "Day-2 follow-up to lead",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1300, 340]
+    }
+  ],
+  "connections": {
+    "VoomLux Webhook": {
+      "main": [[
+        { "node": "Alert VoomLux (EDIT EMAIL)", "type": "main", "index": 0 },
+        { "node": "Lead left an email?", "type": "main", "index": 0 }
+      ]]
+    },
+    "Lead left an email?": {
+      "main": [
+        [ { "node": "Instant reply to lead", "type": "main", "index": 0 } ],
+        []
+      ]
+    },
+    "Instant reply to lead": { "main": [[{ "node": "Wait 2 days", "type": "main", "index": 0 }]] },
+    "Wait 2 days": { "main": [[{ "node": "Day-2 follow-up to lead", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {}
+}
