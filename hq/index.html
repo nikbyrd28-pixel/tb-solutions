@@ -72,6 +72,12 @@
   .done td{opacity:.5}
   .done .ttl{text-decoration:line-through}
   .empty{color:var(--muted);text-align:center;padding:40px 10px;border:1px dashed var(--line);border-radius:14px}
+  .nbadge{margin-left:auto;background:var(--grad);color:#03040a;border-radius:999px;font-size:11px;font-weight:800;padding:1px 7px;font-style:normal}
+  .gsr{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer}
+  .gsr:hover{background:rgba(150,190,255,.06)}
+  .gsr small{color:var(--muted)}
+  .ai-input{background:rgba(150,190,255,.06);border:1px solid var(--line);border-radius:999px;padding:12px 16px;color:var(--text);font:inherit;font-size:14px}
+  .ai-input:focus{outline:none;border-color:var(--cyan)}
   /* modal */
   .ov{position:fixed;inset:0;background:rgba(2,3,8,.7);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
   .ov.on{display:flex}
@@ -122,9 +128,9 @@
       <button data-view="leads"><span class="ic">◎</span> Leads</button>
       <button data-view="clients"><span class="ic">★</span> Clients</button>
       <button data-view="tasks"><span class="ic">✓</span> Tasks</button>
-      <button data-view="prospects"><span class="ic">🌱</span> Prospects</button>
-      <button data-view="intakes"><span class="ic">📥</span> Intakes</button>
-      <button data-view="requests"><span class="ic">🛟</span> Requests</button>
+      <button data-view="prospects"><span class="ic">🌱</span> Prospects <em class="nbadge" id="nb_prospects" hidden></em></button>
+      <button data-view="intakes"><span class="ic">📥</span> Intakes <em class="nbadge" id="nb_intakes" hidden></em></button>
+      <button data-view="requests"><span class="ic">🛟</span> Requests <em class="nbadge" id="nb_requests" hidden></em></button>
       <button data-view="analytics"><span class="ic">📈</span> Analytics</button>
       <button data-view="social"><span class="ic">📣</span> Social</button>
       <button data-view="tools"><span class="ic">✦</span> Marketing Tools</button>
@@ -263,7 +269,7 @@ function convertProspect(id){
     source:'Portal signup', followup:new Date(Date.now()+2*864e5).toISOString().slice(0,10),
     note:'Created a client portal account on '+(x.created_at?new Date(x.created_at).toLocaleDateString():'the site')+'.', createdAt:Date.now() };
   state.leads.unshift(o); save('leads'); upsertRow('leads',o);
-  supa.from('prospects').update({status:'Added'}).eq('id',id).then(function(){ loadProspects(); });
+  supa.from('prospects').update({status:'Added'}).eq('id',id).then(function(){ loadProspects(); refreshInboxCounts(); });
   alert('Added '+(x.email)+' to your Leads pipeline as a new prospect. Follow up in 2 days!');
 }
 
@@ -300,7 +306,7 @@ function convertIntake(id){
     note:['About: '+(x.about||''),'Wants: '+(x.goal||''),'Budget: '+(x.budget||''),'Timeline: '+(x.timeline||''),'Style: '+(x.style||''),'Notes: '+(x.notes||'')].join('\n'),
     createdAt:Date.now() };
   state.clients.unshift(o); save('clients'); upsertRow('clients',o);
-  supa.from('intakes').update({status:'Converted'}).eq('id',id).then(function(){ loadIntakes(); });
+  supa.from('intakes').update({status:'Converted'}).eq('id',id).then(function(){ loadIntakes(); refreshInboxCounts(); });
   alert('Client created for '+(x.business||x.name)+'! They can now log into the portal with '+x.email+'. Open Clients to add their payment link.');
 }
 
@@ -333,7 +339,7 @@ function loadRequests(){
       +'</tbody></table></div>';
   });
 }
-function setTicketStatus(id,v){ if(!cloud) return; supa.from('tickets').update({status:v}).eq('id',id).then(function(r){ if(r.error) alert('Could not update: '+r.error.message); }); }
+function setTicketStatus(id,v){ if(!cloud) return; supa.from('tickets').update({status:v}).eq('id',id).then(function(r){ if(r.error) alert('Could not update: '+r.error.message); else refreshInboxCounts(); }); }
 
 /* ---- Analytics ---- */
 function vAnalytics(){
@@ -493,18 +499,70 @@ function vDash(){
   dueList.sort(function(a,b){return (a.due||'')<(b.due||'')?-1:1;});
   var due=dueList.filter(function(x){return overdue(x.due)||dueToday(x.due);});
   var pipeline=state.leads.filter(function(l){return l.stage!=='Won'&&l.stage!=='Lost';}).length;
+  // money: parse client values
+  function money(v){ return parseFloat((''+(v||'')).replace(/[^0-9.]/g,''))||0; }
+  var activeVal=0, collected=0, owed=0;
+  state.clients.forEach(function(c){
+    var v=money(c.value); if(!v) return;
+    if(c.status!=='Done') activeVal+=v;
+    if(c.dep==='paid' && c.bal==='paid') collected+=v;
+    else if(c.dep==='paid') { collected+=v/2; owed+=v/2; }
+    else owed+=v;
+  });
+  function fm(n){ return '$'+(n>=1000? (n/1000).toFixed(n%1000?1:0)+'k' : Math.round(n)); }
+  var inbox = cloud ? '<div class="section-h"><h2>New for you</h2></div><div class="grid stat-row" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">'
+    +'<div class="card stat spot" style="cursor:pointer" onclick="goView(\'prospects\')"><b>'+inboxCounts.p+'</b><span>🌱 New prospects</span></div>'
+    +'<div class="card stat spot" style="cursor:pointer" onclick="goView(\'intakes\')"><b>'+inboxCounts.i+'</b><span>📥 New intakes</span></div>'
+    +'<div class="card stat spot" style="cursor:pointer" onclick="goView(\'requests\')"><b>'+inboxCounts.t+'</b><span>🛟 Open requests</span></div></div>' : '';
   return '<div class="topbar"><div><h1>Dashboard</h1><p class="sub">'+new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})+'</p></div>'
-    +'<button class="btn primary" onclick="addLead()">+ New lead</button></div>'
-    +'<div class="grid stat-row">'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" onclick="addTask()">+ Task</button><button class="btn sm" onclick="addClient()">+ Client</button><button class="btn sm primary" onclick="addLead()">+ Lead</button></div></div>'
+    +'<input class="ai-input" id="gsearch" placeholder="🔍 Search leads, clients, tasks, posts…" oninput="doSearch(this.value)" style="width:100%;margin-bottom:6px;border-radius:14px">'
+    +'<div id="gsout"></div>'
+    +'<div class="grid stat-row" style="margin-top:14px">'
     +'<div class="card stat"><b>'+pipeline+'</b><span>Active leads in pipeline</span></div>'
     +'<div class="card stat"><b>'+byStage['Booked']+'</b><span>Booked calls</span></div>'
     +'<div class="card stat"><b>'+activeClients+'</b><span>Active clients</span></div>'
-    +'<div class="card stat"><b>'+openTasks.length+'</b><span>Open tasks</span></div></div>'
+    +'<div class="card stat"><b>'+openTasks.length+'</b><span>Open tasks</span></div>'
+    +'<div class="card stat"><b>'+fm(activeVal)+'</b><span>Active project value</span></div>'
+    +'<div class="card stat"><b>'+fm(owed)+'</b><span>Still to collect</span></div></div>'
+    + inbox
     +'<div class="section-h"><h2>Due today &amp; overdue</h2></div>'
     +(due.length? '<div class="card"><table><tbody>'+due.map(function(x){
         return '<tr><td style="width:90px"><span class="pill '+(overdue(x.due)?'over':'due')+'">'+(overdue(x.due)?'Overdue':'Today')+'</span></td><td><b>'+esc(x.title)+'</b></td><td class="hide-sm" style="color:var(--muted)">'+x.type+'</td><td style="text-align:right;color:var(--muted)">'+fmtDate(x.due)+'</td></tr>';
       }).join('')+'</tbody></table></div>'
       : '<div class="empty">Nothing due. Add a follow-up date to a lead or a task to see it here.</div>');
+}
+
+/* ---- dashboard helpers: nav, inbox counts, global search ---- */
+function goView(v){ cur=v; [].forEach.call(document.querySelectorAll('#nav button'),function(x){x.classList.toggle('on',x.getAttribute('data-view')===v);}); render(); }
+var inboxCounts={p:0,i:0,t:0};
+function refreshInboxCounts(){
+  if(!cloud) return;
+  Promise.all([
+    supa.from('prospects').select('id',{count:'exact',head:true}).eq('status','New'),
+    supa.from('intakes').select('id',{count:'exact',head:true}).eq('status','New'),
+    supa.from('tickets').select('id',{count:'exact',head:true}).neq('status','Done')
+  ]).then(function(rs){
+    inboxCounts={ p:(rs[0]&&rs[0].count)||0, i:(rs[1]&&rs[1].count)||0, t:(rs[2]&&rs[2].count)||0 };
+    setBadge('nb_prospects',inboxCounts.p); setBadge('nb_intakes',inboxCounts.i); setBadge('nb_requests',inboxCounts.t);
+    if(cur==='dashboard') render();
+  });
+}
+function setBadge(id,n){ var e=document.getElementById(id); if(!e) return; if(n>0){ e.textContent=n; e.hidden=false; } else { e.hidden=true; } }
+function doSearch(q){
+  var out=document.getElementById('gsout'); if(!out) return;
+  q=(q||'').trim().toLowerCase();
+  if(q.length<2){ out.innerHTML=''; return; }
+  var hits=[];
+  state.leads.forEach(function(l){ var s=((l.name||'')+' '+(l.business||'')+' '+(l.email||'')+' '+(l.phone||'')).toLowerCase(); if(s.indexOf(q)!==-1) hits.push({t:'Lead · '+(l.stage||''),n:l.name||l.business||l.email,f:function(){editLead(l.id);}}); });
+  state.clients.forEach(function(c){ var s=((c.name||'')+' '+(c.business||'')+' '+(c.email||'')+' '+(c.project||'')).toLowerCase(); if(s.indexOf(q)!==-1) hits.push({t:'Client · '+(c.status||''),n:c.business||c.name||c.email,f:function(){editClient(c.id);}}); });
+  state.tasks.forEach(function(x){ if((x.title||'').toLowerCase().indexOf(q)!==-1) hits.push({t:x.done?'Task · done':'Task',n:x.title,f:function(){goView('tasks');}}); });
+  state.posts.forEach(function(p){ if((p.content||'').toLowerCase().indexOf(q)!==-1) hits.push({t:'Post · '+(p.status||''),n:(p.content||'').slice(0,60),f:function(){editPost(p.id);}}); });
+  if(!hits.length){ out.innerHTML='<p class="hint" style="padding:6px 4px">No matches for “'+esc(q)+'”.</p>'; return; }
+  window._gs=hits.slice(0,8);
+  out.innerHTML='<div class="card" style="padding:6px">'+window._gs.map(function(h,i){
+    return '<div class="gsr" onclick="window._gs['+i+'].f()"><b>'+esc(h.n)+'</b><small>'+esc(h.t)+'</small></div>';
+  }).join('')+'</div>';
 }
 
 /* ---- Leads (kanban) ---- */
@@ -831,6 +889,7 @@ function seedIfFirstLocal(){
 }
 function startApp(){
   if(!cloud){ loadState(); seedIfFirstLocal(); }
+  refreshInboxCounts();
   var foot=document.querySelector('.side .foot');
   if(foot){ foot.innerHTML = cloud
     ? '<b style="color:var(--text)"><span class="cloud-dot"></span>Cloud sync on</b><br>Synced across your devices.<br><button class="btn sm ghost" style="margin-top:10px" onclick="logout()">Log out</button>'
