@@ -157,6 +157,10 @@
    CLOUD SYNC CONFIG — paste your two Supabase values here.
    Leave blank to keep saving on this device only.
    ============================================================ */
+// Optional: paste a free YouTube Data API key to make the Viral Finder fetch
+// real most-viewed videos (console.cloud.google.com → YouTube Data API v3 → API key).
+var YT_KEY = '';
+
 var SUPA_URL = 'https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
 var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
 
@@ -614,6 +618,7 @@ function vTools(){
     +'<div class="tool-tabs" id="ttabs">'
     +'<button data-t="kw" class="on">Local keyword ideas</button>'
     +'<button data-t="content">Content &amp; post ideas</button>'
+    +'<button data-t="viral">Viral video finder</button>'
     +'<button data-t="outreach">Outreach templates</button></div>'
     +'<div id="toolbody"></div>';
 }
@@ -635,6 +640,11 @@ function tool(t){
     el.innerHTML='<p class="hint">Get a month of post ideas tailored to your business — captions included. Use them on Instagram, Facebook, or Google.</p>'
       +'<div class="card"><label class="f">What\'s the business?</label><input id="ct_b" placeholder="e.g. a local bakery, a barber, my web design studio">'
       +'<div style="margin-top:14px"><button class="btn primary" onclick="genContent()">Generate 12 post ideas</button></div><div id="ct_out"></div></div>';
+  } else if(t==='viral'){
+    el.innerHTML='<p class="hint">Type a niche and get: one-tap searches that open each platform pre-loaded to find hot videos, viral hook scripts for that niche'+(YT_KEY?'':', and (optional) live YouTube results if you add a free YouTube API key')+'.</p>'
+      +'<div class="card"><label class="f">Niche</label><input id="vf_n" placeholder="e.g. barber, landscaping, bakery, web design">'
+      +'<div style="margin-top:14px"><button class="btn primary" onclick="genViral()">Find viral videos</button></div>'
+      +'<div id="vf_out"></div></div>';
   } else {
     el.innerHTML='<p class="hint">Copy-and-fill templates for cold outreach. Swap the [brackets] for real details.</p>'
       +'<div class="card"><label class="f">Your name</label><input id="ot_n" placeholder="Nick" value="Nick">'
@@ -685,6 +695,67 @@ function genOutreach(){
     'AFTER A "MAYBE LATER":\nTotally get it, [name] — timing matters. I’ll check back in a few weeks. In the meantime here’s the one thing I’d fix first: [tip]. Talk soon! — '+n
   ];
   document.getElementById('ot_out').innerHTML='<div class="out" id="ot_res">'+t.join('\n\n———\n\n')+'</div>'+copyBtn('ot_res');
+}
+
+function genViral(){
+  var n=(val('vf_n')||'').trim();
+  if(!n){ document.getElementById('vf_out').innerHTML='<p class="hint" style="margin-top:12px">Type a niche first.</p>'; return; }
+  var e=encodeURIComponent(n);
+  var links=[
+    ['▶️ YouTube — most viewed','https://www.youtube.com/results?search_query='+e+'&sp=CAM%3D'],
+    ['🎵 TikTok — top videos','https://www.tiktok.com/search/video?q='+e],
+    ['📸 Instagram Reels','https://www.instagram.com/explore/search/keyword/?q='+encodeURIComponent(n+' reels')],
+    ['📘 Facebook video search','https://www.facebook.com/watch/search/?q='+e],
+    ['𝕏 X — video posts','https://x.com/search?q='+encodeURIComponent(n+' filter:native_video')+'&f=top']
+  ];
+  var hooks=[
+    'POV: you finally found a '+n+' who actually gets it',
+    '3 '+n+' mistakes that are costing you money',
+    'I tested the viral '+n+' hack so you don\'t have to',
+    'What $100 vs $500 gets you ('+n+' edition)',
+    'Day in the life: '+n,
+    'Things nobody tells you before hiring a '+n,
+    'Watch this before you pay for '+n,
+    'The 5-second '+n+' trick everyone\'s copying',
+    'Before & after: '+n+' transformation in 60 seconds',
+    'Myth vs fact: '+n+' edition'
+  ];
+  var html='<div class="section-h" style="margin-top:18px"><h2>Open each platform (pre-searched)</h2></div>'
+    +'<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">'
+    + links.map(function(l){ return '<a class="card spot" href="'+l[1]+'" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;font-weight:700;font-size:14px">'+l[0]+'</a>'; }).join('')
+    +'</div><p class="hint" style="margin-top:10px">Tip: on each platform, look for videos under 30 days old with way more views than the account\'s usual — that\'s the format to copy.</p>'
+    +'<div class="section-h"><h2>Viral hooks for “'+esc(n)+'”</h2></div>'
+    +'<div class="out" id="vf_hooks">'+hooks.map(function(h,i){return (i+1)+'. '+h;}).join('\n')+'</div>'+copyBtn('vf_hooks')
+    +'<div id="vf_yt"></div>';
+  document.getElementById('vf_out').innerHTML=html;
+  if(YT_KEY){ fetchYT(n); }
+  else { document.getElementById('vf_yt').innerHTML='<div class="section-h"><h2>Live YouTube results</h2></div><p class="hint">Optional upgrade: add a free YouTube API key (console.cloud.google.com → enable “YouTube Data API v3” → create API key → send it to your builder) and this section fills with the actual most-viewed recent videos for any niche.</p>'; }
+}
+function fetchYT(n){
+  var box=document.getElementById('vf_yt');
+  box.innerHTML='<div class="section-h"><h2>Live YouTube results</h2></div><p class="hint">Loading…</p>';
+  var after=new Date(Date.now()-30*864e5).toISOString();
+  fetch('https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&order=viewCount&maxResults=10&publishedAfter='+encodeURIComponent(after)+'&q='+encodeURIComponent(n)+'&key='+YT_KEY)
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.error){ box.innerHTML='<div class="section-h"><h2>Live YouTube results</h2></div><p class="hint">YouTube said: '+esc(d.error.message||'error')+'</p>'; return; }
+      var ids=(d.items||[]).map(function(i){return i.id.videoId;}).filter(Boolean);
+      if(!ids.length){ box.innerHTML='<div class="section-h"><h2>Live YouTube results</h2></div><p class="hint">No recent videos found for that niche — try a broader word.</p>'; return; }
+      return fetch('https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id='+ids.join(',')+'&key='+YT_KEY)
+        .then(function(r){return r.json();})
+        .then(function(v){
+          var rows=(v.items||[]).sort(function(a,b){return (+b.statistics.viewCount||0)-(+a.statistics.viewCount||0);});
+          box.innerHTML='<div class="section-h"><h2>Most-viewed on YouTube (last 30 days)</h2></div>'
+            + rows.map(function(x){
+                var views=+x.statistics.viewCount||0;
+                var vtxt=views>=1e6?(views/1e6).toFixed(1)+'M':views>=1e3?(views/1e3).toFixed(0)+'K':''+views;
+                return '<a class="card spot" href="https://www.youtube.com/watch?v='+x.id+'" target="_blank" rel="noopener" style="display:flex;gap:12px;align-items:center;text-decoration:none;color:inherit;margin-bottom:10px">'
+                  +'<img src="'+esc((x.snippet.thumbnails&&x.snippet.thumbnails.default&&x.snippet.thumbnails.default.url)||'')+'" style="width:88px;border-radius:10px" loading="lazy">'
+                  +'<span style="flex:1"><b style="font-size:14px">'+esc(x.snippet.title)+'</b><br><small style="color:var(--muted)">'+esc(x.snippet.channelTitle)+' · '+vtxt+' views</small></span></a>';
+              }).join('');
+        });
+    })
+    .catch(function(){ box.innerHTML='<div class="section-h"><h2>Live YouTube results</h2></div><p class="hint">Could not reach YouTube right now.</p>'; });
 }
 
 /* ---- Data / backup ---- */
