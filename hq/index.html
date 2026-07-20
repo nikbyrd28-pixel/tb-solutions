@@ -115,6 +115,10 @@
     .hide-sm{display:none}
   }
 .soon{font-size:9px;background:rgba(139,123,255,.2);color:#b9adff;border-radius:999px;padding:1px 7px;margin-left:6px;font-style:normal;font-weight:700;vertical-align:middle}
+.toast{position:fixed;right:16px;bottom:16px;z-index:9999;background:linear-gradient(135deg,rgba(93,242,224,.15),rgba(139,123,255,.15)),#101425;border:1px solid rgba(93,242,224,.4);border-radius:14px;padding:14px 16px;max-width:320px;box-shadow:0 8px 30px rgba(0,0,0,.5);cursor:pointer;animation:toastIn .25s ease}
+.toast b{display:block;margin-bottom:2px}
+.toast small{color:var(--muted)}
+@keyframes toastIn{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -797,6 +801,38 @@ function convertLead(id){
   l.stage='Won'; save('leads'); upsertRow('leads', l);
   render(); showClientKit(o);
 }
+/* ---- Live pop-ups: new signups, intakes, tickets ---- */
+function popToast(title, sub, view){
+  var d=document.createElement('div'); d.className='toast';
+  d.innerHTML='<b>'+title+'</b><small>'+sub+'</small>';
+  d.onclick=function(){ d.remove(); if(view){ cur=view; document.querySelectorAll('#nav button').forEach(function(b){b.classList.toggle('on',b.dataset.view===view)}); render(); } };
+  document.body.appendChild(d);
+  setTimeout(function(){ if(d.parentNode) d.remove(); }, 12000);
+}
+var _popSeen = JSON.parse(localStorage.getItem('tb_pop_seen')||'{}');
+function checkNew(){
+  if(!cloud) return;
+  var watch=[
+    {table:'prospects', label:'🌱 New signup', view:'prospects', who:function(x){return x.email||''}},
+    {table:'intakes',   label:'📥 New intake', view:'intakes',   who:function(x){return (x.business||x.name||'')+' — '+(x.email||'')}},
+    {table:'tickets',   label:'🛟 New request', view:'requests', who:function(x){return (x.business||x.name||'')+(x.priority==='Urgent'?' (URGENT)':'')}}
+  ];
+  watch.forEach(function(w){
+    supa.from(w.table).select('*').order('created_at',{ascending:false}).limit(3).then(function(r){
+      if(r.error||!r.data||!r.data.length) return;
+      var newest=r.data[0].created_at;
+      var last=_popSeen[w.table];
+      if(last===undefined){ _popSeen[w.table]=newest; localStorage.setItem('tb_pop_seen',JSON.stringify(_popSeen)); return; }
+      r.data.filter(function(x){return x.created_at>last;}).reverse().forEach(function(x){
+        popToast(w.label, w.who(x)+' · tap to view', w.view);
+      });
+      if(newest>last){ _popSeen[w.table]=newest; localStorage.setItem('tb_pop_seen',JSON.stringify(_popSeen)); }
+    });
+  });
+}
+setInterval(checkNew, 45000);
+setTimeout(checkNew, 3000);
+
 function showClientKit(o){
   var slug=(o.business||'').toLowerCase().replace(/[^a-z0-9]/g,'');
   var cap='https://tbsol.net/capture/?c='+slug+'&name='+encodeURIComponent(o.business);

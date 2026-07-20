@@ -131,8 +131,8 @@ function doAuth(){
   var p = mode==='up' ? supa.auth.signUp({email:em,password:pw}) : supa.auth.signInWithPassword({email:em,password:pw});
   p.then(function(r){
     if(r.error){ msg('authMsg',r.error.message); return; }
-    if(mode==='up'){ recordProspect(em); }
-    if(mode==='up' && !r.data.session){ msg('authMsg','Account created! ✓ Check your email to confirm, then log in — Nick has been notified.',true); return; }
+    if(mode==='up'){ recordProspect(em); if(r.data.session){ setTimeout(function(){ location.href='/start/?welcome=1'; }, 800); } }
+    if(mode==='up' && !r.data.session){ msg('authMsg','Account created! ✓ Check your email to confirm, then log in — Nick has been notified.',true); setTimeout(function(){ location.href='/start/?welcome=1'; }, 2500); return; }
     enter(r.data.user||r.data.session.user);
   });
 }
