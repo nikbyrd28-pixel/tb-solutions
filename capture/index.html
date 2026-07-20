@@ -70,6 +70,26 @@ var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 
 var q=new URLSearchParams(location.search);
 var slug=(q.get('c')||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+
+/* Brand themes: auto-applied per client, or via ?ac=HEX&ac2=HEX for any client */
+var THEMES={
+  voomlux:{acc:'#d8b96a',acc2:'#f0d79a',bg:'#0a0a0a',line:'rgba(216,185,106,.3)',text:'#f5f2ea',muted:'#9a958a'}
+};
+(function(){
+  var th=THEMES[slug]||null;
+  var hex=/^[0-9a-fA-F]{6}$/;
+  if(!th && (hex.test(q.get('ac')||'') || hex.test(q.get('ac2')||''))){
+    th={ acc: hex.test(q.get('ac')||'') ? '#'+q.get('ac') : '#7aa2ff',
+         acc2: hex.test(q.get('ac2')||'') ? '#'+q.get('ac2') : (hex.test(q.get('ac')||'') ? '#'+q.get('ac') : '#5ad0f0') };
+  }
+  if(!th) return;
+  var r=document.documentElement.style;
+  r.setProperty('--acc',th.acc); r.setProperty('--acc2',th.acc2||th.acc);
+  if(th.bg){ r.setProperty('--bg',th.bg); document.body.style.background='radial-gradient(circle at 20% -10%,'+th.acc+'22,transparent 40%),radial-gradient(circle at 90% 110%,'+th.acc+'14,transparent 40%),linear-gradient(180deg,'+th.bg+','+th.bg+')'; }
+  if(th.line) r.setProperty('--line',th.line);
+  if(th.text) r.setProperty('--text',th.text);
+  if(th.muted) r.setProperty('--muted',th.muted);
+})();
 var display=q.get('name')||slug.charAt(0).toUpperCase()+slug.slice(1);
 if(slug){
   document.title='Get a quote — '+display;
