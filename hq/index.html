@@ -825,7 +825,7 @@ function checkNew(){
       var last=_popSeen[w.table];
       if(last===undefined){ _popSeen[w.table]=newest; localStorage.setItem('tb_pop_seen',JSON.stringify(_popSeen)); return; }
       r.data.filter(function(x){return x.created_at>last;}).reverse().forEach(function(x){
-        popToast(w.label, w.who(x)+' · tap to view', w.view);
+        popToast(w.label, esc(w.who(x))+' · tap to view', w.view);
       });
       if(newest>last){ _popSeen[w.table]=newest; localStorage.setItem('tb_pop_seen',JSON.stringify(_popSeen)); }
     });
