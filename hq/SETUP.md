@@ -19,8 +19,10 @@ steps once to sync everything across all your devices.
 
 ## 3. Turn on email login
 1. Left menu → **Authentication** → **Providers** → make sure **Email** is on.
-2. (Optional, easier while it's just you) Under Email, turn **OFF**
-   "Confirm email" so you can log in instantly without a confirmation click.
+2. Keep **"Confirm email" ON**. The client portal shows each client only their
+   own project and payments, matched by email — email confirmation is what stops
+   a stranger from signing up as your client and reading their info. Clients just
+   tap a one-time link in their inbox (your branded confirm email handles it).
 
 ## 4. Get your two keys
 1. Left menu → **Project Settings** (gear) → **API**.
