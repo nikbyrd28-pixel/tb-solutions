@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Get a quote</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230a0a0f'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-weight='900' font-size='28' fill='%235ad0f0'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--text:#f2f3f7;--muted:#9aa0ae;--line:rgba(122,162,255,.28);--acc:#7aa2ff;--acc2:#5ad0f0;--bg:#0a0a0f}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.6;min-height:100vh;
+    background:radial-gradient(circle at 20% -10%,rgba(122,162,255,.14),transparent 40%),radial-gradient(circle at 90% 110%,rgba(90,208,240,.10),transparent 40%),linear-gradient(180deg,#0d0d13,#07070b);
+    display:flex;align-items:flex-start;justify-content:center;padding:34px 16px}
+  .wrap{width:min(520px,100%)}
+  .brand{font-weight:900;letter-spacing:.14em;text-transform:uppercase;font-size:18px;margin-bottom:4px}
+  .brand span{color:var(--acc)}
+  .tag{color:var(--muted);font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:24px}
+  h1{font-size:clamp(26px,5.5vw,34px);line-height:1.12;margin:0 0 10px}
+  h1 em{font-style:normal;color:var(--acc)}
+  .lead{color:var(--muted);margin:0 0 22px;font-size:15px}
+  .card{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:18px;padding:24px}
+  label{display:block;margin:14px 0 0;font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+  label .req{color:var(--acc)}
+  input,textarea{width:100%;background:rgba(0,0,0,.45);border:1px solid var(--line);border-radius:12px;padding:13px 14px;color:var(--text);font:inherit;font-size:15px;margin-top:6px}
+  textarea{min-height:84px;resize:vertical}
+  input:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(122,162,255,.15)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:520px){.row{grid-template-columns:1fr}}
+  button{width:100%;margin-top:20px;border:0;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#0a0a0f;border-radius:999px;padding:15px;font:inherit;font-weight:900;font-size:15px;letter-spacing:.05em;text-transform:uppercase;cursor:pointer}
+  button:disabled{opacity:.6}
+  .fine{color:var(--muted);font-size:12px;margin-top:12px;text-align:center}
+  .ok{display:none;text-align:center;padding:24px 6px}
+  .ok.show{display:block}
+  .tick{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#0a0a0f;display:grid;place-items:center;font-size:30px;font-weight:900;margin:0 auto 16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand" id="brand">Get a <span>quote</span></div>
+  <div class="tag" id="tagline">Fast, free, no obligation</div>
+  <h1>Tell us what you <em>need</em>.</h1>
+  <p class="lead">Leave your details — you'll hear back fast with a quote and next steps.</p>
+  <div class="card">
+    <form id="f">
+      <div class="row">
+        <div><label>Name <span class="req">*</span></label><input name="name" required autocomplete="name"></div>
+        <div><label>Phone <span class="req">*</span></label><input name="phone" type="tel" required autocomplete="tel"></div>
+      </div>
+      <label>Email</label><input name="email" type="email" autocomplete="email">
+      <label>What do you need? <span class="req">*</span></label><textarea name="message" required placeholder="Tell us about the job, event, or service you're looking for..."></textarea>
+      <div class="row">
+        <div><label>When?</label><input name="when" placeholder="e.g. this weekend, ASAP"></div>
+        <div><label>Where?</label><input name="where" placeholder="Address or area"></div>
+      </div>
+      <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+      <button type="submit" id="btn">Request my quote</button>
+      <p class="fine" id="fine">No spam — your info goes straight to the team.</p>
+    </form>
+    <div class="ok" id="ok">
+      <div class="tick">✓</div>
+      <h1 style="font-size:24px">Request received!</h1>
+      <p class="lead" id="okmsg">The team has your details and will get back to you shortly.</p>
+    </div>
+  </div>
+</div>
+<script>
+var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+
+var q=new URLSearchParams(location.search);
+var slug=(q.get('c')||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+var display=q.get('name')||slug.charAt(0).toUpperCase()+slug.slice(1);
+if(slug){
+  document.title='Get a quote — '+display;
+  document.getElementById('brand').innerHTML=display.replace(/[<>&]/g,'')+' <span>quotes</span>';
+  document.getElementById('okmsg').textContent='The '+display+' team has your details and will get back to you shortly.';
+}
+var f=document.getElementById('f');
+f.addEventListener('submit',function(e){
+  e.preventDefault();
+  if(f._honey.value) return;
+  if(!slug){ alert('This page is missing its client code (?c=...). Ask TB Solutions for your link.'); return; }
+  var btn=document.getElementById('btn'); btn.disabled=true; btn.textContent='Sending…';
+  var d={}; new FormData(f).forEach(function(v,k){ if(k[0]!=='_') d[k]=v; });
+  fetch(SUPA_URL+'/rest/v1/client_leads',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({client:slug,kind:'lead',name:d.name||'',phone:d.phone||'',email:d.email||'',message:(d.message||'')+(d.when?' | When: '+d.when:'')+(d.where?' | Where: '+d.where:''),service:'',pickup:d.where||'',ride_date:d.when||''})})
+  .then(function(){ f.style.display='none'; document.getElementById('ok').classList.add('show'); window.scrollTo(0,0); })
+  .catch(function(){ btn.disabled=false; btn.textContent='Request my quote'; alert('Could not send — please try again.'); });
+});
+</script>
+</body>
+</html>

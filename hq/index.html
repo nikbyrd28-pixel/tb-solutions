@@ -703,9 +703,10 @@ function vLeads(){
 }
 function leadCard(l){
   var f=''; if(l.followup && l.stage!=='Won' && l.stage!=='Lost'){ f='<span class="pill '+(overdue(l.followup)?'over':(dueToday(l.followup)?'due':''))+'">↻ '+fmtDate(l.followup)+'</span>'; }
+  var cv=(l.stage!=='Won')?'<button class="btn ghost" style="padding:3px 10px;font-size:11px;margin-top:6px" onclick="event.stopPropagation();convertLead(\''+l.id+'\')">★ Make client</button>':'';
   return '<div class="lead" onclick="editLead(\''+l.id+'\')"><b>'+esc(l.name||l.business||'Untitled')+'</b>'
     + (l.business&&l.name? '<small>'+esc(l.business)+'</small>':'')
-    + '<div class="tagline">'+ (l.source?'<span class="pill">'+esc(l.source)+'</span>':'') + f +'</div></div>';
+    + '<div class="tagline">'+ (l.source?'<span class="pill">'+esc(l.source)+'</span>':'') + f +'</div>'+cv+'</div>';
 }
 function leadForm(l){
   l=l||{};
@@ -783,6 +784,32 @@ function saveClient(id){
   else { o.id=uid(); o.createdAt=Date.now(); state.clients.unshift(o); }
   save('clients'); upsertRow('clients', state.clients.filter(function(x){return x.id===(id||o.id);})[0]);
   closeModal(); render();
+  if(!id && o.business){ showClientKit(o); }
+}
+function convertLead(id){
+  var l=state.leads.filter(function(x){return x.id===id;})[0]; if(!l) return;
+  if(!confirm('Convert '+(l.business||l.name||'this lead')+' into a client?')) return;
+  var o={ id:uid(), createdAt:Date.now(),
+    business:l.business||l.name||'New client', name:l.name||'', phone:l.phone||'', email:l.email||'',
+    project:'', status:'Onboarding', value:'', paylink:'', dep:'unpaid', bal:'unpaid',
+    note:(l.note?('From lead: '+l.note):('Converted from lead'+(l.source?' ('+l.source+')':''))) };
+  state.clients.unshift(o); save('clients'); upsertRow('clients', o);
+  l.stage='Won'; save('leads'); upsertRow('leads', l);
+  render(); showClientKit(o);
+}
+function showClientKit(o){
+  var slug=(o.business||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  var cap='https://tbsol.net/capture/?c='+slug+'&name='+encodeURIComponent(o.business);
+  openModal('<h3>✅ '+esc(o.business)+' is fully set up</h3>'
+    +'<p class="sub">Everything below already works — no extra setup:</p>'
+    +'<label class="f">📥 Their lead capture page (share or link ads to it)</label>'
+    +'<input readonly value="'+cap+'" onclick="this.select()">'
+    +'<label class="f">📊 Their own CRM (they log in with '+esc(o.email||'their portal account')+')</label>'
+    +'<input readonly value="https://tbsol.net/crm/" onclick="this.select()">'
+    +'<label class="f">🔑 Their client portal</label>'
+    +'<input readonly value="https://tbsol.net/portal/" onclick="this.select()">'
+    +'<p class="hint" style="margin-top:10px">Every lead from the capture page lands in your Client Leads + Pipelines and in their CRM automatically. Add their brand profile in the <a href="/marketing-engine/" style="color:var(--cyan)">Marketing Engine</a> to generate on-brand copy for them.</p>'
+    +'<div class="modal-actions"><button class="btn primary" onclick="closeModal()">Done</button></div>');
 }
 function setClientStatus(id,v){ state.clients=state.clients.map(function(x){return x.id===id?Object.assign(x,{status:v}):x;}); save('clients'); upsertRow('clients', state.clients.filter(function(x){return x.id===id;})[0]); }
 function openUpdateComposer(id){
