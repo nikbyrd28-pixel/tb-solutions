@@ -3,142 +3,173 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="robots" content="noindex, nofollow" />
-<title>Finish Setup — TB Solutions</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%235df2e0'/%3E%3Cstop offset='.55' stop-color='%236f9dff'/%3E%3Cstop offset='1' stop-color='%23b98bff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='15' fill='%23070a12'/%3E%3Ctext x='50%25' y='53%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-weight='900' font-size='30' fill='url(%23g)'%3ETB%3C/text%3E%3C/svg%3E" />
+<meta name="robots" content="noindex" />
+<title>The Build Manual — TB Command</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305070f'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='28'%3E%F0%9F%93%98%3C/text%3E%3C/svg%3E" />
 <style>
-  :root{--cyan:#5df2e0;--blue:#6f9dff;--violet:#b98bff;--green:#7CFCC6;--text:#eef1ff;--muted:#96a0c4;--line:rgba(150,190,255,.16);--line2:rgba(150,195,255,.36);--grad:linear-gradient(120deg,var(--cyan),var(--blue) 55%,var(--violet))}
+  :root{--text:#eef1ff;--muted:#96a0c4;--line:rgba(150,190,255,.18);--cyan:#5df2e0;--blue:#6f9dff;--violet:#b98bff;--bg:#05070f}
   *{box-sizing:border-box}
-  body{margin:0;font-family:"Space Grotesk",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.6;
-    background:radial-gradient(circle at 12% -8%,rgba(94,242,224,.10),transparent 36%),radial-gradient(circle at 88% 4%,rgba(185,139,255,.10),transparent 38%),linear-gradient(180deg,#05070f,#03040a);min-height:100vh;padding:26px 16px 60px}
-  .wrap{width:min(560px,100%);margin:auto}
-  h1{font-size:clamp(26px,5vw,34px);letter-spacing:-.02em;margin:0 0 6px}
-  .lead{color:var(--muted);margin:0 0 8px;font-size:15px}
-  .bar{height:10px;border-radius:999px;background:rgba(150,190,255,.1);margin:16px 0 26px;overflow:hidden}
-  .bar i{display:block;height:100%;background:var(--grad);width:0%;transition:width .4s;border-radius:999px}
-  .step{background:linear-gradient(160deg,rgba(150,190,255,.07),rgba(150,190,255,.02));border:1px solid var(--line2);border-radius:20px;padding:20px;margin-bottom:14px}
-  .step.done{opacity:.55}
-  .step h2{display:flex;align-items:center;gap:12px;font-size:17px;margin:0 0 8px}
-  .n{flex:0 0 30px;height:30px;border-radius:50%;background:var(--grad);color:#03040a;display:grid;place-items:center;font-weight:900;font-size:14px}
-  .step.done .n{background:var(--green)}
-  .step p{color:var(--muted);font-size:14px;margin:0 0 12px}
-  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;background:var(--grad);color:#03040a;border-radius:999px;padding:14px;font:inherit;font-weight:800;font-size:15px;cursor:pointer;text-decoration:none;margin-bottom:8px}
-  .btn.ghost{background:none;border:1px solid var(--line2);color:var(--text);font-weight:700}
-  .ok{color:var(--green);font-weight:700;font-size:13px;display:none;text-align:center;margin:4px 0}
-  .donebox{display:flex;align-items:center;gap:10px;margin-top:10px;color:var(--muted);font-size:14px;cursor:pointer;user-select:none}
-  .donebox input{width:20px;height:20px;accent-color:#5df2e0}
-  .mini{font-size:13px;color:var(--muted);margin:10px 0 0;line-height:1.6}
-  .mini b{color:var(--text)}
-  .tag{display:inline-block;font-size:11px;font-weight:800;border-radius:999px;padding:2px 9px;background:rgba(94,242,224,.14);color:var(--cyan);margin-left:6px}
-  .foot{text-align:center;color:var(--muted);font-size:13px;margin-top:24px}
-  .foot a{color:var(--cyan)}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.7;background:linear-gradient(180deg,#070a12,#03040a);min-height:100vh}
+  .wrap{max-width:800px;margin:0 auto;padding:36px 20px 100px}
+  a{color:var(--cyan);text-decoration:none}
+  a:hover{text-decoration:underline}
+  h1{font-size:clamp(26px,5vw,36px);margin:8px 0 6px;letter-spacing:-.01em}
+  h1 span{background:linear-gradient(120deg,var(--cyan),var(--blue),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+  h2{font-size:20px;margin:40px 0 10px;padding-top:14px;border-top:1px solid var(--line)}
+  h3{font-size:15px;margin:20px 0 6px;color:var(--cyan)}
+  p,li,td,th{color:var(--muted);font-size:14.5px}
+  b,strong{color:var(--text)}
+  .lead{font-size:16px}
+  code{background:rgba(150,190,255,.1);border-radius:6px;padding:2px 7px;font-family:ui-monospace,Menlo,monospace;font-size:13px;color:var(--cyan)}
+  pre{background:rgba(0,0,0,.45);border:1px solid var(--line);border-radius:12px;padding:14px;overflow-x:auto;font-size:12.5px;line-height:1.6;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--text);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+  .card{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:12px 0}
+  .toc{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;margin:16px 0}
+  @media(max-width:560px){.toc{grid-template-columns:1fr}}
+  .toc a{font-size:14px}
+  .step{display:flex;gap:12px;margin:14px 0}
+  .step .n{flex:0 0 30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#03040a;display:grid;place-items:center;font-weight:900;font-size:14px}
+  .warn{border-left:3px solid #f5c04a;padding-left:12px}
+  .brand{font-weight:900;font-size:16px}
+  .brand a{color:var(--text)}
+  .brand span{color:var(--cyan)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Finish setup 🏁</h1>
-  <p class="lead">One step at a time. Do a step, tap “Mark done,” move on. Your progress saves on this phone.</p>
-  <div class="bar"><i id="prog"></i></div>
+  <div class="brand"><a href="/">TB <span>Solutions</span></a> · <a href="/hq" style="font-weight:400;font-size:13px">→ open HQ</a></div>
+  <h1>The <span>Build Manual</span> 📘</h1>
+  <p class="lead">Everything about how this SaaS is built, how to change anything, and how to hand it to a developer without a single meeting. If tbsol.net were wiped tomorrow, this page is how you'd rebuild it.</p>
 
-  <div class="step" data-s="1">
-    <h2><span class="n">1</span> Set up the database <span class="tag">5 min</span></h2>
-    <p>Two taps and one paste. This turns on file uploads, prospects, and lead automation.</p>
-    <button class="btn" onclick="copySql(this)">📋 Copy the code</button>
-    <div class="ok" id="copied">✓ Copied! Now open the database below, tap in the big box, paste, and hit RUN.</div>
-    <a class="btn ghost" href="https://supabase.com/dashboard/project/qgbjiqdwzgkjkmqyjsmc/sql/new" target="_blank" rel="noopener">🗄️ Open my database → paste → RUN</a>
-    <label class="donebox"><input type="checkbox" onchange="mark(1,this.checked)"> Mark done</label>
+  <div class="toc card">
+    <a href="#map">1 · The big picture</a>
+    <a href="#stack">2 · The stack &amp; logins</a>
+    <a href="#pages">3 · Every page</a>
+    <a href="#data">4 · The databases</a>
+    <a href="#auto">5 · The automations</a>
+    <a href="#change">6 · How to change anything</a>
+    <a href="#cookbook">7 · Cookbook (common tasks)</a>
+    <a href="#scratch">8 · Build it from scratch</a>
+    <a href="#fix">9 · Troubleshooting</a>
+    <a href="#dev">10 · Developer handoff notes</a>
   </div>
 
-  <div class="step" data-s="2">
-    <h2><span class="n">2</span> Make login instant <span class="tag">1 min</span></h2>
-    <p>So clients don't need a confirmation email to get into the portal.</p>
-    <a class="btn ghost" href="https://supabase.com/dashboard/project/qgbjiqdwzgkjkmqyjsmc/auth/providers" target="_blank" rel="noopener">🔓 Open settings</a>
-    <p class="mini">On that page: tap <b>Email</b> → turn <b>OFF</b> “Confirm email” → Save.</p>
-    <label class="donebox"><input type="checkbox" onchange="mark(2,this.checked)"> Mark done</label>
+  <h2 id="map">1 · The big picture</h2>
+  <pre>
+ Visitors / Ads
+      │
+      ▼
+ tbsol.net pages  ──────────────► Supabase (database + logins)
+ (capture, start,                      ▲            │
+  portal, support)                     │            ▼
+      │                          TB Command HQ   Client CRMs
+      ▼                          (/hq — you)     (/crm — clients)
+ n8n automations  ◄────────────────────┘
+ (AI scoring, auto-replies,
+  follow-ups, backups, uptime)
+  </pre>
+  <p><b>Three moving parts:</b> static web pages (hosted on Vercel, code on GitHub), one Postgres database with logins (Supabase), and an automation server (n8n on Hostinger). No servers to maintain, no frameworks to update — every page is a single self-contained HTML file.</p>
+
+  <h2 id="stack">2 · The stack &amp; where to log in</h2>
+  <table>
+    <tr><th>Service</th><th>Does</th><th>Log in at</th><th>Cost</th></tr>
+    <tr><td><b>GitHub</b><br>repo: nikbyrd28-pixel/tb-solutions</td><td>All the code. Every page = one folder with index.html</td><td>github.com</td><td>$0</td></tr>
+    <tr><td><b>Vercel</b></td><td>Hosting. Auto-deploys every push to main in ~30s → tbsol.net</td><td>vercel.com</td><td>$0</td></tr>
+    <tr><td><b>Supabase</b> "Base" project<br><code>qgbjiqdwzgkjkmqyjsmc</code></td><td>Main database + all logins + storage + backups bucket</td><td>supabase.com</td><td>$0</td></tr>
+    <tr><td><b>Supabase</b> VoomLux project<br><code>ewipzalkaybrsyxlhlob</code></td><td>VoomLux's dedicated CRM (n8n-only access)</td><td>supabase.com</td><td>$0</td></tr>
+    <tr><td><b>n8n</b> on Hostinger</td><td>Automations: AI scoring, emails, drips, scanner, uptime, backups</td><td>n8n-fouz.srv1786777.hstgr.cloud</td><td>VPS ~$5-10/mo</td></tr>
+    <tr><td><b>Google AI Studio</b></td><td>Free Gemini key powering all AI generation</td><td>aistudio.google.com</td><td>$0</td></tr>
+    <tr><td><b>Gmail</b></td><td>Sends all automated email (App Password + SMTP)</td><td>—</td><td>$0</td></tr>
+  </table>
+  <p class="warn"><b>Keys live in exactly two places:</b> inside n8n credentials, and nowhere else. The "anon key" visible in page code is <i>designed</i> to be public — the database's row-level security is what actually protects data. Never put a <code>service_role</code> key in a web page.</p>
+
+  <h2 id="pages">3 · Every page and what powers it</h2>
+  <table>
+    <tr><th>URL</th><th>File in repo</th><th>What it does</th></tr>
+    <tr><td>tbsol.net</td><td>index.html</td><td>Marketing site + ARIA chat + reviews section (auto-shows approved reviews)</td></tr>
+    <tr><td>/hq</td><td>hq/index.html</td><td><b>TB Command</b> — your dashboard: leads, clients, pipelines, client leads, reviews moderation, analytics + funnel, live pop-ups</td></tr>
+    <tr><td>/crm</td><td>crm/index.html</td><td>Client CRMs — each client sees only their leads; you see all (<code>?client=slug</code> deep-links)</td></tr>
+    <tr><td>/marketing-engine</td><td>marketing-engine/index.html</td><td>AI generator: plans, ad copy, site copy, emails, social, research, one-pagers + brand profiles + campaign kits</td></tr>
+    <tr><td>/capture</td><td>capture/index.html</td><td>Universal lead form for ANY client: <code>?c=slug&amp;name=Display</code>, tracks <code>?utm_source=</code></td></tr>
+    <tr><td>/start</td><td>start/index.html</td><td>New-client intake (signups get sent here automatically)</td></tr>
+    <tr><td>/portal</td><td>portal/index.html</td><td>Client portal: project status, updates, requests, payments</td></tr>
+    <tr><td>/support</td><td>support/index.html</td><td>Ticket form → HQ Requests</td></tr>
+    <tr><td>/review</td><td>review/index.html</td><td>Star-rating review collector (<code>?b=Business</code> prefills) → HQ moderation → homepage</td></tr>
+    <tr><td>/crm/guide</td><td>crm/guide/index.html</td><td>Client-facing "how to use your CRM"</td></tr>
+    <tr><td>/privacy · /terms</td><td>privacy/ terms/</td><td>Legal pages (linked from all forms)</td></tr>
+    <tr><td>/clients/voomlux</td><td>clients/voomlux/</td><td>VoomLux's custom booking page</td></tr>
+    <tr><td>/n8n/*.json</td><td>n8n/</td><td>All automation workflows — importable straight from URL</td></tr>
+  </table>
+
+  <h2 id="data">4 · The databases</h2>
+  <h3>Base project (the brain)</h3>
+  <p><code>leads</code> your sales pipeline · <code>clients</code> your book of business · <code>client_leads</code> every lead captured for any client · <code>prospects</code> signups · <code>intakes</code> project intakes · <code>tickets</code> support · <code>reviews</code> testimonials (approved → homepage) · <code>marketing_assets</code> AI library · <code>client_profiles</code> brand voices · <code>posts</code> social · <code>updates</code> client updates · <code>pageviews</code> analytics · <code>client_errors</code> JS error log · <code>activities</code> automation log · storage: <code>uploads</code> (public), <code>backups</code> (private)</p>
+  <h3>The security pattern (row-level security)</h3>
+  <p>Every table has RLS ON. Three recurring policy shapes: <b>public-can-insert</b> (forms write, never read) · <b>owner-only</b> (<code>auth.uid() = user_id</code>) · <b>admin-only</b> (email check). Clients see their own leads via a normalized business↔client name match. <b>Automations in the database itself:</b> a signup triggers prospect + lead creation; marking a lead Won auto-creates the client in HQ.</p>
+
+  <h2 id="auto">5 · The automations (n8n)</h2>
+  <table>
+    <tr><th>Workflow</th><th>Runs</th><th>Job</th></tr>
+    <tr><td>marketing-engine-ai</td><td>on Generate</td><td>Powers /marketing-engine</td></tr>
+    <tr><td>crm-autopilot (original)</td><td>per submission</td><td>Website forms → CRM + emails</td></tr>
+    <tr><td>outreach-autopilot</td><td>daily 8am</td><td>AI outreach drafts + ticket alerts</td></tr>
+    <tr><td>prospect-scanner</td><td>Mon 7am</td><td>Finds no-website businesses → CRM + hit list</td></tr>
+    <tr><td>clients/voomlux-crm-intake</td><td>per lead</td><td>AI-scores VoomLux leads → their CRM + auto-reply</td></tr>
+    <tr><td>clients/voomlux-followup-sequencer</td><td>daily 9am</td><td>Chases quiet leads ×3 then marks Lost</td></tr>
+    <tr><td>clients/voomlux-review-rebook</td><td>daily 10am</td><td>Review ask + rebook nudge</td></tr>
+    <tr><td>clients/voomlux-b2b-drip</td><td>HQ 🚀 button</td><td>3-email B2B outreach drip</td></tr>
+    <tr><td>uptime-monitor</td><td>every 30 min</td><td>Emails 🚨 if tbsol.net or /hq is down</td></tr>
+    <tr><td>weekly-backup</td><td>Sun 6am</td><td>Dumps all tables → private backups bucket</td></tr>
+  </table>
+  <p>Import any of them: n8n → ⋯ → Import from URL → <code>https://tbsol.net/n8n/&lt;file&gt;.json</code>. Credentials each workflow needs are listed in <a href="/n8n/README.md">n8n/README.md</a> (Gemini for AI nodes, SMTP for email nodes, Supabase service keys for database nodes).</p>
+
+  <h2 id="change">6 · How to change anything (the 3-step loop)</h2>
+  <div class="step"><div class="n">1</div><div><b>Edit the file on GitHub.</b> github.com → tb-solutions repo → open the file (see §3 for which file is which page) → pencil icon → make your change. Works from your phone.</div></div>
+  <div class="step"><div class="n">2</div><div><b>Commit.</b> Scroll down → "Commit changes". That's the save button.</div></div>
+  <div class="step"><div class="n">3</div><div><b>Wait ~30 seconds.</b> Vercel deploys automatically. Refresh tbsol.net — it's live. Broke something? GitHub → History on that file → restore the previous version the same way.</div></div>
+  <p>Database changes happen in Supabase → SQL Editor. <b>Rule: only ADD things</b> (new tables, new columns) — never rename or delete columns the pages use.</p>
+
+  <h2 id="cookbook">7 · Cookbook — common tasks</h2>
+  <div class="card"><b>Onboard a new client (1 min)</b><br>HQ → Clients → + New client (or mark their lead Won — it auto-creates). The popup gives their capture link, CRM, and portal — already working. Then: Marketing Engine → select them → write their brand profile → 🧰 Full campaign kit.</div>
+  <div class="card"><b>Put a review on the homepage</b><br>Send the client <code>tbsol.net/review?b=TheirBusiness</code> → HQ → Reviews → ✅ Approve. Live instantly.</div>
+  <div class="card"><b>Run ads for a client</b><br>Ad link = <code>tbsol.net/capture/?c=slug&amp;name=Business&amp;utm_source=facebook</code>. Leads land in their CRM + your Pipelines with the source tagged; Analytics shows per-source counts.</div>
+  <div class="card"><b>Change homepage copy / prices</b><br>Edit <code>index.html</code> via §6. Search for the exact text you see on screen to find the spot.</div>
+  <div class="card"><b>Add a new automation</b><br>Build it in n8n directly, or hand an AI one of the files in <code>/n8n/</code> as the example format, commit the JSON to the repo's n8n folder, import from URL.</div>
+  <div class="card"><b>Restore from backup</b><br>Supabase → Storage → backups → download the latest JSON — it contains every table. Re-insert via SQL editor, or hand it plus this page to a developer.</div>
+  <div class="card"><b>Rotate keys (quarterly habit)</b><br>Gemini: aistudio.google.com/apikey → new key → update the n8n credential. n8n API key: Settings → n8n API. Gmail App Password: myaccount.google.com/apppasswords. GitHub tokens: Settings → Developer settings.</div>
+  <div class="card"><b>See errors users hit</b><br>Supabase → Table editor → <code>client_errors</code> — every JS error on every page, newest first.</div>
+
+  <h2 id="scratch">8 · How this SaaS is built, step by step</h2>
+  <p>The recipe — for rebuilding, for an IT person, or for building the next one:</p>
+  <div class="step"><div class="n">1</div><div><b>Create a Supabase project.</b> Database + user logins + file storage, free tier. Note the URL, anon key (public), and service_role key (secret).</div></div>
+  <div class="step"><div class="n">2</div><div><b>Create the tables</b> (SQL editor): leads, clients, client_leads, prospects, intakes, tickets, reviews, marketing_assets, client_profiles, pageviews, client_errors. Every migration ever run is saved under Supabase → Database → Migrations — that's the exact schema, replayable.</div></div>
+  <div class="step"><div class="n">3</div><div><b>Turn on row-level security</b> on every table with the three policy shapes from §4. This is the entire security model — the front-end is untrusted by design.</div></div>
+  <div class="step"><div class="n">4</div><div><b>Build pages as single HTML files.</b> Inline CSS, inline JS, supabase-js from CDN, talking straight to the database with the anon key. No build step, no framework. Auth = <code>supabase.auth.signInWithPassword</code>.</div></div>
+  <div class="step"><div class="n">5</div><div><b>Code on GitHub, connect Vercel.</b> Vercel → New project → import repo → every push auto-deploys. Point the domain at it.</div></div>
+  <div class="step"><div class="n">6</div><div><b>Stand up n8n</b> (Hostinger VPS template or any Docker host). Credentials: Gemini (AI), SMTP (email), Supabase service keys (database writes).</div></div>
+  <div class="step"><div class="n">7</div><div><b>Wire forms → automations.</b> Public pages insert into the database directly (fast, reliable) and/or POST to n8n webhooks (AI scoring + emails). Both patterns are used here on purpose.</div></div>
+  <div class="step"><div class="n">8</div><div><b>Add the ops layer:</b> uptime monitor, weekly backups, error logging, legal pages. All already in this repo — reuse them.</div></div>
+  <div class="step"><div class="n">9</div><div><b>Multi-tenant (the sell-to-marketers phase):</b> blueprint lives at <code>hq/multi-tenant-blueprint.sql</code> and <code>hq/blueprints/nextjs/</code> — orgs table, per-org RLS, roles instead of a hardcoded admin email.</div></div>
+
+  <h2 id="fix">9 · Troubleshooting</h2>
+  <table>
+    <tr><th>Symptom</th><th>Check</th></tr>
+    <tr><td>Site down</td><td>vercel.com → deployments (red = failed build → restore previous file via GitHub History). The uptime monitor emails you automatically.</td></tr>
+    <tr><td>Marketing Engine "Generation failed"</td><td>n8n → is "TB — Marketing Engine AI" Active? → Executions tab shows the exact error. Usually the Gemini credential.</td></tr>
+    <tr><td>Emails not sending</td><td>n8n → Executions → open the red run. Usually the SMTP credential (App Password) or Gmail's ~500/day limit.</td></tr>
+    <tr><td>Client says CRM is empty</td><td>Their <code>clients.email</code> must equal their login email, and <code>clients.business</code> must match the capture page's <code>?c=</code> slug (spacing/case don't matter).</td></tr>
+    <tr><td>Lead didn't appear</td><td>Supabase → Table editor → client_leads — in the database? If yes it's a display filter; if no, check the form page and the client_errors table.</td></tr>
+    <tr><td>Broke something editing</td><td>GitHub → History on that file → restore previous version → commit.</td></tr>
+  </table>
+
+  <h2 id="dev">10 · Developer handoff notes</h2>
+  <div class="card">
+  <p style="margin:0"><b>To whoever inherits this:</b> it's intentionally boring tech. Static HTML pages (one file per page, everything inline), Supabase as the only backend (Postgres + auth + storage; security enforced by RLS, not the client), n8n for anything scheduled or AI. Conventions: escape all user content with the local <code>esc()</code> before innerHTML; additive-only migrations; admin access = email check in RLS (a roles table is the planned upgrade); the anon key is public by design and service keys live only in n8n. Deploy = push to main, ~30s. <code>n8n/README.md</code> documents every workflow's credentials. Read <code>hq/ARCHITECTURE.md</code>, then this page's §4 and §8. There is no build step, no package.json, no node_modules — don't add one without a reason.</p>
   </div>
 
-  <div class="step" data-s="3">
-    <h2><span class="n">3</span> Turn on your automations <span class="tag">15 min</span></h2>
-    <p>This is the longest one — worth it. Emails + leads saved automatically, forever.</p>
-    <p class="mini"><b>A.</b> Download these 3 files (tap → then use your browser's Save/Download):</p>
-    <a class="btn ghost" href="https://raw.githubusercontent.com/nikbyrd28-pixel/tb-solutions/main/n8n/crm-autopilot.json" target="_blank" rel="noopener">⬇️ File 1 — CRM Autopilot</a>
-    <a class="btn ghost" href="https://raw.githubusercontent.com/nikbyrd28-pixel/tb-solutions/main/n8n/daily-followups.json" target="_blank" rel="noopener">⬇️ File 2 — Daily follow-ups</a>
-    <a class="btn ghost" href="https://raw.githubusercontent.com/nikbyrd28-pixel/tb-solutions/main/n8n/weekly-report.json" target="_blank" rel="noopener">⬇️ File 3 — Weekly report</a>
-    <p class="mini"><b>B.</b> Open n8n → Workflows → <b>⋯ → Import from File</b> → import each file. Delete the old “Lead Router” workflow if you see one.</p>
-    <a class="btn ghost" href="https://n8n-fouz.srv1786777.hstgr.cloud" target="_blank" rel="noopener">🔗 Open my n8n</a>
-    <p class="mini"><b>C.</b> Get your master key and paste it wherever you see <b>PASTE_SERVICE_KEY</b> (in the “Save lead to CRM” and “Get…” nodes):</p>
-    <a class="btn ghost" href="https://supabase.com/dashboard/project/qgbjiqdwzgkjkmqyjsmc/settings/api-keys" target="_blank" rel="noopener">🔑 Get my service_role key</a>
-    <p class="mini"><b>D.</b> Make a Gmail App Password (needed so n8n can send email — your normal password won't work):</p>
-    <a class="btn ghost" href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener">📧 Make a Gmail App Password</a>
-    <p class="mini">In n8n, open any <b>Email</b> node → Credential → Create new (SMTP): Host <b>smtp.gmail.com</b>, Port <b>465</b>, SSL on, user <b>nikbyrd28@gmail.com</b>, password = the App Password. Then pick that credential on every Email node.</p>
-    <p class="mini"><b>E.</b> Save each workflow and flip <b>Active</b> (top-right toggle) on all 3.</p>
-    <label class="donebox"><input type="checkbox" onchange="mark(3,this.checked)"> Mark done</label>
-  </div>
-
-  <div class="step" data-s="4">
-    <h2><span class="n">4</span> Put your business on Google <span class="tag">30 min</span></h2>
-    <p>The #1 thing for showing up when Chester County searches. Free.</p>
-    <a class="btn ghost" href="https://business.google.com" target="_blank" rel="noopener">📍 Set up Google Business Profile</a>
-    <p class="mini">Add: TB Solutions · West Chester, PA · website <b>tbsol.net</b> · your phone. Then verify when Google asks.</p>
-    <label class="donebox"><input type="checkbox" onchange="mark(4,this.checked)"> Mark done</label>
-  </div>
-
-  <div class="step" data-s="5">
-    <h2><span class="n">5</span> Tell Google about your site <span class="tag">10 min</span></h2>
-    <p>Gets your homepage and guides into Google search.</p>
-    <a class="btn ghost" href="https://search.google.com/search-console" target="_blank" rel="noopener">🔍 Open Search Console</a>
-    <p class="mini">Add property <b>tbsol.net</b> → verify → left menu <b>Sitemaps</b> → type <b>sitemap.xml</b> → Submit.</p>
-    <label class="donebox"><input type="checkbox" onchange="mark(5,this.checked)"> Mark done</label>
-  </div>
-
-  <div class="step" data-s="6">
-    <h2><span class="n">6</span> Safety: reset 4 keys <span class="tag">5 min</span></h2>
-    <p>Some secret keys got shared in chat during the build — reset them so only you hold them.</p>
-    <a class="btn ghost" href="https://dashboard.stripe.com/apikeys" target="_blank" rel="noopener">💳 Stripe → roll the rk_live key</a>
-    <a class="btn ghost" href="https://supabase.com/dashboard/project/qgbjiqdwzgkjkmqyjsmc/settings/api-keys" target="_blank" rel="noopener">🗄️ Supabase → roll the secret key</a>
-    <a class="btn ghost" href="https://supabase.com/dashboard/account/tokens" target="_blank" rel="noopener">🔑 Supabase → delete the access token</a>
-    <a class="btn ghost" href="https://github.com/settings/tokens" target="_blank" rel="noopener">🐙 GitHub → delete the token</a>
-    <label class="donebox"><input type="checkbox" onchange="mark(6,this.checked)"> Mark done</label>
-  </div>
-
-  <div class="step" data-s="7">
-    <h2><span class="n">7</span> The victory lap 🏆 <span class="tag">2 min</span></h2>
-    <p>Prove the whole machine works:</p>
-    <p class="mini">1. Fill out the form at the bottom of <a href="https://tbsol.net" target="_blank" rel="noopener" style="color:var(--cyan)">tbsol.net</a> with test info.<br>
-    2. Check your email — the 🔥 alert should arrive in seconds.<br>
-    3. Open <a href="https://tbsol.net/hq" target="_blank" rel="noopener" style="color:var(--cyan)">your CRM</a> → Leads — the test lead is sitting there.<br>
-    That's your business running itself.</p>
-    <label class="donebox"><input type="checkbox" onchange="mark(7,this.checked)"> Mark done</label>
-  </div>
-
-  <p class="foot">Stuck on a step? Screenshot what you see and send it to your builder.<br><a href="/hq/">← Back to TB Command</a></p>
+  <p style="margin-top:36px;color:var(--muted);font-size:13px">Last updated July 20, 2026 · <a href="/">tbsol.net</a> · <a href="/hq">HQ</a> · <a href="/privacy/">Privacy</a></p>
 </div>
-<textarea id="sqlbox" readonly style="position:absolute;left:-9999px"></textarea>
-<script>
-var SQL_URL='https://raw.githubusercontent.com/nikbyrd28-pixel/tb-solutions/main/hq/finish.sql';
-var sqlText='';
-fetch(SQL_URL).then(function(r){return r.text();}).then(function(t){sqlText=t;}).catch(function(){});
-function copySql(btn){
-  var show=function(){ document.getElementById('copied').style.display='block'; btn.textContent='✓ Copied'; };
-  var fb=function(){ var ta=document.getElementById('sqlbox'); ta.value=sqlText; ta.style.position='fixed'; ta.style.left='0'; ta.focus(); ta.select(); try{document.execCommand('copy');}catch(e){} ta.style.position='absolute'; ta.style.left='-9999px'; show(); };
-  var go=function(){ if(navigator.clipboard&&sqlText){ navigator.clipboard.writeText(sqlText).then(show,fb); } else fb(); };
-  if(sqlText) go(); else fetch(SQL_URL).then(function(r){return r.text();}).then(function(t){sqlText=t;go();}).catch(function(){alert('Could not load — check your internet and try again.');});
-}
-function mark(n,on){
-  try{ localStorage.setItem('tbsetup_'+n, on?'1':''); }catch(e){}
-  paint();
-}
-function paint(){
-  var total=7, done=0;
-  for(var i=1;i<=total;i++){
-    var on=false; try{ on=!!localStorage.getItem('tbsetup_'+i); }catch(e){}
-    var el=document.querySelector('.step[data-s="'+i+'"]');
-    if(el){ el.classList.toggle('done',on); var cb=el.querySelector('input'); if(cb) cb.checked=on; }
-    if(on) done++;
-  }
-  document.getElementById('prog').style.width=Math.round(done/total*100)+'%';
-}
-paint();
-</script>
 </body>
 </html>
