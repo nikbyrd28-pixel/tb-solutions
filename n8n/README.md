@@ -78,3 +78,14 @@ These run on ONE free Google Gemini key — no OpenAI/Anthropic needed.
 3. Email nodes use your existing **SMTP credential** (same one as the older suite — Gmail App Password). Select it on each Email node.
 4. Supabase nodes: create a **Supabase credential** per project — TB Base (`qgbjiqdwzgkjkmqyjsmc.supabase.co`) for the TB workflows, VoomLux CRM (`ewipzalkaybrsyxlhlob.supabase.co`) for the clients/ workflows. Use each project's **service_role** key (Supabase → Settings → API keys).
 5. Flip each workflow **Active**. Start with `marketing-engine-ai.json` — then tbsol.net/marketing-engine works end to end.
+
+---
+
+## Ops workflows (Phase 1 — production readiness)
+
+| File | What it does | Runs |
+|---|---|---|
+| **`uptime-monitor.json`** | Pings tbsol.net + /hq; emails you 🚨 the moment either is down | Every 30 min |
+| **`weekly-backup.json`** | Dumps every CRM table to your private `backups` storage bucket + confirmation email (see sticky note inside for the 2-min setup) | Sundays 6am |
+
+Import both from URL: `https://tbsol.net/n8n/uptime-monitor.json` and `https://tbsol.net/n8n/weekly-backup.json`.

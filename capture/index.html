@@ -55,7 +55,7 @@
       </div>
       <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
       <button type="submit" id="btn">Request my quote</button>
-      <p class="fine" id="fine">No spam — your info goes straight to the team.</p>
+      <p class="fine" id="fine">No spam — your info goes straight to the team. By submitting you agree to the <a href="/privacy/" style="color:var(--muted)">privacy policy</a>.</p>
     </form>
     <div class="ok" id="ok">
       <div class="tick">✓</div>
@@ -88,6 +88,12 @@ f.addEventListener('submit',function(e){
   .then(function(){ f.style.display='none'; document.getElementById('ok').classList.add('show'); window.scrollTo(0,0); })
   .catch(function(){ btn.disabled=false; btn.textContent='Request my quote'; alert('Could not send — please try again.'); });
 });
+
+/* Sentry-lite: report uncaught JS errors to the client_errors table */
+window.addEventListener('error',function(e){try{
+  fetch(SUPA_URL+'/rest/v1/client_errors',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({page:location.pathname,msg:String((e&&e.message)||'').slice(0,300),src:String((e&&e.filename)||'').slice(0,120),line:(e&&e.lineno)||0})}).catch(function(){});
+}catch(_){}});
 </script>
 </body>
 </html>

@@ -1,0 +1,95 @@
+{
+  "name": "TB — Weekly Backup (all CRM data → private storage)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 🗄️ Weekly backup\n\nEvery Sunday 6am this dumps ALL your CRM data (leads, clients, client leads, tickets, intakes, prospects, tasks, posts, updates, marketing assets, brand profiles) into your private `backups` storage bucket, and emails you a confirmation.\n\nSetup: replace PASTE_SERVICE_KEY in BOTH header fields of the two HTTP nodes with your TB Base service_role key (Supabase → Settings → API keys). Connect your SMTP credential on the email node. Activate.\n\nRestore: Supabase dashboard → Storage → backups → download the JSON.",
+        "height": 320,
+        "width": 340
+      },
+      "id": "w1000000-0000-4000-8000-00000000note",
+      "name": "Read me",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-380, -60]
+    },
+    {
+      "parameters": {
+        "rule": { "interval": [ { "field": "weeks", "weeksInterval": 1, "triggerAtDay": [0], "triggerAtHour": 6, "triggerAtMinute": 0 } ] }
+      },
+      "id": "w1000000-0000-4000-8000-000000000001",
+      "name": "Sundays 6am",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/rpc/backup_dump",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "PASTE_SERVICE_KEY" },
+            { "name": "Authorization", "value": "Bearer PASTE_SERVICE_KEY" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{}",
+        "options": { "timeout": 60000 }
+      },
+      "id": "w1000000-0000-4000-8000-000000000002",
+      "name": "Dump All Tables",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://qgbjiqdwzgkjkmqyjsmc.supabase.co/storage/v1/object/backups/tb-backup-{{ $now.toFormat('yyyy-MM-dd') }}.json",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "PASTE_SERVICE_KEY" },
+            { "name": "Authorization", "value": "Bearer PASTE_SERVICE_KEY" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": { "timeout": 60000 }
+      },
+      "id": "w1000000-0000-4000-8000-000000000003",
+      "name": "Save to Backups Bucket",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "fromEmail": "nikbyrd28@gmail.com",
+        "toEmail": "nikbyrd28@gmail.com",
+        "subject": "=✅ Weekly backup done — {{ $now.toFormat('MMM d') }}",
+        "emailFormat": "text",
+        "text": "=Your TB Command backup ran successfully.\n\nFile: tb-backup-{{ $now.toFormat('yyyy-MM-dd') }}.json\nWhere: Supabase → Storage → backups bucket (private)\n\nEverything's saved: leads, clients, client leads, tickets, intakes, prospects, tasks, posts, updates, marketing assets, and brand profiles.",
+        "options": {}
+      },
+      "id": "w1000000-0000-4000-8000-000000000004",
+      "name": "Confirm to Nick",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [660, 0]
+    }
+  ],
+  "connections": {
+    "Sundays 6am": { "main": [[ { "node": "Dump All Tables", "type": "main", "index": 0 } ]] },
+    "Dump All Tables": { "main": [[ { "node": "Save to Backups Bucket", "type": "main", "index": 0 } ]] },
+    "Save to Backups Bucket": { "main": [[ { "node": "Confirm to Nick", "type": "main", "index": 0 } ]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {}
+}
