@@ -92,10 +92,18 @@
     </div>
 
     <div class="card">
+      <div class="top" style="margin:0"><b>🎨 Brand profile</b><span class="muted" id="profState"></span></div>
+      <p class="muted" style="margin:6px 0 0">Saved per client — automatically fed into every generation so all copy stays on-brand.</p>
+      <textarea id="fProfile" placeholder="Voice, positioning, offers, audience, do's and don'ts for this client..." style="min-height:90px;margin-top:10px"></textarea>
+      <div class="bar"><button class="btn ghost small" onclick="saveProfile()">💾 Save profile</button></div>
+    </div>
+
+    <div class="card">
       <label style="margin-top:0">What should I make?</label>
       <div class="grid" id="assetGrid"></div>
       <div class="bar">
         <button class="btn" id="genBtn" onclick="generate()">⚡ Generate</button>
+        <button class="btn ghost" id="kitBtn" onclick="genKit()">🧰 Full campaign kit</button>
         <span class="muted" id="genState"></span>
       </div>
       <div class="err hide" id="gErr"></div>
@@ -134,7 +142,7 @@ var ASSETS=[
   {k:'research',e:'🔍',t:'Research brief',d:'Competitors + positioning'},
   {k:'one_pager',e:'📄',t:'Sales one-pager',d:'Send to prospects'}
 ];
-var sel='plan', lastOut=null, clients=[];
+var sel='plan', lastOut=null, clients=[], profiles={};
 
 function el(id){return document.getElementById(id)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
@@ -162,7 +170,7 @@ async function showEngine(){
   el('loginCard').classList.add('hide');
   el('engine').classList.remove('hide');
   el('logoutBtn').classList.remove('hide');
-  renderAssets(); loadClients(); loadLibrary();
+  renderAssets(); loadClients(); loadLibrary(); loadProfiles();
 }
 
 async function loadClients(){
@@ -174,6 +182,8 @@ async function loadClients(){
 function useClient(i){
   var c=clients[i];
   el('fBiz').value=c.business||'';
+  el('fProfile').value=(profiles[(c.business||'').toLowerCase()]||{}).context||'';
+  el('profState').textContent=el('fProfile').value?'loaded ✓':'none yet';
   document.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on')});
   document.querySelectorAll('.chip')[i].classList.add('on');
 }
@@ -188,7 +198,8 @@ async function generate(){
   b.append('kind',sel); b.append('business',biz);
   b.append('niche',el('fNiche').value); b.append('city',el('fCity').value);
   b.append('goal',el('fGoal').value); b.append('budget',el('fBudget').value);
-  b.append('extra',el('fExtra').value);
+  var _prof=el('fProfile').value.trim();
+  b.append('extra',(_prof?'BRAND PROFILE (follow strictly):\n'+_prof+'\n\n':'')+el('fExtra').value);
   try{
     var res=await fetch(ENGINE_URL,{method:'POST',body:b});
     var j=await res.json();
@@ -205,6 +216,7 @@ async function generate(){
     el('gErr').classList.remove('hide');
   }
   btn.disabled=false; el('genState').textContent='';
+  return !!lastOut;
 }
 
 function copyOut(){ if(lastOut) navigator.clipboard.writeText(lastOut.content) }
@@ -238,6 +250,37 @@ async function delAsset(id){
   loadLibrary();
 }
 
+async function loadProfiles(){
+  var r=await supa.from('client_profiles').select('client,context');
+  profiles={};
+  (r.data||[]).forEach(function(p){ profiles[(p.client||'').toLowerCase()]={context:p.context} });
+}
+async function saveProfile(){
+  var biz=el('fBiz').value.trim();
+  if(!biz){alert('Pick or type the client/business name first.');return}
+  var ctx=el('fProfile').value;
+  var r=await supa.from('client_profiles').upsert({client:biz,context:ctx},{onConflict:'user_id,client'});
+  if(r.error){alert('Save failed: '+r.error.message);return}
+  profiles[biz.toLowerCase()]={context:ctx};
+  el('profState').textContent='saved ✓';
+}
+async function genKit(){
+  var biz=el('fBiz').value.trim();
+  if(!biz){el('gErr').textContent='Give me at least the business name.';el('gErr').classList.remove('hide');return}
+  if(!confirm('Generate ALL 7 assets for '+biz+' and save them to the library? Takes a few minutes.'))return;
+  var kb=el('kitBtn'); kb.disabled=true;
+  var done=0, failed=[];
+  for (var i=0;i<ASSETS.length;i++){
+    sel=ASSETS[i].k; renderAssets();
+    el('genState').innerHTML='<span class="spin"></span>Kit: '+ASSETS[i].t+' ('+(i+1)+'/'+ASSETS.length+')…';
+    var prev=lastOut; lastOut=null;
+    try{ var ok=await generate(); }catch(e){ var ok=false; }
+    if(lastOut){ await saveAsset(); done++; } else { failed.push(ASSETS[i].t); lastOut=prev; }
+  }
+  el('genState').textContent='Kit done: '+done+'/'+ASSETS.length+' saved'+(failed.length?' — failed: '+failed.join(', '):'');
+  kb.disabled=false;
+  loadLibrary();
+}
 document.addEventListener('keydown',function(e){ if(e.key==='Enter' && !el('loginCard').classList.contains('hide') && document.activeElement && (document.activeElement.id==='lPass')) login() });
 boot();
 </script>
