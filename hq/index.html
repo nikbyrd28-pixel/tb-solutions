@@ -245,7 +245,57 @@ function overdue(d){ return d && d<todayISO(); }
 function dueToday(d){ return d===todayISO(); }
 
 /* ================= VIEWS ================= */
-function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,prospects:vProspects,intakes:vIntakes,requests:vRequests,clientleads:vClientLeads,analytics:vAnalytics,social:vSocial,tools:vTools,data:vData,pipelines:vPipelines,emailsms:vEmailSms,aianswer:vAiAnswer,aioutbound:vAiOutbound,reviews:vReviews}[cur])(); if(cur==='tools') initTools(); if(cur==='requests') loadRequests(); if(cur==='analytics') loadAnalytics(); if(cur==='intakes') loadIntakes(); if(cur==='prospects') loadProspects(); if(cur==='clientleads') loadClientLeads(); if(cur==='pipelines') loadPipelines(); if(cur==='reviews') loadReviews(); }
+function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,prospects:vProspects,intakes:vIntakes,requests:vRequests,clientleads:vClientLeads,analytics:vAnalytics,social:vSocial,tools:vTools,data:vData,pipelines:vPipelines,emailsms:vEmailSms,aianswer:vAiAnswer,aioutbound:vAiOutbound,reviews:vReviews}[cur])(); if(cur==='tools') initTools(); if(cur==='requests') loadRequests(); if(cur==='analytics') loadAnalytics(); if(cur==='intakes') loadIntakes(); if(cur==='prospects') loadProspects(); if(cur==='clientleads') loadClientLeads(); if(cur==='pipelines') loadPipelines(); if(cur==='reviews') loadReviews(); if(cur==='analytics') setTimeout(loadFunnel,300); }
+
+/* ---- Funnel + revenue analytics (Phase 3) ---- */
+function loadFunnel(){
+  if(!cloud) return;
+  var el=document.getElementById('anBody'); if(!el) return;
+  var box=document.getElementById('funnelBox');
+  if(!box){ box=document.createElement('div'); box.id='funnelBox'; box.innerHTML='<div class="empty">Crunching funnel…</div>'; el.parentNode.appendChild(box); }
+  Promise.all([
+    supa.from('pageviews').select('id',{count:'exact',head:true}),
+    supa.from('prospects').select('*'),
+    supa.from('intakes').select('id',{count:'exact',head:true}),
+    supa.from('client_leads').select('client,service,status,created_at'),
+    supa.from('reviews').select('approved')
+  ]).then(function(res){
+    var visits=(res[0]&&res[0].count)||0;
+    var signups=(res[1].data||[]).length;
+    var intakes=(res[2]&&res[2].count)||0;
+    var clientsN=state.clients.length;
+    var wonLeads=state.leads.filter(function(l){return l.stage==='Won';}).length;
+    var rev=0, owed=0;
+    state.clients.forEach(function(c){
+      var v=parseFloat(String(c.value||'').replace(/[^0-9.]/g,''))||0;
+      if(c.dep==='paid'&&c.bal==='paid') rev+=v;
+      else if(c.dep==='paid'){ rev+=v/2; owed+=v/2; }
+      else owed+=v;
+    });
+    var cl=(res[3].data||[]);
+    var bySrc={};
+    cl.forEach(function(x){ var s=(x.service&&x.service!=='')?x.service:'direct'; bySrc[s]=(bySrc[s]||0)+1; });
+    var clWon=cl.filter(function(x){return x.status==='Won'||x.status==='Booked';}).length;
+    var apprRev=(res[4].data||[]).filter(function(x){return x.approved;}).length;
+    function stage(label,n,pct){ return '<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:13px"><span>'+label+'</span><b>'+n+(pct!=null?' <span style="color:var(--muted);font-weight:400">('+pct+'%)</span>':'')+'</b></div><div style="height:8px;background:rgba(255,255,255,.05);border-radius:99px;overflow:hidden"><div style="height:100%;width:'+Math.max(3,Math.min(100,pct==null?100:pct))+'%;background:linear-gradient(90deg,#5df2e0,#6f9dff)"></div></div></div>'; }
+    var p1=visits?Math.round(signups/visits*100):0, p2=signups?Math.round(intakes/signups*100):0, p3=signups?Math.round(clientsN/signups*100):0;
+    box.innerHTML=
+      '<h2 style="margin:18px 0 8px">Your funnel (all time)</h2><div class="card" style="padding:16px">'
+      +stage('👀 Site visits',visits,null)
+      +stage('🌱 Signups',signups,p1)
+      +stage('📥 Intakes',intakes,p2)
+      +stage('★ Clients',clientsN,p3)
+      +'<p class="sub" style="margin:10px 0 0">Your own leads won: '+wonLeads+' · Client leads booked/won: '+clWon+' of '+cl.length+' · Reviews live: '+apprRev+'</p></div>'
+      +'<h2 style="margin:18px 0 8px">Money</h2><div class="card" style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px">'
+      +'<div><div style="font-size:24px;font-weight:900;color:var(--green,#7CFCC6)">$'+rev.toLocaleString()+'</div><div class="sub">collected (est.)</div></div>'
+      +'<div><div style="font-size:24px;font-weight:900;color:#f5c04a">$'+owed.toLocaleString()+'</div><div class="sub">still to collect</div></div></div>'
+      +'<h2 style="margin:18px 0 8px">Client leads by source</h2><div class="card" style="padding:16px">'
+      +(Object.keys(bySrc).length?Object.keys(bySrc).sort(function(a,b){return bySrc[b]-bySrc[a];}).map(function(s){
+          return '<div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+esc(s)+'</span><b>'+bySrc[s]+'</b></div>';
+        }).join(''):'<span class="sub">No client leads yet — sources appear as capture pages collect (use ?utm_source= in ad links).</span>')
+      +'</div>';
+  });
+}
 
 /* ---- Reviews (moderate → homepage proof) ---- */
 function vReviews(){
@@ -833,7 +883,7 @@ function convertLead(id){
 }
 /* ---- Live pop-ups: new signups, intakes, tickets ---- */
 function popToast(title, sub, view){
-  var d=document.createElement('div'); d.className='toast';
+  var d=document.createElement('div'); d.className='toast'; d.setAttribute('role','status'); d.setAttribute('aria-live','polite');
   d.innerHTML='<b>'+title+'</b><small>'+sub+'</small>';
   d.onclick=function(){ d.remove(); if(view){ cur=view; document.querySelectorAll('#nav button').forEach(function(b){b.classList.toggle('on',b.dataset.view===view)}); render(); } };
   document.body.appendChild(d);
