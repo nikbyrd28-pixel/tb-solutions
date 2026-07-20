@@ -132,6 +132,7 @@
       <button data-view="links"><span class="ic">⚡</span> My Tools</button>
       <button data-view="leads"><span class="ic">◎</span> Leads</button>
       <button data-view="everyone"><span class="ic">👥</span> Everyone</button>
+      <button data-view="finder"><span class="ic">🔎</span> Prospect Finder</button>
       <button data-view="clients"><span class="ic">★</span> Clients</button>
       <button data-view="tasks"><span class="ic">✓</span> Tasks</button>
       <button data-view="prospects"><span class="ic">🌱</span> Prospects <em class="nbadge" id="nb_prospects" hidden></em></button>
@@ -246,7 +247,67 @@ function overdue(d){ return d && d<todayISO(); }
 function dueToday(d){ return d===todayISO(); }
 
 /* ================= VIEWS ================= */
-function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,prospects:vProspects,intakes:vIntakes,requests:vRequests,clientleads:vClientLeads,analytics:vAnalytics,social:vSocial,tools:vTools,data:vData,pipelines:vPipelines,emailsms:vEmailSms,aianswer:vAiAnswer,aioutbound:vAiOutbound,reviews:vReviews,everyone:vEveryone}[cur])(); if(cur==='tools') initTools(); if(cur==='requests') loadRequests(); if(cur==='analytics') loadAnalytics(); if(cur==='intakes') loadIntakes(); if(cur==='prospects') loadProspects(); if(cur==='clientleads') loadClientLeads(); if(cur==='pipelines') loadPipelines(); if(cur==='reviews') loadReviews(); if(cur==='analytics') setTimeout(loadFunnel,300); if(cur==='everyone') loadEveryone(); }
+function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,prospects:vProspects,intakes:vIntakes,requests:vRequests,clientleads:vClientLeads,analytics:vAnalytics,social:vSocial,tools:vTools,data:vData,pipelines:vPipelines,emailsms:vEmailSms,aianswer:vAiAnswer,aioutbound:vAiOutbound,reviews:vReviews,everyone:vEveryone,finder:vFinder}[cur])(); if(cur==='tools') initTools(); if(cur==='requests') loadRequests(); if(cur==='analytics') loadAnalytics(); if(cur==='intakes') loadIntakes(); if(cur==='prospects') loadProspects(); if(cur==='clientleads') loadClientLeads(); if(cur==='pipelines') loadPipelines(); if(cur==='reviews') loadReviews(); if(cur==='analytics') setTimeout(loadFunnel,300); if(cur==='everyone') loadEveryone(); }
+
+/* ---- Prospect Finder: Chester County businesses with no website ---- */
+var TOWNS=['West Chester','Downingtown','Coatesville','Exton','Phoenixville','Kennett Square','Malvern','Paoli','Oxford','Honey Brook','Parkesburg','Thorndale'];
+var NICHES=['landscaping','barbershop','hair salon','cleaning service','auto repair','car detailing','contractor','plumber','restaurant','roofing','hvac','towing','painter','handyman','daycare','gym'];
+var _found=[];
+function vFinder(){
+  var key=localStorage.getItem('tb_places_key')||'';
+  return '<div class="topbar"><div><h1>🔎 Prospect Finder</h1><p class="sub">Live search: Chester County businesses with no (real) website — your next clients</p></div></div>'
+    +(!key?'<div class="card" style="padding:16px;margin-bottom:12px"><b>One-time setup (free)</b><p class="sub" style="margin:6px 0 10px">1. Go to <b>console.cloud.google.com</b> → create/select a project → search "Places API (New)" → Enable.<br>2. APIs &amp; Services → Credentials → Create credentials → API key → copy it.<br>3. Paste below (saved on this device only).</p><input id="pfKey" placeholder="Paste your Google Places API key"><div style="margin-top:10px"><button class="btn sm primary" onclick="saveFinderKey()">Save key</button></div></div>':'')
+    +'<div class="card" style="padding:14px;margin-bottom:12px"><div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end">'
+    +'<div><label class="f">Business type</label><input id="pfNiche" list="pfNiches" value="landscaping"><datalist id="pfNiches">'+NICHES.map(function(n){return '<option>'+n+'</option>';}).join('')+'</datalist></div>'
+    +'<div><label class="f">Town</label><select id="pfTown">'+TOWNS.map(function(x){return '<option>'+x+'</option>';}).join('')+'</select></div>'
+    +'<button class="btn sm primary" onclick="runFinder()" id="pfGo" style="height:42px">Search</button></div>'
+    +'<label class="donebox" style="margin-top:10px"><input type="checkbox" id="pfAll"> show businesses that already have websites too</label></div>'
+    +'<div id="pfBody"><div class="empty">Pick a niche + town and hit Search. Businesses with no website are the easiest $300 sale you\'ll ever make.</div></div>';
+}
+function saveFinderKey(){ var v=(document.getElementById('pfKey').value||'').trim(); if(!v){alert('Paste the key first');return} localStorage.setItem('tb_places_key',v); render(); }
+function runFinder(){
+  var key=localStorage.getItem('tb_places_key');
+  if(!key){ alert('Add your free Google Places API key first (setup box above).'); return; }
+  var niche=document.getElementById('pfNiche').value||'business';
+  var town=document.getElementById('pfTown').value||'West Chester';
+  var showAll=document.getElementById('pfAll').checked;
+  var el=document.getElementById('pfBody'); el.innerHTML='<div class="empty">Searching '+esc(niche)+' in '+esc(town)+'…</div>';
+  var go=document.getElementById('pfGo'); go.disabled=true;
+  fetch('https://places.googleapis.com/v1/places:searchText',{method:'POST',
+    headers:{'Content-Type':'application/json','X-Goog-Api-Key':key,'X-Goog-FieldMask':'places.displayName,places.websiteUri,places.nationalPhoneNumber,places.formattedAddress,places.rating,places.userRatingCount'},
+    body:JSON.stringify({textQuery:niche+' in '+town+' PA',pageSize:20})})
+  .then(function(r){return r.json()}).then(function(j){
+    go.disabled=false;
+    if(j.error){ el.innerHTML='<div class="empty">Google said: '+esc(j.error.message||'error')+'.<br>Usually the key needs "Places API (New)" enabled, or billing enabled on the Google project (free tier covers this usage).</div>'; return; }
+    var social=/facebook\.com|instagram\.com|linktr\.ee|yelp\.com/i;
+    _found=(j.places||[]).map(function(p){
+      var site=p.websiteUri||'';
+      return { name:(p.displayName&&p.displayName.text)||'—', phone:p.nationalPhoneNumber||'', addr:p.formattedAddress||'', rating:p.rating||null, reviews:p.userRatingCount||0, site:site, noSite:!site||social.test(site) };
+    });
+    var vis=_found.filter(function(x){ return showAll || x.noSite; });
+    if(!vis.length){ el.innerHTML='<div class="empty">Everyone here has a website — try another niche or town (or tick "show all").</div>'; return; }
+    el.innerHTML='<p class="sub" style="margin:0 0 8px">'+vis.length+' found · '+_found.filter(function(x){return x.noSite;}).length+' with no real website 🎯</p>'
+      +vis.map(function(x,i){
+        var idx=_found.indexOf(x);
+        var already=state.leads.some(function(l){ return (l.business||'').toLowerCase()===x.name.toLowerCase(); });
+        return '<div class="card" style="padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap">'
+          +'<div style="min-width:0"><b>'+esc(x.name)+'</b> '+(x.noSite?'<span class="pill" style="border-color:rgba(245,192,74,.5);color:#f5c04a">NO WEBSITE</span>':'<span class="pill">has site</span>')
+          +'<div style="font-size:12px;color:var(--muted)">'+esc(x.addr)+(x.rating?' · '+x.rating+'★ ('+x.reviews+')':'')+'</div>'
+          +(x.phone?'<a href="tel:'+esc(x.phone)+'" style="color:var(--cyan);text-decoration:none;font-weight:700;font-size:13px">📞 '+esc(x.phone)+'</a>':'')
+          +'</div><div style="flex-shrink:0">'
+          +(already?'<span class="pill">in CRM ✓</span>':'<button class="btn sm primary" onclick="addFound('+idx+',this)">+ Lead</button>')
+          +'</div></div>';
+      }).join('');
+  }).catch(function(e){ go.disabled=false; el.innerHTML='<div class="empty">Search failed: '+esc(e.message)+'</div>'; });
+}
+function addFound(i,btn){
+  var x=_found[i]; if(!x) return;
+  var o={ id:uid(), createdAt:Date.now(), name:'', business:x.name, phone:x.phone||'', email:'', stage:'New', source:'Prospect Finder',
+    followup:new Date(Date.now()+2*864e5).toISOString().slice(0,10),
+    note:(x.noSite?'NO WEBSITE — ':'')+x.addr+(x.rating?' · '+x.rating+'★ ('+x.reviews+' reviews)':'')+' — pitch the $300 site' };
+  state.leads.unshift(o); save('leads'); upsertRow('leads', o);
+  if(btn){ btn.outerHTML='<span class="pill">in CRM ✓</span>'; }
+}
 
 /* ---- Everyone: all prospects + leads + client leads, one call list ---- */
 var _evFilter='All';
