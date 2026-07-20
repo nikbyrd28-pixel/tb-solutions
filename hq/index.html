@@ -114,6 +114,7 @@
     .row2{grid-template-columns:1fr}
     .hide-sm{display:none}
   }
+.soon{font-size:9px;background:rgba(139,123,255,.2);color:#b9adff;border-radius:999px;padding:1px 7px;margin-left:6px;font-style:normal;font-weight:700;vertical-align:middle}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -132,9 +133,13 @@
       <button data-view="intakes"><span class="ic">📥</span> Intakes <em class="nbadge" id="nb_intakes" hidden></em></button>
       <button data-view="requests"><span class="ic">🛟</span> Requests <em class="nbadge" id="nb_requests" hidden></em></button>
       <button data-view="clientleads"><span class="ic">🤝</span> Client Leads</button>
+      <button data-view="pipelines"><span class="ic">📊</span> Pipelines</button>
       <button data-view="analytics"><span class="ic">📈</span> Analytics</button>
       <button data-view="social"><span class="ic">📣</span> Social</button>
       <button data-view="tools"><span class="ic">✦</span> Marketing Tools</button>
+      <button data-view="emailsms"><span class="ic">💬</span> Email &amp; SMS <em class="soon">soon</em></button>
+      <button data-view="aianswer"><span class="ic">🤖</span> AI Answering <em class="soon">soon</em></button>
+      <button data-view="aioutbound"><span class="ic">🚀</span> AI Outbound <em class="soon">soon</em></button>
       <button data-view="data"><span class="ic">⤓</span> Backup / Data</button>
     </nav>
     <div class="foot">
@@ -235,7 +240,80 @@ function overdue(d){ return d && d<todayISO(); }
 function dueToday(d){ return d===todayISO(); }
 
 /* ================= VIEWS ================= */
-function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,prospects:vProspects,intakes:vIntakes,requests:vRequests,clientleads:vClientLeads,analytics:vAnalytics,social:vSocial,tools:vTools,data:vData}[cur])(); if(cur==='tools') initTools(); if(cur==='requests') loadRequests(); if(cur==='analytics') loadAnalytics(); if(cur==='intakes') loadIntakes(); if(cur==='prospects') loadProspects(); if(cur==='clientleads') loadClientLeads(); }
+function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,prospects:vProspects,intakes:vIntakes,requests:vRequests,clientleads:vClientLeads,analytics:vAnalytics,social:vSocial,tools:vTools,data:vData,pipelines:vPipelines,emailsms:vEmailSms,aianswer:vAiAnswer,aioutbound:vAiOutbound}[cur])(); if(cur==='tools') initTools(); if(cur==='requests') loadRequests(); if(cur==='analytics') loadAnalytics(); if(cur==='intakes') loadIntakes(); if(cur==='prospects') loadProspects(); if(cur==='clientleads') loadClientLeads(); if(cur==='pipelines') loadPipelines(); }
+
+/* ---- Pipelines (yours + every client's, one screen) ---- */
+function vPipelines(){
+  var cols=STAGES.map(function(s){
+    var items=state.leads.filter(function(l){return l.stage===s;});
+    return '<div class="col"><h3>'+s+' <em>'+items.length+'</em></h3>'+items.map(leadCard).join('')+'</div>';
+  }).join('');
+  return '<div class="topbar"><div><h1>Pipelines</h1><p class="sub">Your sales pipeline + every client\'s pipeline, one screen</p></div></div>'
+    +'<h2 style="margin:4px 0 8px">Your pipeline</h2><div class="board">'+cols+'</div>'
+    +'<h2 style="margin:18px 0 8px">Client pipelines</h2><div id="clPipes">'+(cloud?'<div class="empty">Loading…</div>':'<div class="empty">Log in with cloud sync to see client pipelines.</div>')+'</div>';
+}
+function loadPipelines(){
+  if(!cloud) return;
+  supa.from('client_leads').select('*').order('created_at',{ascending:false}).limit(400).then(function(r){
+    var el=document.getElementById('clPipes'); if(!el) return;
+    if(r.error){ el.innerHTML='<div class="empty">Could not load client leads.</div>'; return; }
+    var rows=r.data||[];
+    if(!rows.length){ el.innerHTML='<div class="empty">No client leads yet — they appear here as capture pages collect them.</div>'; return; }
+    var byClient={};
+    rows.forEach(function(x){ var k=x.client||'?'; (byClient[k]=byClient[k]||[]).push(x); });
+    el.innerHTML=Object.keys(byClient).map(function(c){
+      var list=byClient[c];
+      var cols=CL_STATUS.map(function(s){
+        var items=list.filter(function(x){return x.status===s;});
+        return '<div class="col"><h3>'+s+' <em>'+items.length+'</em></h3>'
+          + items.map(function(x){
+              return '<div class="card" style="padding:10px;margin-bottom:8px"><b>'+esc(x.name||x.company||'—')+'</b>'
+                +'<div style="font-size:11px;color:var(--muted)">'+esc((x.service||'')+(x.ride_date?' · '+x.ride_date:''))+'</div>'
+                +'<select class="status-sel" style="margin-top:6px" onchange="setClientLeadStatus('+x.id+',this.value)">'
+                +CL_STATUS.map(function(z){return '<option'+(x.status===z?' selected':'')+'>'+z+'</option>';}).join('')+'</select></div>';
+            }).join('')
+          +'</div>';
+      }).join('');
+      return '<div class="card" style="padding:12px;margin-bottom:12px"><b><span class="pill">'+esc(c)+'</span></b>'
+        +'<div style="font-size:11px;color:var(--muted);margin:2px 0 8px">'+list.length+' leads · clients work these at tbsol.net/crm</div>'
+        +'<div class="board">'+cols+'</div></div>';
+    }).join('');
+  });
+}
+
+/* ---- Coming soon: Email & SMS, AI Answering, AI Outbound ---- */
+function soonView(icon,title,lines,note){
+  return '<div class="topbar"><div><h1>'+icon+' '+title+' <em class="soon" style="font-size:11px">coming soon</em></h1></div></div>'
+    +'<div class="card" style="padding:20px"><p class="sub" style="margin:0 0 10px">'+lines[0]+'</p>'
+    +'<ul style="color:var(--muted);font-size:14px;line-height:2;margin:0;padding-left:18px">'+lines.slice(1).map(function(l){return '<li>'+l+'</li>';}).join('')+'</ul>'
+    +(note?'<p style="margin:14px 0 0;font-size:13px;color:var(--muted)">'+note+'</p>':'')
+    +'</div>';
+}
+function vEmailSms(){
+  return soonView('💬','Email & SMS',[
+    'One inbox for every client conversation — send and receive without leaving Command.',
+    'Email + text blasts to leads and customers',
+    'Two-way SMS — replies land right here',
+    'Templates and AI-written messages per client',
+    'Every message logged to the lead automatically']);
+}
+function vAiAnswer(){
+  return soonView('🤖','AI Answering',[
+    'An AI receptionist for you and every client — no lead ever waits.',
+    'Answers inbound leads, chats, and missed calls 24/7',
+    'Qualifies, quotes, and books straight into the pipeline',
+    'Hands off to a human the moment it matters',
+    'Full transcripts saved to the lead']);
+}
+function vAiOutbound(){
+  return soonView('🚀','AI Outbound',[
+    'AI that goes and gets the business — calls, texts, and emails on autopilot.',
+    'AI outreach sequences to prospects and cold lists',
+    'Automatic follow-ups until they answer',
+    'Books meetings onto your calendar',
+    'Per-client campaigns you can sell as a service'],
+    'Early version live now: the Outreach Autopilot workflow already drafts AI follow-up emails every morning — this page is where it becomes full campaigns.');
+}
 
 /* ---- Client Leads (per-client CRM) + B2B campaigns ---- */
 var CL_STATUS=['New','Contacted','Booked','Won','Lost'];
