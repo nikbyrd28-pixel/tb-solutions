@@ -131,6 +131,7 @@
       <button data-view="dashboard" class="on"><span class="ic">◈</span> Dashboard</button>
       <button data-view="links"><span class="ic">⚡</span> My Tools</button>
       <button data-view="leads"><span class="ic">◎</span> Leads</button>
+      <button data-view="everyone"><span class="ic">👥</span> Everyone</button>
       <button data-view="clients"><span class="ic">★</span> Clients</button>
       <button data-view="tasks"><span class="ic">✓</span> Tasks</button>
       <button data-view="prospects"><span class="ic">🌱</span> Prospects <em class="nbadge" id="nb_prospects" hidden></em></button>
@@ -245,7 +246,58 @@ function overdue(d){ return d && d<todayISO(); }
 function dueToday(d){ return d===todayISO(); }
 
 /* ================= VIEWS ================= */
-function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,prospects:vProspects,intakes:vIntakes,requests:vRequests,clientleads:vClientLeads,analytics:vAnalytics,social:vSocial,tools:vTools,data:vData,pipelines:vPipelines,emailsms:vEmailSms,aianswer:vAiAnswer,aioutbound:vAiOutbound,reviews:vReviews}[cur])(); if(cur==='tools') initTools(); if(cur==='requests') loadRequests(); if(cur==='analytics') loadAnalytics(); if(cur==='intakes') loadIntakes(); if(cur==='prospects') loadProspects(); if(cur==='clientleads') loadClientLeads(); if(cur==='pipelines') loadPipelines(); if(cur==='reviews') loadReviews(); if(cur==='analytics') setTimeout(loadFunnel,300); }
+function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,prospects:vProspects,intakes:vIntakes,requests:vRequests,clientleads:vClientLeads,analytics:vAnalytics,social:vSocial,tools:vTools,data:vData,pipelines:vPipelines,emailsms:vEmailSms,aianswer:vAiAnswer,aioutbound:vAiOutbound,reviews:vReviews,everyone:vEveryone}[cur])(); if(cur==='tools') initTools(); if(cur==='requests') loadRequests(); if(cur==='analytics') loadAnalytics(); if(cur==='intakes') loadIntakes(); if(cur==='prospects') loadProspects(); if(cur==='clientleads') loadClientLeads(); if(cur==='pipelines') loadPipelines(); if(cur==='reviews') loadReviews(); if(cur==='analytics') setTimeout(loadFunnel,300); if(cur==='everyone') loadEveryone(); }
+
+/* ---- Everyone: all prospects + leads + client leads, one call list ---- */
+var _evFilter='All';
+function vEveryone(){
+  return '<div class="topbar"><div><h1>👥 Everyone</h1><p class="sub">Every prospect and lead in one list — your cold-call companion</p></div></div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px" id="evChips"></div>'
+    +'<div id="evBody"><div class="empty">Loading…</div></div>';
+}
+function evChip(label){ return '<button class="btn sm '+(_evFilter===label?'primary':'ghost')+'" onclick="_evFilter=\''+label+'\';loadEveryone()">'+label+'</button>'; }
+function loadEveryone(){
+  var chips=document.getElementById('evChips');
+  if(chips) chips.innerHTML=['All','My leads','Prospects','Client leads'].map(evChip).join('');
+  var el=document.getElementById('evBody'); if(!el) return;
+  var items=[];
+  state.leads.forEach(function(l){
+    items.push({ type:'Lead', when:l.createdAt||0, name:l.name||l.business||'—', sub:(l.business&&l.name?l.business+' · ':'')+(l.stage||'New')+(l.source?' · '+l.source:''), phone:l.phone||'', email:l.email||'', action:'<button class="btn sm ghost" onclick="editLead(\''+l.id+'\')">Open</button>'+(l.stage!=='Won'?' <button class="btn sm ghost" onclick="convertLead(\''+l.id+'\')">★ Client</button>':'') });
+  });
+  var done=function(){
+    var vis=items.filter(function(x){
+      if(_evFilter==='My leads') return x.type==='Lead';
+      if(_evFilter==='Prospects') return x.type==='Prospect';
+      if(_evFilter==='Client leads') return x.type==='Client lead';
+      return true;
+    }).sort(function(a,b){ return (b.when||0)-(a.when||0); });
+    if(!vis.length){ el.innerHTML='<div class="empty">Nothing here yet.</div>'; return; }
+    el.innerHTML='<p class="sub" style="margin:0 0 8px">'+vis.length+' people</p>'+vis.map(function(x){
+      return '<div class="card" style="padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap">'
+        +'<div style="min-width:0"><b>'+esc(x.name)+'</b> <span class="pill">'+x.type+'</span>'
+        +'<div style="font-size:12px;color:var(--muted)">'+esc(x.sub)+'</div>'
+        +'<div style="font-size:13px;margin-top:4px">'
+        +(x.phone?'<a href="tel:'+esc(x.phone)+'" style="color:var(--cyan);text-decoration:none;font-weight:700;margin-right:12px">📞 '+esc(x.phone)+'</a>':'')
+        +(x.email?'<a href="mailto:'+esc(x.email)+'" style="color:var(--cyan);text-decoration:none;font-weight:700">✉️ '+esc(x.email)+'</a>':'')
+        +'</div></div><div style="flex-shrink:0">'+(x.action||'')+'</div></div>';
+    }).join('');
+  };
+  if(!cloud){ done(); return; }
+  Promise.all([
+    supa.from('prospects').select('*').order('created_at',{ascending:false}).limit(200),
+    supa.from('client_leads').select('*').order('created_at',{ascending:false}).limit(200)
+  ]).then(function(res){
+    (res[0].data||[]).forEach(function(p){
+      var isLead = state.leads.some(function(l){ return (l.email||'').toLowerCase()===(p.email||'').toLowerCase() && p.email; });
+      if(isLead) return; // already shown as a lead
+      items.push({ type:'Prospect', when:new Date(p.created_at).getTime(), name:p.email||'—', sub:(p.name||'')+' · signed up '+new Date(p.created_at).toLocaleDateString()+' · '+(p.status||'New'), phone:'', email:p.email||'', action:(p.status!=='Added'?'<button class="btn sm primary" onclick="convertProspect('+p.id+')">→ Lead</button>':'') });
+    });
+    (res[1].data||[]).forEach(function(c){
+      items.push({ type:'Client lead', when:new Date(c.created_at).getTime(), name:c.name||c.company||'—', sub:(c.client||'')+' · '+(c.status||'New')+(c.service?' · '+c.service:''), phone:c.phone||'', email:c.email||'', action:'<span class="pill">'+esc(c.status||'New')+'</span>' });
+    });
+    done();
+  }).catch(done);
+}
 
 /* ---- Funnel + revenue analytics (Phase 3) ---- */
 function loadFunnel(){
