@@ -1,0 +1,376 @@
+{
+  "name": "TB — Outreach Autopilot (AI follow-up drafts + ticket alerts)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 8,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "id": "f1000000-0000-4000-8000-000000000001",
+      "name": "Every Day 8am",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "leads",
+        "returnAll": true,
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "followup",
+              "condition": "lte",
+              "keyValue": "={{ $now.toISO().slice(0,10) }}"
+            }
+          ]
+        }
+      },
+      "id": "f1000000-0000-4000-8000-000000000002",
+      "name": "Get Due TB Leads",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        220,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Leads still worth chasing, with an email, max 4 touches\nconst closed = ['won', 'lost', 'closed', 'client', 'dead', 'not interested'];\nconst out = [];\nfor (const item of $input.all()) {\n  const l = item.json;\n  if (!l.email) continue;\n  if (closed.includes(String(l.stage || '').toLowerCase())) continue;\n  if ((Number(l.followup_count) || 0) >= 4) continue;\n  out.push({ json: { ...l, touch: (Number(l.followup_count) || 0) + 1 } });\n}\nreturn out;"
+      },
+      "id": "f1000000-0000-4000-8000-000000000003",
+      "name": "Filter Active Leads",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You write follow-up / outreach emails for Nick Byrd of TB Solutions (tbsol.net), a Chester County PA one-man digital studio: custom websites with a built-in AI chat assistant, Google/Meta ads, and auto follow-up systems for local businesses. Voice: direct, friendly, local operator — zero agency-speak, short sentences.\n\nLead:\n- Name: {{ $json.name }}\n- Business: {{ $json.business }}\n- Stage: {{ $json.stage }}\n- Source: {{ $json.source }}\n- Notes: {{ $json.note }}\n- Touch #{{ $json.touch }} (1 = check-in referencing their business, 2 = share a concrete idea for their site/ads, 3 = quick-win offer like the $100 website audit, 4 = polite last call).\n\nWrite the email. Under 100 words, one clear ask (reply or book a call at tbsol.net). Sign as \"Nick — TB Solutions\".\nRespond with ONLY valid JSON, no markdown fences:\n{ \"subject\": \"...\", \"body\": \"...\" }"
+      },
+      "id": "f1000000-0000-4000-8000-000000000004",
+      "name": "Write Outreach Email",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        660,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "id": "f1000000-0000-4000-8000-000000000005",
+      "name": "Anthropic Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        660,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const lead = $('Filter Active Leads').item.json;\nlet ai = {};\ntry {\n  let t = $json.text || '';\n  t = t.replace(/```json|```/g, '').trim();\n  const m = t.match(/\\{[\\s\\S]*\\}/);\n  ai = m ? JSON.parse(m[0]) : {};\n} catch (e) { ai = {}; }\n\nconst next = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);\n\nreturn [{ json: {\n  ...lead,\n  email_subject: ai.subject || `Quick idea for ${lead.business || 'your business'}`,\n  email_body: ai.body || `Hi ${lead.name || 'there'},\\n\\nStill happy to help with the website/ads when you're ready — reply here or grab a time at tbsol.net.\\n\\nNick — TB Solutions`,\n  new_followup: next\n} }];"
+      },
+      "id": "f1000000-0000-4000-8000-000000000006",
+      "name": "Parse Draft",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "nikbyrd28@gmail.com",
+        "toEmail": "nikbyrd28@gmail.com",
+        "subject": "=[DRAFT — for {{ $json.email }}] {{ $json.email_subject }}",
+        "emailFormat": "text",
+        "text": "=Send this to: {{ $json.email }}\n\n{{ $json.email_body }}",
+        "options": {}
+      },
+      "id": "f1000000-0000-4000-8000-000000000007",
+      "name": "Create Gmail Draft",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1100,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads",
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "dataToSend": "defineBelow",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "followup",
+              "fieldValue": "={{ $json.new_followup }}"
+            },
+            {
+              "fieldId": "followup_count",
+              "fieldValue": "={{ $json.touch }}"
+            },
+            {
+              "fieldId": "last_contacted_at",
+              "fieldValue": "={{ $now.toISO() }}"
+            }
+          ]
+        }
+      },
+      "id": "f1000000-0000-4000-8000-000000000008",
+      "name": "Update TB Lead",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1320,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "activities",
+        "dataToSend": "defineBelow",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $('Parse Draft').item.json.id }}"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "draft_created"
+            },
+            {
+              "fieldId": "detail",
+              "fieldValue": "=Touch #{{ $('Parse Draft').item.json.touch }} draft: {{ $('Parse Draft').item.json.email_subject }}"
+            }
+          ]
+        }
+      },
+      "id": "f1000000-0000-4000-8000-000000000009",
+      "name": "Log Activity",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1540,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "tickets",
+        "returnAll": true,
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "condition": "eq",
+              "keyValue": "New"
+            }
+          ]
+        }
+      },
+      "id": "f1000000-0000-4000-8000-000000000010",
+      "name": "Get New Tickets",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        220,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nif (!items.length) return [];\nconst lines = items.map(i => `• [${i.json.priority || 'Normal'}] ${i.json.business || i.json.name || 'Unknown'} — ${i.json.ticket_type || 'ticket'}: ${(i.json.details || '').slice(0, 120)}`);\nreturn [{ json: { count: items.length, summary: lines.join('\\n') } }];"
+      },
+      "id": "f1000000-0000-4000-8000-000000000011",
+      "name": "Summarize Tickets",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "nikbyrd28@gmail.com",
+        "toEmail": "nikbyrd28@gmail.com",
+        "subject": "=⚠️ TB: {{ $json.count }} open ticket(s) need you",
+        "emailFormat": "text",
+        "text": "=Open tickets in your CRM:\n\n{{ $json.summary }}\n\nHandle them in your portal, then set status so they drop off this alert.",
+        "options": {}
+      },
+      "id": "f1000000-0000-4000-8000-000000000012",
+      "name": "Ticket Alert",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        660,
+        160
+      ]
+    }
+  ],
+  "connections": {
+    "Every Day 8am": {
+      "main": [
+        [
+          {
+            "node": "Get Due TB Leads",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get New Tickets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Due TB Leads": {
+      "main": [
+        [
+          {
+            "node": "Filter Active Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Active Leads": {
+      "main": [
+        [
+          {
+            "node": "Write Outreach Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Outreach Email": {
+      "main": [
+        [
+          {
+            "node": "Parse Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Write Outreach Email",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Draft": {
+      "main": [
+        [
+          {
+            "node": "Create Gmail Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Gmail Draft": {
+      "main": [
+        [
+          {
+            "node": "Update TB Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update TB Lead": {
+      "main": [
+        [
+          {
+            "node": "Log Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get New Tickets": {
+      "main": [
+        [
+          {
+            "node": "Summarize Tickets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize Tickets": {
+      "main": [
+        [
+          {
+            "node": "Ticket Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

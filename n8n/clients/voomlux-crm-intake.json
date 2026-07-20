@@ -1,0 +1,457 @@
+{
+  "name": "VoomLux CRM — Lead Intake (webhook → AI score → CRM → auto-reply)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "voomlux-leads",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "b1000000-0000-4000-8000-000000000001",
+      "name": "Lead Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "voomlux-leads"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Matches the fields tbsol.net/clients/voomlux posts: name, phone, email, service, pickup, dropoff, date, passengers, message, source\nconst body = $json.body || $json;\nconst clean = (s) => (typeof s === 'string' ? s.trim() : '');\n\nconst name = clean(body.name);\nconst email = clean(body.email).toLowerCase();\nconst phone = clean(body.phone);\n\nconst rawService = clean(body.service || body.service_type).toLowerCase();\nlet service_type = 'other';\nif (rawService.includes('airport')) service_type = 'airport';\nelse if (rawService.includes('corporate') || rawService.includes('executive')) service_type = 'corporate';\nelse if (rawService.includes('wedding') || rawService.includes('event') || rawService.includes('night out')) service_type = 'event';\nelse if (rawService.includes('hourly') || rawService.includes('as-directed')) service_type = 'hourly';\n\nconst ride_date_raw = clean(body.date || body.pickup_date);\nlet pickup_date = /^\\d{4}-\\d{2}-\\d{2}/.test(ride_date_raw) ? ride_date_raw.slice(0,10) : null;\nconst pickup_location = clean(body.pickup || body.pickup_location);\nconst dropoff_location = clean(body.dropoff || body.dropoff_location);\nconst party_size = Number(body.passengers || body.party_size) || null;\nlet message = clean(body.message);\nif (ride_date_raw && !pickup_date) message = (message ? message + ' | ' : '') + 'Requested date: ' + ride_date_raw;\nconst source = clean(body.source) || 'website';\n\nconst emailOk = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);\nconst valid = (emailOk || phone.length >= 7) && (name.length > 0 || message.length > 0);\n\nreturn [{ json: { valid, name, email: emailOk ? email : null, phone, service_type, pickup_date, pickup_location, dropoff_location, party_size, message, source, received_at: new Date().toISOString(), next_followup_at: new Date(Date.now() + 24*60*60*1000).toISOString() } }];"
+      },
+      "id": "b1000000-0000-4000-8000-000000000002",
+      "name": "Validate & Normalize",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c2000000-0000-4000-8000-000000000001",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b1000000-0000-4000-8000-000000000003",
+      "name": "Is Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        440,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the lead qualification assistant for VoomLux, a luxury black-SUV chauffeur service in Philadelphia (airport transfers, events, corporate, hourly).\n\nAnalyze this inbound lead:\n- Name: {{ $json.name }}\n- Email: {{ $json.email }}\n- Phone: {{ $json.phone }}\n- Service type: {{ $json.service_type }}\n- Pickup date: {{ $json.pickup_date }}\n- Pickup: {{ $json.pickup_location }}\n- Dropoff: {{ $json.dropoff_location }}\n- Party size: {{ $json.party_size }}\n- Message: {{ $json.message }}\n- Source: {{ $json.source }}\n\nScore it. High scores: near-term pickup dates, airport/corporate/event intent, complete contact info. Low: vague, spam, job-seeking.\nRespond with ONLY a valid JSON object, no markdown fences:\n{\n  \"lead_score\": <integer 0-100>,\n  \"intent\": <\"booking\" | \"quote\" | \"inquiry\" | \"partnership\" | \"spam\" | \"other\">,\n  \"priority\": <\"high\" | \"medium\" | \"low\">,\n  \"summary\": <one sentence>,\n  \"suggested_action\": <one sentence>\n}"
+      },
+      "id": "b1000000-0000-4000-8000-000000000004",
+      "name": "AI Lead Scoring",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        660,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "id": "b1000000-0000-4000-8000-000000000005",
+      "name": "Anthropic Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        660,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const lead = $('Validate & Normalize').first().json;\nlet ai = {};\ntry {\n  let t = $json.text || '';\n  t = t.replace(/```json|```/g, '').trim();\n  const m = t.match(/\\{[\\s\\S]*\\}/);\n  ai = m ? JSON.parse(m[0]) : {};\n} catch (e) { ai = {}; }\n\nreturn [{ json: {\n  ...lead,\n  lead_score: Number(ai.lead_score) || 0,\n  intent: ai.intent || 'unknown',\n  priority: ai.priority || 'low',\n  ai_summary: ai.summary || 'AI scoring failed — review manually',\n  suggested_action: ai.suggested_action || 'Manual review'\n} }];"
+      },
+      "id": "b1000000-0000-4000-8000-000000000006",
+      "name": "Parse AI Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "leads",
+        "dataToSend": "defineBelow",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "name",
+              "fieldValue": "={{ $json.name }}"
+            },
+            {
+              "fieldId": "email",
+              "fieldValue": "={{ $json.email }}"
+            },
+            {
+              "fieldId": "phone",
+              "fieldValue": "={{ $json.phone }}"
+            },
+            {
+              "fieldId": "service_type",
+              "fieldValue": "={{ $json.service_type }}"
+            },
+            {
+              "fieldId": "pickup_date",
+              "fieldValue": "={{ $json.pickup_date }}"
+            },
+            {
+              "fieldId": "pickup_location",
+              "fieldValue": "={{ $json.pickup_location }}"
+            },
+            {
+              "fieldId": "dropoff_location",
+              "fieldValue": "={{ $json.dropoff_location }}"
+            },
+            {
+              "fieldId": "party_size",
+              "fieldValue": "={{ $json.party_size }}"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{ $json.message }}"
+            },
+            {
+              "fieldId": "source",
+              "fieldValue": "={{ $json.source }}"
+            },
+            {
+              "fieldId": "lead_score",
+              "fieldValue": "={{ $json.lead_score }}"
+            },
+            {
+              "fieldId": "intent",
+              "fieldValue": "={{ $json.intent }}"
+            },
+            {
+              "fieldId": "priority",
+              "fieldValue": "={{ $json.priority }}"
+            },
+            {
+              "fieldId": "ai_summary",
+              "fieldValue": "={{ $json.ai_summary }}"
+            },
+            {
+              "fieldId": "suggested_action",
+              "fieldValue": "={{ $json.suggested_action }}"
+            },
+            {
+              "fieldId": "stage",
+              "fieldValue": "New"
+            },
+            {
+              "fieldId": "last_contacted_at",
+              "fieldValue": "={{ $now.toISO() }}"
+            },
+            {
+              "fieldId": "next_followup_at",
+              "fieldValue": "={{ $json.next_followup_at }}"
+            }
+          ]
+        }
+      },
+      "id": "b1000000-0000-4000-8000-000000000007",
+      "name": "Save Lead to CRM",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c2000000-0000-4000-8000-000000000003",
+              "leftValue": "={{ $json.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b1000000-0000-4000-8000-000000000013",
+      "name": "Has Email?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1320,
+        -240
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "nikbyrd28@gmail.com",
+        "toEmail": "={{ $json.email }}",
+        "subject": "VoomLux — we got your request 🖤",
+        "emailFormat": "text",
+        "text": "=Hi {{ $json.name || 'there' }},\n\nThanks for reaching out to VoomLux. We received your request{{ $json.service_type && $json.service_type !== 'other' ? ' for ' + $json.service_type + ' service' : '' }} and a member of our team is reviewing it right now.\n\nYou'll hear from us shortly with availability and a flat-rate quote — no surge pricing, ever.\n\nNeed us faster? Just reply to this email.\n\n— The VoomLux Team\nLuxury black-SUV transportation · Philadelphia",
+        "options": {}
+      },
+      "id": "b1000000-0000-4000-8000-000000000008",
+      "name": "Auto-Reply to Lead",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1320,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c2000000-0000-4000-8000-000000000002",
+              "leftValue": "={{ $json.lead_score }}",
+              "rightValue": 70,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b1000000-0000-4000-8000-000000000009",
+      "name": "High Value?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1540,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "nikbyrd28@gmail.com",
+        "toEmail": "nikbyrd28@gmail.com",
+        "subject": "=🔥 VoomLux hot lead: {{ $json.name }} — score {{ $json.lead_score }}",
+        "emailFormat": "text",
+        "text": "=High-value VoomLux lead:\n\nName: {{ $json.name }}\nEmail: {{ $json.email }}\nPhone: {{ $json.phone }}\nService: {{ $json.service_type }} | Pickup date: {{ $json.pickup_date }}\nRoute: {{ $json.pickup_location }} → {{ $json.dropoff_location }}\nScore: {{ $json.lead_score }} ({{ $json.priority }}, {{ $json.intent }})\n\n{{ $json.ai_summary }}\nNext: {{ $json.suggested_action }}\n\nMessage: {{ $json.message }}",
+        "options": {}
+      },
+      "id": "b1000000-0000-4000-8000-000000000010",
+      "name": "Alert Owner",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1760,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"status\": \"received\" } }}",
+        "options": {}
+      },
+      "id": "b1000000-0000-4000-8000-000000000011",
+      "name": "Respond OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1540,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"status\": \"rejected\", \"reason\": \"invalid lead data\" } }}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "b1000000-0000-4000-8000-000000000012",
+      "name": "Respond Invalid",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        660,
+        220
+      ]
+    }
+  ],
+  "connections": {
+    "Lead Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate & Normalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Normalize": {
+      "main": [
+        [
+          {
+            "node": "Is Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Valid?": {
+      "main": [
+        [
+          {
+            "node": "AI Lead Scoring",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Invalid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Lead Scoring": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Lead Scoring",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Output": {
+      "main": [
+        [
+          {
+            "node": "Save Lead to CRM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Lead to CRM": {
+      "main": [
+        [
+          {
+            "node": "Has Email?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "High Value?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Email?": {
+      "main": [
+        [
+          {
+            "node": "Auto-Reply to Lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "High Value?": {
+      "main": [
+        [
+          {
+            "node": "Alert Owner",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

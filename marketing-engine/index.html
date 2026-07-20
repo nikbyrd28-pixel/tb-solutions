@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Marketing Engine — TB Command</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230b0b12'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-weight='900' font-size='24' fill='%238b7bff'%3EME%3C/text%3E%3C/svg%3E" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{--bg:#0b0b12;--panel:rgba(255,255,255,.04);--line:rgba(139,123,255,.22);--text:#eef0f6;--muted:#9aa0b0;--acc:#8b7bff;--acc2:#5ad0f0;--good:#43d09a;--bad:#ff6a7a}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;background:radial-gradient(circle at 15% -10%,rgba(139,123,255,.14),transparent 40%),radial-gradient(circle at 100% 110%,rgba(90,208,240,.10),transparent 40%),var(--bg);color:var(--text);line-height:1.55;min-height:100vh}
+  .wrap{max-width:860px;margin:0 auto;padding:22px 16px 90px}
+  h1{font-size:24px;margin:0}
+  h1 b{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);font-size:13px;margin:4px 0 18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+  label{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:12px 0 4px}
+  input,select,textarea{width:100%;background:rgba(0,0,0,.4);border:1px solid var(--line);border-radius:10px;padding:11px 12px;color:var(--text);font:inherit;font-size:15px}
+  textarea{min-height:64px;resize:vertical}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(139,123,255,.15)}
+  option{color:#111}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:560px){.row{grid-template-columns:1fr}}
+  .btn{border:0;border-radius:999px;padding:12px 18px;font:inherit;font-weight:800;font-size:14px;cursor:pointer;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#0b0b12}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+  .btn.small{padding:8px 13px;font-size:12px}
+  .btn:disabled{opacity:.55}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+  .chip{border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:13px;color:var(--muted);cursor:pointer;background:transparent}
+  .chip.on{border-color:var(--acc);color:var(--text);background:rgba(139,123,255,.14)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:8px}
+  .asset{border:1px solid var(--line);border-radius:14px;padding:13px;cursor:pointer;background:rgba(0,0,0,.25);transition:transform .08s}
+  .asset:active{transform:scale(.97)}
+  .asset.on{border-color:var(--acc);background:rgba(139,123,255,.14)}
+  .asset .e{font-size:22px}
+  .asset .t{font-weight:800;font-size:13px;margin-top:6px}
+  .asset .d{font-size:11px;color:var(--muted);margin-top:2px}
+  pre{white-space:pre-wrap;word-wrap:break-word;font:13px/1.6 ui-monospace,Menlo,monospace;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:12px;padding:14px;max-height:60vh;overflow:auto}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .muted{color:var(--muted);font-size:13px}
+  .item{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px;cursor:pointer}
+  .item .k{font-size:12px;color:var(--muted)}
+  .spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.25);border-top-color:var(--acc);border-radius:50%;animation:s .7s linear infinite;vertical-align:-3px;margin-right:8px}
+  @keyframes s{to{transform:rotate(360deg)}}
+  .err{color:var(--bad);font-size:13px;margin-top:8px}
+  .ok{color:var(--good);font-size:13px;margin-top:8px}
+  .top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+  .hide{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>⚡ Marketing <b>Engine</b></h1><p class="sub">Pick a client, pick an asset, get finished marketing work.</p></div>
+    <button class="btn ghost small hide" id="logoutBtn" onclick="logout()">Log out</button>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="card" id="loginCard">
+    <label>Email</label><input id="lEmail" type="email" autocomplete="email" placeholder="you@tbsol.net">
+    <label>Password</label><input id="lPass" type="password" autocomplete="current-password">
+    <div class="bar"><button class="btn" onclick="login()">Log in</button></div>
+    <div class="err hide" id="lErr"></div>
+    <p class="muted" style="margin-top:10px">Same login as TB Command cloud sync.</p>
+  </div>
+
+  <!-- ENGINE -->
+  <div id="engine" class="hide">
+    <div class="card">
+      <label>Client</label>
+      <div class="chips" id="clientChips"></div>
+      <div class="row">
+        <div><label>Business name</label><input id="fBiz" placeholder="Voom Lux"></div>
+        <div><label>Niche</label><input id="fNiche" placeholder="luxury black car service"></div>
+      </div>
+      <div class="row">
+        <div><label>City / area</label><input id="fCity" value="Chester County, PA"></div>
+        <div><label>Monthly budget</label>
+          <select id="fBudget">
+            <option>$0 — organic only</option>
+            <option selected>$250–$500</option>
+            <option>$500–$1,000</option>
+            <option>$1,000–$2,500</option>
+            <option>$2,500+</option>
+          </select>
+        </div>
+      </div>
+      <label>Goal right now</label><input id="fGoal" placeholder="book 10 more jobs a month">
+      <label>Anything else? (offers, voice, links)</label><textarea id="fExtra"></textarea>
+    </div>
+
+    <div class="card">
+      <label style="margin-top:0">What should I make?</label>
+      <div class="grid" id="assetGrid"></div>
+      <div class="bar">
+        <button class="btn" id="genBtn" onclick="generate()">⚡ Generate</button>
+        <span class="muted" id="genState"></span>
+      </div>
+      <div class="err hide" id="gErr"></div>
+    </div>
+
+    <div class="card hide" id="outCard">
+      <div class="top"><b id="outTitle"></b></div>
+      <pre id="outText"></pre>
+      <div class="bar">
+        <button class="btn small" onclick="saveAsset()">💾 Save to library</button>
+        <button class="btn ghost small" onclick="copyOut()">📋 Copy</button>
+        <button class="btn ghost small" onclick="generate()">🔁 Regenerate</button>
+      </div>
+      <div class="ok hide" id="saveOk">Saved ✓</div>
+    </div>
+
+    <div class="card">
+      <div class="top"><b>📚 Library</b><button class="btn ghost small" onclick="loadLibrary()">Refresh</button></div>
+      <div id="lib"><p class="muted">Nothing saved yet — generate something above.</p></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+var ENGINE_URL='https://n8n-fouz.srv1786777.hstgr.cloud/webhook/marketing-engine-d0195f21652a';
+
+var supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+var ASSETS=[
+  {k:'plan',e:'🗺️',t:'Marketing plan',d:'30-day plan + budget split'},
+  {k:'ad_copy',e:'📣',t:'Ad copy pack',d:'Meta + Google + TikTok'},
+  {k:'website_copy',e:'🖥️',t:'Website copy',d:'Full one-page site'},
+  {k:'email_sequence',e:'✉️',t:'Email sequence',d:'5-email nurture'},
+  {k:'social_calendar',e:'📆',t:'Social calendar',d:'14 days of posts'},
+  {k:'research',e:'🔍',t:'Research brief',d:'Competitors + positioning'},
+  {k:'one_pager',e:'📄',t:'Sales one-pager',d:'Send to prospects'}
+];
+var sel='plan', lastOut=null, clients=[];
+
+function el(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+
+function renderAssets(){
+  el('assetGrid').innerHTML=ASSETS.map(function(a){
+    return '<div class="asset'+(sel===a.k?' on':'')+'" onclick="pick(\''+a.k+'\')"><div class="e">'+a.e+'</div><div class="t">'+a.t+'</div><div class="d">'+a.d+'</div></div>';
+  }).join('');
+}
+function pick(k){sel=k;renderAssets()}
+
+async function boot(){
+  var s=await supa.auth.getSession();
+  if(s.data && s.data.session){showEngine()}else{el('loginCard').classList.remove('hide')}
+}
+async function login(){
+  el('lErr').classList.add('hide');
+  var r=await supa.auth.signInWithPassword({email:el('lEmail').value.trim(),password:el('lPass').value});
+  if(r.error){el('lErr').textContent=r.error.message;el('lErr').classList.remove('hide');return}
+  showEngine();
+}
+async function logout(){await supa.auth.signOut();location.reload()}
+
+async function showEngine(){
+  el('loginCard').classList.add('hide');
+  el('engine').classList.remove('hide');
+  el('logoutBtn').classList.remove('hide');
+  renderAssets(); loadClients(); loadLibrary();
+}
+
+async function loadClients(){
+  var r=await supa.from('clients').select('business,name').order('created_at',{ascending:false});
+  clients=(r.data||[]).filter(function(c){return c.business});
+  var chips=clients.map(function(c,i){return '<span class="chip" onclick="useClient('+i+')">'+esc(c.business)+'</span>'}).join('');
+  el('clientChips').innerHTML=chips+'<span class="chip on" id="manualChip">+ manual</span>';
+}
+function useClient(i){
+  var c=clients[i];
+  el('fBiz').value=c.business||'';
+  document.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on')});
+  document.querySelectorAll('.chip')[i].classList.add('on');
+}
+
+async function generate(){
+  el('gErr').classList.add('hide');
+  var biz=el('fBiz').value.trim();
+  if(!biz){el('gErr').textContent='Give me at least the business name.';el('gErr').classList.remove('hide');return}
+  var btn=el('genBtn');btn.disabled=true;
+  el('genState').innerHTML='<span class="spin"></span>Claude is working — 20–40s…';
+  var b=new URLSearchParams();
+  b.append('kind',sel); b.append('business',biz);
+  b.append('niche',el('fNiche').value); b.append('city',el('fCity').value);
+  b.append('goal',el('fGoal').value); b.append('budget',el('fBudget').value);
+  b.append('extra',el('fExtra').value);
+  try{
+    var res=await fetch(ENGINE_URL,{method:'POST',body:b});
+    var j=await res.json();
+    if(!j.text) throw new Error('empty response');
+    var a=ASSETS.find(function(x){return x.k===sel});
+    lastOut={kind:sel,client:biz,title:a.t+' — '+biz,content:j.text};
+    el('outTitle').textContent=a.e+' '+lastOut.title;
+    el('outText').textContent=j.text;
+    el('outCard').classList.remove('hide');
+    el('saveOk').classList.add('hide');
+    el('outCard').scrollIntoView({behavior:'smooth'});
+  }catch(e){
+    el('gErr').textContent='Generation failed — is the "TB — Marketing Engine AI" workflow Active in n8n? ('+e.message+')';
+    el('gErr').classList.remove('hide');
+  }
+  btn.disabled=false; el('genState').textContent='';
+}
+
+function copyOut(){ if(lastOut) navigator.clipboard.writeText(lastOut.content) }
+
+async function saveAsset(){
+  if(!lastOut) return;
+  var r=await supa.from('marketing_assets').insert({client:lastOut.client,kind:lastOut.kind,title:lastOut.title,content:lastOut.content});
+  if(r.error){alert('Save failed: '+r.error.message);return}
+  el('saveOk').classList.remove('hide');
+  loadLibrary();
+}
+
+var libRows=[];
+async function loadLibrary(){
+  var r=await supa.from('marketing_assets').select('id,created_at,client,kind,title,content').order('created_at',{ascending:false}).limit(100);
+  libRows=r.data||[];
+  if(r.error){el('lib').innerHTML='<p class="muted">Could not load library: '+esc(r.error.message)+'</p>';return}
+  if(!libRows.length){el('lib').innerHTML='<p class="muted">Nothing saved yet — generate something above.</p>';return}
+  el('lib').innerHTML=libRows.map(function(x,i){
+    var a=ASSETS.find(function(z){return z.k===x.kind})||{e:'📄'};
+    return '<div class="item" onclick="toggleItem('+i+')"><b>'+a.e+' '+esc(x.title||x.kind)+'</b><div class="k">'+esc(x.client||'')+' · '+new Date(x.created_at).toLocaleDateString()+'</div>'
+      +'<pre id="libp'+i+'" class="hide" style="margin-top:10px">'+esc(x.content)+'</pre>'
+      +'<div class="bar hide" id="libb'+i+'"><button class="btn ghost small" onclick="event.stopPropagation();navigator.clipboard.writeText(libRows['+i+'].content)">📋 Copy</button>'
+      +'<button class="btn ghost small" onclick="event.stopPropagation();delAsset('+x.id+')">🗑️ Delete</button></div></div>';
+  }).join('');
+}
+function toggleItem(i){ el('libp'+i).classList.toggle('hide'); el('libb'+i).classList.toggle('hide') }
+async function delAsset(id){
+  if(!confirm('Delete this asset?'))return;
+  await supa.from('marketing_assets').delete().eq('id',id);
+  loadLibrary();
+}
+
+document.addEventListener('keydown',function(e){ if(e.key==='Enter' && !el('loginCard').classList.contains('hide') && document.activeElement && (document.activeElement.id==='lPass')) login() });
+boot();
+</script>
+</body>
+</html>

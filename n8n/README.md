@@ -55,3 +55,26 @@ Save each workflow → flip the **Active** toggle (top-right) on all 3.
   or `hq/automation-setup.sql` not run.
 - **Nothing at all:** workflow not Active, or the old lead-router is still
   Active and stealing the webhook.
+
+---
+
+## NEW: AI suite (Marketing Engine + client CRM)
+
+These run on ONE free Google Gemini key — no OpenAI/Anthropic needed.
+
+| File | What it does | Runs |
+|---|---|---|
+| **`marketing-engine-ai.json`** ⭐ | Powers **tbsol.net/marketing-engine** — generates marketing plans, ad copy, website copy, email sequences, social calendars, research briefs, sales one-pagers per client | When you hit Generate |
+| **`outreach-autopilot.json`** | AI writes a personalized follow-up/outreach draft for every lead whose follow-up date is due, emails the drafts to you ready to send + alerts you about open tickets | Daily 8am |
+| **`prospect-scanner.json`** | Finds Chester County businesses with NO website via Google Places, adds them to your CRM, emails you the Monday hit list (needs a free Places API key in the node) | Mondays 7am |
+| **`clients/voomlux-crm-intake.json`** | VoomLux booking form → AI lead scoring 0–100 → client CRM → instant auto-reply → 🔥 alert if hot | Every submission |
+| **`clients/voomlux-followup-sequencer.json`** | Chases every quiet VoomLux lead: AI-written touch 1 / 2 / 3, then marks Lost | Daily 9am |
+| **`clients/voomlux-review-rebook.json`** | Completed rides → review request + rebook nudge | Daily 10am |
+
+### Setup (once)
+
+1. **Gemini credential** (free): aistudio.google.com/apikey → create key. In n8n, open any imported workflow above → tap the Google Gemini node → Credential → Create new → paste key. Reuse this same credential on every Gemini node.
+2. **Import from URL** — in n8n: ⋯ → Import from URL → e.g. `https://tbsol.net/n8n/marketing-engine-ai.json` (same pattern for each file above — no downloads).
+3. Email nodes use your existing **SMTP credential** (same one as the older suite — Gmail App Password). Select it on each Email node.
+4. Supabase nodes: create a **Supabase credential** per project — TB Base (`qgbjiqdwzgkjkmqyjsmc.supabase.co`) for the TB workflows, VoomLux CRM (`ewipzalkaybrsyxlhlob.supabase.co`) for the clients/ workflows. Use each project's **service_role** key (Supabase → Settings → API keys).
+5. Flip each workflow **Active**. Start with `marketing-engine-ai.json` — then tbsol.net/marketing-engine works end to end.
