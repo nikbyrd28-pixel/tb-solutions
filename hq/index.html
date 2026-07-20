@@ -256,7 +256,7 @@ var _found=[];
 function vFinder(){
   var key=localStorage.getItem('tb_places_key')||'';
   return '<div class="topbar"><div><h1>🔎 Prospect Finder</h1><p class="sub">Live search: Chester County businesses with no (real) website — your next clients</p></div></div>'
-    +(!key?'<div class="card" style="padding:16px;margin-bottom:12px"><b>One-time setup (free)</b><p class="sub" style="margin:6px 0 10px">1. Go to <b>console.cloud.google.com</b> → create/select a project → search "Places API (New)" → Enable.<br>2. APIs &amp; Services → Credentials → Create credentials → API key → copy it.<br>3. Paste below (saved on this device only).</p><input id="pfKey" placeholder="Paste your Google Places API key"><div style="margin-top:10px"><button class="btn sm primary" onclick="saveFinderKey()">Save key</button></div></div>':'')
+    +(!key?'<div class="card" style="padding:16px;margin-bottom:12px"><b>Works now — key optional</b><p class="sub" style="margin:6px 0 10px">Searches work right now in <b>free mode</b> (no key needed). For sharper data — verified websites, star ratings, review counts — add a Google key:<br>1. console.cloud.google.com → enable "Places API (New)".<br>2. Credentials → Create credentials → <b>API key</b> (starts with AIza).<br>3. Paste below (saved on this device only).</p><input id="pfKey" placeholder="Paste your Google Places API key"><div style="margin-top:10px"><button class="btn sm primary" onclick="saveFinderKey()">Save key</button></div></div>':'')
     +'<div class="card" style="padding:14px;margin-bottom:12px"><div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end">'
     +'<div><label class="f">Business type</label><input id="pfNiche" list="pfNiches" value="landscaping"><datalist id="pfNiches">'+NICHES.map(function(n){return '<option>'+n+'</option>';}).join('')+'</datalist></div>'
     +'<div><label class="f">Town</label><select id="pfTown">'+TOWNS.map(function(x){return '<option>'+x+'</option>';}).join('')+'</select></div>'
@@ -267,38 +267,73 @@ function vFinder(){
 function saveFinderKey(){ var v=(document.getElementById('pfKey').value||'').trim(); if(!v){alert('Paste the key first');return} localStorage.setItem('tb_places_key',v); render(); }
 function runFinder(){
   var key=localStorage.getItem('tb_places_key');
-  if(!key){ alert('Add your free Google Places API key first (setup box above).'); return; }
   var niche=document.getElementById('pfNiche').value||'business';
   var town=document.getElementById('pfTown').value||'West Chester';
   var showAll=document.getElementById('pfAll').checked;
   var el=document.getElementById('pfBody'); el.innerHTML='<div class="empty">Searching '+esc(niche)+' in '+esc(town)+'…</div>';
   var go=document.getElementById('pfGo'); go.disabled=true;
+  if(key){ runFinderGoogle(key,niche,town,showAll,el,go); } else { runFinderOSM(niche,town,showAll,el,go); }
+}
+function renderFound(vis,el,noteHtml){
+  if(!vis.length){ el.innerHTML='<div class="empty">Nothing matched — try another niche or town (or tick "show all").</div>'; return; }
+  el.innerHTML='<p class="sub" style="margin:0 0 8px">'+vis.length+' found · '+_found.filter(function(x){return x.noSite;}).length+' with no real website 🎯</p>'
+    +(noteHtml||'')
+    +vis.map(function(x){
+      var idx=_found.indexOf(x);
+      var already=state.leads.some(function(l){ return (l.business||'').toLowerCase()===x.name.toLowerCase(); });
+      return '<div class="card" style="padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap">'
+        +'<div style="min-width:0"><b>'+esc(x.name)+'</b> '+(x.noSite?'<span class="pill" style="border-color:rgba(245,192,74,.5);color:#f5c04a">NO WEBSITE</span>':'<span class="pill">has site</span>')
+        +'<div style="font-size:12px;color:var(--muted)">'+esc(x.addr)+(x.rating?' · '+x.rating+'★ ('+x.reviews+')':'')+'</div>'
+        +(x.phone?'<a href="tel:'+esc(x.phone)+'" style="color:var(--cyan);text-decoration:none;font-weight:700;font-size:13px">📞 '+esc(x.phone)+'</a>':'')
+        +'</div><div style="flex-shrink:0">'
+        +(already?'<span class="pill">in CRM ✓</span>':'<button class="btn sm primary" onclick="addFound('+idx+',this)">+ Lead</button>')
+        +'</div></div>';
+    }).join('');
+}
+function runFinderGoogle(key,niche,town,showAll,el,go){
   fetch('https://places.googleapis.com/v1/places:searchText',{method:'POST',
     headers:{'Content-Type':'application/json','X-Goog-Api-Key':key,'X-Goog-FieldMask':'places.displayName,places.websiteUri,places.nationalPhoneNumber,places.formattedAddress,places.rating,places.userRatingCount'},
     body:JSON.stringify({textQuery:niche+' in '+town+' PA',pageSize:20})})
   .then(function(r){return r.json()}).then(function(j){
     go.disabled=false;
-    if(j.error){ el.innerHTML='<div class="empty">Google said: '+esc(j.error.message||'error')+'.<br>Usually the key needs "Places API (New)" enabled, or billing enabled on the Google project (free tier covers this usage).</div>'; return; }
+    if(j.error){ el.innerHTML='<div class="empty">Google said: '+esc(j.error.message||'error')+'.<br>Falling back to free mode…</div>'; runFinderOSM(niche,town,showAll,el,go); return; }
     var social=/facebook\.com|instagram\.com|linktr\.ee|yelp\.com/i;
     _found=(j.places||[]).map(function(p){
       var site=p.websiteUri||'';
       return { name:(p.displayName&&p.displayName.text)||'—', phone:p.nationalPhoneNumber||'', addr:p.formattedAddress||'', rating:p.rating||null, reviews:p.userRatingCount||0, site:site, noSite:!site||social.test(site) };
     });
-    var vis=_found.filter(function(x){ return showAll || x.noSite; });
-    if(!vis.length){ el.innerHTML='<div class="empty">Everyone here has a website — try another niche or town (or tick "show all").</div>'; return; }
-    el.innerHTML='<p class="sub" style="margin:0 0 8px">'+vis.length+' found · '+_found.filter(function(x){return x.noSite;}).length+' with no real website 🎯</p>'
-      +vis.map(function(x,i){
-        var idx=_found.indexOf(x);
-        var already=state.leads.some(function(l){ return (l.business||'').toLowerCase()===x.name.toLowerCase(); });
-        return '<div class="card" style="padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap">'
-          +'<div style="min-width:0"><b>'+esc(x.name)+'</b> '+(x.noSite?'<span class="pill" style="border-color:rgba(245,192,74,.5);color:#f5c04a">NO WEBSITE</span>':'<span class="pill">has site</span>')
-          +'<div style="font-size:12px;color:var(--muted)">'+esc(x.addr)+(x.rating?' · '+x.rating+'★ ('+x.reviews+')':'')+'</div>'
-          +(x.phone?'<a href="tel:'+esc(x.phone)+'" style="color:var(--cyan);text-decoration:none;font-weight:700;font-size:13px">📞 '+esc(x.phone)+'</a>':'')
-          +'</div><div style="flex-shrink:0">'
-          +(already?'<span class="pill">in CRM ✓</span>':'<button class="btn sm primary" onclick="addFound('+idx+',this)">+ Lead</button>')
-          +'</div></div>';
-      }).join('');
-  }).catch(function(e){ go.disabled=false; el.innerHTML='<div class="empty">Search failed: '+esc(e.message)+'</div>'; });
+    renderFound(_found.filter(function(x){ return showAll || x.noSite; }),el,'');
+  }).catch(function(e){ go.disabled=false; runFinderOSM(niche,town,showAll,el,go); });
+}
+var TOWN_GEO={'West Chester':[39.9607,-75.6055],'Downingtown':[40.0065,-75.7033],'Coatesville':[39.9832,-75.8238],'Exton':[40.0290,-75.6208],'Phoenixville':[40.1304,-75.5149],'Kennett Square':[39.8468,-75.7116],'Malvern':[40.0362,-75.5138],'Paoli':[40.0418,-75.4763],'Oxford':[39.7854,-75.9788],'Honey Brook':[40.0946,-75.9113],'Parkesburg':[39.9587,-75.9194],'Thorndale':[39.9929,-75.7452]};
+function nicheKeyword(n){
+  n=(n||'').toLowerCase().trim();
+  var map={'hvac':'hvac|heating|air','auto repair':'auto|garage|repair','car detailing':'detail|wash','hair salon':'salon|hair','cleaning service':'clean|maid','barbershop':'barber','landscaping':'landscap|lawn|garden','restaurant':'restaurant|grill|kitchen|pizza','contractor':'contract|construct|build','roofing':'roof','plumber':'plumb','painter':'paint','handyman':'handyman|repair','daycare':'daycare|child|learning','gym':'gym|fitness','towing':'tow'};
+  if(map[n]) return map[n];
+  var w=n.split(' ')[0].replace(/(ing|ers|er|s)$/,'');
+  return w||'business';
+}
+function runFinderOSM(niche,town,showAll,el,go){
+  var geo=TOWN_GEO[town]||TOWN_GEO['West Chester'];
+  var kw=nicheKeyword(niche);
+  var q='[out:json][timeout:25];(node["name"~"'+kw+'",i](around:9000,'+geo[0]+','+geo[1]+');way["name"~"'+kw+'",i](around:9000,'+geo[0]+','+geo[1]+'););out center tags 60;';
+  fetch('https://overpass-api.de/api/interpreter',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'data='+encodeURIComponent(q)})
+  .then(function(r){return r.json()}).then(function(j){
+    go.disabled=false;
+    var social=/facebook\.com|instagram\.com|linktr\.ee|yelp\.com/i;
+    var seen={};
+    _found=(j.elements||[]).map(function(e2){
+      var tg=e2.tags||{};
+      var site=tg.website||tg['contact:website']||tg['contact:facebook']||'';
+      var addr=[tg['addr:housenumber'],tg['addr:street'],tg['addr:city']||town].filter(Boolean).join(' ');
+      return { name:tg.name||'', phone:tg.phone||tg['contact:phone']||'', addr:addr||town+', PA', rating:null, reviews:0, site:site, noSite:!site||social.test(site) };
+    }).filter(function(x){
+      if(!x.name) return false;
+      var k=x.name.toLowerCase(); if(seen[k]) return false; seen[k]=1; return true;
+    });
+    renderFound(_found.filter(function(x){ return showAll || x.noSite; }),el,
+      '<p class="sub" style="margin:0 0 8px">⚠️ Free-mode data (OpenStreetMap): "no website" here just means none is on record — <b>google the name before pitching</b>. Add a Google key in the setup box anytime for verified data + ratings.</p>');
+  }).catch(function(e){ go.disabled=false; el.innerHTML='<div class="empty">Free-mode search failed ('+esc(e.message)+') — the free server is sometimes busy; try again in a minute.</div>'; });
 }
 function addFound(i,btn){
   var x=_found[i]; if(!x) return;
