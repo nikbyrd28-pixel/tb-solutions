@@ -743,7 +743,30 @@
       </div>
     </section>
   </main>
-  <footer class="footer"><div class="wrap">© TB Solutions — digital marketing, web design, AI growth agents, local SEO, and ads for Chester County businesses. West Chester · Exton · Malvern · Downingtown · Kennett Square · Main Line, PA. &nbsp;·&nbsp; <a href="/learn/" style="color:var(--cyan);text-decoration:none;font-weight:700">Marketing Guides</a> &nbsp;·&nbsp; <a href="/support/" style="color:var(--cyan);text-decoration:none;font-weight:700">Support</a> &nbsp;·&nbsp; <a href="/portal/" style="color:var(--cyan);text-decoration:none;font-weight:700">Client Login →</a> &nbsp;·&nbsp; <a href="/privacy/" style="color:var(--muted);text-decoration:none">Privacy</a> &nbsp;·&nbsp; <a href="/terms/" style="color:var(--muted);text-decoration:none">Terms</a></div></footer>
+  <section id="reviews" style="display:none;padding:40px 0"><div class="wrap">
+  <h2 style="font-size:clamp(24px,4vw,34px);margin:0 0 6px">What clients <span style="background:linear-gradient(120deg,#5df2e0,#6f9dff);-webkit-background-clip:text;background-clip:text;color:transparent">say</span></h2>
+  <p style="color:var(--muted);margin:0 0 20px">Real reviews from real Chester County businesses.</p>
+  <div id="reviewCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px"></div>
+</div></section>
+<script>
+(function(){
+  var K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+  function escR(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  fetch('https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/reviews?approved=eq.true&order=created_at.desc&limit=6&select=name,business,rating,text',{headers:{apikey:K,Authorization:'Bearer '+K}})
+  .then(function(r){return r.json()}).then(function(rows){
+    if(!rows||!rows.length) return;
+    document.getElementById('reviewCards').innerHTML=rows.map(function(x){
+      return '<div style="background:rgba(255,255,255,.03);border:1px solid rgba(150,190,255,.2);border-radius:16px;padding:18px">'
+        +'<div style="color:#f5c04a;font-size:15px;letter-spacing:2px">'+('★★★★★'.slice(0,x.rating||5))+'</div>'
+        +'<p style="color:#d8ddf2;font-size:14px;margin:10px 0">"'+escR((x.text||'').slice(0,220))+'"</p>'
+        +'<b style="font-size:13px">'+escR(x.name||'')+'</b>'+(x.business?'<span style="color:var(--muted);font-size:13px"> — '+escR(x.business)+'</span>':'')
+        +'</div>';
+    }).join('');
+    document.getElementById('reviews').style.display='block';
+  }).catch(function(){});
+})();
+</script>
+<footer class="footer"><div class="wrap">© TB Solutions — digital marketing, web design, AI growth agents, local SEO, and ads for Chester County businesses. West Chester · Exton · Malvern · Downingtown · Kennett Square · Main Line, PA. &nbsp;·&nbsp; <a href="/learn/" style="color:var(--cyan);text-decoration:none;font-weight:700">Marketing Guides</a> &nbsp;·&nbsp; <a href="/support/" style="color:var(--cyan);text-decoration:none;font-weight:700">Support</a> &nbsp;·&nbsp; <a href="/portal/" style="color:var(--cyan);text-decoration:none;font-weight:700">Client Login →</a> &nbsp;·&nbsp; <a href="/privacy/" style="color:var(--muted);text-decoration:none">Privacy</a> &nbsp;·&nbsp; <a href="/terms/" style="color:var(--muted);text-decoration:none">Terms</a></div></footer>
 
   <div class="mobile-cta" aria-label="Quick contact">
     <a class="call" href="/portal/" style="flex:0 0 auto;padding-left:16px;padding-right:16px">Client Login</a>
