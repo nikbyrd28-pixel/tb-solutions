@@ -68,6 +68,10 @@
       <div class="chips" id="statusChips"></div>
       <div id="list"><p class="muted">Loading…</p></div>
     </div>
+    <div class="card" style="border-style:dashed">
+      <b>💬 Email &amp; SMS <span class="pill" style="color:var(--acc2);border-color:rgba(139,123,255,.4)">coming soon</span></b>
+      <p class="muted" style="margin:6px 0 0">Text and email your leads right from this screen — instant replies, blasts, and automatic follow-ups. Rolling out soon.</p>
+    </div>
     <p class="muted" style="text-align:center">Powered by <a class="call" href="https://tbsol.net">TB Solutions</a> · <a class="call" href="https://tbsol.net/support/">Get support 🛟</a></p>
   </div>
 </div>
@@ -136,6 +140,12 @@ async function loadLeads(){
   if(r.error){el('list').innerHTML='<p class="err">Could not load: '+esc(r.error.message)+'</p>';return}
   rows=r.data||[];
   renderClientChips();
+  var want=new URLSearchParams(location.search).get('client');
+  if(isAdmin && want){
+    var norm=function(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'')};
+    var match=Array.from(new Set(rows.map(function(x){return x.client||'?'}))).find(function(c){return norm(c)===norm(want)});
+    if(match){ filterClient=match; renderClientChips(); }
+  }
   render();
 }
 

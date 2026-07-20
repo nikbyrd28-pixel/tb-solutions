@@ -723,6 +723,7 @@ function leadForm(l){
     +'<label class="f">Next follow-up date</label><input id="l_followup" type="date" value="'+esc(l.followup)+'">'
     +'<label class="f">Notes</label><textarea id="l_note" placeholder="What they need, what you said...">'+esc(l.note)+'</textarea>'
     +'<div class="modal-actions"><button class="btn primary" onclick="saveLead(\''+(l.id||'')+'\')">Save</button>'
+    + (l.id?'<button class="btn ghost" onclick="closeModal();convertLead(\''+l.id+'\')">★ Make client</button>':'')
     + (l.id?'<button class="btn danger" onclick="delLead(\''+l.id+'\')">Delete</button>':'')
     +'<button class="btn ghost" onclick="closeModal()">Cancel</button></div>';
 }
@@ -755,7 +756,7 @@ function vClients(){
       +'<td>'+esc(c.project||'')+'</td>'
       +'<td><select class="status-sel" onchange="setClientStatus(\''+c.id+'\',this.value)">'+CLIENT_STATUS.map(function(s){return '<option'+(c.status===s?' selected':'')+'>'+s+'</option>';}).join('')+'</select></td>'
       +'<td class="hide-sm">'+(c.value?'$'+esc(c.value):'')+(c.dep==='paid'?' <span class="pill" style="border-color:rgba(124,252,198,.5);color:var(--green)">dep ✓</span>':'')+(c.bal==='paid'?' <span class="pill" style="border-color:rgba(124,252,198,.5);color:var(--green)">bal ✓</span>':'')+'</td>'
-      +'<td style="text-align:right"><button class="btn sm ghost" onclick="editClient(\''+c.id+'\')">Open</button></td></tr>';
+      +'<td style="text-align:right"><a class="btn sm ghost" style="text-decoration:none" href="/crm/?client='+encodeURIComponent((c.business||'').toLowerCase().replace(/[^a-z0-9]/g,''))+'" target="_blank">📊 CRM</a> <button class="btn sm ghost" onclick="editClient(\''+c.id+'\')">Open</button></td></tr>';
   }).join('');
   return '<div class="topbar"><div><h1>Clients</h1><p class="sub">'+state.clients.length+' total · '+state.clients.filter(function(c){return c.status!=='Done';}).length+' active</p></div>'
     +'<button class="btn primary" onclick="addClient()">+ New client</button></div>'
@@ -841,7 +842,7 @@ function showClientKit(o){
     +'<label class="f">📥 Their lead capture page (share or link ads to it)</label>'
     +'<input readonly value="'+cap+'" onclick="this.select()">'
     +'<label class="f">📊 Their own CRM (they log in with '+esc(o.email||'their portal account')+')</label>'
-    +'<input readonly value="https://tbsol.net/crm/" onclick="this.select()">'
+    +'<input readonly value="https://tbsol.net/crm/?client='+slug+'" onclick="this.select()">'
     +'<label class="f">🔑 Their client portal</label>'
     +'<input readonly value="https://tbsol.net/portal/" onclick="this.select()">'
     +'<p class="hint" style="margin-top:10px">Every lead from the capture page lands in your Client Leads + Pipelines and in their CRM automatically. Add their brand profile in the <a href="/marketing-engine/" style="color:var(--cyan)">Marketing Engine</a> to generate on-brand copy for them.</p>'
