@@ -49,7 +49,7 @@
 <div class="wrap">
   <div class="top">
     <div><h1 id="brand">Your <b>CRM</b></h1><p class="sub" id="brandSub">Every lead your pages capture — work them here.</p></div>
-    <button class="btn ghost small hide" id="logoutBtn" onclick="logout()">Log out</button>
+    <div class="row2"><a class="btn ghost small hide" id="supportBtn" href="https://tbsol.net/support/" style="text-decoration:none">🛟 Support</a><button class="btn ghost small hide" id="logoutBtn" onclick="logout()">Log out</button></div>
   </div>
 
   <div class="card" id="loginCard">
@@ -68,7 +68,7 @@
       <div class="chips" id="statusChips"></div>
       <div id="list"><p class="muted">Loading…</p></div>
     </div>
-    <p class="muted" style="text-align:center">Powered by <a class="call" href="https://tbsol.net">TB Solutions</a></p>
+    <p class="muted" style="text-align:center">Powered by <a class="call" href="https://tbsol.net">TB Solutions</a> · <a class="call" href="https://tbsol.net/support/">Get support 🛟</a></p>
   </div>
 </div>
 
@@ -100,6 +100,7 @@ async function show(){
   el('loginCard').classList.add('hide');
   el('app').classList.remove('hide');
   el('logoutBtn').classList.remove('hide');
+  el('supportBtn').classList.remove('hide');
   isAdmin=(me.email===ADMIN);
   if(!isAdmin){
     var c=await supa.from('clients').select('business').eq('email',me.email).limit(1);
