@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "content": "## VoomLux lead machine\nRide requests come from tbsol.net/clients/voomlux (or any form posting to this webhook).\n\nWhat happens automatically:\n1. VoomLux gets an instant lead alert (you're CC'd)\n2. The lead gets an instant \"got it\" reply\n3. 2 days later the lead gets a friendly follow-up nudge\n\n### Setup\n1. Replace CLIENT_EMAIL_HERE in the two marked nodes with VoomLux's real email.\n2. Attach your email credential on all 3 Email nodes.\n3. Save → flip **Active**.\n\nLead page to give the client: https://tbsol.net/clients/voomlux",
+        "content": "## VoomLux lead machine\nRide requests come from tbsol.net/clients/voomlux (or any form posting to this webhook).\n\nWhat happens automatically:\n1. A new-ride alert goes out (defaults to YOU, Nick)\n2. The lead gets an instant \"got it\" reply\n3. 2 days later the lead gets a friendly follow-up nudge\n\n### Setup\n1. Attach your email credential on all 3 Email nodes.\n2. Save → flip **Active**. (Works immediately — alerts come to you.)\n\n### Optional\nWhen VoomLux wants the alerts too, open **Alert (goes to you)** and add his email to the **CC** field — or swap it into **To**.\n\nLead page to give the client: https://tbsol.net/clients/voomlux",
         "height": 360,
         "width": 380
       },
@@ -29,15 +29,14 @@
     {
       "parameters": {
         "fromEmail": "nikbyrd28@gmail.com",
-        "toEmail": "CLIENT_EMAIL_HERE",
-        "ccEmail": "nikbyrd28@gmail.com",
+        "toEmail": "nikbyrd28@gmail.com",
         "subject": "=🚘 New ride request: {{ $json.body.name }} — {{ $json.body.service }}",
         "emailFormat": "text",
         "text": "=New ride request from your booking page!\n\nName: {{ $json.body.name }}\nPhone: {{ $json.body.phone }}\nEmail: {{ $json.body.email }}\nTrip: {{ $json.body.service }}\nPickup: {{ $json.body.pickup }}\nDrop-off: {{ $json.body.dropoff }}\nWhen: {{ $json.body.date }}\nPassengers: {{ $json.body.passengers }}\nNotes: {{ $json.body.message }}\n\nReceived: {{ $json.body.ts }}\n\n👉 Call or text them back fast — riders book whoever confirms first.\n\n— Automated by TB Solutions",
         "options": {}
       },
       "id": "em_client",
-      "name": "Alert VoomLux (EDIT EMAIL)",
+      "name": "Alert (goes to you)",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [560, 160]
@@ -106,7 +105,7 @@
   "connections": {
     "VoomLux Webhook": {
       "main": [[
-        { "node": "Alert VoomLux (EDIT EMAIL)", "type": "main", "index": 0 },
+        { "node": "Alert (goes to you)", "type": "main", "index": 0 },
         { "node": "Lead left an email?", "type": "main", "index": 0 }
       ]]
     },
