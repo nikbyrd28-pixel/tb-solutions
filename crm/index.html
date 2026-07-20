@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Your CRM — powered by TB Solutions</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230b0b12'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-weight='900' font-size='24' fill='%235ad0f0'%3ECRM%3C/text%3E%3C/svg%3E" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{--bg:#0b0b12;--panel:rgba(255,255,255,.04);--line:rgba(90,208,240,.22);--text:#eef0f6;--muted:#9aa0b0;--acc:#5ad0f0;--acc2:#8b7bff;--good:#43d09a;--warn:#f0c05a;--bad:#ff6a7a}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;background:radial-gradient(circle at 85% -10%,rgba(90,208,240,.13),transparent 40%),radial-gradient(circle at 0% 110%,rgba(139,123,255,.10),transparent 40%),var(--bg);color:var(--text);line-height:1.55;min-height:100vh}
+  .wrap{max-width:900px;margin:0 auto;padding:22px 16px 90px}
+  h1{font-size:22px;margin:0}
+  h1 b{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);font-size:13px;margin:4px 0 16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+  label{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:12px 0 4px}
+  input,select{width:100%;background:rgba(0,0,0,.4);border:1px solid var(--line);border-radius:10px;padding:11px 12px;color:var(--text);font:inherit;font-size:15px}
+  input:focus,select:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(90,208,240,.14)}
+  option{color:#111}
+  .btn{border:0;border-radius:999px;padding:12px 18px;font:inherit;font-weight:800;font-size:14px;cursor:pointer;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#0b0b12}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+  .btn.small{padding:7px 12px;font-size:12px}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:12px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+  .stat .n{font-size:26px;font-weight:900;color:var(--acc)}
+  .stat .l{font-size:12px;color:var(--muted)}
+  .lead{border:1px solid var(--line);border-radius:14px;padding:13px;margin-top:10px}
+  .lead .who{font-weight:800}
+  .lead .meta{font-size:12px;color:var(--muted);margin:3px 0 8px}
+  .lead .msg{font-size:13px;color:var(--muted);margin-bottom:8px;white-space:pre-wrap}
+  .row2{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .status-sel{width:auto;min-width:130px;padding:8px 10px;font-size:13px}
+  .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:11px;color:var(--muted)}
+  .s-New{color:var(--acc)} .s-Contacted{color:var(--warn)} .s-Booked{color:var(--acc2)} .s-Won{color:var(--good)} .s-Lost{color:var(--bad)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+  .chip{border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:13px;color:var(--muted);cursor:pointer;background:transparent}
+  .chip.on{border-color:var(--acc);color:var(--text);background:rgba(90,208,240,.12)}
+  .top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+  .muted{color:var(--muted);font-size:13px}
+  .err{color:var(--bad);font-size:13px;margin-top:8px}
+  a.call{color:var(--acc);text-decoration:none;font-weight:700;font-size:13px}
+  .hide{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1 id="brand">Your <b>CRM</b></h1><p class="sub" id="brandSub">Every lead your pages capture — work them here.</p></div>
+    <button class="btn ghost small hide" id="logoutBtn" onclick="logout()">Log out</button>
+  </div>
+
+  <div class="card" id="loginCard">
+    <label>Email</label><input id="lEmail" type="email" autocomplete="email">
+    <label>Password</label><input id="lPass" type="password" autocomplete="current-password">
+    <div style="margin-top:14px"><button class="btn" onclick="login()">Log in</button></div>
+    <div class="err hide" id="lErr"></div>
+    <p class="muted" style="margin-top:10px">Use your client portal login. Need an account? Ask your TB Solutions contact.</p>
+  </div>
+
+  <div id="app" class="hide">
+    <div class="chips hide" id="clientChips"></div>
+    <div class="stats" id="stats"></div>
+    <div class="card">
+      <div class="top"><b>📥 Leads</b><button class="btn ghost small" onclick="loadLeads()">Refresh</button></div>
+      <div class="chips" id="statusChips"></div>
+      <div id="list"><p class="muted">Loading…</p></div>
+    </div>
+    <p class="muted" style="text-align:center">Powered by <a class="call" href="https://tbsol.net">TB Solutions</a></p>
+  </div>
+</div>
+
+<script>
+var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+var ADMIN='nikbyrd28@gmail.com';
+var STATUSES=['New','Contacted','Booked','Won','Lost'];
+
+var supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+var me=null, rows=[], filterStatus='All', filterClient='All', isAdmin=false;
+
+function el(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+
+async function boot(){
+  var s=await supa.auth.getSession();
+  if(s.data && s.data.session){me=s.data.session.user;show()}else{el('loginCard').classList.remove('hide')}
+}
+async function login(){
+  el('lErr').classList.add('hide');
+  var r=await supa.auth.signInWithPassword({email:el('lEmail').value.trim(),password:el('lPass').value});
+  if(r.error){el('lErr').textContent=r.error.message;el('lErr').classList.remove('hide');return}
+  me=r.data.user; show();
+}
+async function logout(){await supa.auth.signOut();location.reload()}
+
+async function show(){
+  el('loginCard').classList.add('hide');
+  el('app').classList.remove('hide');
+  el('logoutBtn').classList.remove('hide');
+  isAdmin=(me.email===ADMIN);
+  if(!isAdmin){
+    var c=await supa.from('clients').select('business').eq('email',me.email).limit(1);
+    var biz=(c.data&&c.data[0]&&c.data[0].business)||'Your business';
+    el('brand').innerHTML=esc(biz)+' <b>CRM</b>';
+    el('brandSub').textContent='Every lead your pages capture — work them here. Powered by TB Solutions.';
+  } else {
+    el('brand').innerHTML='All clients <b>CRM</b> <span class="pill">admin</span>';
+  }
+  renderStatusChips();
+  loadLeads();
+}
+
+function renderStatusChips(){
+  el('statusChips').innerHTML=['All'].concat(STATUSES).map(function(s){
+    return '<span class="chip'+(filterStatus===s?' on':'')+'" onclick="setStatusFilter(\''+s+'\')">'+s+'</span>';
+  }).join('');
+}
+function setStatusFilter(s){filterStatus=s;renderStatusChips();render()}
+function setClientFilter(c){filterClient=c;renderClientChips();render()}
+
+function renderClientChips(){
+  if(!isAdmin){el('clientChips').classList.add('hide');return}
+  var clients=['All'].concat(Array.from(new Set(rows.map(function(x){return x.client||'?'}))));
+  el('clientChips').classList.remove('hide');
+  el('clientChips').innerHTML=clients.map(function(c){
+    return '<span class="chip'+(filterClient===c?' on':'')+'" onclick="setClientFilter(\''+esc(c)+'\')">'+esc(c)+'</span>';
+  }).join('');
+}
+
+async function loadLeads(){
+  var r=await supa.from('client_leads').select('*').order('created_at',{ascending:false}).limit(500);
+  if(r.error){el('list').innerHTML='<p class="err">Could not load: '+esc(r.error.message)+'</p>';return}
+  rows=r.data||[];
+  renderClientChips();
+  render();
+}
+
+function render(){
+  var vis=rows.filter(function(x){
+    if(filterStatus!=='All' && x.status!==filterStatus) return false;
+    if(isAdmin && filterClient!=='All' && (x.client||'?')!==filterClient) return false;
+    return true;
+  });
+  var counts={};
+  STATUSES.forEach(function(s){counts[s]=0});
+  rows.forEach(function(x){ if(counts[x.status]!==undefined) counts[x.status]++ });
+  var won=counts['Won']+counts['Booked'];
+  el('stats').innerHTML=
+    '<div class="stat"><div class="n">'+rows.length+'</div><div class="l">Total leads</div></div>'
+    +'<div class="stat"><div class="n">'+counts['New']+'</div><div class="l">New — call these</div></div>'
+    +'<div class="stat"><div class="n">'+won+'</div><div class="l">Booked + Won</div></div>'
+    +'<div class="stat"><div class="n">'+(rows.length?Math.round(won/rows.length*100):0)+'%</div><div class="l">Conversion</div></div>';
+  if(!vis.length){el('list').innerHTML='<p class="muted">No leads here yet. New submissions from your pages land automatically.</p>';return}
+  el('list').innerHTML=vis.map(function(x){
+    var det=[x.service,x.pickup&&('from '+x.pickup),x.dropoff&&('to '+x.dropoff),x.ride_date,x.passengers&&(x.passengers+' pax')].filter(Boolean).join(' · ');
+    return '<div class="lead">'
+      +'<div class="who">'+esc(x.name||x.company||'—')+(isAdmin?' <span class="pill">'+esc(x.client||'')+'</span>':'')+'</div>'
+      +'<div class="meta">'+esc(det)+(det?' · ':'')+new Date(x.created_at).toLocaleString()+'</div>'
+      +(x.message?'<div class="msg">'+esc(x.message)+'</div>':'')
+      +'<div class="row2">'
+      +'<select class="status-sel s-'+esc(x.status)+'" onchange="setStatus('+x.id+',this.value)">'
+      +STATUSES.map(function(s){return '<option'+(x.status===s?' selected':'')+'>'+s+'</option>'}).join('')
+      +'</select>'
+      +(x.phone?'<a class="call" href="tel:'+esc(x.phone)+'">📞 '+esc(x.phone)+'</a>':'')
+      +(x.email?'<a class="call" href="mailto:'+esc(x.email)+'">✉️ '+esc(x.email)+'</a>':'')
+      +'</div></div>';
+  }).join('');
+}
+
+async function setStatus(id,v){
+  var r=await supa.from('client_leads').update({status:v}).eq('id',id);
+  if(r.error){alert('Could not update: '+r.error.message);return}
+  var row=rows.find(function(x){return x.id===id}); if(row) row.status=v;
+  render();
+}
+
+document.addEventListener('keydown',function(e){ if(e.key==='Enter' && document.activeElement && document.activeElement.id==='lPass') login() });
+boot();
+</script>
+</body>
+</html>
