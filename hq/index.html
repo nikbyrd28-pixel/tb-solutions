@@ -814,6 +814,8 @@ function saveLead(id){
   if(!id && !o.followup && o.stage!=='Won' && o.stage!=='Lost'){ o.followup=new Date(Date.now()+2*864e5).toISOString().slice(0,10); }
   if(id){ state.leads=state.leads.map(function(x){return x.id===id?Object.assign(x,o):x;}); }
   else { o.id=uid(); o.createdAt=Date.now(); state.leads.unshift(o); n8nSend(Object.assign({source:'CRM new lead',ts:new Date().toISOString()},o)); }
+  // automation: Won lead → client, automatically (no duplicates)
+  if(o.stage==='Won'){ autoClientFromLead(id||o.id); }
   save('leads'); upsertRow('leads', state.leads.filter(function(x){return x.id===(id||o.id);})[0]);
   closeModal(); render();
   // automation: a lead marked Won becomes a client in one tap
@@ -870,6 +872,21 @@ function saveClient(id){
   closeModal(); render();
   if(!id && o.business){ showClientKit(o); }
 }
+function autoClientFromLead(id){
+  var l=state.leads.filter(function(x){return x.id===id;})[0]; if(!l) return;
+  var nb=norm2(l.business||l.name), ne=(l.email||'').toLowerCase();
+  var exists=state.clients.some(function(c){
+    return (ne && (c.email||'').toLowerCase()===ne) || (nb && norm2(c.business)===nb);
+  });
+  if(exists) return;
+  var o={ id:uid(), createdAt:Date.now(),
+    business:l.business||l.name||'New client', name:l.name||'', phone:l.phone||'', email:l.email||'',
+    project:'', status:'Onboarding', value:'', paylink:'', dep:'unpaid', bal:'unpaid',
+    note:'Auto-created when lead marked Won'+(l.source?' ('+l.source+')':'') };
+  state.clients.unshift(o); save('clients'); upsertRow('clients', o);
+  render(); showClientKit(o);
+}
+function norm2(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
 function convertLead(id){
   var l=state.leads.filter(function(x){return x.id===id;})[0]; if(!l) return;
   if(!confirm('Convert '+(l.business||l.name||'this lead')+' into a client?')) return;
