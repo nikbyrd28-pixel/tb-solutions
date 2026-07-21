@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Your Leads — powered by TB Solutions</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%235df2e0'/%3E%3Cstop offset='.55' stop-color='%236f9dff'/%3E%3Cstop offset='1' stop-color='%23b98bff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='15' fill='%23070a12'/%3E%3Ctext x='50%25' y='53%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-weight='900' font-size='30' fill='url(%23g)'%3ETB%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--cyan:#5df2e0;--blue:#6f9dff;--violet:#b98bff;--green:#7CFCC6;--gold:#f0c674;--red:#ff8a8a;--text:#eef1ff;--muted:#96a0c4;--panel:#0a0e1a;--line:rgba(150,190,255,.16);--line2:rgba(150,195,255,.34);--grad:linear-gradient(120deg,var(--cyan),var(--blue) 55%,var(--violet))}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Space Grotesk",Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--text);min-height:100vh;
+    background:radial-gradient(circle at 12% -8%,rgba(94,242,224,.10),transparent 36%),radial-gradient(circle at 88% 2%,rgba(185,139,255,.10),transparent 38%),linear-gradient(180deg,#05070f,#03040a)}
+  a{color:inherit}
+  /* ---- login ---- */
+  #login{display:none;max-width:440px;margin:0 auto;padding:60px 16px}
+  .brand{font-weight:900;font-size:22px;letter-spacing:-.02em;margin-bottom:4px}
+  .brand span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .eyebrow{color:var(--cyan);text-transform:uppercase;letter-spacing:.2em;font-size:11px;font-weight:800;margin-bottom:18px}
+  h1{font-size:clamp(22px,4.6vw,30px);letter-spacing:-.02em;margin:6px 0}
+  .lead{color:var(--muted);margin:0 0 18px;font-size:14px}
+  .card{background:linear-gradient(160deg,rgba(150,190,255,.07),rgba(150,190,255,.02));border:1px solid var(--line2);border-radius:18px;padding:20px}
+  label{display:block;margin:12px 0 0;font-size:13px;color:var(--muted);font-weight:600}
+  input,select{width:100%;background:rgba(3,4,10,.55);border:1px solid var(--line2);border-radius:11px;padding:12px 13px;color:var(--text);font:inherit;font-size:15px;margin-top:6px}
+  input:focus,select:focus{outline:none;border-color:var(--cyan)}
+  option{color:#03040a}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;background:var(--grad);color:#03040a;border-radius:999px;padding:12px 18px;font:inherit;font-weight:900;font-size:14px;cursor:pointer;text-decoration:none}
+  .btn.full{width:100%;margin-top:16px}
+  .btn.ghost{background:none;border:1px solid var(--line2);color:var(--text);font-weight:700}
+  .btn.sm{padding:7px 12px;font-size:12px}
+  .msg{font-size:13px;min-height:18px;margin-top:8px}
+  .msg.err{color:var(--red)} .msg.ok{color:var(--green)}
+  .hint{color:var(--muted);font-size:13px;line-height:1.5}
+  /* ---- app ---- */
+  #app{display:none}
+  .topbar{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:14px 20px;background:rgba(5,7,15,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .topbar .who{font-size:12px;color:var(--muted)}
+  .wrap{max-width:1000px;margin:0 auto;padding:22px 16px 60px}
+  .title{font-size:clamp(22px,4vw,30px);font-weight:800;letter-spacing:-.02em;margin:6px 0 2px}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 20px}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+  .stat{background:linear-gradient(160deg,rgba(150,190,255,.07),rgba(150,190,255,.02));border:1px solid var(--line);border-radius:16px;padding:15px}
+  .stat .n{font-size:26px;font-weight:900;line-height:1}
+  .stat .l{color:var(--muted);font-size:12px;margin-top:6px;text-transform:uppercase;letter-spacing:.06em}
+  .stat.c1 .n{color:var(--cyan)} .stat.c2 .n{color:var(--blue)} .stat.c3 .n{color:var(--green)} .stat.c4 .n{color:var(--violet)}
+  .bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  .bar input{max-width:260px;margin:0}
+  .bar select{max-width:170px;margin:0}
+  .leads{display:grid;gap:12px}
+  .row{background:linear-gradient(160deg,rgba(150,190,255,.06),rgba(150,190,255,.015));border:1px solid var(--line);border-radius:16px;padding:15px 17px;
+    display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start}
+  .row.done{opacity:.6}
+  .row .nm{font-weight:800;font-size:16px}
+  .row .kind{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--cyan);border:1px solid var(--line2);border-radius:999px;padding:2px 8px;margin-left:8px;vertical-align:middle}
+  .row .det{color:var(--muted);font-size:13.5px;margin-top:5px;line-height:1.5}
+  .row .contact{display:flex;gap:14px;flex-wrap:wrap;margin-top:9px;font-size:13px}
+  .row .contact a{color:var(--blue);text-decoration:none;font-weight:700}
+  .row .contact a:hover{text-decoration:underline}
+  .row .when{color:var(--muted);font-size:11.5px;margin-top:9px}
+  .right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:130px}
+  .sel{margin:0;font-size:13px;padding:8px 10px;border-radius:10px}
+  .sel.st-New{border-color:var(--cyan)} .sel.st-Contacted{border-color:var(--blue)}
+  .sel.st-Booked{border-color:var(--violet)} .sel.st-Won{border-color:var(--green)} .sel.st-Lost{border-color:var(--red)}
+  .empty{text-align:center;color:var(--muted);padding:50px 20px;border:1px dashed var(--line2);border-radius:18px}
+  @media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}.row{grid-template-columns:1fr}.right{align-items:flex-start;min-width:0}.right{flex-direction:row;flex-wrap:wrap}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div id="login">
+  <div class="brand">TB <span>Solutions</span></div>
+  <div class="eyebrow">Client leads dashboard</div>
+  <h1 id="loginTitle">Welcome back.</h1>
+  <p class="lead">Log in to see and work your leads. Use the email you gave Nick.</p>
+  <div class="card">
+    <label>Email</label><input id="em" type="email" autocomplete="username" placeholder="you@yourbusiness.com">
+    <label>Password</label><input id="pw" type="password" autocomplete="current-password">
+    <button class="btn full" id="goBtn">Log in</button>
+    <p class="msg" id="authMsg"></p>
+    <p class="hint" style="margin-top:12px">First time? <a href="#" id="swap" style="color:var(--cyan)">Create your account</a> with that same email.</p>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app">
+  <div class="topbar">
+    <div class="brand" style="font-size:16px">TB <span>Command</span> <span class="who" id="whoTag"></span></div>
+    <button class="btn ghost sm" onclick="logout()">Log out</button>
+  </div>
+  <div class="wrap">
+    <div class="title" id="hTitle">Your leads</div>
+    <p class="sub" id="hSub">Every lead your page captures lands here — call them back fast, then set their status.</p>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="bar">
+      <input id="q" placeholder="🔍 Search name, phone, email…" oninput="draw()">
+      <select id="fstat" onchange="draw()">
+        <option value="">All statuses</option>
+        <option>New</option><option>Contacted</option><option>Booked</option><option>Won</option><option>Lost</option>
+      </select>
+      <button class="btn ghost sm" onclick="reload()">↻ Refresh</button>
+    </div>
+
+    <div class="leads" id="leads"><div class="empty">Loading…</div></div>
+  </div>
+</div>
+
+<script>
+var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+var STATUSES=['New','Contacted','Booked','Won','Lost'];
+var supa=null, user=null, mode='in', myClient='', allLeads=[];
+
+function esc(s){ return (s==null?'':(''+s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function show(id){ document.getElementById(id).style.display='block'; }
+function hide(id){ document.getElementById(id).style.display='none'; }
+function msg(id,t,ok){ var m=document.getElementById(id); m.textContent=t; m.className='msg '+(ok?'ok':'err'); }
+function titleCase(s){ return (s||'').replace(/\b\w/g,function(c){return c.toUpperCase();}); }
+
+function boot(){
+  if(!window.supabase){ document.body.innerHTML='<p style="padding:40px;text-align:center;color:#96a0c4">Could not load — check your internet and refresh.</p>'; return; }
+  supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+  supa.auth.getSession().then(function(r){
+    if(r.data&&r.data.session){ enter(r.data.session.user); } else { show('login'); }
+  });
+  document.getElementById('goBtn').onclick=doAuth;
+  document.getElementById('pw').addEventListener('keydown',function(e){ if(e.key==='Enter') doAuth(); });
+  document.getElementById('swap').onclick=function(e){ e.preventDefault();
+    mode=(mode==='in')?'up':'in';
+    document.getElementById('goBtn').textContent = mode==='up'?'Create account':'Log in';
+    document.getElementById('loginTitle').textContent = mode==='up'?'Create your account.':'Welcome back.';
+    document.getElementById('swap').textContent = mode==='up'?'Log in instead':'Create your account';
+  };
+}
+function doAuth(){
+  var em=document.getElementById('em').value.trim(), pw=document.getElementById('pw').value;
+  if(!em||!pw){ msg('authMsg','Enter your email and password.'); return; }
+  var p = mode==='up' ? supa.auth.signUp({email:em,password:pw}) : supa.auth.signInWithPassword({email:em,password:pw});
+  p.then(function(r){
+    if(r.error){ msg('authMsg',r.error.message); return; }
+    if(mode==='up' && !r.data.session){ msg('authMsg','Account created! ✓ Check your email to confirm, then log in.',true); return; }
+    enter(r.data.user||r.data.session.user);
+  });
+}
+function logout(){ if(supa) supa.auth.signOut(); location.reload(); }
+
+function enter(u){
+  user=u; hide('login'); show('app');
+  document.getElementById('whoTag').textContent=u.email?('· '+u.email):'';
+  // find which client this login is mapped to
+  supa.from('client_users').select('client').eq('email',u.email).limit(1).then(function(r){
+    myClient=((r.data||[])[0]||{}).client||'';
+    if(myClient){
+      document.getElementById('hTitle').textContent=titleCase(myClient)+' — your leads';
+    }
+    reload();
+  });
+}
+function reload(){
+  document.getElementById('leads').innerHTML='<div class="empty">Loading…</div>';
+  // RLS makes sure this only ever returns THIS client's leads
+  supa.from('client_leads').select('*').order('created_at',{ascending:false}).limit(500).then(function(r){
+    if(r.error){ document.getElementById('leads').innerHTML='<div class="empty">Could not load your leads right now. Try Refresh in a moment.</div>'; return; }
+    allLeads=r.data||[];
+    stats(); draw();
+  });
+}
+function stats(){
+  var c={New:0,Contacted:0,Booked:0,Won:0,Lost:0};
+  allLeads.forEach(function(l){ if(c[l.status]==null) c[l.status]=0; c[l.status]++; });
+  var working=(c.New||0)+(c.Contacted||0), won=(c.Booked||0)+(c.Won||0);
+  document.getElementById('stats').innerHTML=
+     '<div class="stat c1"><div class="n">'+(c.New||0)+'</div><div class="l">New — call these</div></div>'
+    +'<div class="stat c2"><div class="n">'+(c.Contacted||0)+'</div><div class="l">Contacted</div></div>'
+    +'<div class="stat c3"><div class="n">'+won+'</div><div class="l">Booked / Won</div></div>'
+    +'<div class="stat c4"><div class="n">'+allLeads.length+'</div><div class="l">Total leads</div></div>';
+}
+function draw(){
+  var q=(document.getElementById('q').value||'').toLowerCase().trim();
+  var fs=document.getElementById('fstat').value;
+  var rows=allLeads.filter(function(l){
+    if(fs && l.status!==fs) return false;
+    if(!q) return true;
+    return ((l.name||'')+' '+(l.company||'')+' '+(l.phone||'')+' '+(l.email||'')+' '+(l.service||'')).toLowerCase().indexOf(q)!==-1;
+  });
+  var el=document.getElementById('leads');
+  if(!rows.length){ el.innerHTML='<div class="empty">'+(allLeads.length?'No leads match that filter.':'No leads yet. As soon as someone submits your page, they show up here.')+'</div>'; return; }
+  el.innerHTML=rows.map(function(l){
+    var det=[l.company,l.service,l.pickup&&('from '+l.pickup),l.dropoff&&('to '+l.dropoff),l.ride_date,l.passengers&&(l.passengers+' pax')].filter(Boolean).map(esc).join(' · ');
+    var done=(l.status==='Won'||l.status==='Lost');
+    var phone=(l.phone||'').replace(/[^0-9+]/g,'');
+    var contact=[];
+    if(l.phone) contact.push('<a href="tel:'+esc(phone)+'">📞 '+esc(l.phone)+'</a>');
+    if(l.email) contact.push('<a href="mailto:'+esc(l.email)+'">✉️ '+esc(l.email)+'</a>');
+    var opts=STATUSES.map(function(s){ return '<option'+(l.status===s?' selected':'')+'>'+s+'</option>'; }).join('');
+    return '<div class="row'+(done?' done':'')+'">'
+      +'<div>'
+        +'<div class="nm">'+esc(l.name||l.company||'New lead')+(l.kind?'<span class="kind">'+esc(l.kind)+'</span>':'')+'</div>'
+        +(det?'<div class="det">'+det+'</div>':'')
+        +(l.message?'<div class="det" style="color:#c3cbe8">“'+esc(l.message)+'”</div>':'')
+        +(contact.length?'<div class="contact">'+contact.join('')+'</div>':'')
+        +'<div class="when">'+(l.created_at?new Date(l.created_at).toLocaleString():'')+'</div>'
+      +'</div>'
+      +'<div class="right"><select class="sel st-'+esc(l.status||'New')+'" onchange="setStatus('+(+l.id)+',this)">'+opts+'</select></div>'
+    +'</div>';
+  }).join('');
+}
+function setStatus(id,selEl){
+  var v=selEl.value;
+  selEl.className='sel st-'+v;
+  supa.from('client_leads').update({status:v}).eq('id',id).then(function(r){
+    if(r.error){ alert('Could not save that change — try again.'); return; }
+    var l=allLeads.filter(function(x){return (+x.id)===(+id);})[0]; if(l) l.status=v;
+    stats();
+  });
+}
+boot();
+</script>
+</body>
+</html>

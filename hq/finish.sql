@@ -9,7 +9,7 @@
 
 
 -- ############################################################
--- PART 1 of 3 — CORE TABLES (leads, clients, tasks, tickets, intakes)
+-- PART 1 of 4 — CORE TABLES (leads, clients, tasks, tickets, intakes)
 -- ############################################################
 
 -- ============================================================
@@ -144,7 +144,7 @@ create policy "own rows" on public.kv for all using (auth.uid()=user_id) with ch
 
 
 -- ############################################################
--- PART 2 of 3 — PORTAL PRIVACY, ANALYTICS, SOCIAL, UPDATES
+-- PART 2 of 4 — PORTAL PRIVACY, ANALYTICS, SOCIAL, UPDATES
 -- ############################################################
 
 -- ============================================================
@@ -227,7 +227,7 @@ create policy "admin reads intakes" on public.intakes
 
 
 -- ############################################################
--- PART 3 of 3 — UPLOADS, PROSPECTS, CLIENT LEADS, AUTOMATION
+-- PART 3 of 4 — UPLOADS, PROSPECTS, CLIENT LEADS, AUTOMATION
 -- ############################################################
 
 -- ============================================================
@@ -343,3 +343,54 @@ create policy "admin manages client leads" on public.client_leads
   for update to authenticated
   using ((auth.jwt()->>'email') = 'nikbyrd28@gmail.com')
   with check ((auth.jwt()->>'email') = 'nikbyrd28@gmail.com');
+
+
+-- ############################################################
+-- PART 4 of 4 — CLIENT LOGINS (each client sees only THEIR leads)
+-- Lets a client (e.g. VoomLux) log into their own dashboard at
+-- tbsol.net/clients/crm and see/work only their own leads.
+-- To give a client access: (1) create their login in
+-- Supabase → Authentication → Users → Add user, then (2) map that
+-- email to their client slug with ONE insert, e.g.:
+--   insert into public.client_users(email,client)
+--   values ('owner@voomlux.com','voomlux')
+--   on conflict (email) do update set client = excluded.client;
+-- ############################################################
+
+-- Maps a login email → the client slug they're allowed to see.
+create table if not exists public.client_users (
+  email      text primary key,
+  client     text not null,          -- must match client_leads.client (e.g. 'voomlux')
+  created_at timestamptz not null default now()
+);
+alter table public.client_users enable row level security;
+
+-- Only you (admin) can create/change these mappings.
+drop policy if exists "admin manages client_users" on public.client_users;
+create policy "admin manages client_users" on public.client_users
+  for all to authenticated
+  using ((auth.jwt()->>'email') = 'nikbyrd28@gmail.com')
+  with check ((auth.jwt()->>'email') = 'nikbyrd28@gmail.com');
+
+-- A logged-in client can read their own mapping row (to know who they are).
+drop policy if exists "user reads own mapping" on public.client_users;
+create policy "user reads own mapping" on public.client_users
+  for select to authenticated
+  using (email = (auth.jwt()->>'email'));
+
+-- A logged-in client can READ the leads for their mapped client slug only.
+drop policy if exists "client user reads their leads" on public.client_leads;
+create policy "client user reads their leads" on public.client_leads
+  for select to authenticated
+  using (client in (select cu.client from public.client_users cu
+                    where cu.email = (auth.jwt()->>'email')));
+
+-- ...and UPDATE (status changes) on those same leads only — the check
+-- keeps them from moving a lead to a client that isn't theirs.
+drop policy if exists "client user updates their leads" on public.client_leads;
+create policy "client user updates their leads" on public.client_leads
+  for update to authenticated
+  using (client in (select cu.client from public.client_users cu
+                    where cu.email = (auth.jwt()->>'email')))
+  with check (client in (select cu.client from public.client_users cu
+                    where cu.email = (auth.jwt()->>'email')));
