@@ -130,6 +130,7 @@
     <nav class="navb" id="nav">
       <button data-view="dashboard" class="on"><span class="ic">◈</span> Dashboard</button>
       <button data-view="links"><span class="ic">⚡</span> My Tools</button>
+      <button data-view="sites"><span class="ic">🌐</span> Sites</button>
       <button data-view="leads"><span class="ic">◎</span> Leads</button>
       <button data-view="everyone"><span class="ic">👥</span> Everyone</button>
       <button data-view="finder"><span class="ic">🔎</span> Prospect Finder</button>
@@ -248,7 +249,46 @@ function overdue(d){ return d && d<todayISO(); }
 function dueToday(d){ return d===todayISO(); }
 
 /* ================= VIEWS ================= */
-function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,prospects:vProspects,intakes:vIntakes,requests:vRequests,clientleads:vClientLeads,analytics:vAnalytics,social:vSocial,tools:vTools,data:vData,pipelines:vPipelines,emailsms:vEmailSms,aianswer:vAiAnswer,aioutbound:vAiOutbound,reviews:vReviews,everyone:vEveryone,finder:vFinder,loyalty:vLoyalty}[cur])(); if(cur==='tools') initTools(); if(cur==='requests') loadRequests(); if(cur==='analytics') loadAnalytics(); if(cur==='intakes') loadIntakes(); if(cur==='prospects') loadProspects(); if(cur==='clientleads') loadClientLeads(); if(cur==='pipelines') loadPipelines(); if(cur==='reviews') loadReviews(); if(cur==='analytics') setTimeout(loadFunnel,300); if(cur==='everyone') loadEveryone(); if(cur==='loyalty') loadLoyalty(); }
+function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,prospects:vProspects,intakes:vIntakes,requests:vRequests,clientleads:vClientLeads,analytics:vAnalytics,social:vSocial,tools:vTools,data:vData,pipelines:vPipelines,emailsms:vEmailSms,aianswer:vAiAnswer,aioutbound:vAiOutbound,reviews:vReviews,everyone:vEveryone,finder:vFinder,loyalty:vLoyalty,sites:vSites}[cur])(); if(cur==='tools') initTools(); if(cur==='requests') loadRequests(); if(cur==='analytics') loadAnalytics(); if(cur==='intakes') loadIntakes(); if(cur==='prospects') loadProspects(); if(cur==='clientleads') loadClientLeads(); if(cur==='pipelines') loadPipelines(); if(cur==='reviews') loadReviews(); if(cur==='analytics') setTimeout(loadFunnel,300); if(cur==='everyone') loadEveryone(); if(cur==='loyalty') loadLoyalty(); }
+
+/* ---- Sites: every page of the platform, one tap away ---- */
+var SITES=[
+  {g:'Your business', items:[
+    ['🌐','Main site','https://tbsol.net','Marketing site + ARIA chat'],
+    ['⚡','Marketing Engine','https://tbsol.net/marketing-engine','AI plans, ad copy, campaign kits'],
+    ['📊','All-clients CRM','https://tbsol.net/crm/','Every client\'s leads (your admin view)'],
+    ['📘','Build Manual','https://tbsol.net/setup','How everything works — for you or an IT person']
+  ]},
+  {g:'Client-facing', items:[
+    ['📥','Capture template','https://tbsol.net/capture/?c=demo&name=Demo','Add ?c=slug for any client'],
+    ['🔑','Client portal','https://tbsol.net/portal/','Where clients log in'],
+    ['🛟','Support','https://tbsol.net/support/','Tickets → your Requests tab'],
+    ['📝','Intake form','https://tbsol.net/start/','New-client intake'],
+    ['⭐','Review collector','https://tbsol.net/review/','?b=Business to prefill'],
+    ['📖','CRM guide','https://tbsol.net/crm/guide/','Client how-to']
+  ]},
+  {g:'Rewards product', items:[
+    ['🎡','Rewards card (demo)','https://tbsol.net/rewards/?c=demo','What customers see'],
+    ['📷','Staff console','https://tbsol.net/rewards/staff/','Scan · punch · redeem'],
+    ['🖨️','Poster (demo)','https://tbsol.net/rewards/poster/?c=demo','Print for the counter']
+  ]},
+  {g:'Legal', items:[
+    ['🔒','Privacy','https://tbsol.net/privacy/',''],
+    ['📄','Terms','https://tbsol.net/terms/','']
+  ]}
+];
+function vSites(){
+  return '<div class="topbar"><div><h1>🌐 Sites</h1><p class="sub">Every page of your platform — tap to open, tap 📋 to copy the link</p></div></div>'
+    + SITES.map(function(sec){
+        return '<h2 style="margin:14px 0 8px">'+sec.g+'</h2>'
+          + sec.items.map(function(s){
+              return '<div class="card" style="padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px">'
+                +'<div style="min-width:0"><b>'+s[0]+' '+s[1]+'</b>'+(s[3]?'<div style="font-size:12px;color:var(--muted)">'+s[3]+'</div>':'')+'</div>'
+                +'<div style="flex-shrink:0"><button class="btn sm ghost" onclick="navigator.clipboard.writeText(\''+s[2]+'\')">📋</button> '
+                +'<a class="btn sm primary" style="text-decoration:none" target="_blank" href="'+s[2]+'">Open</a></div></div>';
+            }).join('');
+      }).join('');
+}
 
 /* ---- Loyalty: rewards program manager ---- */
 function vLoyalty(){
@@ -297,6 +337,8 @@ function editProgram(client){
       +'<label class="f">The reward</label><input id="rp_text" value="'+esc(p.reward_text||'a free visit')+'" placeholder="a free haircut">'
       +'<div class="row2"><div><label class="f">Spin cost (points)</label><input id="rp_spin" type="number" value="'+(p.spin_cost||2)+'"></div>'
       +'<div><label class="f">Survey points</label><input id="rp_sv" type="number" value="'+(p.survey_points||1)+'"></div></div>'
+      +'<label class="f">Wheel difficulty</label>'
+      +'<div style="display:flex;gap:8px;margin-top:6px"><button type="button" class="btn sm ghost" onclick="wheelPreset(8,22)">😊 Easy</button><button type="button" class="btn sm ghost" onclick="wheelPreset(4,32)">⚖️ Fair</button><button type="button" class="btn sm ghost" onclick="wheelPreset(2,46)">😈 Hard</button></div>'
       +'<label class="f">Wheel prizes (JSON — label/type/value/weight; type: points, prize, nothing)</label>'
       +'<textarea id="rp_wheel" style="min-height:110px;font-family:monospace;font-size:11px">'+esc(JSON.stringify(p.spin_prizes||[],null,1))+'</textarea>'
       +'<div class="modal-actions"><button class="btn primary" onclick="saveProgram(\''+(client||'')+'\')">Save</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>'
@@ -304,6 +346,18 @@ function editProgram(client){
   };
   if(isNew){ done({spin_prizes:[{label:'🏆 GRAND PRIZE',type:'prize',value:'',weight:4},{label:'+3 points',type:'points',value:3,weight:12},{label:'10% off',type:'prize',value:'10% off',weight:14},{label:'+1 point',type:'points',value:1,weight:22},{label:'+2 points',type:'points',value:2,weight:16},{label:'😅 So close!',type:'nothing',value:0,weight:32}]}); }
   else { supa.from('reward_settings').select('*').eq('client',client).limit(1).then(function(r){ done((r.data||[])[0]||{}); }); }
+}
+function wheelPreset(grand, nothing){
+  // grand = grand-prize weight, nothing = lose weight; rest stays balanced
+  var wheel=[
+    {label:'🏆 GRAND PRIZE',type:'prize',value:'',weight:grand},
+    {label:'+3 points',type:'points',value:3,weight:12},
+    {label:'10% off',type:'prize',value:'10% off',weight:14},
+    {label:'+1 point',type:'points',value:1,weight:22},
+    {label:'+2 points',type:'points',value:2,weight:16},
+    {label:'😅 So close!',type:'nothing',value:0,weight:nothing}
+  ];
+  var ta=document.getElementById('rp_wheel'); if(ta) ta.value=JSON.stringify(wheel,null,1);
 }
 function saveProgram(client){
   var isNew=!client;
