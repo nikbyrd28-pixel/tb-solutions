@@ -43,6 +43,27 @@
   .err{color:var(--bad);font-size:13px;margin-top:8px}
   a.call{color:var(--acc);text-decoration:none;font-weight:700;font-size:13px}
   .hide{display:none!important}
+  @keyframes popin{0%{transform:translateY(8px);opacity:0}100%{transform:translateY(0);opacity:1}}
+  @keyframes confetti-fall{0%{transform:translateY(-10px) rotate(0);opacity:1}100%{transform:translateY(105vh) rotate(720deg);opacity:0}}
+  .game{background:linear-gradient(150deg,rgba(90,208,240,.09),rgba(139,123,255,.05));border-color:rgba(90,208,240,.4)}
+  .game .hdr{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .lvname{font-weight:900;font-size:16px}
+  .lvname span{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .xpbar{height:10px;border-radius:99px;background:rgba(90,208,240,.13);overflow:hidden;margin:8px 0 4px}
+  .xpbar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:99px;box-shadow:0 0 12px var(--acc);transition:width .7s cubic-bezier(.2,.8,.2,1)}
+  .xpline{font-size:12px;color:var(--muted)}
+  .streak{font-size:13px;font-weight:800;color:var(--warn);white-space:nowrap}
+  .boss{margin-top:12px;border:1px solid rgba(255,106,122,.35);border-radius:12px;padding:11px 12px;background:rgba(255,106,122,.05)}
+  .boss .t{display:flex;justify-content:space-between;font-size:13px;font-weight:800;margin-bottom:6px}
+  .boss .t b{color:var(--bad)}
+  .hpbar{height:9px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
+  .hpbar i{display:block;height:100%;background:linear-gradient(90deg,#ff6a7a,#f0c05a);border-radius:99px;transition:width .7s ease}
+  .boss .sub2{font-size:11.5px;color:var(--muted);margin-top:5px}
+  .badges{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+  .bdg{border:1px solid var(--line);border-radius:999px;padding:5px 11px;font-size:11.5px;font-weight:700;color:var(--muted);background:rgba(0,0,0,.25)}
+  .bdg.got{border-color:rgba(67,208,154,.55);color:var(--good);background:rgba(67,208,154,.08)}
+  .xtoast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:120;font-weight:900;font-size:13px;letter-spacing:.08em;color:#0b0b12;background:linear-gradient(135deg,var(--acc),var(--acc2));border-radius:999px;padding:10px 20px;box-shadow:0 10px 30px rgba(90,208,240,.5);animation:popin .25s ease;white-space:nowrap}
+  .cf{position:fixed;top:-16px;font-size:20px;z-index:119;pointer-events:none;animation:confetti-fall linear forwards}
 </style>
 </head>
 <body>
@@ -62,6 +83,16 @@
 
   <div id="app" class="hide">
     <div class="chips hide" id="clientChips"></div>
+    <div class="card game" id="gameCard">
+      <div class="hdr">
+        <div class="lvname" id="lvName">Lv.1 <span>Rookie</span></div>
+        <div class="streak" id="streak"></div>
+      </div>
+      <div class="xpbar"><i id="xpFill" style="width:0%"></i></div>
+      <div class="xpline" id="xpLine">Every lead is XP. Work them to level up.</div>
+      <div class="boss" id="boss"></div>
+      <div class="badges" id="badges"></div>
+    </div>
     <div class="stats" id="stats"></div>
     <div class="card">
       <div class="top"><b>📥 Leads</b><button class="btn ghost small" onclick="loadLeads()">Refresh</button></div>
@@ -155,6 +186,7 @@ function render(){
     if(isAdmin && filterClient!=='All' && (x.client||'?')!==filterClient) return false;
     return true;
   });
+  renderGame();
   var counts={};
   STATUSES.forEach(function(s){counts[s]=0});
   rows.forEach(function(x){ if(counts[x.status]!==undefined) counts[x.status]++ });
@@ -185,7 +217,78 @@ async function setStatus(id,v){
   var r=await supa.from('client_leads').update({status:v}).eq('id',id);
   if(r.error){alert('Could not update: '+r.error.message);return}
   var row=rows.find(function(x){return x.id===id}); if(row) row.status=v;
+  awardFX(v);
   render();
+}
+
+/* ---------- GAME LAYER: XP, levels, streak, boss fight, badges ---------- */
+var LVN=['Rookie','Hustler','Operator','Closer','Rainmaker','Boss Mode','Legend','Final Form'];
+function gameScope(){
+  if(isAdmin && filterClient!=='All') return rows.filter(function(x){return (x.client||'?')===filterClient});
+  return rows;
+}
+function calcXP(rs){
+  var xp=0;
+  rs.forEach(function(x){
+    xp+=5;
+    if(x.status==='Contacted') xp+=10;
+    if(x.status==='Booked') xp+=25;
+    if(x.status==='Won') xp+=50;
+  });
+  return xp;
+}
+function lvlFromXP(xp){
+  var need=0,lv=1;
+  while(true){ var step=80+ (lv-1)*70; if(xp < need+step) return {lv:lv,into:xp-need,step:step}; need+=step; lv++; if(lv>50) return {lv:50,into:0,step:1}; }
+}
+function streakTick(){
+  var s={count:1,last:''};
+  try{ s=JSON.parse(localStorage.getItem('crm_streak'))||s; }catch(e){}
+  var today=new Date(); var d0=today.toDateString();
+  var y=new Date(today.getTime()-864e5).toDateString();
+  if(s.last===d0){ /* already counted today */ }
+  else if(s.last===y){ s.count++; s.last=d0; }
+  else { s.count=1; s.last=d0; }
+  try{ localStorage.setItem('crm_streak',JSON.stringify(s)); }catch(e){}
+  return s.count;
+}
+function bossGoal(){ var g=5; try{ g=Number(localStorage.getItem('crm_goal'))||5; }catch(e){} return Math.max(1,g); }
+function setGoal(){
+  var g=prompt('Boss fight: how many WON leads this month?', bossGoal());
+  if(g && Number(g)>0){ try{ localStorage.setItem('crm_goal',String(Math.floor(Number(g)))); }catch(e){} renderGame(); }
+}
+function renderGame(){
+  var rs=gameScope();
+  var xp=calcXP(rs);
+  var L=lvlFromXP(xp);
+  var name=LVN[Math.min(L.lv-1,LVN.length-1)];
+  el('lvName').innerHTML='Lv.'+L.lv+' <span>'+esc(name)+'</span>';
+  el('xpFill').style.width=Math.round(L.into/L.step*100)+'%';
+  el('xpLine').textContent=xp+' XP · '+(L.step-L.into)+' XP to Lv.'+(L.lv+1)+' — leads +5 · contacted +10 · booked +25 · won +50';
+  el('streak').textContent='\uD83D\uDD25 '+streakTick()+'-day check-in streak';
+  var now=new Date(); var mStart=new Date(now.getFullYear(),now.getMonth(),1).getTime();
+  var wonM=rs.filter(function(x){return x.status==='Won' && new Date(x.created_at).getTime()>=mStart}).length;
+  var goal=bossGoal();
+  var hp=Math.max(0,goal-wonM);
+  el('boss').innerHTML='<div class="t"><span>\uD83D\uDC51 BOSS FIGHT: win <b>'+goal+'</b> leads this month</span><span>'+(hp===0?'\uD83C\uDFC6 DEFEATED!':'HP '+hp+'/'+goal)+'</span></div>'
+    +'<div class="hpbar"><i style="width:'+Math.round(hp/goal*100)+'%"></i></div>'
+    +'<div class="sub2">'+(hp===0?'Boss down — set a bigger one? ':'Every Won lead hits the boss. ')+'<a class="call" href="javascript:setGoal()">change goal</a></div>';
+  var total=rs.length, won=rs.filter(function(x){return x.status==='Won'}).length;
+  var conv=total?Math.round(won/total*100):0;
+  var B=[['\uD83E\uDD47 First Blood',total>=1,'first lead in'],['\uD83D\uDCE6 Ten Deep',total>=10,'10 leads captured'],['\uD83E\uDD1D Closer',won>=1,'first Won'],['\uD83D\uDD25 High Five',won>=5,'5 leads Won'],['\uD83C\uDFAF Sharpshooter',total>=4&&conv>=50,'50%+ win rate'],['\uD83C\uDF0A Flood',total>=25,'25 leads captured']];
+  el('badges').innerHTML=B.map(function(b){return '<span class="bdg'+(b[1]?' got':'')+'" title="'+esc(b[2])+'">'+(b[1]?b[0]:'\uD83D\uDD12 '+b[0].replace(/^\S+\s/,''))+'</span>'}).join('');
+}
+function awardFX(status){
+  var map={'Contacted':['+10 XP \u00B7 ON IT \uD83D\uDCDE',false],'Booked':['+25 XP \u00B7 BOOKED \uD83D\uDCC5',false],'Won':['+50 XP \u00B7 LEAD WON \uD83C\uDFC6',true]};
+  var m=map[status]; if(!m) return;
+  var tst=document.createElement('div'); tst.className='xtoast'; tst.textContent=m[0];
+  document.body.appendChild(tst); setTimeout(function(){tst.remove()},2000);
+  if(m[1]){
+    var bits=['\uD83C\uDF89','\u2728','\u2B50','\u26A1','\uD83C\uDF8A'];
+    for(var i=0;i<22;i++){ var s=document.createElement('span'); s.className='cf'; s.textContent=bits[i%bits.length];
+      s.style.left=(Math.random()*100)+'vw'; s.style.animationDuration=(1.6+Math.random()*1.6)+'s'; s.style.animationDelay=(Math.random()*0.4)+'s';
+      document.body.appendChild(s); setTimeout(function(el2){return function(){el2.remove()}}(s),3600); }
+  }
 }
 
 document.addEventListener('keydown',function(e){ if(e.key==='Enter' && document.activeElement && document.activeElement.id==='lPass') login() });
