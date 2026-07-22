@@ -137,12 +137,14 @@
     },
     {
       "parameters": {
-        "fromEmail": "nikbyrd28@gmail.com",
+        "fromEmail": "TB Solutions <nick@tbsol.net>",
         "toEmail": "={{ $json.email }}",
         "subject": "={{ $json.email_subject }}",
         "emailFormat": "text",
         "text": "={{ $json.email_body }}",
-        "options": {}
+        "options": {
+          "replyTo": "nikbyrd28@gmail.com"
+        }
       },
       "id": "d1000000-0000-4000-8000-000000000008",
       "name": "Send Follow-up",

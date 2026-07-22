@@ -11,7 +11,10 @@
       "name": "Read me",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [-140, 60]
+      "position": [
+        -140,
+        60
+      ]
     },
     {
       "parameters": {
@@ -23,18 +26,28 @@
       "name": "Website Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [300, 300],
+      "position": [
+        300,
+        300
+      ],
       "webhookId": "12eeac52-a592-4988-b61a-2c2a16baa388"
     },
     {
       "parameters": {
         "conditions": {
-          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "loose" },
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
           "conditions": [
             {
               "leftValue": "={{ $json.body.type }}",
               "rightValue": "client-intake",
-              "operator": { "type": "string", "operation": "equals" }
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
             }
           ],
           "combinator": "and"
@@ -45,17 +58,27 @@
       "name": "Is it a client intake?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [560, 300]
+      "position": [
+        560,
+        300
+      ]
     },
     {
       "parameters": {
         "conditions": {
-          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "loose" },
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
           "conditions": [
             {
               "leftValue": "={{ $json.body.type }}",
               "rightValue": "support-ticket",
-              "operator": { "type": "string", "operation": "equals" }
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
             }
           ],
           "combinator": "and"
@@ -66,105 +89,173 @@
       "name": "Is it a support ticket?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [820, 420]
+      "position": [
+        820,
+        420
+      ]
     },
     {
       "parameters": {
-        "fromEmail": "nikbyrd28@gmail.com",
+        "fromEmail": "TB Solutions <nick@tbsol.net>",
         "toEmail": "nikbyrd28@gmail.com",
         "subject": "=🚀 New client intake: {{ $json.body.business || $json.body.name }}",
         "emailFormat": "text",
         "text": "=New client intake from tbsol.net/start\n\nBusiness: {{ $json.body.business }}\nName: {{ $json.body.name }}\nEmail: {{ $json.body.email }}\nPhone: {{ $json.body.phone }}\nWebsite/IG: {{ $json.body.website }}\nAbout: {{ $json.body.about }}\nWants more: {{ $json.body.goal }}\nInterested in: {{ $json.body.interest }}\nBudget: {{ $json.body.budget }}\nTimeline: {{ $json.body.timeline }}\nStyle: {{ $json.body.style }}\nNotes: {{ $json.body.notes }}\n\nReceived: {{ $json.body.ts }}",
-        "options": {}
+        "options": {
+          "replyTo": "nikbyrd28@gmail.com"
+        }
       },
       "id": "em_intake_nick",
       "name": "Email Nick: new intake",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
-      "position": [860, 140]
+      "position": [
+        860,
+        140
+      ]
     },
     {
       "parameters": {
-        "fromEmail": "nikbyrd28@gmail.com",
+        "fromEmail": "TB Solutions <nick@tbsol.net>",
         "toEmail": "={{ $json.body.email }}",
         "subject": "=Welcome aboard, {{ $json.body.name }}! 🎉 — TB Solutions",
         "emailFormat": "text",
         "text": "=Hi {{ $json.body.name }},\n\nThanks for filling out the intake for {{ $json.body.business }} — I've got everything I need to start.\n\nWhat happens next:\n1. I review your details today.\n2. I reach out to lock in your kickoff call.\n3. You get a simple plan — no jargon, no pressure.\n\nWant to grab a time right now? Book here:\nhttps://calendar.app.google/SbFwfmkwTJoRPDBc9\n\nTalk soon,\nNick\nTB Solutions — tbsol.net",
-        "options": {}
+        "options": {
+          "replyTo": "nikbyrd28@gmail.com"
+        }
       },
       "id": "em_intake_client",
       "name": "Email client: welcome",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
-      "position": [860, 20]
+      "position": [
+        860,
+        20
+      ]
     },
     {
       "parameters": {
-        "fromEmail": "nikbyrd28@gmail.com",
+        "fromEmail": "TB Solutions <nick@tbsol.net>",
         "toEmail": "nikbyrd28@gmail.com",
         "subject": "=🛟 {{ $json.body.priority === 'Urgent — site is down / broken' ? '🔴 URGENT ' : '' }}Ticket: {{ $json.body.ticket_type }} — {{ $json.body.business }}",
         "emailFormat": "text",
         "text": "=New support ticket from tbsol.net/support\n\nFrom: {{ $json.body.name }} ({{ $json.body.business }})\nEmail: {{ $json.body.email }}\nSite: {{ $json.body.website }}\nType: {{ $json.body.ticket_type }}\nPriority: {{ $json.body.priority }}\n\nDetails:\n{{ $json.body.details }}\n\nAttachment: {{ $json.body.attachment }}\nReceived: {{ $json.body.ts }}",
-        "options": {}
+        "options": {
+          "replyTo": "nikbyrd28@gmail.com"
+        }
       },
       "id": "em_ticket_nick",
       "name": "Email Nick: new ticket",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
-      "position": [1100, 300]
+      "position": [
+        1100,
+        300
+      ]
     },
     {
       "parameters": {
-        "fromEmail": "nikbyrd28@gmail.com",
+        "fromEmail": "TB Solutions <nick@tbsol.net>",
         "toEmail": "={{ $json.body.email }}",
         "subject": "=Got your request ✅ — TB Solutions",
         "emailFormat": "text",
         "text": "=Hi {{ $json.body.name }},\n\nYour request just landed in my queue:\n\n“{{ $json.body.details }}”\n\nType: {{ $json.body.ticket_type }}\nPriority: {{ $json.body.priority }}\n\nI'll review it and get back to you — urgent site-down issues jump the line.\n\n— Nick, TB Solutions\ntbsol.net",
-        "options": {}
+        "options": {
+          "replyTo": "nikbyrd28@gmail.com"
+        }
       },
       "id": "em_ticket_client",
       "name": "Email client: ticket received",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
-      "position": [1100, 180]
+      "position": [
+        1100,
+        180
+      ]
     },
     {
       "parameters": {
-        "fromEmail": "nikbyrd28@gmail.com",
+        "fromEmail": "TB Solutions <nick@tbsol.net>",
         "toEmail": "nikbyrd28@gmail.com",
         "subject": "=🔥 New lead: {{ $json.body.name || $json.body.business || 'Website visitor' }}",
         "emailFormat": "text",
         "text": "=New lead from tbsol.net\n\nName: {{ $json.body.name }}\nBusiness: {{ $json.body.business }}\nPhone: {{ $json.body.phone }}\nEmail: {{ $json.body.email }}\nWebsite/IG: {{ $json.body.website }}\nInterested in: {{ $json.body.interest }}\nMessage: {{ $json.body.message }}\nSource: {{ $json.body.source }}\nReceived: {{ $json.body.ts }}\n\n👉 Reply fast — speed wins local leads.",
-        "options": {}
+        "options": {
+          "replyTo": "nikbyrd28@gmail.com"
+        }
       },
       "id": "em_lead_nick",
       "name": "Email Nick: new lead",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
-      "position": [1100, 540]
+      "position": [
+        1100,
+        540
+      ]
     }
   ],
   "connections": {
-    "Website Webhook": { "main": [[{ "node": "Is it a client intake?", "type": "main", "index": 0 }]] },
+    "Website Webhook": {
+      "main": [
+        [
+          {
+            "node": "Is it a client intake?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Is it a client intake?": {
       "main": [
         [
-          { "node": "Email Nick: new intake", "type": "main", "index": 0 },
-          { "node": "Email client: welcome", "type": "main", "index": 0 }
+          {
+            "node": "Email Nick: new intake",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email client: welcome",
+            "type": "main",
+            "index": 0
+          }
         ],
-        [ { "node": "Is it a support ticket?", "type": "main", "index": 0 } ]
+        [
+          {
+            "node": "Is it a support ticket?",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Is it a support ticket?": {
       "main": [
         [
-          { "node": "Email Nick: new ticket", "type": "main", "index": 0 },
-          { "node": "Email client: ticket received", "type": "main", "index": 0 }
+          {
+            "node": "Email Nick: new ticket",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email client: ticket received",
+            "type": "main",
+            "index": 0
+          }
         ],
-        [ { "node": "Email Nick: new lead", "type": "main", "index": 0 } ]
+        [
+          {
+            "node": "Email Nick: new lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
-  "settings": { "executionOrder": "v1" },
+  "settings": {
+    "executionOrder": "v1"
+  },
   "pinData": {}
 }

@@ -3,19 +3,34 @@
   "nodes": [
     {
       "parameters": {
-        "rule": { "interval": [ { "field": "minutes", "minutesInterval": 30 } ] }
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
       },
       "id": "u1000000-0000-4000-8000-000000000001",
       "name": "Every 30 min",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [0, 0]
+      "position": [
+        0,
+        0
+      ]
     },
     {
       "parameters": {
         "url": "https://tbsol.net/",
         "options": {
-          "response": { "response": { "neverError": true, "fullResponse": true } },
+          "response": {
+            "response": {
+              "neverError": true,
+              "fullResponse": true
+            }
+          },
           "timeout": 15000
         }
       },
@@ -23,13 +38,21 @@
       "name": "Check tbsol.net",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [220, -80]
+      "position": [
+        220,
+        -80
+      ]
     },
     {
       "parameters": {
         "url": "https://tbsol.net/hq",
         "options": {
-          "response": { "response": { "neverError": true, "fullResponse": true } },
+          "response": {
+            "response": {
+              "neverError": true,
+              "fullResponse": true
+            }
+          },
           "timeout": 15000
         }
       },
@@ -37,7 +60,10 @@
       "name": "Check HQ",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [220, 80]
+      "position": [
+        220,
+        80
+      ]
     },
     {
       "parameters": {
@@ -47,33 +73,85 @@
       "name": "Any Down?",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [440, 0]
+      "position": [
+        440,
+        0
+      ]
     },
     {
       "parameters": {
-        "fromEmail": "nikbyrd28@gmail.com",
+        "fromEmail": "TB Solutions <nick@tbsol.net>",
         "toEmail": "nikbyrd28@gmail.com",
         "subject": "🚨 TB SITE DOWN",
         "emailFormat": "text",
         "text": "=Uptime check failed:\n\n{{ $json.problems }}\n\nChecked at {{ $now.toISO() }}. Check Vercel status and your last deploy.",
-        "options": {}
+        "options": {
+          "replyTo": "nikbyrd28@gmail.com"
+        }
       },
       "id": "u1000000-0000-4000-8000-000000000005",
       "name": "Alert Nick",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
-      "position": [660, 0]
+      "position": [
+        660,
+        0
+      ]
     }
   ],
   "connections": {
-    "Every 30 min": { "main": [[
-      { "node": "Check tbsol.net", "type": "main", "index": 0 },
-      { "node": "Check HQ", "type": "main", "index": 0 }
-    ]] },
-    "Check tbsol.net": { "main": [[ { "node": "Any Down?", "type": "main", "index": 0 } ]] },
-    "Check HQ": { "main": [[ { "node": "Any Down?", "type": "main", "index": 0 } ]] },
-    "Any Down?": { "main": [[ { "node": "Alert Nick", "type": "main", "index": 0 } ]] }
+    "Every 30 min": {
+      "main": [
+        [
+          {
+            "node": "Check tbsol.net",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check HQ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check tbsol.net": {
+      "main": [
+        [
+          {
+            "node": "Any Down?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check HQ": {
+      "main": [
+        [
+          {
+            "node": "Any Down?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Any Down?": {
+      "main": [
+        [
+          {
+            "node": "Alert Nick",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
-  "settings": { "executionOrder": "v1" },
+  "settings": {
+    "executionOrder": "v1"
+  },
   "pinData": {}
 }

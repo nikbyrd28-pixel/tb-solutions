@@ -105,12 +105,14 @@
     },
     {
       "parameters": {
-        "fromEmail": "nikbyrd28@gmail.com",
+        "fromEmail": "TB Solutions <nick@tbsol.net>",
         "toEmail": "nikbyrd28@gmail.com",
         "subject": "=[DRAFT — for {{ $json.email }}] {{ $json.email_subject }}",
         "emailFormat": "text",
         "text": "=Send this to: {{ $json.email }}\n\n{{ $json.email_body }}",
-        "options": {}
+        "options": {
+          "replyTo": "nikbyrd28@gmail.com"
+        }
       },
       "id": "f1000000-0000-4000-8000-000000000007",
       "name": "Create Gmail Draft",
@@ -235,12 +237,14 @@
     },
     {
       "parameters": {
-        "fromEmail": "nikbyrd28@gmail.com",
+        "fromEmail": "TB Solutions <nick@tbsol.net>",
         "toEmail": "nikbyrd28@gmail.com",
         "subject": "=⚠️ TB: {{ $json.count }} open ticket(s) need you",
         "emailFormat": "text",
         "text": "=Open tickets in your CRM:\n\n{{ $json.summary }}\n\nHandle them in your portal, then set status so they drop off this alert.",
-        "options": {}
+        "options": {
+          "replyTo": "nikbyrd28@gmail.com"
+        }
       },
       "id": "f1000000-0000-4000-8000-000000000012",
       "name": "Ticket Alert",

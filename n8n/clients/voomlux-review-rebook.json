@@ -95,12 +95,14 @@
     },
     {
       "parameters": {
-        "fromEmail": "nikbyrd28@gmail.com",
+        "fromEmail": "TB Solutions <nick@tbsol.net>",
         "toEmail": "={{ $json.rider_email }}",
         "subject": "How was your VoomLux ride?",
         "emailFormat": "text",
         "text": "=Hi {{ $json.rider_name }},\n\nThanks for riding with VoomLux — we hope your chauffeur made it effortless.\n\nIf you have 30 seconds, a quick Google review helps us more than you know:\n👉 REPLACE_WITH_GOOGLE_REVIEW_LINK\n\nAnd whenever you need your next ride — airport, event, or a night out — just reply to this email and we'll take care of it. Returning riders get priority booking.\n\n— The VoomLux Team\nLuxury black-SUV transportation · Philadelphia",
-        "options": {}
+        "options": {
+          "replyTo": "nikbyrd28@gmail.com"
+        }
       },
       "id": "e1000000-0000-4000-8000-000000000005",
       "name": "Send Review Request",

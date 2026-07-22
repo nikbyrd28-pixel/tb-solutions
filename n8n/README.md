@@ -89,3 +89,18 @@ These run on ONE free Google Gemini key — no OpenAI/Anthropic needed.
 | **`weekly-backup.json`** | Dumps every CRM table to your private `backups` storage bucket + confirmation email (see sticky note inside for the 2-min setup) | Sundays 6am |
 
 Import both from URL: `https://tbsol.net/n8n/uptime-monitor.json` and `https://tbsol.net/n8n/weekly-backup.json`.
+
+---
+
+## 📧 Email upgrade: Resend (recommended over Gmail)
+
+All email nodes now send as **TB Solutions <nick@tbsol.net>** with replies going to your Gmail. Power them with Resend (free 3,000 emails/mo, real deliverability):
+
+1. **resend.com** → sign up (free) → **Domains → Add domain → tbsol.net** → add the 3 DNS records it shows (wherever tbsol.net's DNS lives) → wait for "Verified".
+2. **API Keys → Create API key** → copy it.
+3. In n8n → Credentials → **Create new → SMTP**:
+   - Host `smtp.resend.com` · Port `465` · SSL/TLS on
+   - User: `resend` · Password: your Resend API key
+4. Select this credential on **every Email node** in every workflow. Done — no Gmail App Password needed, no daily-limit worries, branded sender.
+
+(Until the domain shows Verified in Resend, sends will be rejected — verify first, then activate the email workflows.)

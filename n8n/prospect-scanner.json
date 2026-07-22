@@ -170,12 +170,14 @@
     },
     {
       "parameters": {
-        "fromEmail": "nikbyrd28@gmail.com",
+        "fromEmail": "TB Solutions <nick@tbsol.net>",
         "toEmail": "nikbyrd28@gmail.com",
         "subject": "=🎯 {{ $json.count }} new no-website prospects this week",
         "emailFormat": "text",
         "text": "=Fresh prospects with no (real) website — every one is a $300 website + AI assistant pitch:\n\n{{ $json.list }}\n\nAll of them are already in your CRM (source: places scan). Call or dig up an email, then set a follow-up date so the autopilot takes over.",
-        "options": {}
+        "options": {
+          "replyTo": "nikbyrd28@gmail.com"
+        }
       },
       "id": "h1000000-0000-4000-8000-000000000009",
       "name": "Email Hit List",

@@ -11,17 +11,33 @@
       "name": "Read me",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [-140, 60]
+      "position": [
+        -140,
+        60
+      ]
     },
     {
       "parameters": {
-        "rule": { "interval": [ { "field": "weeks", "triggerAtDay": [1], "triggerAtHour": 8 } ] }
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 8
+            }
+          ]
+        }
       },
       "id": "sched1",
       "name": "Mondays 8am",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [260, 300]
+      "position": [
+        260,
+        300
+      ]
     },
     {
       "parameters": {
@@ -29,8 +45,14 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "PASTE_SERVICE_KEY" },
-            { "name": "Authorization", "value": "Bearer PASTE_SERVICE_KEY" }
+            {
+              "name": "apikey",
+              "value": "PASTE_SERVICE_KEY"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer PASTE_SERVICE_KEY"
+            }
           ]
         },
         "options": {}
@@ -39,7 +61,10 @@
       "name": "Get new leads",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [480, 300]
+      "position": [
+        480,
+        300
+      ]
     },
     {
       "parameters": {
@@ -47,8 +72,14 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "PASTE_SERVICE_KEY" },
-            { "name": "Authorization", "value": "Bearer PASTE_SERVICE_KEY" }
+            {
+              "name": "apikey",
+              "value": "PASTE_SERVICE_KEY"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer PASTE_SERVICE_KEY"
+            }
           ]
         },
         "options": {}
@@ -57,7 +88,10 @@
       "name": "Get open tickets",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [700, 300]
+      "position": [
+        700,
+        300
+      ]
     },
     {
       "parameters": {
@@ -65,8 +99,14 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "PASTE_SERVICE_KEY" },
-            { "name": "Authorization", "value": "Bearer PASTE_SERVICE_KEY" }
+            {
+              "name": "apikey",
+              "value": "PASTE_SERVICE_KEY"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer PASTE_SERVICE_KEY"
+            }
           ]
         },
         "options": {}
@@ -75,7 +115,10 @@
       "name": "Get pageviews",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [920, 300]
+      "position": [
+        920,
+        300
+      ]
     },
     {
       "parameters": {
@@ -85,31 +128,91 @@
       "name": "Build report",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1140, 300]
+      "position": [
+        1140,
+        300
+      ]
     },
     {
       "parameters": {
-        "fromEmail": "nikbyrd28@gmail.com",
+        "fromEmail": "TB Solutions <nick@tbsol.net>",
         "toEmail": "nikbyrd28@gmail.com",
         "subject": "📊 Your week at TB Solutions",
         "emailFormat": "text",
         "text": "=Good morning! Here's your week in numbers:\n\n{{ $json.report }}\n\n💡 {{ $json.tip }}\n\nFull details: https://tbsol.net/hq\n\nHave a great week! 🚀",
-        "options": {}
+        "options": {
+          "replyTo": "nikbyrd28@gmail.com"
+        }
       },
       "id": "em1",
       "name": "Email the report",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
-      "position": [1360, 300]
+      "position": [
+        1360,
+        300
+      ]
     }
   ],
   "connections": {
-    "Mondays 8am": { "main": [[{ "node": "Get new leads", "type": "main", "index": 0 }]] },
-    "Get new leads": { "main": [[{ "node": "Get open tickets", "type": "main", "index": 0 }]] },
-    "Get open tickets": { "main": [[{ "node": "Get pageviews", "type": "main", "index": 0 }]] },
-    "Get pageviews": { "main": [[{ "node": "Build report", "type": "main", "index": 0 }]] },
-    "Build report": { "main": [[{ "node": "Email the report", "type": "main", "index": 0 }]] }
+    "Mondays 8am": {
+      "main": [
+        [
+          {
+            "node": "Get new leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get new leads": {
+      "main": [
+        [
+          {
+            "node": "Get open tickets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get open tickets": {
+      "main": [
+        [
+          {
+            "node": "Get pageviews",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get pageviews": {
+      "main": [
+        [
+          {
+            "node": "Build report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build report": {
+      "main": [
+        [
+          {
+            "node": "Email the report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
-  "settings": { "executionOrder": "v1" },
+  "settings": {
+    "executionOrder": "v1"
+  },
   "pinData": {}
 }

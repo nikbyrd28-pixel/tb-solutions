@@ -231,12 +231,14 @@
     },
     {
       "parameters": {
-        "fromEmail": "nikbyrd28@gmail.com",
+        "fromEmail": "TB Solutions <nick@tbsol.net>",
         "toEmail": "={{ $json.email }}",
         "subject": "VoomLux — we got your request 🖤",
         "emailFormat": "text",
         "text": "=Hi {{ $json.name || 'there' }},\n\nThanks for reaching out to VoomLux. We received your request{{ $json.service_type && $json.service_type !== 'other' ? ' for ' + $json.service_type + ' service' : '' }} and a member of our team is reviewing it right now.\n\nYou'll hear from us shortly with availability and a flat-rate quote — no surge pricing, ever.\n\nNeed us faster? Just reply to this email.\n\n— The VoomLux Team\nLuxury black-SUV transportation · Philadelphia",
-        "options": {}
+        "options": {
+          "replyTo": "nikbyrd28@gmail.com"
+        }
       },
       "id": "b1000000-0000-4000-8000-000000000008",
       "name": "Auto-Reply to Lead",
@@ -281,12 +283,14 @@
     },
     {
       "parameters": {
-        "fromEmail": "nikbyrd28@gmail.com",
+        "fromEmail": "TB Solutions <nick@tbsol.net>",
         "toEmail": "nikbyrd28@gmail.com",
         "subject": "=🔥 VoomLux hot lead: {{ $json.name }} — score {{ $json.lead_score }}",
         "emailFormat": "text",
         "text": "=High-value VoomLux lead:\n\nName: {{ $json.name }}\nEmail: {{ $json.email }}\nPhone: {{ $json.phone }}\nService: {{ $json.service_type }} | Pickup date: {{ $json.pickup_date }}\nRoute: {{ $json.pickup_location }} → {{ $json.dropoff_location }}\nScore: {{ $json.lead_score }} ({{ $json.priority }}, {{ $json.intent }})\n\n{{ $json.ai_summary }}\nNext: {{ $json.suggested_action }}\n\nMessage: {{ $json.message }}",
-        "options": {}
+        "options": {
+          "replyTo": "nikbyrd28@gmail.com"
+        }
       },
       "id": "b1000000-0000-4000-8000-000000000010",
       "name": "Alert Owner",
