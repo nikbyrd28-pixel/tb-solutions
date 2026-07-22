@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Rewards</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230a0a0f'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%E2%AD%90%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--text:#f2f3f7;--muted:#9aa0ae;--line:rgba(122,162,255,.28);--acc:#7aa2ff;--acc2:#5ad0f0;--bg:#0a0a0f;--good:#43d09a}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.6;min-height:100vh;
+    background:radial-gradient(circle at 20% -10%,rgba(122,162,255,.14),transparent 40%),linear-gradient(180deg,#0d0d13,#07070b);
+    display:flex;align-items:flex-start;justify-content:center;padding:30px 16px}
+  .wrap{width:min(440px,100%)}
+  .brand{font-weight:900;letter-spacing:.14em;text-transform:uppercase;font-size:18px;margin-bottom:2px}
+  .brand span{color:var(--acc)}
+  .tag{color:var(--muted);font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:20px}
+  h1{font-size:clamp(24px,5.5vw,30px);margin:0 0 8px}
+  .lead{color:var(--muted);margin:0 0 18px;font-size:14px}
+  .card{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:12px}
+  label{display:block;margin:12px 0 0;font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+  input{width:100%;background:rgba(0,0,0,.45);border:1px solid var(--line);border-radius:12px;padding:13px 14px;color:var(--text);font:inherit;font-size:15px;margin-top:6px}
+  input:focus{outline:none;border-color:var(--acc)}
+  .btn{width:100%;margin-top:16px;border:0;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#0a0a0f;border-radius:999px;padding:14px;font:inherit;font-weight:900;font-size:15px;cursor:pointer}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text);font-weight:700}
+  .btn:disabled{opacity:.6}
+  .punches{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+  .p{width:38px;height:38px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:18px}
+  .p.on{border-color:var(--acc);background:rgba(122,162,255,.15)}
+  .qr{display:block;margin:14px auto;border-radius:14px;background:#fff;padding:8px;width:196px;height:196px}
+  .big{font-size:38px;font-weight:900;color:var(--acc);line-height:1}
+  .muted{color:var(--muted);font-size:13px}
+  .ok{color:var(--good);font-weight:800}
+  .err{color:#ff8a8a;font-size:13px;margin-top:8px}
+  .hide{display:none!important}
+  .staff{border-style:dashed}
+  .center{text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand" id="brand">Rewards <span>club</span></div>
+  <div class="tag" id="tagline">Earn points every visit</div>
+
+  <!-- JOIN -->
+  <div class="card" id="joinCard">
+    <h1>Join free, earn every visit ⭐</h1>
+    <p class="lead" id="joinLead">Get a point every visit — hit the goal and your reward is on us.</p>
+    <label>Your name</label><input id="jName" autocomplete="name">
+    <label>Phone number</label><input id="jPhone" type="tel" autocomplete="tel" placeholder="Used to find your card">
+    <button class="btn" onclick="join()">Join the club</button>
+    <div class="err hide" id="jErr"></div>
+    <p class="muted" style="margin-top:10px">Already a member? Same button — your phone number finds your card. <a href="/privacy/" style="color:var(--muted)">Privacy</a></p>
+  </div>
+
+  <!-- CARD -->
+  <div id="cardView" class="hide">
+    <div class="card center">
+      <h1 id="mName">Your card</h1>
+      <div class="big" id="mPoints">0</div>
+      <div class="muted">points</div>
+      <div class="punches" id="punches" style="justify-content:center"></div>
+      <p class="muted" id="rewardLine"></p>
+      <p class="ok hide" id="readyLine">🎉 Reward unlocked — show this at the counter!</p>
+      <img class="qr" id="mQr" alt="Your member QR">
+      <p class="muted">Show this QR at the counter to earn your point.</p>
+    </div>
+
+    <div class="card center">
+      <b>💸 Share &amp; earn</b>
+      <p class="muted" style="margin:6px 0 10px">Friends who book through your link get connected — and you get credit for the referral.</p>
+      <img class="qr" id="refQr" alt="Your referral QR" style="width:160px;height:160px">
+      <button class="btn ghost" onclick="shareRef()">Share my link</button>
+      <p class="muted hide" id="copied">Link copied ✓</p>
+    </div>
+
+    <div class="card staff">
+      <b>Staff only</b>
+      <p class="muted" style="margin:6px 0 0">Customer showing their card? Add their point here.</p>
+      <button class="btn ghost" onclick="staffAdd()">➕ Add visit (PIN)</button>
+      <button class="btn ghost hide" id="redeemBtn" onclick="staffRedeem()">🎁 Redeem reward (PIN)</button>
+      <div class="err hide" id="sErr"></div>
+    </div>
+    <p class="muted center">Powered by <a href="https://tbsol.net" style="color:var(--acc);text-decoration:none;font-weight:700">TB Solutions</a></p>
+  </div>
+</div>
+
+<script>
+var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+
+var q=new URLSearchParams(location.search);
+var slug=(q.get('c')||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+var display=q.get('name')||slug.charAt(0).toUpperCase()+slug.slice(1)||'Rewards';
+var refCode=(q.get('ref')||'').slice(0,16);
+var member=null;
+
+/* Brand themes (same system as the capture page) */
+var THEMES={ voomlux:{acc:'#d8b96a',acc2:'#f0d79a',bg:'#0a0a0a',line:'rgba(216,185,106,.3)',text:'#f5f2ea',muted:'#9a958a'} };
+(function(){
+  var th=THEMES[slug]||null, hex=/^[0-9a-fA-F]{6}$/;
+  if(!th && hex.test(q.get('ac')||'')) th={acc:'#'+q.get('ac'),acc2:'#'+(hex.test(q.get('ac2')||'')?q.get('ac2'):q.get('ac'))};
+  if(!th) return;
+  var r=document.documentElement.style;
+  r.setProperty('--acc',th.acc); r.setProperty('--acc2',th.acc2||th.acc);
+  if(th.line) r.setProperty('--line',th.line);
+  if(th.text) r.setProperty('--text',th.text);
+  if(th.muted) r.setProperty('--muted',th.muted);
+  if(th.bg) document.body.style.background='radial-gradient(circle at 20% -10%,'+th.acc+'22,transparent 40%),linear-gradient(180deg,'+th.bg+','+th.bg+')';
+})();
+if(slug){ document.title=display+' Rewards'; document.getElementById('brand').innerHTML=display.replace(/[<>&]/g,'')+' <span>rewards</span>'; }
+
+function el(id){return document.getElementById(id)}
+function rpc(fn,args){
+  return fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(args)}).then(function(r){return r.json()});
+}
+function qrUrl(data,size){ return 'https://api.qrserver.com/v1/create-qr-code/?size='+size+'x'+size+'&data='+encodeURIComponent(data); }
+
+function showCard(m){
+  member=m;
+  try{ localStorage.setItem('rw_'+slug, m.code); }catch(e){}
+  el('joinCard').classList.add('hide');
+  el('cardView').classList.remove('hide');
+  el('mName').textContent=(m.name||'Your')+"'s card";
+  el('mPoints').textContent=m.points;
+  var goal=m.reward_at||5, ready=m.points>=goal;
+  var ph='';
+  for(var i=0;i<goal;i++){ ph+='<div class="p'+(i<m.points?' on':'')+'">'+(i<m.points?'⭐':'')+'</div>'; }
+  el('punches').innerHTML=ph;
+  el('rewardLine').textContent=ready?'':((goal-m.points)+' more to earn '+(m.reward_text||'your reward'));
+  el('readyLine').classList.toggle('hide',!ready);
+  el('redeemBtn').classList.toggle('hide',!ready);
+  var myUrl=location.origin+'/rewards/?c='+slug+'&m='+m.code;
+  el('mQr').src=qrUrl(myUrl,196);
+  el('refQr').src=qrUrl(location.origin+'/capture/?c='+slug+'&name='+encodeURIComponent(display)+'&ref='+m.code,160);
+}
+function join(){
+  el('jErr').classList.add('hide');
+  if(!slug){ el('jErr').textContent='This link is missing its business code (?c=...).'; el('jErr').classList.remove('hide'); return; }
+  rpc('join_rewards',{p_client:slug,p_name:el('jName').value.trim(),p_phone:el('jPhone').value.trim(),p_ref:refCode||null}).then(function(m){
+    if(m.error){ el('jErr').textContent=m.error; el('jErr').classList.remove('hide'); return; }
+    rpc('get_member',{p_code:m.code}).then(function(full){ showCard(full.error?m:full); });
+  });
+}
+function loadByCode(code){
+  rpc('get_member',{p_code:code}).then(function(m){ if(!m.error) showCard(m); else el('joinCard').classList.remove('hide'); });
+}
+function staffAdd(){
+  var pin=prompt('Staff PIN:'); if(!pin) return;
+  el('sErr').classList.add('hide');
+  rpc('add_visit',{p_code:member.code,p_pin:pin}).then(function(m){
+    if(m.error){ el('sErr').textContent=m.error; el('sErr').classList.remove('hide'); return; }
+    showCard(m);
+  });
+}
+function staffRedeem(){
+  var pin=prompt('Staff PIN to redeem:'); if(!pin) return;
+  rpc('redeem_reward',{p_code:member.code,p_pin:pin}).then(function(m){
+    if(m.error){ el('sErr').textContent=m.error; el('sErr').classList.remove('hide'); return; }
+    alert('🎉 Redeemed! Enjoy '+(m.reward_text||'your reward')+'.');
+    showCard(m);
+  });
+}
+function shareRef(){
+  var link=location.origin+'/capture/?c='+slug+'&name='+encodeURIComponent(display)+'&ref='+member.code;
+  if(navigator.share){ navigator.share({title:display+' — come check them out',url:link}).catch(function(){}); }
+  else { navigator.clipboard.writeText(link); el('copied').classList.remove('hide'); }
+}
+
+var mParam=q.get('m');
+var saved=null; try{ saved=localStorage.getItem('rw_'+slug); }catch(e){}
+if(mParam){ el('joinCard').classList.add('hide'); loadByCode(mParam); }
+else if(saved){ el('joinCard').classList.add('hide'); loadByCode(saved); }
+
+window.addEventListener('error',function(e){try{
+  fetch(SUPA_URL+'/rest/v1/client_errors',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({page:location.pathname,msg:String((e&&e.message)||'').slice(0,300),src:String((e&&e.filename)||'').slice(0,120),line:(e&&e.lineno)||0})}).catch(function(){});
+}catch(_){}});
+</script>
+</body>
+</html>

@@ -104,7 +104,7 @@ f.addEventListener('submit',function(e){
   var btn=document.getElementById('btn'); btn.disabled=true; btn.textContent='Sending…';
   var d={}; new FormData(f).forEach(function(v,k){ if(k[0]!=='_') d[k]=v; });
   fetch(SUPA_URL+'/rest/v1/client_leads',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
-    body:JSON.stringify({client:slug,kind:'lead',name:d.name||'',phone:d.phone||'',email:d.email||'',message:(d.message||'')+(d.when?' | When: '+d.when:'')+(d.where?' | Where: '+d.where:''),service:q.get('utm_source')||q.get('s')||'direct',pickup:d.where||'',ride_date:d.when||''})})
+    body:JSON.stringify({client:slug,kind:'lead',name:d.name||'',phone:d.phone||'',email:d.email||'',message:(d.message||'')+(d.when?' | When: '+d.when:'')+(d.where?' | Where: '+d.where:''),service:q.get('utm_source')||q.get('s')||'direct',pickup:d.where||'',ride_date:d.when||'',ref:(q.get('ref')||'').slice(0,16)})})
   .then(function(){ f.style.display='none'; document.getElementById('ok').classList.add('show'); window.scrollTo(0,0); })
   .catch(function(){ btn.disabled=false; btn.textContent='Request my quote'; alert('Could not send — please try again.'); });
 });
