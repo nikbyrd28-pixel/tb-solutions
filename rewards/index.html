@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex" />
 <title>Rewards</title>
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<link rel="preconnect" href="https://api.qrserver.com">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230a0a0f'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%E2%AD%90%3C/text%3E%3C/svg%3E" />
 <style>
   :root{--text:#f2f4ff;--muted:#8f97b8;--line:rgba(122,162,255,.35);--acc:#7aa2ff;--acc2:#5ad0f0;--bg:#05060d;--good:#43f0b0}
@@ -60,6 +62,8 @@
   .wchip.win{border-color:var(--acc);color:var(--text);background:color-mix(in srgb,var(--acc) 20%,transparent);font-weight:800;box-shadow:0 0 14px color-mix(in srgb,var(--acc) 50%,transparent)}
   .prize{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px dashed var(--line);border-radius:14px;padding:10px 12px;margin-top:8px;background:rgba(122,162,255,.05)}
   .spinres{font-size:17px;font-weight:900;margin:10px 0 0;min-height:24px;text-shadow:0 0 14px color-mix(in srgb,var(--acc) 50%,transparent)}
+  @keyframes confetti-fall{0%{transform:translateY(-10px) rotate(0);opacity:1}100%{transform:translateY(105vh) rotate(720deg);opacity:0}}
+  .cf{position:fixed;top:-16px;font-size:20px;z-index:99;pointer-events:none;animation:confetti-fall linear forwards}
 </style>
 </head>
 <body>
@@ -87,8 +91,8 @@
       <div class="punches" id="punches" style="justify-content:center"></div>
       <p class="muted" id="rewardLine"></p>
       <p class="ok hide" id="readyLine">🎉 Reward unlocked — show this at the counter!</p>
-      <img class="qr" id="mQr" alt="Your member QR">
-      <p class="muted">Show this QR at the counter to earn your point.</p>
+      <img class="qr" id="mQr" alt="Your member QR" loading="lazy">
+      <p class="muted">Show this at the counter — staff scans it, you get your point. ⚡</p>
     </div>
 
     <div class="card center">
@@ -119,19 +123,12 @@
     <div class="card center">
       <b>💸 Share &amp; earn</b>
       <p class="muted" style="margin:6px 0 10px">Friends who book through your link get connected — and you get credit for the referral.</p>
-      <img class="qr" id="refQr" alt="Your referral QR" style="width:160px;height:160px">
+      <img class="qr" id="refQr" alt="Your referral QR" loading="lazy" style="width:160px;height:160px">
       <button class="btn ghost" onclick="shareRef()">Share my link</button>
       <p class="muted hide" id="copied">Link copied ✓</p>
     </div>
 
-    <div class="card staff">
-      <b>Staff only</b>
-      <p class="muted" style="margin:6px 0 0">Customer showing their card? Add their point here.</p>
-      <button class="btn ghost" onclick="staffAdd()">➕ Add visit (PIN)</button>
-      <button class="btn ghost hide" id="redeemBtn" onclick="staffRedeem()">🎁 Redeem reward (PIN)</button>
-      <div class="err hide" id="sErr"></div>
-    </div>
-    <p class="muted center">Powered by <a href="https://tbsol.net" style="color:var(--acc);text-decoration:none;font-weight:700">TB Solutions</a></p>
+    <p class="muted center">Powered by <a href="https://tbsol.net" style="color:var(--acc);text-decoration:none;font-weight:700">TB Solutions</a> · <a href="/rewards/staff/" style="color:var(--muted);text-decoration:none">staff</a></p>
   </div>
 </div>
 
@@ -172,14 +169,13 @@ function showCard(m){
   el('joinCard').classList.add('hide');
   el('cardView').classList.remove('hide');
   el('mName').textContent=(m.name||'Your')+"'s card";
-  el('mPoints').textContent=m.points;
+  countUp(m.points);
   var goal=m.reward_at||5, ready=m.points>=goal;
   var ph='';
   for(var i=0;i<goal;i++){ ph+='<div class="p'+(i<m.points?' on':'')+'">'+(i<m.points?'⭐':'')+'</div>'; }
   el('punches').innerHTML=ph;
   el('rewardLine').textContent=ready?'':((goal-m.points)+' more to earn '+(m.reward_text||'your reward'));
   el('readyLine').classList.toggle('hide',!ready);
-  el('redeemBtn').classList.toggle('hide',!ready);
   var myUrl=location.origin+'/rewards/?c='+slug+'&m='+m.code;
   el('mQr').src=qrUrl(myUrl,196);
   el('refQr').src=qrUrl(location.origin+'/capture/?c='+slug+'&name='+encodeURIComponent(display)+'&ref='+m.code,160);
@@ -229,7 +225,9 @@ function renderWheel(m){
   el('wheel').style.background='conic-gradient('+stops.join(',')+')';
   el('wchips').innerHTML=labels.map(function(l,i){return '<span class="wchip" id="wc'+i+'">'+String(l).replace(/[<>&]/g,'')+'</span>';}).join('');
   el('spinCost').textContent=m.spin_cost||2;
-  el('spinBtn').disabled=(m.points < (m.spin_cost||2));
+  var cost=m.spin_cost||2, can=m.points>=cost;
+  el('spinBtn').disabled=!can;
+  el('spinBtn').textContent = can ? ('🎡 Spin — '+cost+' points') : ('🔒 Earn '+(cost-m.points)+' more point'+((cost-m.points)===1?'':'s')+' to spin');
 }
 function renderPrizes(m){
   var ps=m.prizes||[];
@@ -253,6 +251,7 @@ function spin(){
       var c=el('wc'+idx); if(c) c.classList.add('win');
       var res=m.result||{};
       el('spinRes').textContent = res.type==='nothing' ? '😅 '+res.label+' — spin again!' : '🎉 You won: '+res.label+'!';
+      if(res.type!=='nothing') confetti();
       showCard(m);
     }, 3300);
   });
@@ -278,6 +277,30 @@ function sendSurvey(){
     el('svErr').textContent='✅ Thanks — point added!'; el('svErr').style.color='var(--good)'; el('svErr').classList.remove('hide');
     showCard(m);
   });
+}
+function confetti(){
+  var bits=['🎉','✨','⭐','💎','🎊'];
+  for(var i=0;i<26;i++){
+    var s=document.createElement('span'); s.className='cf';
+    s.textContent=bits[i%bits.length];
+    s.style.left=(Math.random()*100)+'vw';
+    s.style.animationDuration=(1.6+Math.random()*1.6)+'s';
+    s.style.animationDelay=(Math.random()*0.5)+'s';
+    document.body.appendChild(s);
+    setTimeout(function(el2){return function(){el2.remove()}}(s), 3800);
+  }
+}
+var _lastPts=null;
+function countUp(to){
+  var node=el('mPoints');
+  var from=(_lastPts==null)?to:_lastPts; _lastPts=to;
+  if(from===to){ node.textContent=to; return; }
+  var start=performance.now(), dur=700;
+  (function tick(now){
+    var p=Math.min(1,(now-start)/dur);
+    node.textContent=Math.round(from+(to-from)*(1-Math.pow(1-p,3)));
+    if(p<1) requestAnimationFrame(tick);
+  })(start);
 }
 var mParam=q.get('m');
 var saved=null; try{ saved=localStorage.getItem('rw_'+slug); }catch(e){}

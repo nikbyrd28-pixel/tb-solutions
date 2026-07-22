@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Staff Console — Rewards</title>
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='28'%3E%F0%9F%93%B7%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--text:#f2f4ff;--muted:#8f97b8;--line:rgba(122,162,255,.35);--acc:#7aa2ff;--acc2:#5ad0f0;--good:#43f0b0}
+  *{box-sizing:border-box}
+  @keyframes drift{0%{background-position:0 0}100%{background-position:60px 60px}}
+  @keyframes scanline{0%{top:6%}50%{top:88%}100%{top:6%}}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.6;min-height:100vh;
+    background:radial-gradient(circle at 15% -5%,color-mix(in srgb,var(--acc) 20%,transparent),transparent 42%),linear-gradient(180deg,#070811,#04050a);
+    display:flex;align-items:flex-start;justify-content:center;padding:28px 16px;position:relative}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(rgba(122,162,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(122,162,255,.05) 1px,transparent 1px);
+    background-size:60px 60px;animation:drift 14s linear infinite}
+  .wrap{width:min(440px,100%);position:relative;z-index:1}
+  .brand{font-weight:900;letter-spacing:.22em;text-transform:uppercase;font-size:17px;margin-bottom:2px}
+  .brand span{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tag{color:var(--muted);font-size:11px;letter-spacing:.28em;text-transform:uppercase;margin-bottom:20px}
+  h1{font-size:24px;margin:0 0 8px}
+  .card{background:linear-gradient(150deg,rgba(255,255,255,.055),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:22px;padding:22px;margin-bottom:14px;
+    backdrop-filter:blur(12px);box-shadow:0 18px 44px rgba(0,0,0,.45),0 0 34px color-mix(in srgb,var(--acc) 9%,transparent)}
+  label{display:block;margin:12px 0 0;font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+  input{width:100%;background:rgba(2,4,12,.6);border:1px solid var(--line);border-radius:13px;padding:13px 14px;color:var(--text);font:inherit;font-size:15px;margin-top:6px}
+  input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 22%,transparent)}
+  .btn{width:100%;margin-top:14px;border:0;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;border-radius:999px;padding:14px;font:inherit;font-weight:900;font-size:14px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;
+    box-shadow:0 0 22px color-mix(in srgb,var(--acc) 40%,transparent)}
+  .btn.ghost{background:rgba(122,162,255,.06);border:1px solid var(--line);color:var(--text);box-shadow:none;font-weight:700}
+  .btn.good{background:linear-gradient(135deg,#43f0b0,#22c58a);box-shadow:0 0 22px rgba(67,240,176,.4)}
+  .btn:disabled{opacity:.5}
+  .muted{color:var(--muted);font-size:13px}
+  .err{color:#ff8a9d;font-size:13px;margin-top:8px}
+  .ok{color:var(--good);font-weight:800;font-size:14px;margin-top:8px}
+  .hide{display:none!important}
+  .center{text-align:center}
+  .scanbox{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--acc);box-shadow:0 0 30px color-mix(in srgb,var(--acc) 35%,transparent);margin-top:14px}
+  video{width:100%;display:block;background:#000;max-height:340px;object-fit:cover}
+  .laser{position:absolute;left:6%;right:6%;height:2px;background:linear-gradient(90deg,transparent,var(--acc2),transparent);box-shadow:0 0 12px var(--acc2);animation:scanline 2.6s ease-in-out infinite}
+  .big{font-size:40px;font-weight:900;line-height:1;background:linear-gradient(135deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .punches{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+  .p{width:34px;height:34px;border-radius:10px;border:1.5px solid var(--line);display:grid;place-items:center;font-size:15px;transform:rotate(45deg)}
+  .p>*{transform:rotate(-45deg)}
+  .p.on{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 18%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--acc) 40%,transparent)}
+  .prize{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px dashed var(--line);border-radius:14px;padding:10px 12px;margin-top:8px;background:rgba(122,162,255,.05)}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  a.small{color:var(--muted);font-size:12px;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div><div class="brand">Staff <span>console</span></div><div class="tag">Scan · punch · redeem</div></div>
+    <a class="small" href="#" onclick="resetSetup();return false" id="bizTag"></a>
+  </div>
+
+  <!-- SETUP -->
+  <div class="card" id="setupCard">
+    <h1>One-time setup 🔐</h1>
+    <p class="muted">Saved on this device only — do it once per shop phone.</p>
+    <label>Business code (slug)</label><input id="sSlug" placeholder="joesbarber" autocapitalize="none">
+    <label>Staff PIN</label><input id="sPin" type="password" placeholder="Your program PIN">
+    <button class="btn" onclick="saveSetup()">Save &amp; start</button>
+    <div class="err hide" id="sErr"></div>
+  </div>
+
+  <!-- CONSOLE -->
+  <div id="console" class="hide">
+    <div class="card center">
+      <h1>📷 Scan their card</h1>
+      <p class="muted" style="margin:0">Customer opens their rewards card — you scan their QR.</p>
+      <div class="scanbox hide" id="scanbox"><video id="video" playsinline muted></video><div class="laser"></div></div>
+      <button class="btn" id="scanBtn" onclick="toggleScan()">📷 Start scanning</button>
+      <label style="display:flex;align-items:center;gap:8px;margin-top:12px;text-transform:none;letter-spacing:0;font-size:13px;cursor:pointer">
+        <input type="checkbox" id="fastMode" style="width:20px;height:20px;margin:0;accent-color:#5ad0f0" onchange="saveFast()"> ⚡ Fast mode — auto-punch on scan, camera stays on
+      </label>
+      <label style="text-align:left">…or type their member code</label>
+      <input id="codeIn" placeholder="e.g. a1b2c3d4" autocapitalize="none">
+      <button class="btn ghost" onclick="lookup(document.getElementById('codeIn').value.trim())">Find member</button>
+      <div class="err hide" id="cErr"></div>
+    </div>
+
+    <div class="card center hide" id="memberCard">
+      <h1 id="mName">Member</h1>
+      <div class="big" id="mPoints">0</div>
+      <div class="muted">points</div>
+      <div class="punches" id="punches"></div>
+      <p class="muted" id="mLine"></p>
+      <button class="btn good" onclick="addVisit()">➕ Add visit</button>
+      <button class="btn hide" id="redeemBtn" onclick="redeem()">🏆 Redeem main reward</button>
+      <div id="prizeList"></div>
+      <div class="ok hide" id="aOk"></div>
+      <div class="err hide" id="aErr"></div>
+      <button class="btn ghost" onclick="clearMember()">Done — next customer</button>
+    </div>
+  </div>
+  <p class="muted center">Powered by <a href="https://tbsol.net" style="color:var(--acc);text-decoration:none;font-weight:700">TB Solutions</a></p>
+</div>
+
+<script>
+var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+var member=null, stream=null, scanTimer=null, scanning=false;
+
+function el(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function rpc(fn,args){
+  return fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(args)}).then(function(r){return r.json()});
+}
+function cfg(){ try{ return JSON.parse(localStorage.getItem('rw_staff')||'null'); }catch(e){ return null; } }
+
+function boot(){
+  var c=cfg();
+  if(c&&c.slug&&c.pin){ el('setupCard').classList.add('hide'); el('console').classList.remove('hide'); el('bizTag').textContent=c.slug+' · change';  if(c.fast) el('fastMode').checked=true; }
+}
+function saveSetup(){
+  var slug=(el('sSlug').value||'').toLowerCase().replace(/[^a-z0-9]/g,''), pin=el('sPin').value.trim();
+  if(!slug||!pin){ el('sErr').textContent='Need both the business code and PIN.'; el('sErr').classList.remove('hide'); return; }
+  localStorage.setItem('rw_staff',JSON.stringify({slug:slug,pin:pin}));
+  location.reload();
+}
+function resetSetup(){ if(confirm('Change business / PIN on this device?')){ localStorage.removeItem('rw_staff'); location.reload(); } }
+
+function toggleScan(){ scanning?stopScan():startScan(); }
+async function startScan(){
+  if(!('BarcodeDetector' in window)){ el('cErr').textContent='Camera scanning not supported on this browser — type the code instead.'; el('cErr').classList.remove('hide'); return; }
+  try{
+    var det=new BarcodeDetector({formats:['qr_code']});
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    var v=el('video'); v.srcObject=stream; await v.play();
+    el('scanbox').classList.remove('hide'); el('scanBtn').textContent='⏹ Stop scanning'; scanning=true;
+    scanTimer=setInterval(async function(){
+      try{
+        var codes=await det.detect(v);
+        if(codes.length){ var raw=codes[0].rawValue; stopScan(); handleScan(raw); }
+      }catch(e){}
+    },350);
+  }catch(e){ el('cErr').textContent='Camera blocked — allow camera access, or type the code.'; el('cErr').classList.remove('hide'); }
+}
+function stopScan(){
+  scanning=false; el('scanBtn').textContent='📷 Start scanning'; el('scanbox').classList.add('hide');
+  if(scanTimer){ clearInterval(scanTimer); scanTimer=null; }
+  if(stream){ stream.getTracks().forEach(function(t){t.stop()}); stream=null; }
+}
+function saveFast(){ var c=cfg()||{}; c.fast=el('fastMode').checked; localStorage.setItem('rw_staff',JSON.stringify(c)); }
+var lastCode=null, lastAt=0;
+function handleScan(raw){
+  var code=raw;
+  try{ var u=new URL(raw); code=u.searchParams.get('m')||raw; }catch(e){}
+  // debounce: same card within 8s = ignore (prevents double-punch)
+  if(code===lastCode && Date.now()-lastAt<8000){ startScan(); return; }
+  lastCode=code; lastAt=Date.now();
+  var fast=el('fastMode').checked;
+  if(fast){
+    rpc('get_member',{p_code:code}).then(function(m){
+      if(m.error){ el('cErr').textContent='Member not found.'; el('cErr').classList.remove('hide'); startScan(); return; }
+      var c=cfg();
+      if(c && m.client!==c.slug){ el('cErr').textContent='Wrong shop card.'; el('cErr').classList.remove('hide'); startScan(); return; }
+      rpc('add_visit',{p_code:code,p_pin:cfg().pin}).then(function(m2){
+        if(m2.error){ done(m2,''); startScan(); return; }
+        showMember(m2);
+        el('aOk').textContent='⚡ '+(m2.name||'Member')+' punched — '+m2.points+' pts'; el('aOk').classList.remove('hide');
+        setTimeout(startScan, 1200); // camera right back on for the next customer
+      });
+    });
+  } else {
+    lookup(code);
+  }
+}
+function lookup(code){
+  el('cErr').classList.add('hide');
+  if(!code){ return; }
+  rpc('get_member',{p_code:code}).then(function(m){
+    if(m.error){ el('cErr').textContent='Member not found — check the code.'; el('cErr').classList.remove('hide'); return; }
+    var c=cfg();
+    if(c && m.client!==c.slug){ el('cErr').textContent='That card belongs to "'+m.client+'", not your shop.'; el('cErr').classList.remove('hide'); return; }
+    showMember(m);
+  });
+}
+function showMember(m){
+  member=m;
+  el('memberCard').classList.remove('hide');
+  el('aOk').classList.add('hide'); el('aErr').classList.add('hide');
+  el('mName').textContent=m.name||'Member';
+  el('mPoints').textContent=m.points;
+  var goal=m.reward_at||5, ready=m.points>=goal;
+  var ph='';
+  for(var i=0;i<goal;i++){ ph+='<div class="p'+(i<m.points?' on':'')+'"><span>'+(i<m.points?'⭐':'')+'</span></div>'; }
+  el('punches').innerHTML=ph;
+  el('mLine').textContent=ready?('🏆 Reward ready: '+(m.reward_text||'')):((goal-m.points)+' more to '+(m.reward_text||'the reward'));
+  el('redeemBtn').classList.toggle('hide',!ready);
+  var ps=m.prizes||[];
+  el('prizeList').innerHTML=ps.map(function(p,i){
+    return '<div class="prize"><b>🎁 '+esc(p.label||'Prize')+'</b><button class="btn ghost" style="width:auto;margin:0;padding:8px 14px;font-size:12px" onclick="claim('+i+')">Hand over</button></div>';
+  }).join('');
+  el('memberCard').scrollIntoView({behavior:'smooth'});
+}
+function done(m,msg){
+  if(m.error){ el('aErr').textContent=m.error; el('aErr').classList.remove('hide'); return; }
+  showMember(m);
+  el('aOk').textContent=msg; el('aOk').classList.remove('hide');
+}
+function addVisit(){ rpc('add_visit',{p_code:member.code,p_pin:cfg().pin}).then(function(m){ done(m,'✅ Point added'); }); }
+function redeem(){ rpc('redeem_reward',{p_code:member.code,p_pin:cfg().pin}).then(function(m){ done(m,'🏆 Redeemed — enjoy!'); }); }
+function claim(i){ rpc('claim_prize',{p_code:member.code,p_pin:cfg().pin,p_index:i}).then(function(m){ done(m,'🎁 Prize handed over'); }); }
+function clearMember(){ member=null; el('memberCard').classList.add('hide'); el('codeIn').value=''; window.scrollTo({top:0,behavior:'smooth'}); }
+
+window.addEventListener('error',function(e){try{
+  fetch(SUPA_URL+'/rest/v1/client_errors',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({page:location.pathname,msg:String((e&&e.message)||'').slice(0,300),src:String((e&&e.filename)||'').slice(0,120),line:(e&&e.lineno)||0})}).catch(function(){});
+}catch(_){}});
+boot();
+</script>
+</body>
+</html>
