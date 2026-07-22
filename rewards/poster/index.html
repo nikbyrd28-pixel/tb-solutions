@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Rewards poster</title>
+<style>
+  :root{--acc:#7aa2ff;--ink:#0a0a0f}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;background:#f4f4f6;color:var(--ink);display:flex;flex-direction:column;align-items:center;padding:24px 16px}
+  .sheet{background:#fff;width:min(520px,100%);border-radius:22px;box-shadow:0 10px 40px rgba(0,0,0,.12);padding:44px 34px;text-align:center}
+  .badge{display:inline-block;background:var(--acc);color:#fff;border-radius:999px;padding:6px 16px;font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+  h1{font-size:34px;line-height:1.15;margin:16px 0 6px}
+  h1 span{color:var(--acc)}
+  .sub{color:#555;font-size:16px;margin:0 0 22px}
+  .qr{width:240px;height:240px;border:6px solid var(--ink);border-radius:20px;padding:10px;background:#fff}
+  .steps{text-align:left;margin:26px auto 0;max-width:360px}
+  .step{display:flex;gap:12px;align-items:flex-start;margin:12px 0;font-size:15px;color:#333}
+  .n{flex:0 0 28px;height:28px;border-radius:50%;background:var(--acc);color:#fff;display:grid;place-items:center;font-weight:900;font-size:14px}
+  .foot{margin-top:26px;color:#999;font-size:12px}
+  .printbtn{margin:20px 0;border:0;background:var(--ink);color:#fff;border-radius:999px;padding:14px 26px;font:inherit;font-weight:800;font-size:15px;cursor:pointer}
+  @media print{
+    body{background:#fff;padding:0}
+    .sheet{box-shadow:none;border-radius:0;width:100%}
+    .printbtn{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <span class="badge">⭐ Rewards Club</span>
+  <h1><span id="bizName">Our</span> rewards.<br>Free stuff for showing up.</h1>
+  <p class="sub">Every visit earns a point. Points become <b id="rewardText">rewards</b> — or spin the prize wheel and get lucky. 🎡</p>
+  <img class="qr" id="qr" alt="Scan to join">
+  <div class="steps">
+    <div class="step"><div class="n">1</div><div><b>Scan the code</b> — takes 20 seconds, no app to download.</div></div>
+    <div class="step"><div class="n">2</div><div><b>Show your card every visit</b> — we punch it right on your phone.</div></div>
+    <div class="step"><div class="n">3</div><div><b>Cash in or spin</b> — save up for the guaranteed reward, or gamble points on the wheel.</div></div>
+  </div>
+  <div class="foot">Powered by TB Solutions · tbsol.net</div>
+</div>
+<button class="printbtn" onclick="window.print()">🖨️ Print this poster</button>
+<script>
+var q=new URLSearchParams(location.search);
+var slug=(q.get('c')||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+var name=q.get('name')||slug.charAt(0).toUpperCase()+slug.slice(1)||'Our';
+var hex=/^[0-9a-fA-F]{6}$/;
+if(hex.test(q.get('ac')||'')) document.documentElement.style.setProperty('--acc','#'+q.get('ac'));
+document.getElementById('bizName').textContent=name;
+document.title=name+' rewards poster';
+var join='https://tbsol.net/rewards/?c='+slug+(q.get('name')?'&name='+encodeURIComponent(q.get('name')):'');
+document.getElementById('qr').src='https://api.qrserver.com/v1/create-qr-code/?size=480x480&data='+encodeURIComponent(join);
+// pull the actual reward text so the poster sells the real prize
+fetch('https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/rpc/get_program_public',{method:'POST',headers:{apikey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro',Authorization:'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro','Content-Type':'application/json'},body:JSON.stringify({p_client:slug})})
+.then(function(r){return r.json()}).then(function(p){ if(p&&p.reward_text) document.getElementById('rewardText').textContent=p.reward_text; }).catch(function(){});
+</script>
+</body>
+</html>

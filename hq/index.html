@@ -141,6 +141,7 @@
       <button data-view="clientleads"><span class="ic">🤝</span> Client Leads</button>
       <button data-view="pipelines"><span class="ic">📊</span> Pipelines</button>
       <button data-view="reviews"><span class="ic">⭐</span> Reviews</button>
+      <button data-view="loyalty"><span class="ic">🎡</span> Loyalty</button>
       <button data-view="analytics"><span class="ic">📈</span> Analytics</button>
       <button data-view="social"><span class="ic">📣</span> Social</button>
       <button data-view="tools"><span class="ic">✦</span> Marketing Tools</button>
@@ -247,7 +248,76 @@ function overdue(d){ return d && d<todayISO(); }
 function dueToday(d){ return d===todayISO(); }
 
 /* ================= VIEWS ================= */
-function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,prospects:vProspects,intakes:vIntakes,requests:vRequests,clientleads:vClientLeads,analytics:vAnalytics,social:vSocial,tools:vTools,data:vData,pipelines:vPipelines,emailsms:vEmailSms,aianswer:vAiAnswer,aioutbound:vAiOutbound,reviews:vReviews,everyone:vEveryone,finder:vFinder}[cur])(); if(cur==='tools') initTools(); if(cur==='requests') loadRequests(); if(cur==='analytics') loadAnalytics(); if(cur==='intakes') loadIntakes(); if(cur==='prospects') loadProspects(); if(cur==='clientleads') loadClientLeads(); if(cur==='pipelines') loadPipelines(); if(cur==='reviews') loadReviews(); if(cur==='analytics') setTimeout(loadFunnel,300); if(cur==='everyone') loadEveryone(); }
+function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,prospects:vProspects,intakes:vIntakes,requests:vRequests,clientleads:vClientLeads,analytics:vAnalytics,social:vSocial,tools:vTools,data:vData,pipelines:vPipelines,emailsms:vEmailSms,aianswer:vAiAnswer,aioutbound:vAiOutbound,reviews:vReviews,everyone:vEveryone,finder:vFinder,loyalty:vLoyalty}[cur])(); if(cur==='tools') initTools(); if(cur==='requests') loadRequests(); if(cur==='analytics') loadAnalytics(); if(cur==='intakes') loadIntakes(); if(cur==='prospects') loadProspects(); if(cur==='clientleads') loadClientLeads(); if(cur==='pipelines') loadPipelines(); if(cur==='reviews') loadReviews(); if(cur==='analytics') setTimeout(loadFunnel,300); if(cur==='everyone') loadEveryone(); if(cur==='loyalty') loadLoyalty(); }
+
+/* ---- Loyalty: rewards program manager ---- */
+function vLoyalty(){
+  return '<div class="topbar"><div><h1>🎡 Loyalty</h1><p class="sub">Rewards programs you run for clients — punch cards, prize wheel, surveys, referrals</p></div>'
+    +'<button class="btn primary" onclick="editProgram()">+ New program</button></div>'
+    +'<div id="loyBody"><div class="empty">Loading…</div></div>';
+}
+function loadLoyalty(){
+  if(!cloud) return;
+  Promise.all([
+    supa.from('reward_settings').select('*').order('created_at',{ascending:false}),
+    supa.from('reward_members').select('client,points,lifetime,spins,redeemed,name,referred_by,prizes,created_at').order('lifetime',{ascending:false}).limit(500)
+  ]).then(function(res){
+    var el=document.getElementById('loyBody'); if(!el) return;
+    if(res[0].error){ el.innerHTML='<div class="empty">Could not load programs.</div>'; return; }
+    var progs=res[0].data||[], members=res[1].data||[];
+    if(!progs.length){ el.innerHTML='<div class="empty">No programs yet — hit + New program. Each one is a QR on a counter that keeps customers coming back.</div>'; return; }
+    el.innerHTML=progs.map(function(p){
+      var ms=members.filter(function(m){return m.client===p.client;});
+      var spins=ms.reduce(function(a,m){return a+(m.spins||0)},0);
+      var reds=ms.reduce(function(a,m){return a+(m.redeemed||0)},0);
+      var joinUrl='https://tbsol.net/rewards/?c='+p.client;
+      var posterUrl='https://tbsol.net/rewards/poster/?c='+p.client;
+      var top=ms.slice(0,8).map(function(m){
+        return '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+esc(m.name||'—')+(m.referred_by?' <span class="pill">ref</span>':'')+'</span><span>'+m.points+' pts · '+(m.spins||0)+' spins</span></div>';
+      }).join('');
+      return '<div class="card" style="padding:14px;margin-bottom:12px">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">'
+        +'<div><b style="font-size:16px">'+esc(p.client)+'</b><div style="font-size:12px;color:var(--muted)">'+p.reward_at+' pts → '+esc(p.reward_text)+' · spin costs '+p.spin_cost+' · PIN '+esc(p.pin)+'</div></div>'
+        +'<div><button class="btn sm ghost" onclick="editProgram(\''+p.client+'\')">Edit</button> '
+        +'<a class="btn sm ghost" style="text-decoration:none" target="_blank" href="'+posterUrl+'">🖨️ Poster</a></div></div>'
+        +'<div style="display:flex;gap:14px;margin:10px 0;font-size:13px"><span><b>'+ms.length+'</b> members</span><span><b>'+spins+'</b> spins</span><span><b>'+reds+'</b> redeemed</span></div>'
+        +'<input readonly value="'+joinUrl+'" onclick="this.select()" style="font-size:12px">'
+        +(top?'<div style="margin-top:8px">'+top+'</div>':'')
+        +'</div>';
+    }).join('');
+  });
+}
+function editProgram(client){
+  var isNew=!client;
+  var done=function(p){
+    openModal('<h3>'+(isNew?'New rewards program':'Edit: '+esc(p.client||''))+'</h3>'
+      +(isNew?'<label class="f">Business slug (letters/numbers only — used in the link)</label><input id="rp_client" placeholder="joesbarber">':'')
+      +'<div class="row2"><div><label class="f">Staff PIN</label><input id="rp_pin" value="'+esc(p.pin||'1234')+'"></div>'
+      +'<div><label class="f">Points for reward</label><input id="rp_at" type="number" value="'+(p.reward_at||5)+'"></div></div>'
+      +'<label class="f">The reward</label><input id="rp_text" value="'+esc(p.reward_text||'a free visit')+'" placeholder="a free haircut">'
+      +'<div class="row2"><div><label class="f">Spin cost (points)</label><input id="rp_spin" type="number" value="'+(p.spin_cost||2)+'"></div>'
+      +'<div><label class="f">Survey points</label><input id="rp_sv" type="number" value="'+(p.survey_points||1)+'"></div></div>'
+      +'<label class="f">Wheel prizes (JSON — label/type/value/weight; type: points, prize, nothing)</label>'
+      +'<textarea id="rp_wheel" style="min-height:110px;font-family:monospace;font-size:11px">'+esc(JSON.stringify(p.spin_prizes||[],null,1))+'</textarea>'
+      +'<div class="modal-actions"><button class="btn primary" onclick="saveProgram(\''+(client||'')+'\')">Save</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>'
+      +'<p class="hint">Members join at tbsol.net/rewards/?c=SLUG — print the poster and tape it by the register.</p>');
+  };
+  if(isNew){ done({spin_prizes:[{label:'🏆 GRAND PRIZE',type:'prize',value:'',weight:4},{label:'+3 points',type:'points',value:3,weight:12},{label:'10% off',type:'prize',value:'10% off',weight:14},{label:'+1 point',type:'points',value:1,weight:22},{label:'+2 points',type:'points',value:2,weight:16},{label:'😅 So close!',type:'nothing',value:0,weight:32}]}); }
+  else { supa.from('reward_settings').select('*').eq('client',client).limit(1).then(function(r){ done((r.data||[])[0]||{}); }); }
+}
+function saveProgram(client){
+  var isNew=!client;
+  var slug=isNew?String(val('rp_client')||'').toLowerCase().replace(/[^a-z0-9]/g,''):client;
+  if(!slug){ alert('Give it a slug.'); return; }
+  var wheel;
+  try{ wheel=JSON.parse(val('rp_wheel')); if(!Array.isArray(wheel)||!wheel.length) throw 0; }catch(e){ alert('Wheel JSON is invalid.'); return; }
+  var row={ client:slug, pin:val('rp_pin')||'1234', reward_at:Number(val('rp_at'))||5, reward_text:val('rp_text')||'a free visit',
+    spin_cost:Number(val('rp_spin'))||2, survey_points:Number(val('rp_sv'))||1, spin_prizes:wheel };
+  supa.from('reward_settings').upsert(row,{onConflict:'client'}).then(function(r){
+    if(r.error){ alert('Save failed: '+r.error.message); return; }
+    closeModal(); loadLoyalty();
+  });
+}
 
 /* ---- Prospect Finder: Chester County businesses with no website ---- */
 var TOWNS=['West Chester','Downingtown','Coatesville','Exton','Phoenixville','Kennett Square','Malvern','Paoli','Oxford','Honey Brook','Parkesburg','Thorndale'];
@@ -1087,6 +1157,8 @@ function showClientKit(o){
     +'<input readonly value="'+cap+'" onclick="this.select()">'
     +'<label class="f">📊 Their own CRM (they log in with '+esc(o.email||'their portal account')+')</label>'
     +'<input readonly value="https://tbsol.net/crm/?client='+slug+'" onclick="this.select()">'
+    +'<label class="f">🎡 Their rewards program (optional add-on — set it up in the Loyalty tab)</label>'
+    +'<input readonly value="https://tbsol.net/rewards/?c='+slug+'" onclick="this.select()">'
     +'<label class="f">🔑 Their client portal</label>'
     +'<input readonly value="https://tbsol.net/portal/" onclick="this.select()">'
     +'<p class="hint" style="margin-top:10px">Every lead from the capture page lands in your Client Leads + Pipelines and in their CRM automatically. Add their brand profile in the <a href="/marketing-engine/" style="color:var(--cyan)">Marketing Engine</a> to generate on-brand copy for them.</p>'
