@@ -36,6 +36,14 @@
   .hide{display:none!important}
   .staff{border-style:dashed}
   .center{text-align:center}
+  .wheelbox{position:relative;width:230px;height:230px;margin:14px auto}
+  .wheel{width:100%;height:100%;border-radius:50%;border:5px solid var(--line);transition:transform 3.2s cubic-bezier(.15,.9,.25,1)}
+  .ptr{position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:26px;z-index:2;filter:drop-shadow(0 2px 3px rgba(0,0,0,.6))}
+  .wchips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px}
+  .wchip{border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:12px;color:var(--muted)}
+  .wchip.win{border-color:var(--acc);color:var(--text);background:rgba(122,162,255,.18);font-weight:800}
+  .prize{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px dashed var(--line);border-radius:12px;padding:10px 12px;margin-top:8px}
+  .spinres{font-size:17px;font-weight:900;margin:10px 0 0;min-height:24px}
 </style>
 </head>
 <body>
@@ -65,6 +73,31 @@
       <p class="ok hide" id="readyLine">🎉 Reward unlocked — show this at the counter!</p>
       <img class="qr" id="mQr" alt="Your member QR">
       <p class="muted">Show this QR at the counter to earn your point.</p>
+    </div>
+
+    <div class="card center">
+      <b>🎡 Spin the wheel</b>
+      <p class="muted" style="margin:6px 0 0">Feeling lucky? Spend <span id="spinCost">2</span> points for a chance at the grand prize — or save them for the sure thing.</p>
+      <div class="wheelbox"><div class="ptr">🔻</div><div class="wheel" id="wheel"></div></div>
+      <div class="wchips" id="wchips"></div>
+      <div class="spinres" id="spinRes"></div>
+      <button class="btn" id="spinBtn" onclick="spin()">🎡 Spin</button>
+      <div class="err hide" id="wErr"></div>
+    </div>
+
+    <div class="card hide" id="prizeCard">
+      <b>🎁 Your prizes</b>
+      <p class="muted" style="margin:6px 0 0">Show these at the counter — staff claims them with the PIN.</p>
+      <div id="prizeList"></div>
+    </div>
+
+    <div class="card" id="surveyCard">
+      <b>📝 Quick survey — earn a free point</b>
+      <p class="muted" style="margin:6px 0 10px">30 seconds, once a week. How was your last visit?</p>
+      <div class="punches" id="svStars" style="margin:6px 0"></div>
+      <input id="svText" placeholder="Anything we should know? (optional)">
+      <button class="btn ghost" onclick="sendSurvey()">Send + earn</button>
+      <div class="err hide" id="svErr"></div>
     </div>
 
     <div class="card center">
@@ -134,6 +167,9 @@ function showCard(m){
   var myUrl=location.origin+'/rewards/?c='+slug+'&m='+m.code;
   el('mQr').src=qrUrl(myUrl,196);
   el('refQr').src=qrUrl(location.origin+'/capture/?c='+slug+'&name='+encodeURIComponent(display)+'&ref='+m.code,160);
+  if(m.wheel) renderWheel(m);
+  renderPrizes(m);
+  renderSvStars();
 }
 function join(){
   el('jErr').classList.add('hide');
@@ -168,6 +204,65 @@ function shareRef(){
   else { navigator.clipboard.writeText(link); el('copied').classList.remove('hide'); }
 }
 
+var WHEEL_COLORS=['rgba(122,162,255,.55)','rgba(90,208,240,.35)'];
+var wheelTurns=0, svRating=5;
+function renderWheel(m){
+  var labels=m.wheel||[]; var n=labels.length||6;
+  var seg=360/n, stops=[];
+  for(var i=0;i<n;i++){ stops.push(WHEEL_COLORS[i%2]+' '+(i*seg)+'deg '+((i+1)*seg)+'deg'); }
+  el('wheel').style.background='conic-gradient('+stops.join(',')+')';
+  el('wchips').innerHTML=labels.map(function(l,i){return '<span class="wchip" id="wc'+i+'">'+String(l).replace(/[<>&]/g,'')+'</span>';}).join('');
+  el('spinCost').textContent=m.spin_cost||2;
+  el('spinBtn').disabled=(m.points < (m.spin_cost||2));
+}
+function renderPrizes(m){
+  var ps=m.prizes||[];
+  el('prizeCard').classList.toggle('hide', !ps.length);
+  el('prizeList').innerHTML=ps.map(function(p,i){
+    return '<div class="prize"><b>🎁 '+String(p.label||'Prize').replace(/[<>&]/g,'')+'</b><button class="btn ghost" style="width:auto;margin:0;padding:8px 14px;font-size:12px" onclick="claim('+i+')">Staff claim (PIN)</button></div>';
+  }).join('');
+}
+function spin(){
+  el('wErr').classList.add('hide'); el('spinRes').textContent='';
+  var btn=el('spinBtn'); btn.disabled=true;
+  rpc('spin_wheel',{p_code:member.code}).then(function(m){
+    if(m.error){ el('wErr').textContent=m.error; el('wErr').classList.remove('hide'); btn.disabled=false; return; }
+    var labels=m.wheel||[]; var n=labels.length||6; var seg=360/n;
+    var idx=(m.result&&m.result.index)||0;
+    wheelTurns+=5;
+    var target=wheelTurns*360 - (idx*seg + seg/2);
+    el('wheel').style.transform='rotate('+target+'deg)';
+    for(var i=0;i<n;i++){ var c=el('wc'+i); if(c) c.classList.remove('win'); }
+    setTimeout(function(){
+      var c=el('wc'+idx); if(c) c.classList.add('win');
+      var res=m.result||{};
+      el('spinRes').textContent = res.type==='nothing' ? '😅 '+res.label+' — spin again!' : '🎉 You won: '+res.label+'!';
+      showCard(m);
+    }, 3300);
+  });
+}
+function claim(i){
+  var pin=prompt('Staff PIN to hand over this prize:'); if(!pin) return;
+  rpc('claim_prize',{p_code:member.code,p_pin:pin,p_index:i}).then(function(m){
+    if(m.error){ alert(m.error); return; }
+    alert('✅ Prize claimed — enjoy!');
+    showCard(m);
+  });
+}
+function renderSvStars(){
+  var h='';
+  for(var i=1;i<=5;i++){ h+='<div class="p'+(i<=svRating?' on':'')+'" style="cursor:pointer" onclick="svRating='+i+';renderSvStars()">'+(i<=svRating?'⭐':'')+'</div>'; }
+  el('svStars').innerHTML=h;
+}
+function sendSurvey(){
+  el('svErr').classList.add('hide');
+  rpc('submit_survey',{p_code:member.code,p_rating:svRating,p_text:el('svText').value.trim()}).then(function(m){
+    if(m.error){ el('svErr').textContent=m.error; el('svErr').classList.remove('hide'); return; }
+    el('svText').value='';
+    el('svErr').textContent='✅ Thanks — point added!'; el('svErr').style.color='var(--good)'; el('svErr').classList.remove('hide');
+    showCard(m);
+  });
+}
 var mParam=q.get('m');
 var saved=null; try{ saved=localStorage.getItem('rw_'+slug); }catch(e){}
 if(mParam){ el('joinCard').classList.add('hide'); loadByCode(mParam); }
