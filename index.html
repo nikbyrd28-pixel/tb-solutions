@@ -413,6 +413,15 @@
       h1{font-size:46px}.screen{min-height:460px}.orbit{display:none}.final{padding:30px 22px;border-radius:24px}.demo-blocks{grid-template-columns:1fr}.money{font-size:38px}
       .ai-panel{right:12px;left:12px;width:auto;bottom:88px}.ai-fab{right:16px;bottom:16px}
     }
+    .play-pill{position:fixed;left:18px;bottom:22px;z-index:80;display:none;align-items:center;gap:8px;background:linear-gradient(135deg,#5df2e0,#6f9dff);color:#03040a;border-radius:999px;padding:12px 18px;font-weight:900;font-size:14px;text-decoration:none;box-shadow:0 10px 34px rgba(94,242,224,.4);animation:pillpop .35s ease}
+    .play-pill.show{display:flex}
+    .play-pill .x{margin-left:4px;color:#03040a;opacity:.55;font-weight:900;cursor:pointer;padding:0 2px}
+    @keyframes pillpop{0%{transform:translateY(16px);opacity:0}100%{transform:translateY(0);opacity:1}}
+    @media(max-width:760px){.play-pill{bottom:78px;left:12px;padding:11px 15px;font-size:13px}}
+    .exit-veil{position:fixed;inset:0;z-index:120;background:rgba(3,4,10,.78);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px}
+    .exit-veil.show{display:flex}
+    .exit-card{width:min(430px,100%);background:linear-gradient(150deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid var(--line2);border-radius:24px;padding:32px 26px;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.6),0 0 44px rgba(111,157,255,.2);animation:pillpop .3s ease}
+    .exit-card h3{font-family:"Orbitron",sans-serif;font-size:22px;margin:0 0 10px}
   </style>
 </head>
 <body>
@@ -425,7 +434,7 @@
   <header class="top">
     <div class="wrap nav">
       <a class="brand" href="#">TB <span>Solutions</span></a>
-      <nav class="navlinks"><a href="#services">Services</a><a href="#ai-agent">AI Agent</a><a href="#plan">Free Plan</a><a href="#pricing">Packages</a><a href="#growth-system">Growth System</a><a href="#portfolio">Work</a><a href="/learn/">Learn</a><a href="#contact">Contact</a><a href="/support/">Support</a><a href="/portal/" style="color:var(--cyan)">Client Login</a></nav>
+      <nav class="navlinks"><a href="/play/" style="color:var(--cyan)">🎮 Build My Plan</a><a href="#services">Services</a><a href="#ai-agent">AI Agent</a><a href="#plan">Free Plan</a><a href="#pricing">Packages</a><a href="#growth-system">Growth System</a><a href="#portfolio">Work</a><a href="/learn/">Learn</a><a href="#contact">Contact</a><a href="/support/">Support</a><a href="/portal/" style="color:var(--cyan)">Client Login</a></nav>
       <div class="actions" style="margin-top:0"><a class="btn primary" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener" data-book>Book a Call</a></div>
     </div>
   </header>
@@ -436,13 +445,13 @@
         <div class="orbit" aria-hidden="true"><span class="ring"></span><span class="ring r2"></span><span class="sat"></span></div>
         <div>
           <div class="eyebrow">Chester County digital marketing studio</div>
-          <h1>Websites that feel <span class="gradient">out of this world</span> — with an AI agent built in.</h1>
-          <p class="lead">We build stunning websites for Chester County businesses — and get you found on Google so more customers call and book.</p>
-          <p class="sublead">No confusing tech talk. Just a great-looking website and more customers.</p>
+          <h1>Growing your business should be <span class="gradient">fun</span>. So we made it a game. 🎮</h1>
+          <p class="lead">Play the 60-second plan builder — pick your business, your goal, your budget, and watch your growth machine assemble itself. Real plan, real price, zero pressure.</p>
+          <p class="sublead">No email required to play. No jargon. No scary sales call.</p>
           <div class="actions">
-            <a class="btn primary" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener" data-book>Book a Free Call</a>
-            <a class="btn" href="#pricing">See packages</a>
-            <a class="btn" href="#ai-agent">Meet the AI agent</a>
+            <a class="btn primary" href="/play/">🎮 Play: build my plan — 60 sec</a>
+            <a class="btn" href="#growth">🎡 Spin the rewards demo</a>
+            <a class="btn" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener" data-book>Talk to a human instead</a>
           </div>
           <div class="hero-proof">
             <div class="proof-tile"><b>Sci-fi grade</b><span>visual direction</span></div>
@@ -564,7 +573,7 @@
             <div class="plan-step"><span class="pnum">2</span><b>The 1–2 things to fix first</b><span>Where your money actually moves the needle — and what to skip.</span></div>
             <div class="plan-step"><span class="pnum">3</span><b>A clear next step</b><span>A simple plan you can act on, whether we work together or not.</span></div>
           </div>
-          <div class="actions" style="justify-content:center;margin-top:30px"><a class="btn primary" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener" data-book>Book my free marketing plan</a></div>
+          <div class="actions" style="justify-content:center;margin-top:30px"><a class="btn primary" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener" data-book>Book my free marketing plan</a><a class="btn" href="/play/">🎮 Or skip the call — play the builder</a></div>
         </div>
       </div>
     </section>
@@ -579,6 +588,7 @@
           <article class="price reveal" style="border-color:rgba(93,242,224,.45)"><span class="tag">Everything</span><h3>The Whole Machine</h3><div class="money">$997 <span style="font-size:14px;color:var(--muted);font-weight:600">+ $149/mo</span></div><p class="muted">Growth System + paid ads + your own rewards club. Customers found, captured, and kept.</p><ul><li>Everything in Growth System</li><li>Google + Facebook/Instagram ads launched</li><li>🎡 Loyalty rewards program (demo below!)</li><li>Monthly report: which ads made you money</li></ul><a class="btn btn-sm" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener" data-book>Book a call</a></article>
         </div>
         <p class="muted" style="text-align:center;margin-top:18px;font-size:13px"><b style="color:var(--text)">À la carte:</b> website check-up $100 · social pack (10 posts) $150 · AI chat assistant $400 · extra ads platform from $250 · rewards club alone $149 + $79/mo</p>
+        <p style="text-align:center;margin-top:14px"><a class="btn" href="/play/">🎮 Not sure which? Play the 60-second builder — it picks for you</a></p>
       </div>
     </section>
 
@@ -1130,6 +1140,31 @@
     });
   })();
   </script>
+<a class="play-pill" id="playPill" href="/play/">🎮 Build my plan — 60 sec<span class="x" id="pillX" role="button" aria-label="Dismiss">✕</span></a>
+<div class="exit-veil" id="exitVeil" role="dialog" aria-label="Before you go">
+  <div class="exit-card">
+    <div style="font-size:46px">🎮</div>
+    <h3>Leaving empty-handed?</h3>
+    <p class="muted" style="margin:0 0 18px">60 seconds gets you a real plan with a real price — it's actually fun, and you don't even have to give an email.</p>
+    <a class="btn primary" href="/play/" style="display:block;margin-bottom:10px">Fine, I'll play 🎮</a>
+    <button class="btn" id="exitClose" style="width:100%">Keep browsing</button>
+  </div>
+</div>
+<script>
+(function(){
+  var pill=document.getElementById('playPill');
+  var dism=false;
+  try{dism=sessionStorage.getItem('tb_pill')==='1'}catch(e){}
+  document.getElementById('pillX').addEventListener('click',function(e){e.preventDefault();e.stopPropagation();dism=true;pill.classList.remove('show');try{sessionStorage.setItem('tb_pill','1')}catch(_){}});
+  addEventListener('scroll',function(){ if(dism)return; var on=scrollY>650 && scrollY<document.body.scrollHeight-innerHeight-500; pill.classList.toggle('show',on); },{passive:true});
+  var veil=document.getElementById('exitVeil'), shown=false;
+  try{shown=sessionStorage.getItem('tb_exit')==='1'}catch(e){}
+  function popExit(){ if(shown)return; shown=true; try{sessionStorage.setItem('tb_exit','1')}catch(_){} veil.classList.add('show'); }
+  document.addEventListener('mouseout',function(e){ if(!e.relatedTarget && e.clientY<=8) popExit(); });
+  document.getElementById('exitClose').addEventListener('click',function(){veil.classList.remove('show')});
+  veil.addEventListener('click',function(e){ if(e.target===veil) veil.classList.remove('show'); });
+})();
+</script>
 <script>(function(){try{var K="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro";fetch("https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/pageviews",{method:"POST",headers:{apikey:K,Authorization:"Bearer "+K,"Content-Type":"application/json",Prefer:"return=minimal"},body:JSON.stringify({path:location.pathname,ref:document.referrer||"",ua:(navigator.userAgent||"").slice(0,120),w:innerWidth})}).catch(function(){});}catch(e){}})();</script>
 </body>
 </html>
