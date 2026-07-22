@@ -422,6 +422,14 @@
     .exit-veil.show{display:flex}
     .exit-card{width:min(430px,100%);background:linear-gradient(150deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid var(--line2);border-radius:24px;padding:32px 26px;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.6),0 0 44px rgba(111,157,255,.2);animation:pillpop .3s ease}
     .exit-card h3{font-family:"Orbitron",sans-serif;font-size:22px;margin:0 0 10px}
+    #hudBar{position:fixed;top:0;left:0;right:0;height:4px;z-index:210;background:rgba(122,162,255,.12)}
+    #hudBar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#5df2e0,#6f9dff);box-shadow:0 0 12px #6f9dff;transition:width .15s linear}
+    #hudLv{position:fixed;right:16px;bottom:96px;z-index:79;font-family:"Orbitron",sans-serif;font-weight:900;font-size:11px;letter-spacing:.16em;color:#5df2e0;background:rgba(4,5,10,.72);border:1px solid rgba(93,242,224,.4);border-radius:999px;padding:5px 11px;backdrop-filter:blur(6px);pointer-events:none}
+    @media(max-width:760px){#hudLv{bottom:150px}}
+    .lvl-tag{display:inline-block;border:1px solid rgba(93,242,224,.45);color:#5df2e0;border-radius:999px;padding:4px 14px;font-size:11px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;margin-bottom:14px;background:rgba(93,242,224,.06);font-family:"Orbitron",sans-serif}
+    .lvl-toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:220;font-family:"Orbitron",sans-serif;font-weight:900;font-size:11px;letter-spacing:.14em;color:#03040a;background:linear-gradient(135deg,#5df2e0,#6f9dff);border-radius:999px;padding:9px 18px;box-shadow:0 10px 30px rgba(94,242,224,.45);animation:pillpop .3s ease;text-transform:uppercase;white-space:nowrap}
+    @keyframes pressglow{0%,100%{box-shadow:0 0 18px rgba(94,242,224,.45)}50%{box-shadow:0 0 36px rgba(94,242,224,.85)}}
+    .press{animation:pressglow 1.6s ease infinite}
   </style>
 </head>
 <body>
@@ -434,7 +442,7 @@
   <header class="top">
     <div class="wrap nav">
       <a class="brand" href="#">TB <span>Solutions</span></a>
-      <nav class="navlinks"><a href="/play/" style="color:var(--cyan)">🎮 Build My Plan</a><a href="#services">Services</a><a href="#ai-agent">AI Agent</a><a href="#plan">Free Plan</a><a href="#pricing">Packages</a><a href="#growth-system">Growth System</a><a href="#portfolio">Work</a><a href="/learn/">Learn</a><a href="#contact">Contact</a><a href="/support/">Support</a><a href="/portal/" style="color:var(--cyan)">Client Login</a></nav>
+      <nav class="navlinks"><a href="/play/" style="color:var(--cyan)">🎮 Talk to Nick</a><a href="#services">Services</a><a href="#ai-agent">AI Agent</a><a href="#plan">Free Plan</a><a href="#pricing">Packages</a><a href="#growth-system">Growth System</a><a href="#portfolio">Work</a><a href="/learn/">Learn</a><a href="#contact">Contact</a><a href="/support/">Support</a><a href="/portal/" style="color:var(--cyan)">Client Login</a></nav>
       <div class="actions" style="margin-top:0"><a class="btn primary" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener" data-book>Book a Call</a></div>
     </div>
   </header>
@@ -446,10 +454,10 @@
         <div>
           <div class="eyebrow">Chester County digital marketing studio</div>
           <h1>Growing your business should be <span class="gradient">fun</span>. So we made it a game. 🎮</h1>
-          <p class="lead">Play the 60-second plan builder — pick your business, your goal, your budget, and watch your growth machine assemble itself. Real plan, real price, zero pressure.</p>
+          <p class="lead"><b style="color:var(--text)">Talk to Nick — The Game.</b> 60 seconds: pick your world, set your goal, and watch your growth machine assemble itself. Zero pressure, no email needed.</p>
           <p class="sublead">No email required to play. No jargon. No scary sales call.</p>
           <div class="actions">
-            <a class="btn primary" href="/play/">🎮 Play: build my plan — 60 sec</a>
+            <a class="btn primary press" href="/play/">▶ PRESS START — Talk to Nick</a>
             <a class="btn" href="#growth">🎡 Spin the rewards demo</a>
             <a class="btn" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener" data-book>Talk to a human instead</a>
           </div>
@@ -573,22 +581,22 @@
             <div class="plan-step"><span class="pnum">2</span><b>The 1–2 things to fix first</b><span>Where your money actually moves the needle — and what to skip.</span></div>
             <div class="plan-step"><span class="pnum">3</span><b>A clear next step</b><span>A simple plan you can act on, whether we work together or not.</span></div>
           </div>
-          <div class="actions" style="justify-content:center;margin-top:30px"><a class="btn primary" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener" data-book>Book my free marketing plan</a><a class="btn" href="/play/">🎮 Or skip the call — play the builder</a></div>
+          <div class="actions" style="justify-content:center;margin-top:30px"><a class="btn primary" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener" data-book>Book my free marketing plan</a><a class="btn" href="/play/">🎮 Or skip the call — Talk to Nick, the game</a></div>
         </div>
       </div>
     </section>
 
     <section id="pricing">
       <div class="wrap">
-        <h2 class="section-title">Pick your speed. Upgrade when it pays for itself.</h2>
-        <p class="muted">Start small, see results, add power. Half to start, half when it's done — monthly plans cancel anytime.</p>
+        <h2 class="section-title">Every package is a <span style="background:linear-gradient(120deg,#5df2e0,#6f9dff);-webkit-background-clip:text;background-clip:text;color:transparent">boost</span>. Stack them when you're ready.</h2>
+        <p class="muted">Start small, level up when it pays for itself. No long contracts — cancel monthly stuff anytime.</p>
         <div class="pricing">
-          <article class="price reveal"><h3>Starter Site</h3><div class="money">$300</div><p class="muted">Get online this week. A sharp one-page website that captures leads instead of just sitting there.</p><ul><li>Custom design for your business</li><li>Built-in lead capture form</li><li>Set up to show on Google</li><li>Done in days, not months</li></ul><a class="btn btn-sm" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener" data-book>Book a call</a></article>
-          <article class="price featured glow-ring reveal"><span class="tag">Most popular</span><h3>Growth System</h3><div class="money">$497 <span style="font-size:14px;color:var(--muted);font-weight:600">+ $99/mo</span></div><p class="muted">The website <b>plus the machine behind it</b> — so no lead ever slips away while you're working.</p><ul><li>Everything in Starter Site</li><li>Your own CRM — every lead tracked</li><li>Instant AI replies + automatic follow-ups</li><li>Review collection that builds your reputation</li><li>We keep it running &amp; improving monthly</li></ul><a class="btn btn-sm primary" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener" data-book>Book a call</a></article>
-          <article class="price reveal" style="border-color:rgba(93,242,224,.45)"><span class="tag">Everything</span><h3>The Whole Machine</h3><div class="money">$997 <span style="font-size:14px;color:var(--muted);font-weight:600">+ $149/mo</span></div><p class="muted">Growth System + paid ads + your own rewards club. Customers found, captured, and kept.</p><ul><li>Everything in Growth System</li><li>Google + Facebook/Instagram ads launched</li><li>🎡 Loyalty rewards program (demo below!)</li><li>Monthly report: which ads made you money</li></ul><a class="btn btn-sm" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener" data-book>Book a call</a></article>
+          <article class="price reveal"><span class="tag">🕹️ Boost Lv.1</span><h3>Starter Site</h3><div class="money">$300</div><p class="muted">Get online this week. A sharp one-page website that captures leads instead of just sitting there.</p><ul><li>Custom design for your business</li><li>Built-in lead capture form</li><li>Set up to show on Google</li><li>Done in days, not months</li></ul><a class="btn btn-sm" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener" data-book>Book a call</a></article>
+          <article class="price featured glow-ring reveal"><span class="tag">⚡ Boost Lv.2 · Most popular</span><h3>Growth System</h3><div class="money" style="font-size:26px;line-height:1.25">Priced to fit you 🎯</div><p class="muted" style="font-size:12.5px;margin:4px 0 0">figured out together on your free call — no surprises, no lock-in</p><p class="muted">The website <b>plus the machine behind it</b> — so no lead ever slips away while you're working.</p><ul><li>Everything in Starter Site</li><li>Your own CRM — every lead tracked</li><li>Instant AI replies + automatic follow-ups</li><li>Review collection that builds your reputation</li><li>We keep it running &amp; improving monthly</li></ul><a class="btn btn-sm primary" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener" data-book>Book a call</a></article>
+          <article class="price reveal" style="border-color:rgba(93,242,224,.45)"><span class="tag">🚀 Boost Lv.3 · Full send</span><h3>The Whole Machine</h3><div class="money" style="font-size:26px;line-height:1.25">Custom build 🚀</div><p class="muted" style="font-size:12.5px;margin:4px 0 0">priced on your call — scaled to what you're comfortable with</p><p class="muted">Growth System + paid ads + your own rewards club. Customers found, captured, and kept.</p><ul><li>Everything in Growth System</li><li>Google + Facebook/Instagram ads launched</li><li>🎡 Loyalty rewards program (demo below!)</li><li>Monthly report: which ads made you money</li></ul><a class="btn btn-sm" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener" data-book>Book a call</a></article>
         </div>
-        <p class="muted" style="text-align:center;margin-top:18px;font-size:13px"><b style="color:var(--text)">À la carte:</b> website check-up $100 · social pack (10 posts) $150 · AI chat assistant $400 · extra ads platform from $250 · rewards club alone $149 + $79/mo</p>
-        <p style="text-align:center;margin-top:14px"><a class="btn" href="/play/">🎮 Not sure which? Play the 60-second builder — it picks for you</a></p>
+        <p class="muted" style="text-align:center;margin-top:18px;font-size:13px"><b style="color:var(--text)">Side quests:</b> website check-up $100 · social pack (10 posts) $150 · one-page website $300 — everything else we price together on your call.</p>
+        <p style="text-align:center;margin-top:14px"><a class="btn" href="/play/">🎮 Not sure which boost? Talk to Nick — the game picks for you</a></p>
       </div>
     </section>
 
@@ -603,7 +611,7 @@
           <div style="max-width:340px">
             <h3 style="font-size:20px;margin:0 0 10px">🎡 Your own rewards club</h3>
             <p class="muted" style="margin:0 0 14px">Punch cards, a prize wheel with odds you control, automatic review collection, and referrals that pay your customers to bring their friends. One QR code on your counter — no app, no hardware.</p>
-            <p class="muted" style="margin:0 0 18px">Included in <b style="color:var(--text)">The Whole Machine</b>, or standalone for <b style="color:var(--text)">$149 + $79/mo</b>.</p>
+            <p class="muted" style="margin:0 0 18px">Included in <b style="color:var(--text)">The Whole Machine</b> — or grab it on its own; we'll price it on your call.</p>
             <a class="btn btn-sm primary" href="/rewards/?c=demo" target="_blank" rel="noopener">Open the demo full screen →</a>
           </div>
         </div>
@@ -999,8 +1007,8 @@
              "Short version: websites, a chat helper, getting found on Google, ads, and follow-up — everything that turns a Google search into a booked job. Want prices or a free plan?"],
         chips:['Pricing','Websites','Get me on Google','Free marketing plan']},
       {id:'pricing', kw:{'price':3,'pricing':3,'cost':3,'how much':4,'package':3,'quote':3,'rate':2,'rates':2,'expensive':3,'cheap':2,'afford':3,'budget':3,'$':2,'charge':3,'fee':2}, book:true,
-        ans:["Here's the list: Quick Check-Up $100 · One-Page Website $300 · Smart Chat Assistant $400 · Facebook Ads from $250 · Google Ads from $350 · Auto Follow-Up $500. Or one monthly plan that covers everything, priced on a call. Not sure which fits? The free plan call sorts that out.",
-             "Simple pricing: websites from $300, chat assistant $400, ads from $250, check-up $100. Bigger monthly plans are priced to fit. Not sure? Grab the free call and Nick figures out the right fit for your budget."],
+        ans:["Good news — it's less scary than you think. Websites start at just $300, and that's the whole price. Everything else (CRM, ads, rewards club, AI) gets priced to fit YOUR budget on a free call with Nick. Want me to set that up?",
+             "Websites start at $300 one-time — the cheapest boost and the best first move. Bigger systems get priced together on a free call so nothing ever stretches you. Want me to book it?"],
         chips:['Book a free call','Whats included?','See the work']},
       {id:'website', kw:{'website':4,'web site':4,'site':2,'build':2,'design':3,'redesign':3,'landing page':4,'web page':3,'new site':4}, book:true,
         ans:["Websites start at $300 — great-looking, fast, work perfectly on phones, set up to show on Google, and every button makes it easy to book a call. Bigger sites are priced on a call.",
@@ -1140,12 +1148,12 @@
     });
   })();
   </script>
-<a class="play-pill" id="playPill" href="/play/">🎮 Build my plan — 60 sec<span class="x" id="pillX" role="button" aria-label="Dismiss">✕</span></a>
+<a class="play-pill" id="playPill" href="/play/">🎮 Talk to Nick — 60 sec<span class="x" id="pillX" role="button" aria-label="Dismiss">✕</span></a>
 <div class="exit-veil" id="exitVeil" role="dialog" aria-label="Before you go">
   <div class="exit-card">
     <div style="font-size:46px">🎮</div>
     <h3>Leaving empty-handed?</h3>
-    <p class="muted" style="margin:0 0 18px">60 seconds gets you a real plan with a real price — it's actually fun, and you don't even have to give an email.</p>
+    <p class="muted" style="margin:0 0 18px">Talk to Nick — the game. 60 seconds gets your business a real plan. It's actually fun, and no email needed.</p>
     <a class="btn primary" href="/play/" style="display:block;margin-bottom:10px">Fine, I'll play 🎮</a>
     <button class="btn" id="exitClose" style="width:100%">Keep browsing</button>
   </div>
@@ -1163,6 +1171,35 @@
   document.addEventListener('mouseout',function(e){ if(!e.relatedTarget && e.clientY<=8) popExit(); });
   document.getElementById('exitClose').addEventListener('click',function(){veil.classList.remove('show')});
   veil.addEventListener('click',function(e){ if(e.target===veil) veil.classList.remove('show'); });
+})();
+</script>
+<script>
+/* GAME MODE: XP bar, section levels, achievement toasts */
+(function(){
+  var bar=document.createElement('div'); bar.id='hudBar'; bar.innerHTML='<i></i>'; document.body.appendChild(bar);
+  var chip=document.createElement('div'); chip.id='hudLv'; chip.textContent='LV.1'; document.body.appendChild(chip);
+  var fill=bar.firstChild;
+  addEventListener('scroll',function(){ var h=document.documentElement; var m=h.scrollHeight-h.clientHeight; fill.style.width=(m>0?(h.scrollTop/m*100):0)+'%'; },{passive:true});
+  var LEVELS=[['services','LEVEL 1 · YOUR ARSENAL'],['ai-agent','LEVEL 2 · MEET ARIA'],['seo','LEVEL 3 · GET FOUND'],['plan','LEVEL 4 · FREE INTEL'],['pricing','LEVEL 5 · PICK YOUR BOOST'],['growth','LEVEL 6 · BONUS ROUND'],['growth-system','LEVEL 7 · THE MACHINE'],['portfolio','LEVEL 8 · VICTORY LOG'],['guarantee','LEVEL 9 · SAFE MODE'],['founder','LEVEL 10 · PLAYER 2'],['faq','LEVEL 11 · CHEAT CODES'],['contact','FINAL LEVEL · TALK TO NICK']];
+  LEVELS.forEach(function(L){
+    var s=document.getElementById(L[0]); if(!s) return;
+    var w=s.querySelector('.wrap')||s;
+    var b=document.createElement('div'); b.className='lvl-tag'; b.textContent='🎮 '+L[1];
+    w.insertBefore(b,w.firstChild);
+  });
+  if(!('IntersectionObserver' in window)) return;
+  var lv=1, seen={}, lastToast=0;
+  var io=new IntersectionObserver(function(es){ es.forEach(function(en){
+    if(!en.isIntersecting) return;
+    var id=en.target.id; if(seen[id]) return; seen[id]=1;
+    var idx=-1; LEVELS.forEach(function(L,i){ if(L[0]===id) idx=i; });
+    if(idx<0) return;
+    if(idx+1>lv){ lv=idx+1; chip.textContent='LV.'+lv; }
+    var now=Date.now(); if(now-lastToast<1500) return; lastToast=now;
+    var tst=document.createElement('div'); tst.className='lvl-toast'; tst.textContent='⭐ '+LEVELS[idx][1];
+    document.body.appendChild(tst); setTimeout(function(){tst.remove()},2100);
+  });},{threshold:.25});
+  LEVELS.forEach(function(L){ var s=document.getElementById(L[0]); if(s) io.observe(s); });
 })();
 </script>
 <script>(function(){try{var K="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro";fetch("https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/pageviews",{method:"POST",headers:{apikey:K,Authorization:"Bearer "+K,"Content-Type":"application/json",Prefer:"return=minimal"},body:JSON.stringify({path:location.pathname,ref:document.referrer||"",ua:(navigator.userAgent||"").slice(0,120),w:innerWidth})}).catch(function(){});}catch(e){}})();</script>

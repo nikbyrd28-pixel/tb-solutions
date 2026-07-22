@@ -3,132 +3,85 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Build Your Growth Machine — TB Solutions</title>
-<meta name="description" content="A 60-second game that builds your perfect marketing plan — pick your business, your goal, your budget, and watch your machine assemble." />
+<title>Talk to Nick — The Game · TB Solutions</title>
+<meta name="description" content="Talk to Nick — a 60-second game that builds your business a growth plan. No email to play, no scary prices, no pressure." />
 <link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='28'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E" />
 <style>
   :root{--text:#f2f4ff;--muted:#8f97b8;--line:rgba(122,162,255,.35);--acc:#7aa2ff;--acc2:#5df2e0;--good:#43f0b0}
   *{box-sizing:border-box}
   @keyframes drift{0%{background-position:0 0}100%{background-position:60px 60px}}
-  @keyframes popin{0%{transform:scale(.92);opacity:0}100%{transform:scale(1);opacity:1}}
+  @keyframes popin{0%{transform:translateY(10px) scale(.97);opacity:0}100%{transform:translateY(0) scale(1);opacity:1}}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
   @keyframes confetti-fall{0%{transform:translateY(-10px) rotate(0);opacity:1}100%{transform:translateY(105vh) rotate(720deg);opacity:0}}
-  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.6;min-height:100vh;
+  @keyframes lvlflash{0%{transform:scale(.6);opacity:0}25%{transform:scale(1.1);opacity:1}75%{transform:scale(1);opacity:1}100%{transform:scale(1);opacity:0}}
+  @keyframes dotty{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+  html,body{height:100%}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.5;
     background:radial-gradient(circle at 15% -5%,rgba(122,162,255,.2),transparent 42%),radial-gradient(circle at 90% 108%,rgba(93,242,224,.13),transparent 45%),linear-gradient(180deg,#070811,#04050a);
-    display:flex;align-items:flex-start;justify-content:center;padding:28px 16px;position:relative}
+    display:flex;flex-direction:column;align-items:center;position:relative}
   body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.5;
     background-image:linear-gradient(rgba(122,162,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(122,162,255,.05) 1px,transparent 1px);
     background-size:60px 60px;animation:drift 14s linear infinite}
-  .wrap{width:min(480px,100%);position:relative;z-index:1}
-  .brand{font-weight:900;font-size:16px;margin-bottom:14px}
+  .shell{width:min(520px,100%);height:100dvh;display:flex;flex-direction:column;position:relative;z-index:1;padding:14px 14px 12px}
+  .hud{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+  .brand{font-weight:900;font-size:14px;white-space:nowrap}
   .brand a{color:var(--text);text-decoration:none}
   .brand span{background:linear-gradient(90deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .bar{height:9px;border-radius:99px;background:rgba(122,162,255,.12);overflow:hidden;margin-bottom:20px}
-  .bar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--acc2),var(--acc));border-radius:99px;transition:width .5s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 14px var(--acc)}
-  .step-tag{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--acc2);font-weight:800;margin-bottom:4px}
-  h1{font-size:clamp(24px,6vw,32px);margin:0 0 8px;letter-spacing:-.01em}
-  .lead{color:var(--muted);margin:0 0 18px;font-size:14.5px}
-  .card{background:linear-gradient(150deg,rgba(255,255,255,.055),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:22px;padding:24px;backdrop-filter:blur(12px);
-    box-shadow:0 18px 44px rgba(0,0,0,.45),0 0 34px rgba(122,162,255,.08);animation:popin .3s ease}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .opt{border:1px solid var(--line);border-radius:16px;padding:16px 10px;text-align:center;cursor:pointer;background:rgba(0,0,0,.25);transition:all .12s;user-select:none}
-  .opt:active{transform:scale(.96)}
-  .opt .e{font-size:26px;display:block;margin-bottom:4px}
-  .opt b{font-size:13px}
-  .opt.on{border-color:var(--acc2);background:rgba(93,242,224,.12);box-shadow:0 0 16px rgba(93,242,224,.3)}
-  label{display:block;margin:14px 0 0;font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.16em;text-transform:uppercase}
-  input{width:100%;background:rgba(2,4,12,.6);border:1px solid var(--line);border-radius:13px;padding:13px 14px;color:var(--text);font:inherit;font-size:15px;margin-top:6px}
-  input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(122,162,255,.2)}
-  input[type=range]{padding:0;height:38px;accent-color:#5df2e0;border:0;background:transparent}
-  .btn{width:100%;margin-top:18px;border:0;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;border-radius:999px;padding:15px;font:inherit;font-weight:900;font-size:14px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;
-    box-shadow:0 0 22px rgba(122,162,255,.45)}
+  .lv{font-size:11px;font-weight:900;letter-spacing:.14em;color:var(--acc2);white-space:nowrap}
+  .bar{flex:1;height:10px;border-radius:99px;background:rgba(122,162,255,.12);overflow:hidden}
+  .bar i{display:block;height:100%;width:4%;background:linear-gradient(90deg,var(--acc2),var(--acc));border-radius:99px;transition:width .6s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 14px var(--acc)}
+  .chat{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:6px 2px 12px;-webkit-overflow-scrolling:touch}
+  .msg{display:flex;gap:9px;align-items:flex-end;animation:popin .28s ease}
+  .msg.me{flex-direction:row-reverse}
+  .ava{flex:0 0 34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--acc2),var(--acc));display:grid;place-items:center;font-size:17px;font-weight:900;color:#04050a;box-shadow:0 0 14px rgba(122,162,255,.45)}
+  .bub{max-width:82%;background:linear-gradient(150deg,rgba(255,255,255,.07),rgba(255,255,255,.025));border:1px solid var(--line);border-radius:16px 16px 16px 5px;padding:11px 14px;font-size:14.5px;backdrop-filter:blur(8px)}
+  .msg.me .bub{border-radius:16px 16px 5px 16px;background:rgba(93,242,224,.12);border-color:rgba(93,242,224,.45)}
+  .bub b{color:var(--acc2)}
+  .typing{display:inline-flex;gap:4px;padding:4px 2px}
+  .typing i{width:7px;height:7px;border-radius:50%;background:var(--acc2);animation:dotty 1s infinite}
+  .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+  .dock{padding-top:10px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .opt{border:1px solid var(--line);border-radius:14px;padding:12px 8px;text-align:center;cursor:pointer;background:rgba(0,0,0,.3);transition:all .12s;user-select:none;animation:popin .3s ease}
+  .opt:active{transform:scale(.95)}
+  .opt .e{font-size:22px;display:block;margin-bottom:2px}
+  .opt b{font-size:12.5px}
+  .opt.wide{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:8px}
+  .opt.wide .e{margin:0}
+  .start{border:0;width:100%;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;border-radius:999px;padding:16px;font:inherit;font-weight:900;font-size:15px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;box-shadow:0 0 26px rgba(122,162,255,.5);animation:popin .3s ease}
+  .btn{width:100%;margin-top:10px;border:0;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;border-radius:999px;padding:14px;font:inherit;font-weight:900;font-size:14px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;box-shadow:0 0 20px rgba(122,162,255,.4)}
   .btn.ghost{background:rgba(122,162,255,.06);border:1px solid var(--line);color:var(--text);box-shadow:none;font-weight:700}
-  .btn:disabled{opacity:.45;box-shadow:none}
-  .money{font-size:44px;font-weight:900;line-height:1.05;background:linear-gradient(135deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(122,162,255,.45))}
-  .budget-tag{font-size:13px;font-weight:800;color:var(--acc2);letter-spacing:.1em;text-transform:uppercase}
-  .term{font-family:ui-monospace,Menlo,monospace;font-size:13px;background:rgba(0,0,0,.5);border:1px solid var(--line);border-radius:14px;padding:16px;min-height:150px;text-align:left}
+  input[type=text],input[type=tel],input[type=email]{width:100%;background:rgba(2,4,12,.6);border:1px solid var(--line);border-radius:13px;padding:12px 14px;color:var(--text);font:inherit;font-size:15px;margin-top:8px}
+  input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(122,162,255,.2)}
+  input[type=range]{width:100%;padding:0;height:38px;accent-color:#5df2e0;border:0;background:transparent}
+  .money{font-size:38px;font-weight:900;line-height:1.05;background:linear-gradient(135deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(122,162,255,.45));text-align:center}
+  .budget-tag{font-size:12px;font-weight:800;color:var(--acc2);letter-spacing:.12em;text-transform:uppercase;text-align:center;margin-bottom:4px}
+  .term{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:rgba(0,0,0,.5);border:1px solid var(--line);border-radius:12px;padding:12px;min-height:120px}
   .term div{opacity:0;color:var(--acc2)}
   .term div.show{opacity:1}
   .term .c{animation:blink 1s step-end infinite}
-  ul.inc{list-style:none;margin:14px 0 0;padding:0;text-align:left}
-  ul.inc li{padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:14px;color:#c8cde6}
+  .build{border:1px solid rgba(93,242,224,.5);border-radius:16px;padding:16px;background:rgba(93,242,224,.05);box-shadow:0 0 24px rgba(93,242,224,.15)}
+  .pill{display:inline-block;border:1px solid rgba(93,242,224,.5);color:var(--acc2);border-radius:999px;padding:2px 11px;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+  .build h2{margin:8px 0 2px;font-size:21px}
+  ul.inc{list-style:none;margin:10px 0 0;padding:0}
+  ul.inc li{padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:13.5px;color:#c8cde6}
   ul.inc li b{color:var(--text)}
-  .muted{color:var(--muted);font-size:13px}
-  .err{color:#ff8a9d;font-size:13px;margin-top:8px}
-  .hide{display:none!important}
-  .center{text-align:center}
+  .muted{color:var(--muted);font-size:12.5px}
+  .err{color:#ff8a9d;font-size:13px;margin-top:6px}
   .cf{position:fixed;top:-16px;font-size:20px;z-index:99;pointer-events:none;animation:confetti-fall linear forwards}
-  .pill{display:inline-block;border:1px solid rgba(93,242,224,.5);color:var(--acc2);border-radius:999px;padding:3px 12px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+  .lvlup{position:fixed;top:34%;left:50%;transform:translateX(-50%);z-index:98;font-weight:900;font-size:26px;letter-spacing:.2em;color:var(--acc2);text-shadow:0 0 24px rgba(93,242,224,.8);pointer-events:none;animation:lvlflash 1.1s ease forwards}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="brand"><a href="/">TB <span>Solutions</span></a></div>
-  <div class="bar"><i id="prog"></i></div>
-
-  <!-- STEP 1: business -->
-  <div class="card" id="s1">
-    <div class="step-tag">Level 1 of 4</div>
-    <h1>What are we building for? 🎮</h1>
-    <p class="lead">60 seconds. No email required to play. Pick your world:</p>
-    <div class="grid" id="bizGrid"></div>
-    <label>Your business name (optional)</label>
-    <input id="bizName" placeholder="Joe's Barbershop">
-    <button class="btn" id="n1" onclick="go(2)" disabled>Next →</button>
+<div class="shell">
+  <div class="hud">
+    <div class="brand"><a href="/">TB <span>Solutions</span></a></div>
+    <div class="bar"><i id="xp"></i></div>
+    <div class="lv" id="lv">LV.1</div>
   </div>
-
-  <!-- STEP 2: goal -->
-  <div class="card hide" id="s2">
-    <div class="step-tag">Level 2 of 4</div>
-    <h1>Pick your power-up ⚡</h1>
-    <p class="lead">What would actually change your month?</p>
-    <div class="grid" id="goalGrid"></div>
-    <button class="btn" id="n2" onclick="go(3)" disabled>Next →</button>
-  </div>
-
-  <!-- STEP 3: budget -->
-  <div class="card center hide" id="s3">
-    <div class="step-tag">Level 3 of 4</div>
-    <h1>Set your fuel 💸</h1>
-    <p class="lead">What could you put into growth to start? Be honest — the machine adjusts.</p>
-    <div class="money" id="budgetOut">$500</div>
-    <div class="budget-tag" id="budgetTag">SERIOUS</div>
-    <input type="range" id="budget" min="100" max="2500" step="50" value="500" oninput="budgetChange()">
-    <button class="btn" onclick="go(4)">⚙️ Assemble my machine</button>
-  </div>
-
-  <!-- STEP 4: assembling -->
-  <div class="card hide" id="s4">
-    <div class="step-tag">Level 4 of 4</div>
-    <h1>Assembling… 🛠️</h1>
-    <div class="term" id="term"></div>
-  </div>
-
-  <!-- REVEAL -->
-  <div class="card center hide" id="s5">
-    <div class="pill" id="revTag">Your build</div>
-    <h1 id="revName" style="margin-top:10px">—</h1>
-    <div class="money" id="revPrice">—</div>
-    <p class="muted" id="revMo"></p>
-    <ul class="inc" id="revList"></ul>
-    <p class="muted" id="revWhy" style="margin-top:12px"></p>
-    <label>Your name</label><input id="cName" autocomplete="name">
-    <label>Phone</label><input id="cPhone" type="tel" autocomplete="tel">
-    <label>Email (optional)</label><input id="cEmail" type="email" autocomplete="email">
-    <button class="btn" onclick="lockIn()">🔒 Lock in my build</button>
-    <div class="err hide" id="lErr"></div>
-    <p class="muted" style="margin-top:10px">No payment now — this just saves your plan. <a href="/privacy/" style="color:var(--muted)">Privacy</a></p>
-  </div>
-
-  <!-- DONE -->
-  <div class="card center hide" id="s6">
-    <div style="font-size:52px">🏆</div>
-    <h1>Build saved!</h1>
-    <p class="lead" id="doneMsg">Nick has your plan and will reach out fast. Want to skip the line?</p>
-    <a class="btn" style="display:block;text-decoration:none" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener">📅 Book the free call now</a>
-    <a class="btn ghost" style="display:block;text-decoration:none" href="/rewards/?c=demo" target="_blank" rel="noopener">🎡 Play the rewards demo while you wait</a>
-  </div>
+  <div class="chat" id="chat"></div>
+  <div class="dock" id="dock"></div>
 </div>
 
 <script>
@@ -136,76 +89,150 @@ var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
 var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
 
 var BIZ=[['💈','Barber / Salon'],['🍕','Food / Restaurant'],['🚗','Auto / Detailing'],['🧽','Cleaning'],['🔨','Contractor / Trades'],['🌿','Landscaping'],['🚙','Transport'],['✨','Something else']];
-var GOALS=[['📞','More calls & leads','leads'],['🏆','Look legit online','legit'],['🔁','Keep customers coming back','retention'],['🚀','All of it','all']];
-var pick={biz:null,goal:null,budget:500,rec:null};
+var SITE=[['😬','No website yet','none'],['🕸️','Yeah… but it\'s old','old'],['✅','Yep, and it\'s decent','good']];
+var GOALS=[['📞','More calls & leads','leads'],['🏆','Look legit online','legit'],['🔁','Customers coming back','retention'],['🚀','All of it','all']];
+var pick={biz:null,site:null,siteLabel:'',goal:null,goalLabel:'',budget:500,rec:null};
+var xpNow=4, lvNow=1;
 
 function el(id){return document.getElementById(id)}
-function chips(){
-  el('bizGrid').innerHTML=BIZ.map(function(b,i){return '<div class="opt" id="b'+i+'" onclick="pickBiz('+i+')"><span class="e">'+b[0]+'</span><b>'+b[1]+'</b></div>';}).join('');
-  el('goalGrid').innerHTML=GOALS.map(function(g,i){return '<div class="opt" id="g'+i+'" onclick="pickGoal('+i+')"><span class="e">'+g[0]+'</span><b>'+g[1]+'</b></div>';}).join('');
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function scrollDown(){var c=el('chat'); requestAnimationFrame(function(){c.scrollTop=c.scrollHeight+400;});}
+function addXP(amt){
+  xpNow=Math.min(100,xpNow+amt); el('xp').style.width=xpNow+'%';
+  var lv=1+Math.floor(xpNow/20);
+  if(lv>lvNow){ lvNow=lv; el('lv').textContent='LV.'+lv;
+    var f=document.createElement('div'); f.className='lvlup'; f.textContent='LEVEL UP!';
+    document.body.appendChild(f); setTimeout(function(){f.remove()},1200);
+  }
 }
-function pickBiz(i){ pick.biz=BIZ[i][1]; BIZ.forEach(function(_,j){el('b'+j).classList.toggle('on',j===i)}); el('n1').disabled=false; }
-function pickGoal(i){ pick.goal=GOALS[i][2]; pick.goalLabel=GOALS[i][1]; GOALS.forEach(function(_,j){el('g'+j).classList.toggle('on',j===i)}); el('n2').disabled=false; }
-function budgetChange(){
+function nick(html,cb,delay){
+  var c=el('chat');
+  var t=document.createElement('div'); t.className='msg';
+  t.innerHTML='<div class="ava">N</div><div class="bub"><span class="typing"><i></i><i></i><i></i></span></div>';
+  c.appendChild(t); scrollDown();
+  setTimeout(function(){
+    t.querySelector('.bub').innerHTML=html; scrollDown();
+    if(cb) setTimeout(cb,180);
+  }, delay||700);
+}
+function me(text){
+  var c=el('chat');
+  var m=document.createElement('div'); m.className='msg me';
+  m.innerHTML='<div class="bub">'+esc(text)+'</div>';
+  c.appendChild(m); scrollDown();
+}
+function dock(html){ el('dock').innerHTML=html; scrollDown(); }
+
+/* ---------- game flow ---------- */
+function start(){
+  nick("Yo! I'm <b>Nick</b> 👋 I build growth machines for local businesses around Chester County.",function(){
+    nick("Let's play a quick game — <b>60 seconds</b>, and I'll figure out exactly what your business needs. No email, no pressure, no boring forms.",function(){
+      dock('<button class="start" onclick="q1()">▶ Press start</button>');
+    });
+  },500);
+}
+function q1(){
+  me('▶ Start');
+  dock('');
+  nick("Nice. 🎮 <b>Level 1:</b> what kind of business are we powering up?",function(){
+    dock('<div class="grid">'+BIZ.map(function(b,i){return '<div class="opt" onclick="a1('+i+')"><span class="e">'+b[0]+'</span><b>'+b[1]+'</b></div>';}).join('')+'</div>');
+  });
+}
+function a1(i){
+  pick.biz=BIZ[i][1]; me(BIZ[i][0]+' '+BIZ[i][1]); dock(''); addXP(20);
+  nick("Solid. 💪 <b>Level 2:</b> real talk — do you have a website right now?",function(){
+    dock('<div class="grid">'+SITE.map(function(s,i2){return '<div class="opt wide" onclick="a2('+i2+')"><span class="e">'+s[0]+'</span><b>'+s[1]+'</b></div>';}).join('')+'</div>');
+  });
+}
+function a2(i){
+  pick.site=SITE[i][2]; pick.siteLabel=SITE[i][1]; me(SITE[i][0]+' '+SITE[i][1]); dock(''); addXP(20);
+  var line = pick.site==='none' ? "No shame — that just means the biggest glow-up. ✨"
+           : pick.site==='old'  ? "Been there. Old sites are like flip phones — they technically work. 📟"
+           : "Look at you! 🙌 Then we make it <b>work harder</b> for you.";
+  nick(line,function(){
+    nick("<b>Level 3:</b> pick your power-up. What would actually change your month?",function(){
+      dock('<div class="grid">'+GOALS.map(function(g,i2){return '<div class="opt" onclick="a3('+i2+')"><span class="e">'+g[0]+'</span><b>'+g[1]+'</b></div>';}).join('')+'</div>');
+    });
+  });
+}
+function a3(i){
+  pick.goal=GOALS[i][2]; pick.goalLabel=GOALS[i][1]; me(GOALS[i][0]+' '+GOALS[i][1]); dock(''); addXP(20);
+  nick("Last level. 🔋 Slide to whatever feels <b>comfortable</b> to invest in growth. No wrong answers — nothing gets charged, it just tunes the machine.",function(){
+    dock('<div class="budget-tag" id="btag">SERIOUS</div><div class="money" id="bout">$500</div>'+
+      '<input type="range" id="budget" min="100" max="2500" step="50" value="500" oninput="bch()">'+
+      '<button class="btn" onclick="a4()">⚙️ Assemble my machine</button>');
+  });
+}
+function bch(){
   var v=Number(el('budget').value); pick.budget=v;
-  el('budgetOut').textContent='$'+v.toLocaleString();
-  el('budgetTag').textContent = v<400?'BOOTSTRAP':(v<900?'SERIOUS':(v<1800?'DOMINATE':'FULL SEND'));
+  el('bout').textContent='$'+v.toLocaleString();
+  el('btag').textContent = v<400?'EASY MODE':(v<900?'SERIOUS':(v<1800?'DOMINATE':'FULL SEND'));
 }
-function go(n){
-  [1,2,3,4].forEach(function(i){ el('s'+i).classList.add('hide'); });
-  el('s5').classList.add('hide');
-  el('prog').style.width=(n*22)+'%';
-  el('s'+n).classList.remove('hide');
-  if(n===4) assemble();
-  window.scrollTo({top:0,behavior:'smooth'});
+function a4(){
+  me('🔋 Comfort zone set'); dock(''); addXP(20);
+  nick('<div class="term" id="term"></div>',function(){
+    var lines=['> scanning '+pick.biz.toLowerCase()+' market…','> website: '+(pick.site==='good'?'detected ✓ (we plug in)':'MISSING — adding one ✓'),'> goal locked: '+pick.goalLabel.toLowerCase()+' ✓','> matching systems… '+(pick.budget>=900?'CRM ✓ AI ✓ ADS ✓ REWARDS ✓':'CRM ✓ AI ✓'),'> BUILD COMPLETE 🏆'];
+    var t=el('term'); t.innerHTML=lines.map(function(l){return '<div>'+esc(l)+'</div>';}).join('')+'<div class="show c">█</div>';
+    var ds=t.querySelectorAll('div');
+    lines.forEach(function(_,i){ setTimeout(function(){ ds[i].classList.add('show'); scrollDown(); }, 430*(i+1)); });
+    setTimeout(reveal, 430*lines.length+600);
+  },600);
 }
 function decide(){
-  var b=pick.budget, g=pick.goal;
-  if(b<400){
-    return {name:'Starter Site',tag:'Smart start',price:'$300',mo:'one-time · upgrade whenever',why:'Fits your budget with room to breathe — and it\'s built to plug straight into the CRM machine when you\'re ready to level up.',
+  if(pick.budget<400 || (pick.site==='none' && pick.goal==='legit')){
+    return {name:'Starter Site',tag:'Smart start',cheap:true,
+      why:"An easy first move — and it's built to plug straight into the bigger machine whenever you're ready.",
       inc:['<b>Custom one-page website</b> — live this week','<b>Built-in lead capture</b> — no lead lost','<b>Google-ready</b> — your towns, your services']};
   }
-  if(b<900 && g!=='all'){
-    var inc=['<b>Everything in Starter Site</b>','<b>Your own CRM</b> — every lead tracked','<b>Instant AI replies + auto follow-ups</b>','<b>Review collection</b> that builds your rep'];
-    if(g==='retention') inc.push('<b>🎡 Rewards club add-on recommended</b> (+$79/mo when ready)');
-    return {name:'Growth System',tag:'Most popular',price:'$497',mo:'+ $99/mo · cancel anytime',why:'The sweet spot: a website plus the machine that answers and chases every lead while you work.',inc:inc};
+  if(pick.budget<900 && pick.goal!=='all'){
+    var inc=[pick.site==='good'?'<b>Plugs into your current site</b> — no rebuild needed':'<b>Fresh website included</b> — live this week',
+      '<b>Your own CRM</b> — every lead tracked','<b>Instant AI replies + auto follow-ups</b>','<b>Review collection</b> that builds your rep'];
+    if(pick.goal==='retention') inc.push('<b>🎡 Rewards club</b> — customers keep coming back');
+    return {name:'Growth System',tag:'Most popular',cheap:false,
+      why:'The sweet spot: the machine answers and chases every lead while you work.',inc:inc};
   }
-  return {name:'The Whole Machine',tag:'Full send',price:'$997',mo:'+ $149/mo · cancel anytime',why:'At your budget, this pays for itself with a couple of jobs — found, captured, and kept, all running by itself.',
-    inc:['<b>Everything in Growth System</b>','<b>Google + Facebook/Instagram ads launched</b>','<b>🎡 Your own loyalty rewards club</b> (like the demo)','<b>Monthly report:</b> which ads made you money']};
+  return {name:'The Whole Machine',tag:'Full send',cheap:false,
+    why:'Customers found, captured, and kept — all running by itself while you run the shop.',
+    inc:[pick.site==='good'?'<b>Your site, supercharged</b> + CRM + AI replies':'<b>Website + CRM + AI replies</b> — the full stack','<b>Google + Facebook/Instagram ads launched</b>','<b>🎡 Your own loyalty rewards club</b> (like our demo)','<b>Monthly report:</b> what actually made you money']};
 }
-function assemble(){
-  var lines=['> scanning '+(el('bizName').value||pick.biz).toLowerCase().replace(/[<>&]/g,'')+' market…','> goal locked: '+pick.goalLabel.toLowerCase()+' ✓','> fuel: $'+pick.budget.toLocaleString()+' ✓','> matching systems… CRM ✓ AI ✓ '+(pick.budget>=900?'ADS ✓ REWARDS ✓':'')+'','> optimizing for budget… ✓','> BUILD COMPLETE 🏆'];
-  var t=el('term'); t.innerHTML=lines.map(function(l){return '<div>'+l+'</div>';}).join('')+'<div class="show c">█</div>';
-  var ds=t.querySelectorAll('div');
-  lines.forEach(function(_,i){ setTimeout(function(){ ds[i].classList.add('show'); }, 420*(i+1)); });
-  setTimeout(function(){
-    pick.rec=decide();
-    el('revTag').textContent=pick.rec.tag;
-    el('revName').textContent=pick.rec.name;
-    el('revPrice').textContent=pick.rec.price;
-    el('revMo').textContent=pick.rec.mo;
-    el('revList').innerHTML=pick.rec.inc.map(function(x){return '<li>✅ '+x+'</li>';}).join('');
-    el('revWhy').textContent=pick.rec.why;
-    el('s4').classList.add('hide'); el('s5').classList.remove('hide');
-    el('prog').style.width='100%';
+function reveal(){
+  pick.rec=decide(); addXP(20);
+  var r=pick.rec;
+  var price = r.cheap
+    ? '<div class="money" style="margin-top:6px">$300</div><p class="muted" style="text-align:center;margin:2px 0 0">…and that\'s the whole price. One time. 😎</p>'
+    : '<p class="muted" style="text-align:center;margin:8px 0 0">Priced to fit <b style="color:var(--text)">your</b> budget on a quick call — it\'s less than you\'d guess. Websites start at just <b style="color:var(--text)">$300</b>.</p>';
+  nick('<div class="build"><span class="pill">'+esc(r.tag)+'</span><h2>'+esc(r.name)+'</h2>'+price+'<ul class="inc">'+r.inc.map(function(x){return '<li>✅ '+x+'</li>';}).join('')+'</ul><p class="muted" style="margin:10px 0 0">'+esc(r.why)+'</p></div>',function(){
     confetti();
-    window.scrollTo({top:0,behavior:'smooth'});
-  }, 420*lines.length+700);
+    nick("That's your build. 🏆 Want me to <b>hold it</b> and give you a quick call to walk through it? Takes your name + number, that's it.",function(){
+      dock('<input type="text" id="cName" placeholder="Your name" autocomplete="name">'+
+           '<input type="tel" id="cPhone" placeholder="Phone" autocomplete="tel">'+
+           '<input type="email" id="cEmail" placeholder="Email (optional)" autocomplete="email">'+
+           '<button class="btn" onclick="lockIn()">📞 Request my call</button>'+
+           '<div class="err" id="lErr" style="display:none"></div>'+
+           '<p class="muted" style="text-align:center;margin-top:8px">No payment, no contract — just a friendly call. <a href="/privacy/" style="color:var(--muted)">Privacy</a></p>');
+    });
+  },900);
 }
 function lockIn(){
   var name=el('cName').value.trim(), phone=el('cPhone').value.trim();
-  if(!name || phone.length<7){ el('lErr').textContent='Name + phone so Nick can reach you.'; el('lErr').classList.remove('hide'); return; }
-  el('lErr').classList.add('hide');
+  var errEl=el('lErr');
+  if(!name || phone.length<7){ errEl.textContent='Name + phone so Nick can actually call you.'; errEl.style.display='block'; return; }
+  errEl.style.display='none';
   fetch(SUPA_URL+'/rest/v1/intakes',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
     body:JSON.stringify({
-      business: el('bizName').value.trim()||pick.biz, name:name, phone:phone, email:el('cEmail').value.trim(),
-      about:'🎮 From the plan builder game', goal:pick.goalLabel, interest:pick.rec.name,
-      budget:'$'+pick.budget, timeline:'ASAP', notes:'Game picks: '+pick.biz+' · '+pick.goalLabel+' · $'+pick.budget+' → '+pick.rec.name+' '+pick.rec.price+' '+pick.rec.mo
+      business: pick.biz, name:name, phone:phone, email:el('cEmail').value.trim(),
+      website: pick.siteLabel, about:'🎮 Talk to Nick — the game', goal:pick.goalLabel, interest:pick.rec.name,
+      budget:'$'+pick.budget, timeline:'ASAP',
+      notes:'Game picks: '+pick.biz+' · site: '+pick.siteLabel+' · '+pick.goalLabel+' · comfort $'+pick.budget+' → '+pick.rec.name
     })})
   .then(function(r){ if(!r.ok) throw 0;
-    el('s5').classList.add('hide'); el('s6').classList.remove('hide'); confetti(); window.scrollTo({top:0,behavior:'smooth'});
+    me('📞 Request my call'); dock(''); confetti();
+    nick("Locked in! 🏆 I'll call you soon — probably faster than you expect. Want to skip the line or play with something while you wait?",function(){
+      dock('<a class="btn" style="display:block;text-decoration:none;text-align:center" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener">📅 Pick my call time now</a>'+
+           '<a class="btn ghost" style="display:block;text-decoration:none;text-align:center" href="/rewards/?c=demo" target="_blank" rel="noopener">🎡 Spin the rewards demo</a>');
+    });
   })
-  .catch(function(){ el('lErr').textContent='Could not save — try again in a sec.'; el('lErr').classList.remove('hide'); });
+  .catch(function(){ errEl.textContent='Could not save — try again in a sec.'; errEl.style.display='block'; });
 }
 function confetti(){
   var bits=['🎉','✨','⭐','⚡','🎊'];
@@ -218,7 +245,7 @@ function confetti(){
     setTimeout(function(el2){return function(){el2.remove()}}(s), 3800);
   }
 }
-chips(); budgetChange(); el('prog').style.width='22%';
+start();
 
 window.addEventListener('error',function(e){try{
   fetch(SUPA_URL+'/rest/v1/client_errors',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
