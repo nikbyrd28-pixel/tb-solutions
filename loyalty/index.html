@@ -274,7 +274,7 @@
         <button class="btn ghost" type="submit" id="sBtn" style="font-size:14px">Rather talk first? Book a free demo</button>
         <p class="err hide" id="subErr" style="color:#ff8a9d;font-size:13px;text-align:center;margin:2px 0 0"></p>
         <p class="ok hide" id="ok">🎉 Got it! We'll reach out shortly to set up your card.</p>
-        <p style="color:var(--muted);font-size:12px;margin:4px 0 0">Free to start · no card needed · we'll set you up. <a href="/privacy/" style="color:var(--muted)">Privacy</a></p>
+        <p style="color:var(--muted);font-size:12px;margin:4px 0 0">Free to start · no card, no contract · live within a day · cancel anytime. <a href="/privacy/" style="color:var(--muted)">Privacy</a></p>
       </form>
     </div>
   </section>
@@ -287,6 +287,38 @@
 <script>
 var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
 var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+/* ===== Ad & conversion tracking — paste your IDs to switch on (blank = off, nothing loads) =====
+   Meta: Events Manager → your Pixel ID. GA4: Admin → Data Streams → Measurement ID (G-…).
+   Google Ads: your AW-… id + the Lead conversion's label (from the conversion's tag setup). */
+var META_PIXEL_ID='';        // e.g. '1234567890123456'
+var GA4_ID='';               // e.g. 'G-XXXXXXXXXX'
+var GADS_ID='';              // e.g. 'AW-XXXXXXXXXX'
+var GADS_LEAD_LABEL='';      // e.g. 'AbC-D_efGh' (Google Ads conversion label)
+(function(){ try{
+  if(META_PIXEL_ID){
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init',META_PIXEL_ID); fbq('track','PageView');
+  }
+  var gid=GA4_ID||GADS_ID;
+  if(gid){
+    var sc=document.createElement('script'); sc.async=true; sc.src='https://www.googletagmanager.com/gtag/js?id='+gid; document.head.appendChild(sc);
+    window.dataLayer=window.dataLayer||[]; window.gtag=function(){dataLayer.push(arguments);};
+    gtag('js',new Date()); if(GA4_ID)gtag('config',GA4_ID); if(GADS_ID)gtag('config',GADS_ID);
+  }
+}catch(e){} })();
+function trackLead(src){
+  try{ if(window.fbq) fbq('track','Lead',{content_name:src||'Loop'}); }catch(e){}
+  try{ if(window.gtag){ if(GA4_ID)gtag('event','generate_lead',{source:src||'loop'});
+    if(GADS_ID&&GADS_LEAD_LABEL)gtag('event','conversion',{send_to:GADS_ID+'/'+GADS_LEAD_LABEL}); } }catch(e){}
+}
+/* capture ad-click source (utm / gclid / fbclid), keep 45 days, attach to every lead */
+(function(){ try{ var u=new URLSearchParams(location.search),utm={};
+  ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid','fbclid'].forEach(function(k){var v=u.get(k); if(v)utm[k]=v.slice(0,120);});
+  if(Object.keys(utm).length) localStorage.setItem('tb_utm',JSON.stringify({d:utm,t:Date.now()}));
+  window.tbUtm=function(){ try{ var x=JSON.parse(localStorage.getItem('tb_utm')||'null'); if(x&&x.d&&(Date.now()-x.t)<3888000000)return x.d; }catch(e){} return {}; };
+}catch(e){ window.tbUtm=function(){return {};}; } })();
+function adSrc(){ var u=window.tbUtm?window.tbUtm():{}, p=[]; for(var k in u){ if(u.hasOwnProperty(k)) p.push(k+'='+u[k]); } return p.length?(' · '+p.join(' · ')):''; }
+
 // affiliate ref capture (45-day)
 (function(){try{var u=new URLSearchParams(location.search),r=(u.get('ref')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,16);
   if(r){localStorage.setItem('tb_ref',JSON.stringify({r:r,t:Date.now()}));}
@@ -312,8 +344,8 @@ function subscribe(){
   var btn=document.getElementById('subBtn'); btn.disabled=true; btn.textContent='Sending…';
   document.getElementById('subErr').classList.add('hide');
   fetch(SUPA_URL+'/rest/v1/intakes',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
-    body:JSON.stringify({business:biz,name:name,email:email,phone:phone,about:'🔁 Loop signup',interest:'Loyalty program (Loop)',goal:'get more repeat customers',timeline:'ASAP',ref:(window.tbRef?window.tbRef():''),notes:'Loop free-month signup'})})
-  .then(function(r){ if(!r.ok) throw 0; leadCaptured(); })
+    body:JSON.stringify({business:biz,name:name,email:email,phone:phone,about:'🔁 Loop signup',interest:'Loyalty program (Loop)',goal:'get more repeat customers',timeline:'ASAP',ref:(window.tbRef?window.tbRef():''),notes:'Loop free-month signup'+adSrc()})})
+  .then(function(r){ if(!r.ok) throw 0; trackLead('Loop signup'); leadCaptured(); })
   .catch(function(){ btn.disabled=false; btn.textContent='Get started free →'; subFlash('Could not send just now — please try again in a moment.'); });
 }
 // lead form → intakes (lands in TB Command)
@@ -324,8 +356,8 @@ document.getElementById('f').addEventListener('submit',function(e){
   fetch(SUPA_URL+'/rest/v1/intakes',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
     body:JSON.stringify({business:d.business||'',name:d.name||'',phone:d.phone||'',email:d.email||'',niche:d.niche||'',
       about:'🔁 Loop loyalty landing page',interest:'Loyalty program (Loop)',goal:'get more repeat customers',
-      timeline:'ASAP',ref:(window.tbRef?window.tbRef():''),notes:'From loyalty SaaS site · '+(d.niche||'')})})
-  .then(function(r){ if(!r.ok) throw 0; f.querySelector('.hide').classList.remove('hide'); btn.style.display='none';
+      timeline:'ASAP',ref:(window.tbRef?window.tbRef():''),notes:'From loyalty SaaS site · '+(d.niche||'')+adSrc()})})
+  .then(function(r){ if(!r.ok) throw 0; trackLead('Loop demo request'); f.querySelector('.hide').classList.remove('hide'); btn.style.display='none';
     [].forEach.call(f.querySelectorAll('input'),function(i){i.style.display='none';}); })
   .catch(function(){ btn.disabled=false; btn.textContent='Set up my Loop card →'; alert('Could not send — please try again.'); });
 });
