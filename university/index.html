@@ -118,6 +118,14 @@
   summary::-webkit-details-marker{display:none}summary::after{content:'+';float:right;color:var(--gold);font-weight:900;font-size:20px;line-height:1}
   details[open] summary::after{content:'\2013'}
   details p{margin:0;padding:0 20px 17px;color:var(--muted);font-size:14.5px}
+  .proof-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:900px;margin:0 auto}
+  @media(max-width:760px){.proof-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:440px){.proof-grid{grid-template-columns:1fr}}
+  .pcard{display:block;text-decoration:none;border:1px solid var(--line);border-radius:16px;padding:18px 16px;background:linear-gradient(160deg,rgba(255,255,255,.035),rgba(255,255,255,.01));transition:border-color .2s,transform .2s}
+  .pcard:hover{border-color:rgba(255,212,90,.5);transform:translateY(-2px)}
+  .pcard .pv{font-family:Poppins,Inter,sans-serif;font-weight:900;font-size:26px;line-height:1;background:linear-gradient(120deg,#ffd45a,#ffb03a);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .pcard .pl{color:var(--text);font-weight:800;font-size:14px;margin:8px 0 4px}
+  .pcard .pd{color:var(--muted);font-size:12.5px;line-height:1.5}
   .final{border-radius:24px;padding:34px;background:linear-gradient(160deg,rgba(20,17,10,.9),rgba(8,9,17,.95));box-shadow:var(--shadow),var(--glow);max-width:560px;margin:0 auto;text-align:center}
   form{display:flex;flex-direction:column;gap:11px;margin-top:20px;text-align:left}
   label.f{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:-4px}
@@ -224,6 +232,21 @@
       <p class="muted" style="max-width:60ch;margin:0 auto 20px;font-size:16px">Taught by someone who <b style="color:var(--text)">actually runs this</b> — the same tools, campaigns and systems live in real businesses right now. You don't just learn the theory; you get the software that runs it.</p>
       <a href="#apply" class="btn" onclick="softLead('why')">Apply for Cohort 1 →</a>
     </div>
+  </div>
+</section>
+
+<section id="proof">
+  <div class="wrap">
+    <div class="eyebrow reveal" style="text-align:center">The receipts</div>
+    <h2 class="sec reveal">Proof it's real — not a promise</h2>
+    <p class="muted reveal" style="max-width:58ch;margin:2px auto 22px;text-align:center;font-size:16px">Most courses sell screenshots. Here the proof is that the whole machine is <b style="color:var(--text)">already built and running</b> — you can open every piece right now, free.</p>
+    <div class="proof-grid reveal">
+      <a class="pcard" href="/content-studio/"><div class="pv">Live</div><div class="pl">The AI content Studio</div><div class="pd">Idea → reel + thumbnail + caption. Open it and make one.</div></a>
+      <a class="pcard" href="/loyalty/"><div class="pv">Live</div><div class="pl">Loop rewards, in real shops</div><div class="pd">The retention product you'll sell — running, not theoretical.</div></a>
+      <a class="pcard" href="/university/lessons/"><div class="pv">7</div><div class="pl">Free lessons published</div><div class="pd">The full arc — zero to agency — readable right now.</div></a>
+      <a class="pcard" href="/university/toolkit/"><div class="pv">Free</div><div class="pl">The first-client toolkit</div><div class="pd">Scripts + call framework you can use today.</div></a>
+    </div>
+    <p class="muted reveal" style="max-width:60ch;margin:20px auto 0;text-align:center;font-size:14px;opacity:.9">Cohort 1 is just forming — so instead of fake testimonials, this is where real member wins get posted as they happen. No invented numbers, ever. That honesty <i>is</i> the offer.</p>
   </div>
 </section>
 
