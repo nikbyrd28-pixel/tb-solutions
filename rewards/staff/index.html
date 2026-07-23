@@ -49,6 +49,15 @@
   .prize{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px dashed var(--line);border-radius:14px;padding:10px 12px;margin-top:8px;background:rgba(122,162,255,.05)}
   .topbar{display:flex;justify-content:space-between;align-items:center;gap:8px}
   a.small{color:var(--muted);font-size:12px;text-decoration:none}
+  .daychip{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:var(--acc2);background:color-mix(in srgb,var(--acc) 12%,transparent);border:1px solid var(--line);border-radius:999px;padding:6px 14px;margin:10px auto 0}
+  .burst{position:fixed;inset:0;display:grid;place-items:center;z-index:130;pointer-events:none}
+  .burst .bmain{font-size:74px;font-weight:900;color:var(--acc2);text-shadow:0 0 34px var(--acc2),0 0 8px #fff;animation:burstpop 1s cubic-bezier(.2,1.3,.4,1) forwards;text-align:center;line-height:1}
+  .burst .bsub{position:absolute;top:62%;font-size:16px;font-weight:800;color:var(--text);text-shadow:0 0 12px rgba(0,0,0,.6);animation:burstpop 1s ease forwards;text-align:center}
+  @keyframes burstpop{0%{transform:scale(.3);opacity:0}22%{transform:scale(1.18);opacity:1}72%{transform:scale(1);opacity:1}100%{transform:scale(1.06);opacity:0}}
+  .coin{position:fixed;top:46%;left:50%;font-size:26px;z-index:129;pointer-events:none;animation:coinfly 1.05s ease-out forwards}
+  @keyframes coinfly{0%{transform:translate(0,0) scale(.5);opacity:1}100%{transform:translate(calc(var(--dx,0)*46vw),-56vh) scale(1.1) rotate(var(--rot,120deg));opacity:0}}
+  @keyframes flash{0%{opacity:0}30%{opacity:.5}100%{opacity:0}}
+  .succflash{position:fixed;inset:0;z-index:110;pointer-events:none;background:radial-gradient(circle at 50% 46%,rgba(67,240,176,.5),transparent 55%);animation:flash .7s ease forwards}
 </style>
 </head>
 <body>
@@ -73,6 +82,7 @@
     <div class="card center">
       <h1>📷 Scan their card</h1>
       <p class="muted" style="margin:0">Customer opens their rewards card — you scan their QR.</p>
+      <div class="daychip" id="dayCount">🔥 0 scans today</div>
       <div class="scanbox hide" id="scanbox"><video id="video" playsinline muted></video><div class="laser"></div></div>
       <button class="btn" id="scanBtn" onclick="toggleScan()">📷 Start scanning</button>
       <label style="display:flex;align-items:center;gap:8px;margin-top:12px;text-transform:none;letter-spacing:0;font-size:13px;cursor:pointer">
@@ -112,10 +122,31 @@ function rpc(fn,args){
   return fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(args)}).then(function(r){return r.json()});
 }
 function cfg(){ try{ return JSON.parse(localStorage.getItem('rw_staff')||'null'); }catch(e){ return null; } }
+function todayKey(){ var d=new Date(), c=cfg(); return 'rw_scans_'+((c&&c.slug)||'')+'_'+d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+function getScans(){ try{ return +localStorage.getItem(todayKey())||0; }catch(e){ return 0; } }
+function showScans(){ var e=el('dayCount'); if(e) e.textContent='🔥 '+getScans()+' scans today'; }
+function bumpScans(){ try{ localStorage.setItem(todayKey(), getScans()+1); }catch(e){} showScans(); }
+function pointBurst(main,sub){
+  var fl=document.createElement('div'); fl.className='succflash'; document.body.appendChild(fl); setTimeout(function(){fl.remove()},700);
+  var b=document.createElement('div'); b.className='burst';
+  b.innerHTML='<div class="bmain">'+main+'</div>'+(sub?'<div class="bsub">'+esc(sub)+'</div>':'');
+  document.body.appendChild(b); setTimeout(function(){b.remove()},1050);
+  for(var i=0;i<16;i++){ var c=document.createElement('span'); c.className='coin'; c.textContent=(i%3===0?'🪙':'⭐');
+    c.style.setProperty('--dx',(Math.random()*2-1).toFixed(2));
+    c.style.setProperty('--rot',(Math.random()*360|0)+'deg');
+    c.style.animationDelay=(Math.random()*0.12)+'s';
+    document.body.appendChild(c); setTimeout(function(el2){return function(){el2.remove()}}(c),1200); }
+  try{ if(navigator.vibrate) navigator.vibrate(main.indexOf('🏆')>=0?[40,60,120]:55); }catch(e){}
+}
+function celebrate(m,delta){
+  bumpScans();
+  var ready=(m.points>=(m.reward_at||5));
+  pointBurst(ready?'🏆':'+'+(delta>0?delta:1), ready?('REWARD READY! · '+(m.name||'Member')):((m.name||'Member')+' · '+m.points+' pts'));
+}
 
 function boot(){
   var c=cfg();
-  if(c&&c.slug&&c.pin){ el('setupCard').classList.add('hide'); el('console').classList.remove('hide'); el('bizTag').textContent=c.slug+' · change';  if(c.fast) el('fastMode').checked=true; }
+  if(c&&c.slug&&c.pin){ el('setupCard').classList.add('hide'); el('console').classList.remove('hide'); el('bizTag').textContent=c.slug+' · change';  if(c.fast) el('fastMode').checked=true; showScans(); }
 }
 function saveSetup(){
   var slug=(el('sSlug').value||'').toLowerCase().replace(/[^a-z0-9]/g,''), pin=el('sPin').value.trim();
@@ -162,9 +193,10 @@ function handleScan(raw){
       if(c && m.client!==c.slug){ el('cErr').textContent='Wrong shop card.'; el('cErr').classList.remove('hide'); startScan(); return; }
       rpc('add_visit',{p_code:code,p_pin:cfg().pin}).then(function(m2){
         if(m2.error){ done(m2,''); startScan(); return; }
+        celebrate(m2, m2.points-(m.points||0));
         showMember(m2);
         el('aOk').textContent='⚡ '+(m2.name||'Member')+' punched — '+m2.points+' pts'; el('aOk').classList.remove('hide');
-        setTimeout(startScan, 1200); // camera right back on for the next customer
+        setTimeout(startScan, 1400); // camera right back on for the next customer
       });
     });
   } else {
@@ -204,9 +236,9 @@ function done(m,msg){
   showMember(m);
   el('aOk').textContent=msg; el('aOk').classList.remove('hide');
 }
-function addVisit(){ rpc('add_visit',{p_code:member.code,p_pin:cfg().pin}).then(function(m){ done(m,'✅ Point added'); }); }
-function redeem(){ rpc('redeem_reward',{p_code:member.code,p_pin:cfg().pin}).then(function(m){ done(m,'🏆 Redeemed — enjoy!'); }); }
-function claim(i){ rpc('claim_prize',{p_code:member.code,p_pin:cfg().pin,p_index:i}).then(function(m){ done(m,'🎁 Prize handed over'); }); }
+function addVisit(){ var old=member?member.points:0; rpc('add_visit',{p_code:member.code,p_pin:cfg().pin}).then(function(m){ if(!m.error){ celebrate(m, m.points-old); } done(m,'✅ Point added'); }); }
+function redeem(){ rpc('redeem_reward',{p_code:member.code,p_pin:cfg().pin}).then(function(m){ if(!m.error) pointBurst('🏆','Reward redeemed — enjoy!'); done(m,'🏆 Redeemed — enjoy!'); }); }
+function claim(i){ rpc('claim_prize',{p_code:member.code,p_pin:cfg().pin,p_index:i}).then(function(m){ if(!m.error) pointBurst('🎁','Prize handed over!'); done(m,'🎁 Prize handed over'); }); }
 function clearMember(){ member=null; el('memberCard').classList.add('hide'); el('codeIn').value=''; window.scrollTo({top:0,behavior:'smooth'}); }
 
 window.addEventListener('error',function(e){try{
