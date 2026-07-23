@@ -274,6 +274,11 @@ var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 })();
 if(new URLSearchParams(location.search).get('canceled')){ setTimeout(function(){ var e=document.getElementById('subErr'); if(e){ e.style.color='var(--muted)'; e.textContent='No rush — start your free month whenever you\'re ready.'; e.classList.remove('hide'); } },300); }
 function subFlash(msg,muted){ var e=document.getElementById('subErr'); if(!e){ alert(msg); return; } e.style.color=muted?'var(--muted)':'#ff8a9d'; e.textContent=msg; e.classList.remove('hide'); }
+function leadCaptured(){
+  var f=document.getElementById('f');
+  [].forEach.call(f.querySelectorAll('input,button,.err'),function(x){x.style.display='none';});
+  var ok=document.getElementById('ok'); if(ok){ ok.textContent="\u{1F389} Got it! We'll reach out to get you set up \u2014 first month's on us."; ok.classList.remove('hide'); ok.style.display='block'; }
+}
 function subscribe(){
   var f=document.getElementById('f');
   var biz=(f.business.value||'').trim(), email=(f.email.value||'').trim(), name=(f.name.value||'').trim(), phone=(f.phone.value||'').trim();
@@ -286,8 +291,8 @@ function subscribe(){
   fetch(SUPA_URL+'/functions/v1/loop-checkout',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify({business:biz,email:email,name:name,phone:phone})})
   .then(function(r){return r.json()}).then(function(d){
     if(d && d.url){ location.href=d.url; return; }
-    btn.disabled=false; btn.textContent='💳 Start my free month →';
-    subFlash((d&&d.error)?d.error:'Checkout isn\'t available right now — we\'ll reach out to set you up.', true);
+    try{ if(d&&d.error) console.log('Loop checkout:', d.error); }catch(e){}
+    leadCaptured();
   }).catch(function(){ btn.disabled=false; btn.textContent='💳 Start my free month →'; subFlash('Network hiccup — please try again.'); });
 }
 // lead form → intakes (lands in TB Command)
