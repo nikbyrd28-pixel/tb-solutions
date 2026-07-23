@@ -83,7 +83,7 @@
     <div><h1>🎬 TB Video <b>Studio</b> <span class="tag">AI</span></h1></div>
     <a class="back" href="/marketing-engine">← Marketing Engine</a>
   </div>
-  <p class="sub">Type an idea → AI writes the script → get a polished, animated short-form video with captions, motion & music. Right here, free, no editor.</p>
+  <p class="sub">Type an idea → AI writes the script → get a polished promo <b>video</b>, a scroll-stopping <b>thumbnail</b> and a ready-to-paste <b>post</b>. Right here, free, no editor.</p>
 
   <div class="layout">
     <!-- LEFT: controls -->
@@ -206,6 +206,24 @@
           <button class="btn ghost small" onclick="copyForPost()">📋 Copy caption idea</button>
         </div>
         <p class="muted hide" id="dlNote" style="margin-top:8px">Saved as <b>.webm</b> — Instagram, TikTok, YouTube Shorts & Google Drive all accept it. Want .mp4? Import to CapCut and export.</p>
+
+        <!-- STILL EXPORTS: thumbnail + post image -->
+        <div style="border-top:1px solid var(--line);margin-top:16px;padding-top:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+            <b style="font-size:13px">🖼️ Thumbnail &amp; post image</b>
+            <select id="stillScene" style="width:auto;max-width:180px;font-size:12px;padding:7px 9px"></select>
+          </div>
+          <p class="muted" style="margin:6px 0 10px">Instant high-res PNGs straight from your scenes — no render wait. Pick which line to feature.</p>
+          <div class="bar">
+            <button class="btn small" onclick="exportStill('thumb')">📸 Thumbnail</button>
+            <button class="btn small" onclick="exportStill('post')">📱 Post image (square)</button>
+          </div>
+          <img id="stillPrev" class="hide" alt="preview" style="width:100%;max-height:52vh;object-fit:contain;border-radius:12px;margin-top:12px;border:1px solid var(--line);background:#000" />
+          <div class="bar hide" id="stillBar">
+            <a class="btn small" id="stillDl" download="tb-thumbnail.png">⬇️ Download PNG</a>
+            <button class="btn ghost small" onclick="copyForPost()">📋 Copy caption</button>
+          </div>
+        </div>
       </div>
       <div class="card">
         <h2>Post <span>ideas</span></h2>
@@ -345,6 +363,7 @@ function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
 
 /* ---------- scenes UI ---------- */
 function renderScenes(){
+  syncStillScenes();
   if(!scenes.length){ el('sceneList').innerHTML='<p class="muted" style="margin-top:10px">No scenes yet — write an AI script or pick a template above.</p>'; return; }
   el('sceneList').innerHTML=scenes.map(function(s,i){
     var sw=PALS.map(function(p,pi){return '<span class="sw'+(s.palI===pi&&!s.photo?' on':'')+'" style="background:linear-gradient(135deg,'+p.c[0]+','+p.c[1]+')" onclick="setPal('+i+','+pi+')"></span>'}).join('');
@@ -691,7 +710,7 @@ function drawEndCard(sc,p,W,H){
   ctx.restore();
 }
 
-function draw(t){
+function draw(t,opts){
   var W=cv.width,H=cv.height,T=t;
   var s=sceneAt(t); var arr=s.arr, i=s.i, sc=arr[i];
   if(!sc){ ctx.fillStyle='#050509'; ctx.fillRect(0,0,W,H); return; }
@@ -721,7 +740,7 @@ function draw(t){
   ctx.restore();
   if(sc._end){ drawEndCard(sc,s.p,W,H); }
   else { drawCaption(sc,s.p,W,H); drawWatermark(W,H); }
-  drawProgress(t,W,H);
+  if(!(opts&&opts.noProgress)) drawProgress(t,W,H);
 }
 function drawAt(t){ if(!scenes.length){ ctx.fillStyle='#050509'; ctx.fillRect(0,0,cv.width,cv.height); placeholder(); return;} draw(t); }
 function placeholder(){
@@ -834,6 +853,44 @@ function suggestPost(){
 }
 function cap1(s){return s.charAt(0).toUpperCase()+s.slice(1)}
 function copyForPost(){ if(window._postCap) navigator.clipboard.writeText(window._postCap); }
+
+/* ---------- still exports: thumbnail + square post image ---------- */
+function syncStillScenes(){
+  var sel2=el('stillScene'); if(!sel2)return;
+  var prev=sel2.value;
+  sel2.innerHTML='';
+  scenes.forEach(function(s,i){
+    var t=(s.text||'').replace(/\s+/g,' ').trim(); if(t.length>26)t=t.slice(0,25)+'…';
+    var o=document.createElement('option'); o.value=i; o.textContent='Scene '+(i+1)+' · '+t; sel2.appendChild(o);
+  });
+  if(prev!=='' && +prev<scenes.length) sel2.value=prev;
+}
+async function exportStill(kind){
+  if(!scenes.length){ el('renderState').innerHTML='<span class="err">Add a script or template first.</span>'; return; }
+  await ensureFonts();
+  var idx=parseInt(el('stillScene').value,10); if(isNaN(idx)||idx<0||idx>=scenes.length)idx=0;
+  var W,H;
+  if(kind==='post'){ W=1080; H=1080; }            // square feed post
+  else { var sh=SHAPES[shapeIdx]; W=sh[1]; H=sh[2]; } // thumbnail matches chosen shape
+  // stash live canvas, render the chosen scene with its caption fully revealed
+  var ow=cv.width, oh=cv.height, opv=previewT;
+  rebuildTimeline();
+  var st=starts[idx]||0;
+  var dur=(idx+1<starts.length?starts[idx+1]:totalDur)-st; dur=Math.max(0.2,dur);
+  var t=st+dur*0.9;
+  cv.width=W; cv.height=H;
+  draw(t,{noProgress:true});
+  var url=cv.toDataURL('image/png');
+  // restore live preview
+  cv.width=ow; cv.height=oh; rebuildTimeline(); drawAt(opv);
+  // surface result
+  var img=el('stillPrev'); img.src=url; img.classList.remove('hide');
+  var dl=el('stillDl'); dl.href=url;
+  dl.download=(kind==='post'?'tb-post-square.png':'tb-thumbnail-'+shapeName()+'.png');
+  el('stillBar').classList.remove('hide');
+  suggestPost();
+  el('renderState').innerHTML='<span class="ok">'+(kind==='post'?'Post image':'Thumbnail')+' ready ✓ — download below.</span>';
+}
 
 /* ---------- fonts ---------- */
 async function ensureFonts(){
