@@ -492,7 +492,7 @@ function renderQuests(m){
       +'</div>';
   }).join('');
 }
-function goReview(){ lsSet('rw_reviewed_'); if(member) renderQuests(member); var u=location.origin+'/review/?c='+slug; window.open(u,'_blank'); }
+function goReview(){ lsSet('rw_reviewed_'); if(member) renderQuests(member); var u=location.origin+'/review/?c='+encodeURIComponent(slug)+(member?('&m='+encodeURIComponent(member.code)+'&name='+encodeURIComponent(member.name||'')):''); window.open(u,'_blank'); }
 function renderAchievements(m){
   var lt=m.lifetime||0, spins=m.spins||0, prizes=(m.prizes||[]).length, streak=m.streak||0;
   var B=[
