@@ -89,6 +89,8 @@
   .statrow .st{border:1px solid var(--line);border-radius:12px;padding:7px 12px;min-width:64px;background:rgba(122,162,255,.05)}
   .statrow .st b{display:block;font-size:15px;color:var(--text);line-height:1.1}
   .statrow .st span{font-size:9.5px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(18px);background:rgba(8,10,18,.96);border:1px solid var(--line);color:var(--text);padding:12px 18px;border-radius:12px;font-weight:700;font-size:14px;z-index:200;opacity:0;transition:opacity .25s,transform .25s;box-shadow:0 12px 34px rgba(0,0,0,.55);max-width:90vw;text-align:center;pointer-events:none}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .wrap{position:relative;z-index:2}
   .player{overflow:hidden;position:relative}
   .pcard-top{display:flex;align-items:center;gap:14px;text-align:left}
@@ -400,7 +402,7 @@ function staffRedeem(){
   var pin=prompt('Staff PIN to redeem:'); if(!pin) return;
   rpc('redeem_reward',{p_code:member.code,p_pin:pin}).then(function(m){
     if(m.error){ el('sErr').textContent=m.error; el('sErr').classList.remove('hide'); return; }
-    alert('🎉 Redeemed! Enjoy '+(m.reward_text||'your reward')+'.');
+    toast('🎉 Redeemed! Enjoy '+(m.reward_text||'your reward'));
     showCard(m);
   });
 }
@@ -489,8 +491,8 @@ function spin(){
     }
     spinReels(targets, function(){
       var wc=el('wc'+idx); if(wc) wc.classList.add('win');
-      if(win){ el('slot').classList.add('win'); el('spinRes').textContent='🎉 You won: '+res.label+'!'; confetti(); }
-      else { el('spinRes').textContent='😅 '+(res.label||'So close')+' — spin again!'; }
+      if(win){ el('slot').classList.add('win'); el('spinRes').textContent='🎉 You won: '+res.label+'!'; haptic([30,60,40]); confetti(); }
+      else { el('spinRes').textContent='😅 '+(res.label||'So close')+' — spin again!'; haptic(12); }
       showCard(m);
     });
   });
@@ -498,8 +500,8 @@ function spin(){
 function claim(i){
   var pin=prompt('Staff PIN to hand over this prize:'); if(!pin) return;
   rpc('claim_prize',{p_code:member.code,p_pin:pin,p_index:i}).then(function(m){
-    if(m.error){ alert(m.error); return; }
-    alert('✅ Prize claimed — enjoy!');
+    if(m.error){ toast(m.error); return; }
+    toast('✅ Prize claimed — enjoy!');
     showCard(m);
   });
 }
@@ -518,6 +520,13 @@ function sendSurvey(){
   });
 }
 function reducedMotion(){ return !!(window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches); }
+var _toastEl=null,_toastT=null;
+function toast(msg){
+  if(!_toastEl){ _toastEl=document.createElement('div'); _toastEl.className='toast'; document.body.appendChild(_toastEl); }
+  _toastEl.textContent=msg; _toastEl.classList.add('show');
+  clearTimeout(_toastT); _toastT=setTimeout(function(){ if(_toastEl) _toastEl.classList.remove('show'); },2800);
+}
+function haptic(p){ try{ if(navigator.vibrate) navigator.vibrate(p||15); }catch(e){} }
 function remindMe(){
   var d=new Date(Date.now()+7*864e5), e=new Date(d.getTime()+30*60000);
   function z(n){ return (n<10?'0':'')+n; }
