@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Loop — Owner Dashboard</title>
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%F0%9F%93%8A%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--text:#eef1fb;--muted:#96a0bd;--line:rgba(122,162,255,.26);--acc:#7aa2ff;--acc2:#5df2e0;--vio:#b98bff;--good:#43f0b0;--warn:#ffb15a;--bg:#06070e}
+  *{box-sizing:border-box}
+  @keyframes drift{0%{background-position:0 0}100%{background-position:60px 60px}}
+  @keyframes popin{0%{transform:translateY(10px);opacity:0}100%{transform:translateY(0);opacity:1}}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.5;min-height:100vh;
+    background:radial-gradient(circle at 12% -6%,rgba(122,162,255,.18),transparent 42%),radial-gradient(circle at 92% 4%,rgba(185,139,255,.12),transparent 40%),radial-gradient(circle at 50% 120%,rgba(93,242,224,.1),transparent 46%),var(--bg);position:relative}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.5;background-image:linear-gradient(rgba(122,162,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(122,162,255,.045) 1px,transparent 1px);background-size:60px 60px;animation:drift 18s linear infinite}
+  .wrap{max-width:940px;margin:0 auto;padding:22px 16px 80px;position:relative;z-index:1}
+  .brand{font-weight:900;font-size:17px}
+  .brand span{background:linear-gradient(90deg,var(--acc2),var(--acc),var(--vio));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tag{color:var(--muted);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:18px}
+  .card{background:linear-gradient(150deg,rgba(255,255,255,.05),rgba(255,255,255,.014));border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:14px;animation:popin .3s ease}
+  h1{font-size:22px;margin:0 0 4px}
+  h1 span{background:linear-gradient(90deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+  label{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
+  input{width:100%;background:rgba(2,4,12,.6);border:1px solid var(--line);border-radius:12px;padding:13px 14px;color:var(--text);font:inherit;font-size:16px}
+  input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(122,162,255,.18)}
+  .btn{border:0;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d;border-radius:999px;padding:13px 18px;font:inherit;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 8px 22px rgba(122,162,255,.32);text-decoration:none;display:inline-block}
+  .btn.ghost{background:rgba(122,162,255,.07);border:1px solid var(--line);color:var(--text);box-shadow:none;font-weight:700}
+  .btn.wide{width:100%;text-align:center;margin-top:14px}
+  .btn:disabled{opacity:.5}
+  .err{color:#ff8a9d;font-size:13px;margin-top:10px;text-align:center}
+  .hide{display:none!important}
+  .top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  @media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:rgba(0,0,0,.26);border:1px solid var(--line);border-radius:16px;padding:15px 12px}
+  .stat .n{font-size:30px;font-weight:900;line-height:1;background:linear-gradient(135deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat .l{font-size:11.5px;color:var(--muted);margin-top:6px;letter-spacing:.03em}
+  .stat.alt .n{background:linear-gradient(135deg,var(--good),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat.warm .n{background:linear-gradient(135deg,var(--warn),#ff7a59);-webkit-background-clip:text;background-clip:text;color:transparent}
+  h2{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;font-weight:800}
+  h2 b{color:var(--text)}
+  .tierbar{display:flex;height:26px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:rgba(0,0,0,.3)}
+  .tierbar div{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#05060d;min-width:0}
+  .tierleg{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12.5px;color:var(--muted)}
+  .tierleg b{color:var(--text)}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  .lead{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid rgba(255,255,255,.06)}
+  .lead:last-child{border-bottom:0}
+  .rankn{flex:0 0 34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:900;font-size:15px;background:rgba(122,162,255,.12);border:1px solid var(--line)}
+  .lead .who{font-weight:800;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lead .who small{display:block;color:var(--muted);font-weight:600;font-size:12px}
+  .lvtag{font-size:11px;font-weight:800;color:var(--acc2);border:1px solid var(--line);border-radius:999px;padding:3px 9px;white-space:nowrap}
+  .fire{color:var(--warn);font-weight:800;font-size:12.5px;white-space:nowrap}
+  .bk{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px}
+  .bk:last-child{border-bottom:0}
+  .bk .st{font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+  .muted{color:var(--muted);font-size:12.5px}
+  .links{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:40;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d;font-weight:800;font-size:13px;border-radius:999px;padding:9px 18px;box-shadow:0 10px 30px rgba(122,162,255,.4);animation:popin .25s ease}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">🔁 <span>Loop</span> · Owner Dashboard</div>
+  <div class="tag">Your loyalty program, live</div>
+
+  <!-- LOGIN -->
+  <div class="card" id="login">
+    <h1>Sign in to your <span>program</span></h1>
+    <p class="muted">Use your business code and staff PIN — the same PIN your team uses to scan.</p>
+    <label>Business code</label>
+    <input id="code" placeholder="e.g. joesbarber" autocomplete="off" style="text-transform:lowercase">
+    <label>Staff PIN</label>
+    <input id="pin" type="tel" inputmode="numeric" placeholder="Your PIN" autocomplete="off">
+    <button class="btn wide" id="loginBtn" onclick="load()">Open my dashboard →</button>
+    <div class="err hide" id="err"></div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dash" class="hide">
+    <div class="top">
+      <div><h1 id="bizName">Your program</h1><div class="muted" id="bizSub"></div></div>
+      <div class="links">
+        <button class="btn ghost" onclick="load(true)">↻ Refresh</button>
+        <button class="btn ghost" onclick="location.reload()">Log out</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stats" id="stats"></div>
+    </div>
+
+    <div class="card">
+      <h2>👑 <b>Member tiers</b></h2>
+      <div class="tierbar" id="tierbar"></div>
+      <div class="tierleg" id="tierleg"></div>
+    </div>
+
+    <div class="card">
+      <h2>🏆 <b>Top members</b> — your VIPs</h2>
+      <div id="leaderboard"></div>
+    </div>
+
+    <div class="card">
+      <h2>📅 <b>Recent bookings</b></h2>
+      <div id="bookings"></div>
+    </div>
+
+    <div class="card">
+      <h2>🔗 <b>Quick links</b></h2>
+      <div class="links">
+        <button class="btn ghost" id="lkJoin">📱 Member join link</button>
+        <button class="btn ghost" id="lkPoster">🖨️ Counter poster</button>
+        <a class="btn ghost" id="lkStaff" href="#" target="_blank" rel="noopener">📷 Staff scanner</a>
+      </div>
+    </div>
+    <p class="muted" style="text-align:center">Powered by TB Solutions · tbsol.net</p>
+  </div>
+</div>
+
+<script>
+var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+function el(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+var q=new URLSearchParams(location.search);
+if(q.get('c')) el('code').value=q.get('c').toLowerCase();
+el('pin').addEventListener('keydown',function(e){ if(e.key==='Enter') load(); });
+function toast(t){ var x=document.createElement('div'); x.className='toast'; x.textContent=t; document.body.appendChild(x); setTimeout(function(){x.remove()},1300); }
+function cp(txt){ try{ navigator.clipboard.writeText(txt); toast('Copied ✓'); }catch(e){} }
+
+var CODE='', PIN='';
+function load(isRefresh){
+  var code=(el('code').value||'').trim().toLowerCase().replace(/[^a-z0-9]/g,''), pin=(el('pin').value||'').trim();
+  if(isRefresh){ code=CODE; pin=PIN; }
+  if(!code){ showErr('Enter your business code.'); return; }
+  el('err').classList.add('hide');
+  var btn=el('loginBtn'); if(!isRefresh){ btn.disabled=true; btn.textContent='Loading…'; }
+  fetch(SUPA_URL+'/rest/v1/rpc/loyalty_owner_dashboard',{method:'POST',
+    headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({p_client:code,p_pin:pin})})
+  .then(function(r){return r.json()})
+  .then(function(d){
+    if(!d || d.ok===false){ showErr((d&&d.error)||'Could not sign in.'); btn.disabled=false; btn.textContent='Open my dashboard →'; return; }
+    CODE=code; PIN=pin; render(d);
+  })
+  .catch(function(){ showErr('Network error — try again.'); btn.disabled=false; btn.textContent='Open my dashboard →'; });
+}
+function showErr(m){ el('err').textContent=m; el('err').classList.remove('hide'); }
+
+function render(d){
+  el('login').classList.add('hide'); el('dash').classList.remove('hide');
+  el('bizName').textContent=cap(d.client)+' — Loop';
+  el('bizSub').textContent='Reward: '+d.reward_text+' at '+d.reward_at+' points';
+  var tiles=[
+    {n:d.members,l:'Members',c:''},
+    {n:d.active30,l:'Active (30 days)',c:'alt'},
+    {n:d.new7,l:'New this week',c:'alt'},
+    {n:d.bookings,l:'Bookings',c:'warm'},
+    {n:d.points_out,l:'Points held',c:''},
+    {n:d.redeemed,l:'Rewards redeemed',c:'alt'},
+    {n:d.spins,l:'Total spins',c:''},
+    {n:d.prizes,l:'Prizes won',c:'warm'}
+  ];
+  el('stats').innerHTML=tiles.map(function(t){
+    return '<div class="stat '+t.c+'"><div class="n" data-to="'+(t.n||0)+'">0</div><div class="l">'+t.l+'</div></div>';
+  }).join('');
+  animCounts();
+  // tiers
+  var tr=d.tiers||{bronze:0,silver:0,gold:0,vip:0};
+  var seg=[['Bronze',tr.bronze,'#c58b5a'],['Silver',tr.silver,'#c9d2e6'],['Gold',tr.gold,'#ffd34d'],['VIP',tr.vip,'#b98bff']];
+  var tot=seg.reduce(function(a,b){return a+(b[1]||0)},0)||1;
+  el('tierbar').innerHTML=seg.map(function(s){ var w=(s[1]||0)/tot*100; return w>0?'<div style="width:'+w+'%;background:'+s[2]+'">'+(w>10?s[1]:'')+'</div>':''; }).join('')||'<div style="width:100%;background:rgba(255,255,255,.05);color:var(--muted)">No members yet</div>';
+  el('tierleg').innerHTML=seg.map(function(s){ return '<span><span class="dot" style="background:'+s[2]+'"></span>'+s[0]+' <b>'+(s[1]||0)+'</b></span>'; }).join('');
+  // leaderboard
+  var top=d.top||[];
+  if(!top.length){ el('leaderboard').innerHTML='<p class="muted">No members yet — put your poster on the counter to get the first sign-ups.</p>'; }
+  else{
+    var medals=['🥇','🥈','🥉'];
+    el('leaderboard').innerHTML=top.map(function(m,i){
+      return '<div class="lead"><div class="rankn">'+(medals[i]||('#'+(i+1)))+'</div>'
+        +'<div class="who">'+esc(m.name||'A member')+'<small>'+(m.lifetime||0)+' lifetime pts · '+(m.points||0)+' to spend</small></div>'
+        +(m.streak>=2?'<span class="fire">🔥 '+m.streak+'</span>':'')
+        +'<span class="lvtag">Lv '+(m.level||1)+'</span></div>';
+    }).join('');
+  }
+  // bookings
+  var bk=d.recent_bookings||[];
+  if(!bk.length){ el('bookings').innerHTML='<p class="muted">No bookings yet. Members can book from their card — they\'ll show here for you to confirm.</p>'; }
+  else{
+    el('bookings').innerHTML=bk.map(function(b){
+      var when=(b.message||'').replace(/^📅[^:]*:\s*/,'');
+      var win=['Won','Booked','Converted'].indexOf(b.status)>=0;
+      return '<div class="bk"><div><b>'+esc(b.who||'A member')+'</b><div class="muted">'+esc(when||'wants to book')+' · '+new Date(b.created_at).toLocaleDateString()+'</div></div>'
+        +'<span class="st"'+(win?' style="color:var(--good);border-color:rgba(67,240,176,.5)"':'')+'>'+esc(b.status||'New')+'</span></div>';
+    }).join('');
+  }
+  // links
+  var base=location.origin;
+  el('lkJoin').onclick=function(){ cp(base+'/rewards/?c='+d.client); };
+  el('lkPoster').onclick=function(){ window.open(base+'/rewards/poster/?c='+d.client,'_blank'); };
+  el('lkStaff').href=base+'/rewards/staff/';
+}
+function cap(s){ return String(s||'').charAt(0).toUpperCase()+String(s||'').slice(1); }
+function animCounts(){
+  [].forEach.call(document.querySelectorAll('#stats .n'),function(e){
+    var to=+e.getAttribute('data-to')||0, s=0, step=Math.max(1,Math.ceil(to/22));
+    (function tick(){ s=Math.min(to,s+step); e.textContent=s.toLocaleString(); if(s<to) requestAnimationFrame(tick); })();
+  });
+}
+if(q.get('c') && q.get('pin')){ el('pin').value=q.get('pin'); load(); }
+
+window.addEventListener('error',function(e){try{
+  fetch(SUPA_URL+'/rest/v1/client_errors',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({page:location.pathname,msg:String((e&&e.message)||'').slice(0,300),src:String((e&&e.filename)||'').slice(0,120),line:(e&&e.lineno)||0})}).catch(function(){});
+}catch(_){}});
+</script>
+</body>
+</html>
