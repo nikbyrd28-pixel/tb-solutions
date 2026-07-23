@@ -754,6 +754,10 @@ function importKit(text){
 function init(){
   renderTpls(); renderShapeChips();
   setShape(0);
+  try{ var qp=new URLSearchParams(location.search);
+    if(qp.get('embed')){ var bk=document.querySelector('a.back'); if(bk) bk.style.display='none'; }
+    var bd=localStorage.getItem('tb_video_brand'); if(bd){ if(el('aiBrand'))el('aiBrand').value=bd; localStorage.removeItem('tb_video_brand'); }
+  }catch(e){}
   var imported=false;
   try{ var kit=localStorage.getItem('tb_video_kit'); if(kit){ imported=importKit(kit); localStorage.removeItem('tb_video_kit'); if(imported){ el('aiState').innerHTML='<span class="ok">Imported your Video Kit ✓ — tweak & render</span>'; } } }catch(e){}
   if(!imported) useTpl(0); else { renderScenes(); resetPreview(); }

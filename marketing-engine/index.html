@@ -11,7 +11,7 @@
   :root{--bg:#0b0b12;--panel:rgba(255,255,255,.04);--line:rgba(139,123,255,.22);--text:#eef0f6;--muted:#9aa0b0;--acc:#8b7bff;--acc2:#5ad0f0;--good:#43d09a;--bad:#ff6a7a}
   *{box-sizing:border-box}
   body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;background:radial-gradient(circle at 15% -10%,rgba(139,123,255,.14),transparent 40%),radial-gradient(circle at 100% 110%,rgba(90,208,240,.10),transparent 40%),var(--bg);color:var(--text);line-height:1.55;min-height:100vh}
-  .wrap{max-width:860px;margin:0 auto;padding:22px 16px 90px}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 16px 90px}
   h1{font-size:24px;margin:0}
   h1 b{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
   .sub{color:var(--muted);font-size:13px;margin:4px 0 18px}
@@ -48,12 +48,18 @@
   .ok{color:var(--good);font-size:13px;margin-top:8px}
   .top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
   .hide{display:none!important}
+  .modes{display:flex;gap:8px;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:14px;padding:6px;margin-bottom:16px}
+  .modes button{flex:1;border:0;border-radius:10px;padding:12px;font:inherit;font-weight:800;font-size:14px;cursor:pointer;background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap}
+  .modes button.on{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#0b0b12;box-shadow:0 6px 18px rgba(139,123,255,.3)}
+  .modes button .sm2{font-size:11px;font-weight:600;opacity:.85}
+  .vframe{width:100%;height:82vh;min-height:560px;border:1px solid var(--line);border-radius:16px;background:#05060d}
+  @media(max-width:560px){.vframe{height:78vh}.modes button .sm2{display:none}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="top">
-    <div><h1>⚡ Marketing <b>Engine</b></h1><p class="sub">Pick a client, pick an asset, get finished marketing work.</p></div>
+    <div><h1>⚡ Marketing <b>Studio</b></h1><p class="sub">Write the copy, then turn it into a video — one place, one client.</p></div>
     <button class="btn ghost small hide" id="logoutBtn" onclick="logout()">Log out</button>
   </div>
 
@@ -64,6 +70,16 @@
     <div class="bar"><button class="btn" onclick="login()">Log in</button></div>
     <div class="err hide" id="lErr"></div>
     <p class="muted" style="margin-top:10px">Same login as TB Command cloud sync.</p>
+  </div>
+
+  <div class="modes hide" id="modes">
+    <button id="copyTab" class="on" onclick="setMode('copy')">✍️ Copy Studio <span class="sm2">plans · ads · scripts</span></button>
+    <button id="videoTab" onclick="setMode('video')">🎬 Video Studio <span class="sm2">turn it into a reel</span></button>
+  </div>
+
+  <!-- VIDEO (embedded studio) -->
+  <div id="videoWrap" class="hide">
+    <iframe id="videoFrame" class="vframe" title="TB Video Studio" allow="autoplay; encrypted-media"></iframe>
   </div>
 
   <!-- ENGINE -->
@@ -116,7 +132,7 @@
         <button class="btn small" onclick="saveAsset()">💾 Save to library</button>
         <button class="btn ghost small" onclick="copyOut()">📋 Copy</button>
         <button class="btn ghost small" onclick="generate()">🔁 Regenerate</button>
-        <button class="btn small hide" id="toStudioBtn" onclick="toStudio()">🎬 Turn into a video</button>
+        <button class="btn small" id="toStudioBtn" onclick="seedVideo()">🎬 Make this a video</button>
       </div>
       <div class="ok hide" id="saveOk">Saved ✓</div>
     </div>
@@ -173,6 +189,22 @@ async function showEngine(){
   el('engine').classList.remove('hide');
   el('logoutBtn').classList.remove('hide');
   renderAssets(); loadClients(); loadLibrary(); loadProfiles();
+  el('modes').classList.remove('hide');
+  setMode(location.hash==='#video'?'video':'copy');
+}
+var videoLoaded=false;
+function setMode(m){
+  var copy=(m==='copy');
+  el('copyTab').classList.toggle('on',copy); el('videoTab').classList.toggle('on',!copy);
+  el('engine').classList.toggle('hide',!copy);
+  el('videoWrap').classList.toggle('hide',copy);
+  if(!copy && !videoLoaded){ el('videoFrame').src='/studio/?embed=1'; videoLoaded=true; }
+  try{ history.replaceState(null,'',copy?'#copy':'#video'); }catch(e){}
+}
+function seedVideo(){
+  if(lastOut){ try{ localStorage.setItem('tb_video_kit',lastOut.content); localStorage.setItem('tb_video_brand',lastOut.client||''); }catch(e){} }
+  el('videoFrame').src='/studio/?embed=1&t='+Date.now(); videoLoaded=true;
+  setMode('video'); window.scrollTo({top:0,behavior:'smooth'});
 }
 
 async function loadClients(){
@@ -212,7 +244,6 @@ async function generate(){
     el('outText').textContent=j.text;
     el('outCard').classList.remove('hide');
     el('saveOk').classList.add('hide');
-    el('toStudioBtn').classList.toggle('hide', sel!=='video_script');
     el('outCard').scrollIntoView({behavior:'smooth'});
   }catch(e){
     el('gErr').textContent='Generation failed — is the "TB — Marketing Engine AI" workflow Active in n8n? ('+e.message+')';
@@ -223,7 +254,7 @@ async function generate(){
 }
 
 function copyOut(){ if(lastOut) navigator.clipboard.writeText(lastOut.content) }
-function toStudio(){ if(!lastOut) return; try{ localStorage.setItem('tb_video_kit', lastOut.content); }catch(e){} window.open('/studio/','_blank'); }
+function toStudio(){ seedVideo(); }
 
 async function saveAsset(){
   if(!lastOut) return;
