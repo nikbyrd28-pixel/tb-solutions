@@ -164,6 +164,8 @@
         <p class="ok hide" id="readyLine">🎉 Reward unlocked — show this at the counter!</p>
         <img class="qr" id="mQr" alt="Your member QR" loading="lazy">
         <p class="muted">Show this at the counter — staff scans it, you get your point. ⚡</p>
+        <button class="btn ghost" onclick="saveCard()" style="margin-top:8px">📌 Save my card to my phone</button>
+        <p class="muted hide" id="savedMsg" style="margin-top:6px">Saved — keep this link to open your card anytime ✓</p>
       </div>
     </div>
 
@@ -219,6 +221,7 @@
       </div>
       <p class="ok hide" id="bkOk">✅ Booked! We\'ll reach out to confirm your time.</p>
       <div class="err hide" id="bkErr"></div>
+      <button class="btn ghost" onclick="remindMe()" style="margin-top:10px">🔔 Remind me to come back</button>
     </div>
 
     <div class="card center">
@@ -515,6 +518,21 @@ function sendSurvey(){
   });
 }
 function reducedMotion(){ return !!(window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches); }
+function remindMe(){
+  var d=new Date(Date.now()+7*864e5), e=new Date(d.getTime()+30*60000);
+  function z(n){ return (n<10?'0':'')+n; }
+  function fmt(x){ return x.getUTCFullYear()+z(x.getUTCMonth()+1)+z(x.getUTCDate())+'T'+z(x.getUTCHours())+z(x.getUTCMinutes())+'00Z'; }
+  var text=encodeURIComponent('Visit '+display+' — keep my rewards streak going 🔥');
+  var det=encodeURIComponent('Come back to '+display+' to earn your next point and protect your streak. Open your card: '+location.href);
+  var url='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+text+'&details='+det+'&dates='+fmt(d)+'/'+fmt(e);
+  window.open(url,'_blank','noopener');
+}
+function saveCard(){
+  var url=location.origin+'/rewards/?c='+slug+(member&&member.code?('&m='+member.code):'');
+  if(navigator.share){ navigator.share({title:display+' rewards card',text:'My rewards card at '+display,url:url}).catch(function(){}); }
+  else { try{ navigator.clipboard.writeText(url); }catch(e){} }
+  var e=el('savedMsg'); if(e) e.classList.remove('hide');
+}
 function confetti(){
   if(reducedMotion()) return;
   var bits=['🎉','✨','⭐','💎','🎊'];
