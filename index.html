@@ -129,10 +129,10 @@
     .noise{position:fixed;inset:0;pointer-events:none;opacity:.045;z-index:60;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E")}
     .wrap{width:min(1180px,92vw);margin:auto}
     .top{position:sticky;top:0;z-index:20;background:rgba(3,4,10,.72);backdrop-filter:blur(22px);border-bottom:1px solid var(--line)}
-    .nav{height:76px;display:flex;align-items:center;justify-content:space-between;gap:22px}
+    .nav{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap;padding:10px 0}
     .brand{text-decoration:none;font-weight:900;letter-spacing:-.02em;font-size:21px}
     .brand span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-    .navlinks{display:flex;gap:24px;color:var(--muted);font-size:14px}
+    .navlinks{display:flex;flex-wrap:wrap;gap:16px 20px;color:var(--muted);font-size:14px;align-items:center}
     .navlinks a{text-decoration:none;white-space:nowrap}
     .navlinks a:hover{color:var(--cyan)}
     .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
@@ -445,7 +445,7 @@
   <header class="top">
     <div class="wrap nav">
       <a class="brand" href="#">TB <span>Solutions</span></a>
-      <nav class="navlinks"><a href="/play/" style="color:var(--cyan)">🎮 Talk to Nick</a><a href="#services">Services</a><a href="#ai-agent">AI Agent</a><a href="#plan">Free Plan</a><a href="#pricing">Packages</a><a href="/suite/">Tools &amp; Pricing</a><a href="/content-studio/" style="color:var(--cyan)">🎬 Free Studio</a><a href="/university/" style="color:#ffd45a">🎓 University</a><a href="#growth-system">Growth System</a><a href="#portfolio">Work</a><a href="/learn/">Learn</a><a href="#contact">Contact</a><a href="/support/">Support</a><a href="/portal/" style="color:var(--cyan)">Client Login</a></nav>
+      <nav class="navlinks"><a href="/play/" style="color:var(--cyan)">🎮 Talk to Nick</a><a href="#services">Services</a><a href="#ai-agent">AI Agent</a><a href="#plan">Free Plan</a><a href="#pricing">Packages</a><a href="/suite/">Tools &amp; Pricing</a><a href="/content-studio/" style="color:var(--cyan)">🎬 Free Studio</a><a href="/university/" style="color:#ffd45a">🎓 University</a><a href="#crm-demo">📊 CRM Demo</a><a href="/ambassadors/" style="color:var(--violet)">🤝 Ambassadors</a><a href="#growth-system">Growth System</a><a href="#portfolio">Work</a><a href="/learn/">Learn</a><a href="#contact">Contact</a><a href="/support/">Support</a><a href="/portal/" style="color:var(--cyan)">Client Login</a></nav>
       <div class="actions" style="margin-top:0"><a class="btn primary" href="https://calendar.app.google/SbFwfmkwTJoRPDBc9" target="_blank" rel="noopener" data-book>Book a Call</a></div>
     </div>
   </header>
