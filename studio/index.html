@@ -343,6 +343,8 @@
   <div class="recCtrls">
     <button class="btn rec" id="recBtn" onclick="toggleRec()">● Record</button>
     <span class="muted" id="recTimer">0.0s / 30s</span>
+    <button class="btn ghost" id="recFlip" onclick="flipCam()">🔄 Flip</button>
+    <label class="btn ghost" style="cursor:pointer">🎞️ Upload<input type="file" accept="video/*" onchange="recUpload(this.files[0]);this.value=''" style="display:none"></label>
     <button class="btn ghost" onclick="closeRecorder()">Close</button>
   </div>
   <div id="recResult" class="hide">
@@ -1284,7 +1286,7 @@ el('logoFile').addEventListener('change',function(){ var f=this.files[0]; if(!f)
 
 /* ---------- teleprompter recorder (camera + burned captions + mic audio) ---------- */
 var camStream=null, recCanvas=null, recCtx=null, recVideo=null, recRAF=null, recLines=[], recIdx=0;
-var recRec=null, recChunks2=[], recActive=false, recStart2=0, REC_MAX=30;
+var recRec=null, recChunks2=[], recActive=false, recStart2=0, REC_MAX=30, recFacing='user', recUploadUrl=null;
 async function openRecorder(){
   recLines = scenes.map(function(s){ return (s.text||'').replace(/\s+/g,' ').trim(); }).filter(Boolean);
   if(!recLines.length) recLines=['Write a script or pick a template first'];
@@ -1295,16 +1297,39 @@ async function openRecorder(){
   recCanvas=el('recCanvas'); recCanvas.width=w; recCanvas.height=h; recCtx=recCanvas.getContext('2d');
   recVideo=el('camVideo');
   updateRecLine();
+  if(recUploadUrl){ try{ URL.revokeObjectURL(recUploadUrl); }catch(e){} recUploadUrl=null; }
   try{
-    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},audio:true});
+    recVideo.srcObject=null; recVideo.src=''; recVideo.loop=false; recVideo.muted=true;
+    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:recFacing,width:{ideal:1280},height:{ideal:720}},audio:true});
     recVideo.srcObject=camStream; await recVideo.play();
-  }catch(e){ el('recTele').textContent='Camera/mic blocked — allow access in your browser, then reopen.'; }
+  }catch(e){ el('recTele').textContent='Camera/mic blocked — allow access, or tap Upload to bring your own clip.'; }
   try{ ensureFonts(); }catch(e){}
   if(recRAF) cancelAnimationFrame(recRAF); recLoop();
 }
 function updateRecLine(){ if(el('recTele')) el('recTele').textContent=recLines[recIdx]||''; if(el('recLineNo')) el('recLineNo').textContent=(recIdx+1)+'/'+recLines.length; }
 function recNext(){ if(recIdx<recLines.length-1){ recIdx++; updateRecLine(); } }
 function recPrev(){ if(recIdx>0){ recIdx--; updateRecLine(); } }
+async function flipCam(){
+  if(recActive) return;
+  recFacing=(recFacing==='user')?'environment':'user';
+  if(recUploadUrl){ try{ URL.revokeObjectURL(recUploadUrl); }catch(e){} recUploadUrl=null; }
+  if(camStream){ camStream.getTracks().forEach(function(t){ try{ t.stop(); }catch(e){} }); camStream=null; }
+  try{
+    var v=el('camVideo'); v.srcObject=null; v.src=''; v.muted=true; v.loop=false;
+    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:recFacing},audio:true});
+    v.srcObject=camStream; await v.play();
+  }catch(e){ el('recTele').textContent='Could not switch camera on this device.'; }
+}
+function recUpload(file){
+  if(!file || recActive) return;
+  if(camStream){ camStream.getTracks().forEach(function(t){ try{ t.stop(); }catch(e){} }); camStream=null; }
+  if(recUploadUrl){ try{ URL.revokeObjectURL(recUploadUrl); }catch(e){} }
+  recUploadUrl=URL.createObjectURL(file);
+  var v=el('camVideo'); v.srcObject=null; v.muted=false; v.loop=false; v.src=recUploadUrl;
+  v.play().catch(function(){});
+  el('recTele').textContent='Uploaded clip loaded — tap Record to burn your captions in.';
+  el('recResult').classList.add('hide');
+}
 function drawRecCap(g,text,W,H){
   if(!text) return;
   var sc=g.createLinearGradient(0,H*0.58,0,H); sc.addColorStop(0,'rgba(0,0,0,0)'); sc.addColorStop(1,'rgba(0,0,0,.62)');
@@ -1337,11 +1362,13 @@ function startRec(){
   var stream;
   try{ stream=recCanvas.captureStream(30); }catch(e){ el('recTimer').textContent='Recording not supported here — try Chrome.'; return; }
   if(camStream){ camStream.getAudioTracks().forEach(function(t){ try{ stream.addTrack(t); }catch(e){} }); }
+  else if(recUploadUrl && recVideo){ try{ var us=recVideo.captureStream?recVideo.captureStream():(recVideo.mozCaptureStream&&recVideo.mozCaptureStream()); if(us) us.getAudioTracks().forEach(function(t){ try{ stream.addTrack(t); }catch(e){} }); }catch(e){} }
   var mime=pickMime();
   try{ recRec=new MediaRecorder(stream, mime?{mimeType:mime,videoBitsPerSecond:8000000}:undefined); }
   catch(e){ el('recTimer').textContent='Recording not supported here — try Chrome.'; return; }
   recChunks2=[]; recRec.ondataavailable=function(e){ if(e.data&&e.data.size) recChunks2.push(e.data); };
   recRec.onstop=function(){ finishRec(); };
+  if(recUploadUrl && recVideo){ try{ recVideo.currentTime=0; recVideo.play(); }catch(e){} recVideo.onended=function(){ stopRec(); }; }
   recActive=true; recStart2=performance.now(); recRec.start(100);
   el('recBtn').textContent='■ Stop'; el('recBtn').classList.add('on');
   el('recResult').classList.add('hide');
@@ -1365,7 +1392,8 @@ function closeRecorder(){
   stopRec();
   if(recRAF){ cancelAnimationFrame(recRAF); recRAF=null; } recCtx=null;
   if(camStream){ camStream.getTracks().forEach(function(t){ try{ t.stop(); }catch(e){} }); camStream=null; }
-  if(recVideo){ try{ recVideo.srcObject=null; }catch(e){} }
+  if(recUploadUrl){ try{ URL.revokeObjectURL(recUploadUrl); }catch(e){} recUploadUrl=null; }
+  if(recVideo){ try{ recVideo.srcObject=null; recVideo.src=''; recVideo.onended=null; }catch(e){} }
   el('recOverlay').classList.add('hide');
 }
 
