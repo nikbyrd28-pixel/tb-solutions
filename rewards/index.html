@@ -72,6 +72,14 @@
   .spinres{font-size:17px;font-weight:900;margin:10px 0 0;min-height:24px;text-shadow:0 0 14px color-mix(in srgb,var(--acc) 50%,transparent)}
   @keyframes confetti-fall{0%{transform:translateY(-10px) rotate(0);opacity:1}100%{transform:translateY(105vh) rotate(720deg);opacity:0}}
   .cf{position:fixed;top:-16px;font-size:20px;z-index:99;pointer-events:none;animation:confetti-fall linear forwards}
+  .tierbox{margin:12px 0 2px}
+  .tierbadge{display:inline-flex;align-items:center;gap:7px;font-weight:900;font-size:14px;background:color-mix(in srgb,var(--acc) 14%,transparent);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:6px 14px}
+  .tierbadge .em{font-size:17px}
+  .tierbar{height:8px;border-radius:99px;background:rgba(122,162,255,.14);overflow:hidden;margin:10px auto 5px;max-width:280px}
+  .tierbar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc2),var(--acc));border-radius:99px;box-shadow:0 0 12px var(--acc);transition:width .8s cubic-bezier(.2,.8,.2,1)}
+  .tiernext{font-size:12px;color:var(--muted)}
+  .streak{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:#ffb15a;background:rgba(255,177,90,.1);border:1px solid rgba(255,177,90,.35);border-radius:999px;padding:5px 12px;margin-top:10px}
+  label.f{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px;text-align:left}
 </style>
 </head>
 <body>
@@ -96,6 +104,8 @@
       <h1 id="mName">Your card</h1>
       <div class="big" id="mPoints">0</div>
       <div class="muted">points</div>
+      <div id="streakWrap"></div>
+      <div class="tierbox" id="tierbox"></div>
       <div class="punches" id="punches" style="justify-content:center"></div>
       <p class="muted" id="rewardLine"></p>
       <p class="ok hide" id="readyLine">🎉 Reward unlocked — show this at the counter!</p>
@@ -131,6 +141,20 @@
       <input id="svText" placeholder="Anything we should know? (optional)">
       <button class="btn ghost" onclick="sendSurvey()">Send + earn</button>
       <div class="err hide" id="svErr"></div>
+    </div>
+
+    <div class="card" id="bookCard">
+      <b>📅 Book your next visit</b>
+      <p class="muted" style="margin:6px 0 2px">Lock in your spot — we\'ll confirm, and you earn your point when you come in.</p>
+      <div id="bookForm">
+        <label class="f">When works for you?</label>
+        <input id="bkWhen" placeholder="e.g. Sat morning, next Tue around 3pm">
+        <label class="f">Phone to confirm</label>
+        <input id="bkPhone" type="tel" placeholder="Your number">
+        <button class="btn" onclick="bookVisit()">Request my spot</button>
+      </div>
+      <p class="ok hide" id="bkOk">✅ Booked! We\'ll reach out to confirm your time.</p>
+      <div class="err hide" id="bkErr"></div>
     </div>
 
     <div class="card center">
@@ -192,9 +216,40 @@ function showCard(m){
   var myUrl=location.origin+'/rewards/?c='+slug+'&m='+m.code;
   el('mQr').src=qrUrl(myUrl,196);
   el('refQr').src=qrUrl(location.origin+'/capture/?c='+slug+'&name='+encodeURIComponent(display)+'&ref='+m.code,160);
+  renderTier(m);
   if(m.wheel) renderSlot(m);
   renderPrizes(m);
   renderSvStars();
+  el('bookCard').classList.toggle('hide', m.booking_on===false);
+}
+var TIERS=[
+  {n:'Bronze',min:0,e:'🥉'},
+  {n:'Silver',min:25,e:'🥈'},
+  {n:'Gold',min:75,e:'🥇'},
+  {n:'VIP',min:200,e:'💎'}
+];
+function renderTier(m){
+  var lt=m.lifetime||m.points||0, cur=TIERS[0], nxt=null;
+  for(var i=0;i<TIERS.length;i++){ if(lt>=TIERS[i].min){ cur=TIERS[i]; nxt=TIERS[i+1]||null; } }
+  var html='<span class="tierbadge"><span class="em">'+cur.e+'</span>'+cur.n+' member</span>';
+  if(nxt){
+    var span=nxt.min-cur.min, into=lt-cur.min, pct=Math.max(6,Math.min(100,Math.round(into/span*100)));
+    html+='<div class="tierbar"><i style="width:'+pct+'%"></i></div>'
+      +'<div class="tiernext">'+(nxt.min-lt)+' more lifetime points to '+nxt.e+' '+nxt.n+'</div>';
+  } else {
+    html+='<div class="tierbar"><i style="width:100%"></i></div><div class="tiernext">Top tier — you\'re a legend ⭐</div>';
+  }
+  el('tierbox').innerHTML=html;
+  el('streakWrap').innerHTML=(m.streak&&m.streak>=2)?('<div class="streak">🔥 '+m.streak+'-visit streak — keep it going!</div>'):'';
+}
+function bookVisit(){
+  var when=el('bkWhen').value.trim(), phone=el('bkPhone').value.trim();
+  if(!when || phone.length<7){ el('bkErr').textContent='Add when + a phone so we can confirm.'; el('bkErr').classList.remove('hide'); return; }
+  el('bkErr').classList.add('hide');
+  fetch(SUPA_URL+'/rest/v1/client_leads',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({client:slug,kind:'booking',name:(member&&member.name)||'Member',phone:phone,message:'📅 Rewards member wants to book: '+when,service:'booking',ride_date:when,status:'New'})})
+  .then(function(r){ if(!r.ok) throw 0; el('bookForm').classList.add('hide'); el('bkOk').classList.remove('hide'); })
+  .catch(function(){ el('bkErr').textContent='Could not send — try again in a sec.'; el('bkErr').classList.remove('hide'); });
 }
 function join(){
   el('jErr').classList.add('hide');
