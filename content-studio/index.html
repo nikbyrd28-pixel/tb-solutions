@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TB Studio — free AI content studio for Reels, TikTok & YouTube</title>
+<meta name="description" content="TB Studio turns one idea into a finished short-form video, a click-winning thumbnail and a ready-to-post caption — for every one of your brands. AI writes the script, you get a polished reel in minutes. Free with Loop. No editor, no app." />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#06070e" />
+<link rel="canonical" href="https://tbsol.net/content-studio/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="TB Studio — your free AI content studio" />
+<meta property="og:description" content="One idea → a finished reel, a scroll-stopping thumbnail and a ready-to-post caption. AI writes the script. Free with Loop." />
+<meta property="og:url" content="https://tbsol.net/content-studio/" />
+<meta property="og:site_name" content="TB Solutions" />
+<meta property="og:image" content="https://tbsol.net/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="TB Studio — AI content studio making a vertical video, thumbnail and post." />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="TB Studio — free AI content studio" />
+<meta name="twitter:description" content="One idea → a finished reel, thumbnail and caption. AI writes the script. Free with Loop." />
+<meta name="twitter:image" content="https://tbsol.net/og-image.png" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"TB Studio","applicationCategory":"MultimediaApplication","operatingSystem":"Web browser","url":"https://tbsol.net/content-studio/","description":"AI content studio for local businesses and marketers — turns one idea into a short-form video, thumbnail and social post. Free with Loop.","provider":{"@type":"Organization","name":"TB Solutions","url":"https://tbsol.net"},"offers":{"@type":"Offer","price":"0","priceCurrency":"USD","description":"Free to start — included with Loop."}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. TB Studio is included free with Loop, and you can start making content right now — no card, no download."}},{"@type":"Question","name":"Do I need editing skills?","acceptedAnswer":{"@type":"Answer","text":"None. Type your idea, the AI writes the script, and you get a finished vertical video plus a matching thumbnail and caption you can paste straight into your post."}},{"@type":"Question","name":"What can I make?","acceptedAnswer":{"@type":"Answer","text":"Short-form videos for Reels, TikTok and YouTube Shorts, click-winning thumbnails, and square post images — all from the same idea."}},{"@type":"Question","name":"Can I use it for more than one business?","acceptedAnswer":{"@type":"Answer","text":"Yes. Save a Brand Kit for each brand and its colour, sign-off and call-to-action apply automatically to every video, thumbnail and post."}},{"@type":"Question","name":"Where do the videos work?","acceptedAnswer":{"@type":"Answer","text":"Instagram, TikTok, YouTube Shorts and Facebook — export vertical, square or widescreen."}}]}
+</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2306070e'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-size='34'%3E%F0%9F%8E%AC%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet">
+<script defer src="/track.js"></script>
+<style>
+  :root{--bg:#06070e;--panel:rgba(255,255,255,.045);--line:rgba(122,162,255,.22);--text:#eef1fb;--muted:#96a0bd;
+    --acc:#7aa2ff;--acc2:#5df2e0;--vio:#b98bff;--good:#43f0b0;--warm:#ffb15a}
+  *{box-sizing:border-box}
+  @keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.6;
+    background:radial-gradient(circle at 12% -8%,rgba(122,162,255,.16),transparent 42%),radial-gradient(circle at 92% 4%,rgba(185,139,255,.12),transparent 40%),radial-gradient(circle at 50% 120%,rgba(93,242,224,.10),transparent 45%),var(--bg)}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+  h1,h2,h3{font-family:Poppins,Inter,sans-serif;letter-spacing:-.02em;text-wrap:balance;margin:0}
+  .grad{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  a{color:var(--acc);text-decoration:none}
+  .muted{color:var(--muted)}
+  .reveal{opacity:0;animation:rise .6s ease forwards}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}.reveal{opacity:1!important}}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:30;background:rgba(6,7,14,.78);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px;gap:12px}
+  .logo{font-family:Poppins;font-weight:900;font-size:19px}
+  .navlinks{display:flex;gap:22px;align-items:center}
+  .navlinks a{color:var(--muted);font-size:14px;font-weight:600}
+  .navlinks a:hover{color:var(--text)}
+  @media(max-width:720px){.navlinks a.hidesm{display:none}}
+  .btn{display:inline-flex;align-items:center;gap:8px;border:0;cursor:pointer;font:inherit;font-weight:800;font-size:15px;
+    border-radius:999px;padding:13px 22px;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;
+    box-shadow:0 8px 26px rgba(122,162,255,.35);transition:transform .12s,box-shadow .12s;text-decoration:none}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 12px 32px rgba(122,162,255,.45)}
+  .btn:active{transform:scale(.98)}
+  .btn.sm{padding:10px 16px;font-size:14px}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text);box-shadow:none}
+
+  /* hero */
+  header.hero{padding:56px 0 30px}
+  .kick{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--acc2);border:1px solid var(--line);border-radius:999px;padding:7px 14px;margin-bottom:18px;background:rgba(122,162,255,.06)}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:34px;align-items:center}
+  @media(max-width:880px){.hero-grid{grid-template-columns:1fr;gap:26px}}
+  h1.big{font-size:clamp(32px,5.6vw,52px);font-weight:900;line-height:1.04}
+  .lede{color:var(--muted);font-size:clamp(16px,2.1vw,19px);margin:16px 0 24px;max-width:34ch}
+  .cta-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .trust{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+  .trust span{font-size:12.5px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+  /* phone / live demo */
+  .demo{position:relative;border-radius:26px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(122,162,255,.12),rgba(0,0,0,.4));
+    padding:14px;box-shadow:0 30px 90px rgba(0,0,0,.6),0 0 50px rgba(122,162,255,.18);animation:floaty 6s ease-in-out infinite}
+  .demo .screen{position:relative;border-radius:16px;overflow:hidden;background:#05060d;aspect-ratio:9/15;display:grid;place-items:center}
+  .demo iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .demo .launch{text-align:center;padding:22px}
+  .demo .launch .e{font-size:40px}
+  .demo .launch p{color:var(--muted);font-size:13px;margin:8px 0 16px}
+  .demo .cap{text-align:center;color:var(--muted);font-size:11.5px;margin-top:9px}
+  @media (prefers-reduced-motion:reduce){.demo{animation:none}}
+
+  section{padding:44px 0;border-top:1px solid var(--line)}
+  .eyebrow{font-size:12.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)}
+  h2.sec{font-size:clamp(23px,3.6vw,32px);font-weight:900;margin:8px 0 8px}
+  .sub{color:var(--muted);max-width:60ch;margin:0 0 22px}
+  .chips{display:flex;flex-wrap:wrap;gap:9px}
+  .chip{border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:13.5px;color:var(--muted);background:rgba(122,162,255,.04)}
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:760px){.feat-grid{grid-template-columns:1fr}}
+  .feat{border:1px solid var(--line);border-radius:16px;padding:20px;background:var(--panel)}
+  .feat .e{font-size:26px}
+  .feat h3{font-size:17px;margin:10px 0 6px}
+  .feat p{color:var(--muted);font-size:14px;margin:0}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;counter-reset:s}
+  @media(max-width:760px){.steps{grid-template-columns:1fr}}
+  .step{border:1px solid var(--line);border-radius:16px;padding:20px;background:var(--panel);position:relative}
+  .step::before{counter-increment:s;content:counter(s);font-family:Poppins;font-weight:900;font-size:15px;color:#04050a;
+    width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--acc2),var(--acc));margin-bottom:12px}
+  .step h3{font-size:16px;margin:0 0 6px}.step p{color:var(--muted);font-size:14px;margin:0}
+  /* bundle band */
+  .band{border:1px solid var(--line);border-radius:20px;padding:26px;background:linear-gradient(150deg,rgba(185,139,255,.12),rgba(122,162,255,.06));text-align:center}
+  .band h2{font-size:clamp(22px,3.4vw,30px);font-weight:900;margin:0 0 8px}
+  .band p{color:var(--muted);max-width:56ch;margin:0 auto 18px}
+  details{border:1px solid var(--line);border-radius:12px;padding:0;margin-top:10px;background:var(--panel);overflow:hidden}
+  summary{cursor:pointer;padding:15px 18px;font-weight:700;font-size:15px;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:'+';float:right;color:var(--acc);font-weight:900}
+  details[open] summary::after{content:'–'}
+  details p{margin:0;padding:0 18px 16px;color:var(--muted);font-size:14px}
+  /* final form */
+  .final{border:1px solid var(--line);border-radius:22px;padding:30px;background:var(--panel);max-width:560px;margin:0 auto;text-align:center}
+  .final h2{font-size:clamp(23px,3.6vw,30px);font-weight:900}
+  form{display:flex;flex-direction:column;gap:10px;margin-top:18px;text-align:left}
+  input{width:100%;background:rgba(2,4,12,.6);border:1px solid var(--line);border-radius:12px;padding:13px 14px;color:var(--text);font:inherit;font-size:15px}
+  input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(122,162,255,.2)}
+  .err{color:#ff8a9d;font-size:13px;text-align:center}
+  .ok{color:var(--good);font-weight:800}
+  footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted);font-size:13.5px;text-align:center}
+  :focus-visible{outline:2px solid var(--acc2);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="logo">🎬 TB <span class="grad">Studio</span></div>
+    <div class="navlinks">
+      <a href="#make" class="hidesm">What you make</a>
+      <a href="#how" class="hidesm">How it works</a>
+      <a href="/studio/" class="btn sm" onclick="softLead('nav try')">Try it free →</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="kick reveal">🎁 Free with Loop</div>
+      <h1 class="big reveal">Turn one idea into a <span class="grad">reel, a thumbnail &amp; a post</span> — in minutes.</h1>
+      <p class="lede reveal">TB Studio writes the script, animates the video, designs the click-winning thumbnail and hands you the caption — for every one of your brands. No editor. No app. Right in your browser.</p>
+      <div class="cta-row reveal">
+        <a href="/studio/" class="btn" onclick="softLead('hero try')">Open the free studio →</a>
+        <a href="#get" class="btn ghost">Get it set up for me</a>
+      </div>
+      <div class="trust reveal">
+        <span>⚡ Ready in minutes</span><span>📱 Reels · TikTok · Shorts</span><span>🎨 Thumbnails + posts</span><span>💳 No card</span>
+      </div>
+    </div>
+    <div class="reveal">
+      <div class="demo">
+        <div class="screen" id="demoScreen">
+          <div class="launch" id="demoLaunch">
+            <div class="e">🎬</div>
+            <p>The real studio — try it right here.</p>
+            <button class="btn sm" onclick="launchDemo()">▶ Launch live studio</button>
+          </div>
+        </div>
+        <div class="cap">Live tool · make a real video before you sign up</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="who">
+  <div class="wrap">
+    <div class="eyebrow reveal">Built for</div>
+    <h2 class="sec reveal">Any business that has to keep posting</h2>
+    <p class="sub reveal">You know you need content. You don't have time to edit it. TB Studio does the making so you can get back to running the place.</p>
+    <div class="chips reveal">
+      <span class="chip">💈 Barbers &amp; salons</span><span class="chip">🏋️ Gyms &amp; studios</span><span class="chip">🍽️ Restaurants &amp; cafés</span>
+      <span class="chip">🏡 Realtors</span><span class="chip">🧰 Home services</span><span class="chip">💅 Med-spas</span><span class="chip">🚗 Auto &amp; detailing</span><span class="chip">📈 Coaches &amp; agencies</span>
+    </div>
+  </div>
+</section>
+
+<section id="make">
+  <div class="wrap">
+    <div class="eyebrow reveal">What you make</div>
+    <h2 class="sec reveal">One idea. A whole post's worth of content.</h2>
+    <p class="sub reveal">Type what it's about — AI does the rest, then hands you every asset the post needs.</p>
+    <div class="feat-grid">
+      <div class="feat reveal"><div class="e">🎬</div><h3>Short-form video</h3><p>AI writes a scroll-stopping script, then builds an animated vertical video with captions, motion and music. Render &amp; download.</p></div>
+      <div class="feat reveal"><div class="e">📸</div><h3>Click-winning thumbnail</h3><p>The Thumbnail Studio makes handcrafted-looking, high-CTR covers — bold headline, your face, brand colours. Instant PNG.</p></div>
+      <div class="feat reveal"><div class="e">📱</div><h3>Ready-to-post caption + image</h3><p>A matching square post image and a caption with hashtags you can paste straight into Instagram, TikTok or Facebook.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="eyebrow reveal">How it works</div>
+    <h2 class="sec reveal">Three steps, zero editing</h2>
+    <div class="steps" style="margin-top:6px">
+      <div class="step reveal"><h3>Type your idea</h3><p>"Why locals should book us this week." Pick a vibe. Or grab a proven template.</p></div>
+      <div class="step reveal"><h3>AI writes &amp; designs</h3><p>Script, scenes, captions, motion, thumbnail and caption — all generated, all on-brand.</p></div>
+      <div class="step reveal"><h3>Download &amp; post</h3><p>Grab the video, the thumbnail and the caption. Post to Reels, TikTok or Shorts. Done.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="brands">
+  <div class="wrap">
+    <div class="band reveal">
+      <h2>One studio, <span class="grad">all your brands</span></h2>
+      <p>Save a Brand Kit for each business — colour, sign-off and call-to-action — and every video, thumbnail and post comes out on-brand automatically. Run content for your shop, your side hustle and your clients from one place.</p>
+      <a href="/studio/" class="btn" onclick="softLead('brands try')">Try it with your brand →</a>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap" style="max-width:760px;margin:0 auto">
+    <div class="eyebrow reveal">Questions</div>
+    <h2 class="sec reveal">Good questions</h2>
+    <details class="reveal"><summary>Is it really free?</summary><p>Yes. TB Studio is included free with Loop, and you can start making content right now — no card, no download.</p></details>
+    <details class="reveal"><summary>Do I need editing skills?</summary><p>None. Type your idea, the AI writes the script, and you get a finished vertical video plus a matching thumbnail and caption you can paste straight into your post.</p></details>
+    <details class="reveal"><summary>What can I make?</summary><p>Short-form videos for Reels, TikTok and YouTube Shorts, click-winning thumbnails, and square post images — all from the same idea.</p></details>
+    <details class="reveal"><summary>Can I use it for more than one business?</summary><p>Yes. Save a Brand Kit for each brand and its colour, sign-off and call-to-action apply automatically to every video, thumbnail and post.</p></details>
+    <details class="reveal"><summary>Where do the videos work?</summary><p>Instagram, TikTok, YouTube Shorts and Facebook — export vertical, square or widescreen.</p></details>
+  </div>
+</section>
+
+<section id="get">
+  <div class="wrap">
+    <div class="final reveal">
+      <div class="eyebrow">Get started</div>
+      <h2>Want it set up for your brand?</h2>
+      <p class="sub" style="margin:8px auto 0">Start making content free right now — or leave your details and we'll set up TB Studio <b>and</b> your Loop rewards program for your business.</p>
+      <div class="cta-row" style="justify-content:center;margin-top:16px">
+        <a href="/studio/" class="btn" onclick="softLead('get try')">Open the free studio →</a>
+      </div>
+      <form id="f" style="margin-top:20px">
+        <input name="business" placeholder="Business name *" required>
+        <input name="name" placeholder="Your name *" required>
+        <input name="email" type="email" placeholder="Email *" required>
+        <input name="phone" type="tel" placeholder="Phone *" required>
+        <input name="niche" placeholder="What kind of business? (barber, café…)">
+        <button class="btn" type="button" id="subBtn" onclick="subscribe()" style="justify-content:center">Set me up free →</button>
+        <p class="err" id="subErr" style="display:none"></p>
+        <p class="ok" id="ok" style="display:none;text-align:center">🎉 Got it! We'll reach out to set up your studio + Loop.</p>
+        <p class="muted" style="font-size:12px;text-align:center;margin:2px 0 0">Free to start · no card · <a href="/privacy/" class="muted">Privacy</a></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">🎬 <b>TB Studio</b> · free with <a href="/loyalty/">Loop</a> · by <a href="https://tbsol.net">TB Solutions</a></div>
+</footer>
+
+<script>
+var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+function el(id){return document.getElementById(id)}
+
+// load the real studio into the hero on demand (keeps first paint fast for ad traffic)
+var demoUp=false;
+function launchDemo(){
+  if(demoUp)return; demoUp=true;
+  var s=el('demoScreen'); s.innerHTML='<iframe title="TB Studio live demo" src="/studio/?embed=1" loading="lazy" allow="autoplay; encrypted-media"></iframe>';
+  if(window.trackLead) trackLead('Studio demo launched');
+}
+// soft signal when someone clicks through to actually use the tool
+function softLead(where){ try{ if(window.fbq)fbq('trackCustom','StudioOpen',{where:where}); if(window.gtag&&window.GA4_ID)gtag('event','studio_open',{where:where}); }catch(e){} }
+
+// reveal on scroll
+(function(){ if(!('IntersectionObserver' in window)){ [].forEach.call(document.querySelectorAll('.reveal'),function(x){x.style.opacity=1}); return; }
+  var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.style.animationDelay='0s';io.unobserve(en.target);}else{en.target.style.opacity='0';}});},{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(function(x){io.observe(x);});
+})();
+
+function subFlash(msg){ var e=el('subErr'); e.textContent=msg; e.style.display='block'; }
+function subscribe(){
+  var f=el('f');
+  var biz=(f.business.value||'').trim(), email=(f.email.value||'').trim(), name=(f.name.value||'').trim(), phone=(f.phone.value||'').trim();
+  if(!biz){ f.business.focus(); return subFlash('Add your business name first.'); }
+  if(!email || email.indexOf('@')<1){ f.email.focus(); return subFlash('Add a valid email so we can reach you.'); }
+  var btn=el('subBtn'); btn.disabled=true; btn.textContent='Sending…'; el('subErr').style.display='none';
+  fetch(SUPA_URL+'/rest/v1/intakes',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({business:biz,name:name,email:email,phone:phone,niche:(f.niche.value||''),about:'🎬 TB Studio signup',interest:'Content Studio + Loop',goal:'make content that sells',timeline:'ASAP',notes:'From TB Studio landing'+(window.adSrc?adSrc():'')})})
+  .then(function(r){ if(!r.ok) throw 0;
+    if(window.trackLead) trackLead('Studio signup');
+    [].forEach.call(f.querySelectorAll('input,button'),function(x){x.style.display='none';});
+    el('ok').style.display='block';
+  })
+  .catch(function(){ btn.disabled=false; btn.textContent='Set me up free →'; subFlash('Could not send just now — please try again in a moment.'); });
+}
+window.addEventListener('error',function(e){try{
+  fetch(SUPA_URL+'/rest/v1/client_errors',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({page:location.pathname,msg:String((e&&e.message)||'').slice(0,300),src:String((e&&e.filename)||'').slice(0,120),line:(e&&e.lineno)||0})}).catch(function(){});
+}catch(_){}});
+</script>
+</body>
+</html>
