@@ -79,6 +79,13 @@
   .mini.good{border-color:rgba(67,240,176,.5);color:var(--good)}
   .mini.bad{border-color:rgba(255,138,157,.5);color:#ff8a9d}
   @media(max-width:520px){.appt{grid-template-columns:52px 1fr;grid-auto-rows:auto}.appt-a{grid-column:1/-1;justify-content:flex-start}}
+  .svcrow{display:grid;grid-template-columns:1fr 68px 68px 34px;gap:8px;align-items:center;margin-top:8px}
+  .barbrow{display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin-top:8px}
+  .hrow{display:grid;grid-template-columns:52px 78px 1fr 1fr;gap:8px;align-items:center;margin-top:8px}
+  .hrow .hd{font-weight:800;font-size:13px}
+  .hrow .cl{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);cursor:pointer}
+  .svcrow input,.barbrow input,.hrow input{padding:10px 10px;font-size:14px}
+  .svcrow .rm,.barbrow .rm{background:rgba(255,138,157,.12);border:1px solid rgba(255,138,157,.4);color:#ff8a9d;border-radius:10px;padding:9px 0;font-weight:800;cursor:pointer}
 </style>
 </head>
 <body>
@@ -179,6 +186,38 @@
       </div>
     </div>
 
+    <div class="card" id="bookingSetupCard">
+      <h2>📅 <b>Booking setup</b> — services, barbers &amp; hours</h2>
+      <div id="bkLoad" class="muted">Loading…</div>
+      <div id="bkForm" class="hide">
+        <label>Services <span style="text-transform:none;letter-spacing:0;color:var(--muted)">(name · minutes · price)</span></label>
+        <div id="svcEditor"></div>
+        <button class="btn ghost" onclick="addSvc()" style="margin-top:8px">+ Add service</button>
+
+        <label style="margin-top:18px">Barbers / chairs <span style="text-transform:none;letter-spacing:0;color:var(--muted)">(leave empty for a single chair)</span></label>
+        <div id="barbEditor"></div>
+        <button class="btn ghost" onclick="addBarb()" style="margin-top:8px">+ Add barber</button>
+
+        <label style="margin-top:18px">Open hours</label>
+        <div id="hoursEditor"></div>
+
+        <div class="grid2" style="margin-top:16px">
+          <div><label>Slot every (min)</label><input id="bkEvery" type="number" min="5" inputmode="numeric"></div>
+          <div><label>Min notice (min)</label><input id="bkLead" type="number" min="0" inputmode="numeric"></div>
+        </div>
+        <div class="grid2">
+          <div><label>Book up to (days ahead)</label><input id="bkHorizon" type="number" min="1" inputmode="numeric"></div>
+          <div><label>Timezone</label><input id="bkTz" placeholder="America/New_York"></div>
+        </div>
+        <label>Booking policy note (optional)</label>
+        <input id="bkNote" placeholder="Free to book. 24h notice to cancel.">
+
+        <button class="btn wide" id="saveBkBtn" onclick="saveBooking()">💾 Save booking setup</button>
+        <div class="err hide" id="bkSetErr"></div>
+        <div class="muted hide" id="bkSetOk" style="text-align:center;color:var(--good);margin-top:8px;font-weight:800">Saved ✓ — your booking page updates instantly.</div>
+      </div>
+    </div>
+
     <div class="card">
       <h2>🔗 <b>Quick links</b></h2>
       <div class="links">
@@ -275,6 +314,73 @@ function render(d){
   el('lkStaff').href=base+'/rewards/staff/';
   loadSettings();
   loadAgenda();
+  loadBooking();
+}
+/* ============ Booking setup (services / barbers / hours) ============ */
+var SVCS=[], BARBS=[], HOURS={};
+var DOW=[['1','Mon'],['2','Tue'],['3','Wed'],['4','Thu'],['5','Fri'],['6','Sat'],['7','Sun']];
+function slugify(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,16)||('s'+Math.random().toString(36).slice(2,6)); }
+function loadBooking(){
+  rpc('booking_config',{p_client:CODE}).then(function(d){
+    if(!d||!d.ok){ el('bkLoad').textContent='Could not load booking setup.'; return; }
+    el('bkLoad').classList.add('hide'); el('bkForm').classList.remove('hide');
+    SVCS=(d.services||[]).map(function(s){return {id:s.id||slugify(s.name),name:s.name||'Service',mins:s.mins||30,price:s.price||''};});
+    if(!SVCS.length) SVCS=[{id:'cut',name:'Haircut',mins:30,price:'$30'}];
+    BARBS=(d.staff||[]).map(function(s){return {id:s.id||slugify(s.name),name:s.name||'Barber'};});
+    HOURS=d.hours||{};
+    el('bkEvery').value=d.slot_every||15; el('bkLead').value=d.lead_mins||90; el('bkHorizon').value=d.horizon_days||30;
+    el('bkTz').value=d.book_tz||'America/New_York'; el('bkNote').value=d.deposit_note||'';
+    renderSvc(); renderBarb(); renderHours();
+  }).catch(function(){ el('bkLoad').textContent='Network error loading booking setup.'; });
+}
+function readSvc(){ var a=[]; [].forEach.call(document.querySelectorAll('#svcEditor .svcrow'),function(r){ var n=(r.querySelector('.s-name').value||'').trim(); if(!n) return; a.push({id:r.getAttribute('data-id')||slugify(n),name:n,mins:Math.max(5,parseInt(r.querySelector('.s-mins').value,10)||30),price:(r.querySelector('.s-price').value||'').trim()}); }); SVCS=a; return a; }
+function renderSvc(){
+  el('svcEditor').innerHTML=SVCS.map(function(s,i){
+    return '<div class="svcrow" data-id="'+esc(s.id)+'"><input class="s-name" value="'+esc(s.name)+'" placeholder="Service"><input class="s-mins" type="number" min="5" value="'+(s.mins||30)+'" title="minutes"><input class="s-price" value="'+esc(s.price||'')+'" placeholder="$"><button class="rm" onclick="rmSvc('+i+')">✕</button></div>';
+  }).join('');
+}
+function addSvc(){ readSvc(); SVCS.push({id:slugify('svc'+(SVCS.length+1)),name:'',mins:30,price:''}); renderSvc(); }
+function rmSvc(i){ readSvc(); SVCS.splice(i,1); if(!SVCS.length) SVCS=[{id:'cut',name:'Haircut',mins:30,price:''}]; renderSvc(); }
+function readBarb(){ var a=[]; [].forEach.call(document.querySelectorAll('#barbEditor .barbrow'),function(r){ var n=(r.querySelector('.b-name').value||'').trim(); if(!n) return; a.push({id:r.getAttribute('data-id')||slugify(n),name:n}); }); BARBS=a; return a; }
+function renderBarb(){
+  el('barbEditor').innerHTML=BARBS.length?BARBS.map(function(b,i){
+    return '<div class="barbrow" data-id="'+esc(b.id)+'"><input class="b-name" value="'+esc(b.name)+'" placeholder="Barber name"><button class="rm" onclick="rmBarb('+i+')">✕</button></div>';
+  }).join(''):'<p class="muted" style="margin:6px 0 0">Single chair — bookings won\'t ask for a barber.</p>';
+}
+function addBarb(){ readBarb(); BARBS.push({id:slugify('b'+(BARBS.length+1)),name:''}); renderBarb(); }
+function rmBarb(i){ readBarb(); BARBS.splice(i,1); renderBarb(); }
+function renderHours(){
+  el('hoursEditor').innerHTML=DOW.map(function(d){
+    var w=HOURS[d[0]], open=w&&w[0]||'09:00', close=w&&w[1]||'18:00', closed=!(w&&w.length>=2);
+    return '<div class="hrow" data-dow="'+d[0]+'"><div class="hd">'+d[1]+'</div>'
+      +'<label class="cl"><input type="checkbox" class="h-closed" '+(closed?'checked':'')+' onchange="renderHoursState(this)" style="width:16px;height:16px;accent-color:#7aa2ff"> off</label>'
+      +'<input type="time" class="h-open" value="'+open+'" '+(closed?'disabled':'')+'>'
+      +'<input type="time" class="h-close" value="'+close+'" '+(closed?'disabled':'')+'></div>';
+  }).join('');
+}
+function renderHoursState(cb){ var row=cb.closest('.hrow'); var off=cb.checked; row.querySelector('.h-open').disabled=off; row.querySelector('.h-close').disabled=off; }
+function readHours(){ var h={}; [].forEach.call(document.querySelectorAll('#hoursEditor .hrow'),function(r){ if(r.querySelector('.h-closed').checked) return; var o=r.querySelector('.h-open').value, c=r.querySelector('.h-close').value; if(o&&c&&o<c) h[r.getAttribute('data-dow')]=[o,c]; }); HOURS=h; return h; }
+function saveBooking(){
+  readSvc(); readBarb(); readHours();
+  var validSvc=SVCS.filter(function(s){return s.name;});
+  if(!validSvc.length){ el('bkSetErr').textContent='Add at least one service.'; el('bkSetErr').classList.remove('hide'); return; }
+  var btn=el('saveBkBtn'); btn.disabled=true; btn.textContent='Saving…';
+  el('bkSetErr').classList.add('hide'); el('bkSetOk').classList.add('hide');
+  rpc('save_booking_config',{
+    p_client:CODE, p_pin:PIN,
+    p_services:validSvc, p_staff:BARBS, p_hours:HOURS,
+    p_slot_every:parseInt(el('bkEvery').value,10)||15,
+    p_lead_mins:parseInt(el('bkLead').value,10)||0,
+    p_horizon_days:parseInt(el('bkHorizon').value,10)||30,
+    p_book_tz:(el('bkTz').value||'').trim(),
+    p_deposit_note:(el('bkNote').value||'').trim(),
+    p_booking_on:null
+  }).then(function(d){
+    btn.disabled=false; btn.textContent='💾 Save booking setup';
+    if(!d||!d.ok){ el('bkSetErr').textContent=(d&&d.error)||'Could not save.'; el('bkSetErr').classList.remove('hide'); return; }
+    el('bkSetOk').classList.remove('hide'); toast('Booking setup saved ✓');
+    setTimeout(function(){ el('bkSetOk').classList.add('hide'); },3200);
+  }).catch(function(){ btn.disabled=false; btn.textContent='💾 Save booking setup'; el('bkSetErr').textContent='Network error — try again.'; el('bkSetErr').classList.remove('hide'); });
 }
 /* ============ Live appointment agenda ============ */
 function loadAgenda(){
