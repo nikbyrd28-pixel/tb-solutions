@@ -983,8 +983,11 @@ function countUp(to){
 }
 var mParam=q.get('m');
 var saved=null; try{ saved=localStorage.getItem('rw_'+slug); }catch(e){}
+// Demo shops skip the sign-up gate and open a pre-loaded, populated card.
+var DEMO_MEMBER={demo:'demo0001'};
 if(mParam){ el('joinCard').classList.add('hide'); loadByCode(mParam); }
 else if(saved){ el('joinCard').classList.add('hide'); loadByCode(saved); }
+else if(DEMO_MEMBER[slug]){ el('joinCard').classList.add('hide'); loadByCode(DEMO_MEMBER[slug]); }
 
 /* ambient game particles */
 (function(){
