@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Rep Portal — TB Solutions</title>
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%F0%9F%92%B8%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--text:#f2f4ff;--muted:#8f97b8;--line:rgba(122,162,255,.3);--acc:#7aa2ff;--acc2:#5df2e0;--good:#43f0b0;--warn:#f0c05a}
+  *{box-sizing:border-box}
+  @keyframes drift{0%{background-position:0 0}100%{background-position:60px 60px}}
+  @keyframes popin{0%{transform:translateY(10px);opacity:0}100%{transform:translateY(0);opacity:1}}
+  @keyframes cnt{from{opacity:.3}to{opacity:1}}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.5;min-height:100vh;
+    background:radial-gradient(circle at 15% -5%,rgba(122,162,255,.2),transparent 42%),radial-gradient(circle at 90% 108%,rgba(93,242,224,.13),transparent 45%),linear-gradient(180deg,#070811,#04050a);position:relative}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(rgba(122,162,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(122,162,255,.05) 1px,transparent 1px);
+    background-size:60px 60px;animation:drift 16s linear infinite}
+  .wrap{max-width:520px;margin:0 auto;padding:26px 16px 80px;position:relative;z-index:1}
+  .brand{font-weight:900;letter-spacing:.06em;font-size:15px;margin-bottom:2px}
+  .brand span{background:linear-gradient(90deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tag{color:var(--muted);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:20px}
+  .card{background:linear-gradient(150deg,rgba(255,255,255,.055),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:14px;backdrop-filter:blur(10px);animation:popin .3s ease}
+  h1{font-size:22px;margin:0 0 4px}
+  h1 span{background:linear-gradient(90deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+  label{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
+  input{width:100%;background:rgba(2,4,12,.6);border:1px solid var(--line);border-radius:13px;padding:13px 14px;color:var(--text);font:inherit;font-size:16px}
+  input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(122,162,255,.2)}
+  .btn{width:100%;margin-top:16px;border:0;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;border-radius:999px;padding:15px;font:inherit;font-weight:900;font-size:15px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;box-shadow:0 0 24px rgba(122,162,255,.4)}
+  .btn:disabled{opacity:.5}
+  .btn.ghost{background:rgba(122,162,255,.07);border:1px solid var(--line);color:var(--text);box-shadow:none;font-weight:700;text-transform:none;letter-spacing:0}
+  .err{color:#ff8a9d;font-size:13px;margin-top:10px;text-align:center}
+  .hide{display:none!important}
+  .stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .stat{background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:16px;padding:14px 10px;text-align:center}
+  .stat .n{font-size:30px;font-weight:900;line-height:1;background:linear-gradient(135deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent;animation:cnt .5s ease}
+  .stat .l{font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:.04em}
+  .rank{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .rank .medal{font-size:30px}
+  .rank .rt{font-weight:900;font-size:18px}
+  .rank .rs{font-size:12px;color:var(--muted)}
+  .lvbar{height:9px;border-radius:99px;background:rgba(122,162,255,.14);overflow:hidden;margin-top:8px}
+  .lvbar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc2),var(--acc));border-radius:99px;box-shadow:0 0 12px var(--acc);transition:width .8s cubic-bezier(.2,.8,.2,1)}
+  .earn{text-align:center;padding:6px 0 2px}
+  .earn .amt{font-size:38px;font-weight:900;background:linear-gradient(135deg,#43f0b0,var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(67,240,176,.4))}
+  .earn .sub{color:var(--muted);font-size:12.5px}
+  .linkrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .linkrow button{flex:1;min-width:120px;border:1px solid var(--line);background:rgba(122,162,255,.06);color:var(--text);border-radius:12px;padding:11px;font:inherit;font-weight:700;font-size:13px;cursor:pointer}
+  .linkrow button:active{transform:scale(.97)}
+  h2{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:2px 0 10px;font-weight:800}
+  .lead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px}
+  .lead:last-child{border-bottom:0}
+  .lead .who{font-weight:700}
+  .lead .st{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+  .st.win{color:var(--good);border-color:rgba(67,240,176,.5);background:rgba(67,240,176,.08)}
+  .muted{color:var(--muted);font-size:12.5px}
+  .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:40;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;font-weight:800;font-size:13px;border-radius:999px;padding:9px 18px;box-shadow:0 10px 30px rgba(122,162,255,.4);animation:popin .25s ease}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">TB <span>Solutions</span> · Rep Portal</div>
+  <div class="tag">Track your referrals & earnings</div>
+
+  <!-- LOGIN -->
+  <div class="card" id="login">
+    <h1>Welcome, <span>partner</span> 👋</h1>
+    <p class="muted">Enter your code and PIN to see how you're doing. Don't have them yet? Ask your TB Solutions contact.</p>
+    <label>Your code</label>
+    <input id="code" placeholder="JORDAN" style="text-transform:uppercase" autocomplete="off">
+    <label>PIN</label>
+    <input id="pin" type="tel" inputmode="numeric" placeholder="4-digit PIN" autocomplete="off">
+    <button class="btn" id="loginBtn" onclick="loadDash()">See my dashboard →</button>
+    <div class="err hide" id="err"></div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dash" class="hide">
+    <div class="card">
+      <div class="rank">
+        <div class="medal" id="medal">🥉</div>
+        <div style="flex:1">
+          <div class="rt" id="repName">—</div>
+          <div class="rs" id="rankSub">—</div>
+          <div class="lvbar"><i id="lvfill" style="width:0%"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stats">
+        <div class="stat"><div class="n" id="sTotal">0</div><div class="l">Referred</div></div>
+        <div class="stat"><div class="n" id="sWon">0</div><div class="l">Booked / Won</div></div>
+        <div class="stat"><div class="n" id="sRate">0%</div><div class="l">Win rate</div></div>
+      </div>
+      <div class="earn" style="margin-top:16px">
+        <div class="amt" id="earn">$0</div>
+        <div class="sub" id="earnSub">estimated earnings</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🔗 Your links — share these</h2>
+      <div class="linkrow" id="links"></div>
+      <p class="muted" style="margin-top:10px">Anyone who taps your link and becomes a lead is tracked to you automatically — for 45 days.</p>
+    </div>
+
+    <div class="card">
+      <h2>📈 Recent referrals</h2>
+      <div id="recent"><p class="muted">No referrals yet — share your link to get started!</p></div>
+    </div>
+
+    <button class="btn ghost" onclick="location.reload()">Log out</button>
+    <p class="muted" style="text-align:center;margin-top:14px">Powered by TB Solutions · tbsol.net</p>
+  </div>
+</div>
+
+<script>
+var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+function el(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+
+var q=new URLSearchParams(location.search);
+if(q.get('code')) el('code').value=q.get('code').toUpperCase();
+
+el('pin').addEventListener('keydown',function(e){ if(e.key==='Enter') loadDash(); });
+
+function toast(t){ var x=document.createElement('div'); x.className='toast'; x.textContent=t; document.body.appendChild(x); setTimeout(function(){x.remove()},1300); }
+
+async function loadDash(){
+  var code=(el('code').value||'').trim().toUpperCase(), pin=(el('pin').value||'').trim();
+  if(!code){ showErr('Enter your code.'); return; }
+  el('err').classList.add('hide');
+  var btn=el('loginBtn'); btn.disabled=true; btn.textContent='Loading…';
+  try{
+    var r=await fetch(SUPA_URL+'/rest/v1/rpc/affiliate_dashboard',{method:'POST',
+      headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_code:code,p_pin:pin})});
+    var d=await r.json();
+    if(!d || d.ok===false){ showErr((d&&d.error)||'Could not sign you in.'); btn.disabled=false; btn.textContent='See my dashboard →'; return; }
+    render(d);
+  }catch(e){ showErr('Network error — try again.'); btn.disabled=false; btn.textContent='See my dashboard →'; }
+}
+function showErr(m){ el('err').textContent=m; el('err').classList.remove('hide'); }
+
+function render(d){
+  el('login').classList.add('hide'); el('dash').classList.remove('hide');
+  el('repName').textContent=(d.name||d.code)+' · '+d.code;
+  var total=d.total||0, won=d.won||0, rate=total?Math.round(won/total*100):0;
+  // rank/level from won
+  var ranks=[[0,'🥉','Rookie'],[1,'🥈','Closer'],[3,'🥇','Pro'],[6,'💎','Elite'],[12,'👑','Legend']];
+  var rk=ranks[0]; for(var i=0;i<ranks.length;i++){ if(won>=ranks[i][0]) rk=ranks[i]; }
+  var next=ranks.find(function(x){return x[0]>won});
+  el('medal').textContent=rk[1];
+  el('rankSub').textContent=next? (rk[2]+' · '+(next[0]-won)+' more booked to hit '+next[2]) : (rk[2]+' · top tier!');
+  el('lvfill').style.width=(next? Math.min(100, (won/next[0])*100) : 100)+'%';
+  countTo('sTotal',total); countTo('sWon',won);
+  el('sRate').textContent=rate+'%';
+  // earnings
+  var earn, sub;
+  if(d.payout_type==='flat'){ earn='$'+((d.rate||0)*won).toLocaleString(); sub=won+' booked × $'+(d.rate||0)+' each'; }
+  else { earn=(d.rate||0)+'%'; sub='of each booked client\'s first payment · '+won+' booked so far'; }
+  el('earn').textContent=earn; el('earnSub').textContent=sub;
+  // links
+  var base='https://tbsol.net';
+  var links=[['🎮 Plan game',base+'/play/?ref='+d.code],['🌐 Homepage',base+'/?ref='+d.code],['📝 Intake',base+'/start/?ref='+d.code]];
+  el('links').innerHTML=links.map(function(l,i){return '<button onclick="cp('+i+')">'+l[0]+'</button>';}).join('');
+  window._links=links.map(function(l){return l[1]});
+  // recent
+  var rec=d.recent||[];
+  if(!rec.length){ el('recent').innerHTML='<p class="muted">No referrals yet — share your link to get started!</p>'; }
+  else{
+    el('recent').innerHTML=rec.map(function(x){
+      var win=['Won','Booked','Converted','Client'].indexOf(x.status)>=0;
+      return '<div class="lead"><span class="who">'+esc(x.who||'A business')+'</span>'
+        +'<span class="st'+(win?' win':'')+'">'+esc(x.status||'New')+'</span></div>';
+    }).join('');
+  }
+}
+function cp(i){ try{ navigator.clipboard.writeText(window._links[i]); toast('Link copied ✓'); }catch(e){} }
+function countTo(id,val){ var e=el(id),s=0,step=Math.max(1,Math.ceil(val/18)); (function tick(){ s=Math.min(val,s+step); e.textContent=s; if(s<val) requestAnimationFrame(tick); })(); }
+
+if(q.get('code') && q.get('pin')){ el('pin').value=q.get('pin'); loadDash(); }
+
+window.addEventListener('error',function(e){try{
+  fetch(SUPA_URL+'/rest/v1/client_errors',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({page:location.pathname,msg:String((e&&e.message)||'').slice(0,300),src:String((e&&e.filename)||'').slice(0,120),line:(e&&e.lineno)||0})}).catch(function(){});
+}catch(_){}});
+</script>
+</body>
+</html>

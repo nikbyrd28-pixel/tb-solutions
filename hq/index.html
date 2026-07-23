@@ -618,7 +618,7 @@ function addAffiliate(){
   var m=document.getElementById('af_msg'); if(!cloud){ if(m)m.textContent='Log in (cloud sync) first.'; return; }
   var name=afVal('af_name'), code=(afVal('af_code')||name).toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,16);
   if(!code){ if(m)m.textContent='Give it a name or code.'; return; }
-  supa.from('affiliates').insert({code:code,name:name,email:afVal('af_email'),phone:afVal('af_phone'),rate:parseFloat(afVal('af_rate'))||0,payout_type:afVal('af_ptype'),kind:'rep',active:true}).then(function(r){
+  supa.from('affiliates').insert({code:code,name:name,email:afVal('af_email'),phone:afVal('af_phone'),rate:parseFloat(afVal('af_rate'))||0,payout_type:afVal('af_ptype'),kind:'rep',active:true,pin:String(Math.floor(1000+Math.random()*9000))}).then(function(r){
     if(r.error){ if(m)m.textContent=(r.error.code==='23505'?'That code is taken — pick another.':r.error.message); return; }
     ['af_name','af_code','af_email','af_phone'].forEach(function(id){ var e=document.getElementById(id); if(e)e.value=''; });
     if(m)m.textContent=''; loadAffiliates();
@@ -641,12 +641,12 @@ function loadAffiliates(){
     if(!affs.length){ box.innerHTML='<div class="empty">No reps yet. Add one above — they get a link like <b>tbsol.net/?ref=CODE</b> to share. Every lead it brings shows up tagged to them.</div>'; return; }
     box.innerHTML=affs.map(function(a){
       var t=tally[(a.code||'').toUpperCase()]||{n:0,won:0}, base='https://tbsol.net';
-      var links=[['🎮 Plan game',base+'/play/?ref='+a.code],['🌐 Homepage',base+'/?ref='+a.code],['📝 Intake',base+'/start/?ref='+a.code]];
+      var links=[['🎮 Plan game',base+'/play/?ref='+a.code],['🌐 Homepage',base+'/?ref='+a.code],['📝 Intake',base+'/start/?ref='+a.code],['📊 Their portal',base+'/affiliate/?code='+a.code]];
       return '<div class="card" style="padding:14px;margin-bottom:10px">'
         +'<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">'
         +'<div><b style="font-size:16px">'+esc(a.name||a.code)+'</b> <span class="pill">'+esc(a.code)+'</span></div>'
         +'<div><span class="pill" style="border-color:rgba(124,252,198,.5);color:var(--green)">'+t.n+' referred</span> <span class="pill">'+t.won+' won</span></div></div>'
-        +'<div style="margin-top:6px;color:var(--muted);font-size:12px">'+esc(a.email||'')+(a.phone?' · '+esc(a.phone):'')+' · pays '+(a.payout_type==='flat'?('$'+(a.rate||0)+' per client'):((a.rate||0)+'% of first payment'))+'</div>'
+        +'<div style="margin-top:6px;color:var(--muted);font-size:12px">'+esc(a.email||'')+(a.phone?' · '+esc(a.phone):'')+' · pays '+(a.payout_type==='flat'?('$'+(a.rate||0)+' per client'):((a.rate||0)+'% of first payment'))+(a.pin?' · <b style="color:var(--text)">portal PIN '+esc(a.pin)+'</b>':'')+'</div>'
         +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">'+links.map(function(l){return '<button class="btn sm ghost" onclick="afCopy(\''+l[1]+'\',this)">'+l[0]+'</button>';}).join('')+'</div>'
         +'<div style="margin-top:8px"><button class="btn sm ghost" onclick="delAffiliate(\''+a.id+'\')">Delete</button></div></div>';
     }).join('');
