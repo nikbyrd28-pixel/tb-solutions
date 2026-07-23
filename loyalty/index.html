@@ -104,6 +104,7 @@
   .ok{color:var(--good);font-weight:700;margin-top:12px}
   footer{border-top:1px solid var(--line);padding:26px 0;text-align:center;color:var(--muted);font-size:13px;margin-top:20px}
   .reveal{opacity:0;animation:rise .6s ease forwards}
+  .hide{display:none!important}
 </style>
 </head>
 <body>
@@ -127,7 +128,7 @@
       <h1>Turn one-time customers into <span class="g">regulars</span>.</h1>
       <p class="lead">Loop gives your customers points, prizes, VIP status and one-tap booking — so they keep coming back and bring their friends. No app to download. No hardware. Just a QR code on your counter.</p>
       <div class="cta-row">
-        <a class="btn big" href="#start">Start free demo →</a>
+        <a class="btn big" href="#start">Start free — first month on us</a>
         <a class="btn ghost big" href="https://tbsol.net/rewards/?c=demo" target="_blank" rel="noopener">Try the live card</a>
       </div>
       <div class="trust">
@@ -204,8 +205,8 @@
     <h2>One plan. Everything above.</h2>
     <p class="sub">No per-customer fees, no hardware to buy, no long contract. Cancel anytime.</p>
     <div class="price">
-      <div class="amt">$149 <small>setup</small></div>
-      <div style="color:var(--muted);margin-top:4px">then <b style="color:var(--text)">$79/mo</b> — cancel anytime</div>
+      <div class="amt">$0 <small>first month</small></div>
+      <div style="color:var(--muted);margin-top:4px">then <b style="color:var(--text)">$79/mo</b> — cancel anytime, no setup fee</div>
       <ul>
         <li>Your branded loyalty card + prize game</li>
         <li>VIP tiers, streaks &amp; referrals</li>
@@ -214,8 +215,8 @@
         <li>Auto review collection</li>
         <li>Setup &amp; support included</li>
       </ul>
-      <a class="btn big" href="#start" style="display:block">Get Loop for my business</a>
-      <p style="color:var(--muted);font-size:12.5px;margin:12px 0 0">Bundled free inside TB Solutions' Whole Machine plan.</p>
+      <a class="btn big" href="#start" style="display:block">Start my free month →</a>
+      <p style="color:var(--muted);font-size:12.5px;margin:12px 0 0">First month free. Cancel anytime. Also bundled inside TB Solutions' Whole Machine plan.</p>
     </div>
   </section>
 
@@ -236,17 +237,19 @@
   <section id="start">
     <div class="final">
       <div class="kick">Get started</div>
-      <h2>Let's get your customers hooked</h2>
-      <p class="sub" style="margin-bottom:0">Tell us about your business and we'll set up your Loop card — free demo, no commitment.</p>
+      <h2>Start your free month</h2>
+      <p class="sub" style="margin-bottom:0">First month free, then $79/mo — cancel anytime. Card set up for you within a day.</p>
       <form id="f">
         <input name="business" placeholder="Business name *" required>
         <input name="name" placeholder="Your name *" required>
+        <input name="email" type="email" placeholder="Email *" required>
         <input name="phone" type="tel" placeholder="Phone *" required>
-        <input name="email" type="email" placeholder="Email (optional)">
         <input name="niche" placeholder="What kind of business? (barber, café…)">
-        <button class="btn big" type="submit" id="sBtn">Set up my Loop card →</button>
+        <button class="btn big" type="button" id="subBtn" onclick="subscribe()">💳 Start my free month →</button>
+        <button class="btn ghost" type="submit" id="sBtn" style="font-size:14px">Rather talk first? Book a free demo</button>
+        <p class="err hide" id="subErr" style="color:#ff8a9d;font-size:13px;text-align:center;margin:2px 0 0"></p>
         <p class="ok hide" id="ok">🎉 Got it! We'll reach out shortly to set up your card.</p>
-        <p style="color:var(--muted);font-size:12px;margin:4px 0 0">No spam. Powered by TB Solutions · <a href="/privacy/" style="color:var(--muted)">Privacy</a></p>
+        <p style="color:var(--muted);font-size:12px;margin:4px 0 0">First month free, then $79/mo · cancel anytime · secure checkout by <b style="color:var(--text)">Stripe</b>. <a href="/privacy/" style="color:var(--muted)">Privacy</a></p>
       </form>
     </div>
   </section>
@@ -269,6 +272,24 @@ var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
   var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.style.animationDelay='0s';en.target.classList.add('reveal');io.unobserve(en.target);}});},{threshold:.12});
   document.querySelectorAll('section .step,section .feat,.band,.price,.final').forEach(function(x){io.observe(x);});
 })();
+if(new URLSearchParams(location.search).get('canceled')){ setTimeout(function(){ var e=document.getElementById('subErr'); if(e){ e.style.color='var(--muted)'; e.textContent='No rush — start your free month whenever you\'re ready.'; e.classList.remove('hide'); } },300); }
+function subFlash(msg,muted){ var e=document.getElementById('subErr'); if(!e){ alert(msg); return; } e.style.color=muted?'var(--muted)':'#ff8a9d'; e.textContent=msg; e.classList.remove('hide'); }
+function subscribe(){
+  var f=document.getElementById('f');
+  var biz=(f.business.value||'').trim(), email=(f.email.value||'').trim(), name=(f.name.value||'').trim(), phone=(f.phone.value||'').trim();
+  if(!biz){ f.business.focus(); return subFlash('Add your business name first.'); }
+  if(!email || email.indexOf('@')<1){ f.email.focus(); return subFlash('Add a valid email for your receipt.'); }
+  var btn=document.getElementById('subBtn'); btn.disabled=true; btn.textContent='Opening secure checkout…';
+  document.getElementById('subErr').classList.add('hide');
+  fetch(SUPA_URL+'/rest/v1/intakes',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({business:biz,name:name,email:email,phone:phone,about:'🔁 Loop — started checkout',interest:'Loyalty program (Loop) — subscribing',goal:'get more repeat customers',timeline:'ASAP',ref:(window.tbRef?window.tbRef():''),notes:'Clicked Start my free month'})}).catch(function(){});
+  fetch(SUPA_URL+'/functions/v1/loop-checkout',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify({business:biz,email:email,name:name,phone:phone})})
+  .then(function(r){return r.json()}).then(function(d){
+    if(d && d.url){ location.href=d.url; return; }
+    btn.disabled=false; btn.textContent='💳 Start my free month →';
+    subFlash((d&&d.error)?d.error:'Checkout isn\'t available right now — we\'ll reach out to set you up.', true);
+  }).catch(function(){ btn.disabled=false; btn.textContent='💳 Start my free month →'; subFlash('Network hiccup — please try again.'); });
+}
 // lead form → intakes (lands in TB Command)
 document.getElementById('f').addEventListener('submit',function(e){
   e.preventDefault();

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Welcome to Loop 🎉</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-size='34'%3E%F0%9F%94%81%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--text:#eef1fb;--muted:#96a0bd;--line:rgba(122,162,255,.26);--acc:#7aa2ff;--acc2:#5df2e0;--vio:#b98bff;--good:#43f0b0;--bg:#06070e}
+  *{box-sizing:border-box}
+  @keyframes confetti-fall{0%{transform:translateY(-10px) rotate(0);opacity:1}100%{transform:translateY(105vh) rotate(720deg);opacity:0}}
+  @keyframes pop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;
+    background:radial-gradient(circle at 20% -10%,rgba(122,162,255,.2),transparent 45%),radial-gradient(circle at 80% 110%,rgba(93,242,224,.14),transparent 45%),var(--bg)}
+  .card{max-width:480px;width:100%;background:linear-gradient(150deg,rgba(255,255,255,.06),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:26px;padding:40px 28px;box-shadow:0 24px 70px rgba(0,0,0,.55);animation:pop .5s ease}
+  .em{font-size:64px;animation:pop .6s ease}
+  h1{font-size:28px;margin:14px 0 8px}
+  h1 span{background:linear-gradient(90deg,var(--acc2),var(--acc),var(--vio));-webkit-background-clip:text;background-clip:text;color:transparent}
+  p{color:var(--muted);font-size:15.5px;margin:0 0 14px}
+  .steps{text-align:left;margin:22px 0}
+  .step{display:flex;gap:12px;align-items:flex-start;margin:12px 0;font-size:14.5px}
+  .step .n{flex:0 0 28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:900;color:#05060d;background:linear-gradient(135deg,var(--acc2),var(--acc));font-size:14px}
+  .step b{color:var(--text)}
+  .btn{display:inline-block;border:0;border-radius:999px;padding:14px 24px;font:inherit;font-weight:800;font-size:15px;text-decoration:none;color:#05060d;background:linear-gradient(135deg,var(--acc2),var(--acc));box-shadow:0 8px 24px rgba(122,162,255,.35);margin-top:8px}
+  .fine{font-size:12.5px;margin-top:16px}
+  .cf{position:fixed;top:-16px;font-size:22px;z-index:9;pointer-events:none;animation:confetti-fall linear forwards}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="em">🎉</div>
+  <h1>You're <span>in!</span></h1>
+  <p>Your <b style="color:var(--text)">first month is free</b> — you won't be charged until 30 days from now, and you can cancel anytime.</p>
+  <div class="steps">
+    <div class="step"><div class="n">1</div><div>We're building your <b>branded Loop card</b>, prize game and counter poster right now.</div></div>
+    <div class="step"><div class="n">2</div><div>You'll get an <b>email within a day</b> with your card link, staff PIN and owner dashboard.</div></div>
+    <div class="step"><div class="n">3</div><div>Put your QR poster on the counter and watch customers start <b>coming back</b>. 🔁</div></div>
+  </div>
+  <a class="btn" href="https://tbsol.net/rewards/?c=demo" target="_blank" rel="noopener">Play with the live demo →</a>
+  <p class="fine">Questions? Reply to your receipt email or reach us at tbsol.net. <br>Powered by TB Solutions.</p>
+</div>
+<script>
+(function(){ var b=['🎉','✨','⭐','🔁','🎊','💎'];
+  for(var i=0;i<40;i++){ var s=document.createElement('span'); s.className='cf'; s.textContent=b[i%b.length];
+    s.style.left=(Math.random()*100)+'vw'; s.style.animationDuration=(1.8+Math.random()*2)+'s'; s.style.animationDelay=(Math.random()*0.8)+'s';
+    document.body.appendChild(s); setTimeout(function(el){return function(){el.remove()}}(s),4200); }
+})();
+</script>
+</body>
+</html>
