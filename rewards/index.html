@@ -80,9 +80,40 @@
   .tiernext{font-size:12px;color:var(--muted)}
   .streak{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:#ffb15a;background:rgba(255,177,90,.1);border:1px solid rgba(255,177,90,.35);border-radius:999px;padding:5px 12px;margin-top:10px}
   label.f{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px;text-align:left}
+  #pcanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.6}
+  .wrap{position:relative;z-index:2}
+  .player{overflow:hidden;position:relative}
+  .pcard-top{display:flex;align-items:center;gap:14px;text-align:left}
+  .avatar{flex:0 0 60px;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:26px;color:#05060d;background:linear-gradient(135deg,var(--acc2),var(--acc));box-shadow:0 0 22px color-mix(in srgb,var(--acc) 55%,transparent);position:relative}
+  .avatar .lvchip{position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);background:#05060d;border:1.5px solid var(--acc2);color:var(--acc2);font-size:10px;font-weight:900;border-radius:999px;padding:2px 8px;letter-spacing:.04em;white-space:nowrap}
+  .pname{font-size:19px;font-weight:900;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .prank{font-size:12.5px;color:var(--muted);font-weight:700;letter-spacing:.03em;margin-top:2px}
+  .xpwrap{margin-top:16px}
+  .xpbar{height:10px;border-radius:99px;background:rgba(122,162,255,.14);overflow:hidden}
+  .xpbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc2),var(--acc));box-shadow:0 0 14px var(--acc);border-radius:99px;transition:width .9s cubic-bezier(.2,.8,.2,1)}
+  .xptxt{font-size:11.5px;color:var(--muted);margin-top:6px;text-align:center;letter-spacing:.03em}
+  .qh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .qh b{font-size:15px}
+  .quest{display:flex;align-items:center;gap:12px;padding:11px 12px;border:1px solid var(--line);border-radius:14px;margin-top:9px;background:rgba(0,0,0,.22);transition:.15s}
+  .quest.done{border-color:rgba(67,240,176,.45);background:rgba(67,240,176,.06)}
+  .quest .qi{font-size:23px;flex:0 0 30px;text-align:center;filter:drop-shadow(0 0 8px color-mix(in srgb,var(--acc) 40%,transparent))}
+  .quest .qt{flex:1;min-width:0}
+  .quest .qt b{display:block;font-size:14px}
+  .quest .qt span{font-size:12px;color:var(--muted)}
+  .quest .qx{font-size:12px;font-weight:800;color:#05060d;background:linear-gradient(135deg,var(--acc2),var(--acc));border:0;border-radius:999px;padding:8px 13px;cursor:pointer;white-space:nowrap}
+  .quest.done .qx{background:transparent;border:1px solid rgba(67,240,176,.5);color:var(--good);cursor:default}
+  .badges{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
+  .badge{text-align:center;border:1px solid var(--line);border-radius:14px;padding:12px 5px;background:rgba(0,0,0,.22);opacity:.4;transition:.2s}
+  .badge.got{opacity:1;border-color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,transparent);box-shadow:0 0 16px color-mix(in srgb,var(--acc) 32%,transparent)}
+  .badge .be{font-size:25px;line-height:1}
+  .badge .bn{font-size:9.5px;color:var(--muted);margin-top:5px;font-weight:700;line-height:1.15}
+  .badge.got .bn{color:var(--text)}
+  .levelup{position:fixed;top:30%;left:50%;z-index:100;font-weight:900;font-size:30px;letter-spacing:.16em;color:var(--acc2);text-shadow:0 0 28px var(--acc2);pointer-events:none;animation:lvpop 1.5s ease forwards}
+  @keyframes lvpop{0%{transform:translateX(-50%) scale(.5);opacity:0}18%{transform:translateX(-50%) scale(1.18);opacity:1}80%{opacity:1}100%{transform:translateX(-50%) scale(1);opacity:0}}
 </style>
 </head>
 <body>
+<canvas id="pcanvas" aria-hidden="true"></canvas>
 <div class="wrap">
   <div class="brand" id="brand">Rewards <span>club</span></div>
   <div class="tag" id="tagline">Earn points every visit</div>
@@ -100,17 +131,33 @@
 
   <!-- CARD -->
   <div id="cardView" class="hide">
-    <div class="card center">
-      <h1 id="mName">Your card</h1>
-      <div class="big" id="mPoints">0</div>
-      <div class="muted">points</div>
-      <div id="streakWrap"></div>
-      <div class="tierbox" id="tierbox"></div>
-      <div class="punches" id="punches" style="justify-content:center"></div>
-      <p class="muted" id="rewardLine"></p>
-      <p class="ok hide" id="readyLine">🎉 Reward unlocked — show this at the counter!</p>
-      <img class="qr" id="mQr" alt="Your member QR" loading="lazy">
-      <p class="muted">Show this at the counter — staff scans it, you get your point. ⚡</p>
+    <div class="card player">
+      <div class="pcard-top">
+        <div class="avatar" id="avatar">?<span class="lvchip" id="lvchip">Lv 1</span></div>
+        <div style="flex:1;min-width:0">
+          <div class="pname" id="mName">Your card</div>
+          <div class="prank" id="prank">Bronze rank</div>
+          <div id="streakWrap"></div>
+        </div>
+      </div>
+      <div class="xpwrap">
+        <div class="xpbar"><i id="xpFill"></i></div>
+        <div class="xptxt" id="xpTxt"></div>
+      </div>
+      <div style="text-align:center;margin-top:16px">
+        <div class="big" id="mPoints">0</div>
+        <div class="muted">points to spend</div>
+        <div class="punches" id="punches" style="justify-content:center"></div>
+        <p class="muted" id="rewardLine"></p>
+        <p class="ok hide" id="readyLine">🎉 Reward unlocked — show this at the counter!</p>
+        <img class="qr" id="mQr" alt="Your member QR" loading="lazy">
+        <p class="muted">Show this at the counter — staff scans it, you get your point. ⚡</p>
+      </div>
+    </div>
+
+    <div class="card quests">
+      <div class="qh"><b>🎯 Your quests</b><span class="muted" id="qDone"></span></div>
+      <div id="questList"></div>
     </div>
 
     <div class="card center">
@@ -141,6 +188,11 @@
       <input id="svText" placeholder="Anything we should know? (optional)">
       <button class="btn ghost" onclick="sendSurvey()">Send + earn</button>
       <div class="err hide" id="svErr"></div>
+    </div>
+
+    <div class="card">
+      <div class="qh"><b>🏆 Achievements</b><span class="muted" id="achCount"></span></div>
+      <div class="badges" id="badgeGrid"></div>
     </div>
 
     <div class="card" id="bookCard">
@@ -216,31 +268,73 @@ function showCard(m){
   var myUrl=location.origin+'/rewards/?c='+slug+'&m='+m.code;
   el('mQr').src=qrUrl(myUrl,196);
   el('refQr').src=qrUrl(location.origin+'/capture/?c='+slug+'&name='+encodeURIComponent(display)+'&ref='+m.code,160);
-  renderTier(m);
+  renderPlayer(m);
+  renderQuests(m);
+  renderAchievements(m);
   if(m.wheel) renderSlot(m);
   renderPrizes(m);
   renderSvStars();
   el('bookCard').classList.toggle('hide', m.booking_on===false);
 }
-var TIERS=[
-  {n:'Bronze',min:0,e:'🥉'},
-  {n:'Silver',min:25,e:'🥈'},
-  {n:'Gold',min:75,e:'🥇'},
-  {n:'VIP',min:200,e:'💎'}
-];
-function renderTier(m){
-  var lt=m.lifetime||m.points||0, cur=TIERS[0], nxt=null;
-  for(var i=0;i<TIERS.length;i++){ if(lt>=TIERS[i].min){ cur=TIERS[i]; nxt=TIERS[i+1]||null; } }
-  var html='<span class="tierbadge"><span class="em">'+cur.e+'</span>'+cur.n+' member</span>';
-  if(nxt){
-    var span=nxt.min-cur.min, into=lt-cur.min, pct=Math.max(6,Math.min(100,Math.round(into/span*100)));
-    html+='<div class="tierbar"><i style="width:'+pct+'%"></i></div>'
-      +'<div class="tiernext">'+(nxt.min-lt)+' more lifetime points to '+nxt.e+' '+nxt.n+'</div>';
-  } else {
-    html+='<div class="tierbar"><i style="width:100%"></i></div><div class="tiernext">Top tier — you\'re a legend ⭐</div>';
-  }
-  el('tierbox').innerHTML=html;
-  el('streakWrap').innerHTML=(m.streak&&m.streak>=2)?('<div class="streak">🔥 '+m.streak+'-visit streak — keep it going!</div>'):'';
+var RANKS=[{n:'Bronze',min:0,e:'🥉'},{n:'Silver',min:25,e:'🥈'},{n:'Gold',min:75,e:'🥇'},{n:'VIP',min:200,e:'💎'}];
+var XP_PER_LEVEL=10, _lastLevel=null;
+function rankOf(lt){ var r=RANKS[0]; for(var i=0;i<RANKS.length;i++){ if(lt>=RANKS[i].min) r=RANKS[i]; } return r; }
+function renderPlayer(m){
+  var lt=m.lifetime||m.points||0;
+  var level=1+Math.floor(lt/XP_PER_LEVEL), into=lt%XP_PER_LEVEL;
+  var rank=rankOf(lt);
+  var init=((m.name||'?').trim().charAt(0)||'?').toUpperCase();
+  el('avatar').firstChild.textContent=init;
+  el('lvchip').textContent='Lv '+level;
+  el('prank').innerHTML='<span style="color:var(--acc2)">'+rank.e+' '+rank.n+'</span> · Level '+level;
+  el('xpFill').style.width=Math.round(into/XP_PER_LEVEL*100)+'%';
+  el('xpTxt').textContent=(XP_PER_LEVEL-into)+' XP to Level '+(level+1)+'  ·  '+lt+' lifetime';
+  el('streakWrap').innerHTML=(m.streak&&m.streak>=2)?('<div class="streak">🔥 '+m.streak+'-visit streak — don\'t break it!</div>'):'';
+  if(_lastLevel!=null && level>_lastLevel){ levelUp(level); }
+  _lastLevel=level;
+}
+function levelUp(level){
+  var f=document.createElement('div'); f.className='levelup'; f.textContent='LEVEL '+level+'! ⚡';
+  document.body.appendChild(f); setTimeout(function(){f.remove()},1500);
+  confetti();
+}
+function scrollToId(id){ var e=el(id); if(e) e.scrollIntoView({behavior:'smooth',block:'center'}); }
+function lsGet(k){ try{ return localStorage.getItem(k+slug); }catch(e){ return null; } }
+function lsSet(k){ try{ localStorage.setItem(k+slug,'1'); }catch(e){} }
+function renderQuests(m){
+  var recentSurvey = m.last_survey_at && (Date.now()-new Date(m.last_survey_at).getTime() < 7*864e5);
+  var qs=[
+    {i:'📅',b:'Book your next visit',s:'Lock in your spot',done:!!lsGet('rw_booked_'),act:"scrollToId('bookCard')"},
+    {i:'📝',b:'Take the 30-sec survey',s:'Earn a free point',done:!!recentSurvey,act:"scrollToId('surveyCard')"},
+    {i:'🎰',b:'Spin the slots',s:'Try your luck for a prize',done:(m.spins||0)>0,act:"scrollToId('slot')"},
+    {i:'💸',b:'Refer a friend',s:'+1 now, +2 when they book',done:!!lsGet('rw_shared_'),act:"shareRef()"},
+    {i:'🔥',b:'Keep your streak alive',s:'Visit again soon',done:(m.streak||0)>=2,act:""}
+  ];
+  var done=qs.filter(function(x){return x.done}).length;
+  el('qDone').textContent=done+'/'+qs.length+' done';
+  el('questList').innerHTML=qs.map(function(x){
+    return '<div class="quest'+(x.done?' done':'')+'"><div class="qi">'+x.i+'</div>'
+      +'<div class="qt"><b>'+x.b+'</b><span>'+x.s+'</span></div>'
+      +(x.done?'<span class="qx">Done ✓</span>':(x.act?'<button class="qx" onclick="'+x.act+'">Do it →</button>':'<span class="qx" style="background:transparent;border:1px solid var(--line);color:var(--muted)">Active</span>'))
+      +'</div>';
+  }).join('');
+}
+function renderAchievements(m){
+  var lt=m.lifetime||0, spins=m.spins||0, prizes=(m.prizes||[]).length, streak=m.streak||0;
+  var B=[
+    {e:'🥇',n:'First visit',got:lt>=1},
+    {e:'🔟',n:'10 points',got:lt>=10},
+    {e:'🎰',n:'First spin',got:spins>=1},
+    {e:'🎁',n:'Prize won',got:prizes>=1},
+    {e:'⭐',n:'50 club',got:lt>=50},
+    {e:'🔥',n:'On fire',got:streak>=3},
+    {e:'🤝',n:'Referrer',got:!!lsGet('rw_shared_')},
+    {e:'💎',n:'VIP',got:lt>=200}
+  ];
+  el('achCount').textContent=B.filter(function(x){return x.got}).length+'/'+B.length;
+  el('badgeGrid').innerHTML=B.map(function(b){
+    return '<div class="badge'+(b.got?' got':'')+'"><div class="be">'+(b.got?b.e:'🔒')+'</div><div class="bn">'+b.n+'</div></div>';
+  }).join('');
 }
 function bookVisit(){
   var when=el('bkWhen').value.trim(), phone=el('bkPhone').value.trim();
@@ -248,7 +342,7 @@ function bookVisit(){
   el('bkErr').classList.add('hide');
   fetch(SUPA_URL+'/rest/v1/client_leads',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
     body:JSON.stringify({client:slug,kind:'booking',name:(member&&member.name)||'Member',phone:phone,message:'📅 Rewards member wants to book: '+when,service:'booking',ride_date:when,status:'New'})})
-  .then(function(r){ if(!r.ok) throw 0; el('bookForm').classList.add('hide'); el('bkOk').classList.remove('hide'); })
+  .then(function(r){ if(!r.ok) throw 0; el('bookForm').classList.add('hide'); el('bkOk').classList.remove('hide'); lsSet('rw_booked_'); if(member){renderQuests(member);renderAchievements(member);} confetti(); })
   .catch(function(){ el('bkErr').textContent='Could not send — try again in a sec.'; el('bkErr').classList.remove('hide'); });
 }
 function join(){
@@ -282,6 +376,7 @@ function shareRef(){
   var link=location.origin+'/capture/?c='+slug+'&name='+encodeURIComponent(display)+'&ref='+member.code;
   if(navigator.share){ navigator.share({title:display+' — come check them out',url:link}).catch(function(){}); }
   else { navigator.clipboard.writeText(link); el('copied').classList.remove('hide'); }
+  lsSet('rw_shared_'); if(member){renderQuests(member);renderAchievements(member);}
 }
 
 var CELL_H=84, svRating=5;
@@ -418,6 +513,23 @@ var mParam=q.get('m');
 var saved=null; try{ saved=localStorage.getItem('rw_'+slug); }catch(e){}
 if(mParam){ el('joinCard').classList.add('hide'); loadByCode(mParam); }
 else if(saved){ el('joinCard').classList.add('hide'); loadByCode(saved); }
+
+/* ambient game particles */
+(function(){
+  var c=document.getElementById('pcanvas'); if(!c) return; var x=c.getContext('2d');
+  var W,H,parts=[];
+  function resize(){ W=c.width=innerWidth; H=c.height=innerHeight; }
+  resize(); addEventListener('resize',resize);
+  for(var i=0;i<42;i++){ parts.push({x:Math.random(),y:Math.random(),r:Math.random()*2+0.6,s:Math.random()*0.0005+0.00015,a:Math.random()*0.45+0.12}); }
+  function hx(h,a){ h=(h||'#7aa2ff').replace('#',''); if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2]; var r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16); return 'rgba('+r+','+g+','+b+','+a+')'; }
+  function col(){ return (getComputedStyle(document.documentElement).getPropertyValue('--acc')||'#7aa2ff').trim(); }
+  function loop(){ x.clearRect(0,0,W,H); var c2=col();
+    for(var i=0;i<parts.length;i++){ var p=parts[i]; p.y-=p.s; if(p.y<-0.02)p.y=1.02;
+      x.beginPath(); x.fillStyle=hx(c2,p.a); x.arc(p.x*W,p.y*H,p.r*(W/420),0,6.283); x.fill(); }
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
 
 window.addEventListener('error',function(e){try{
   fetch(SUPA_URL+'/rest/v1/client_errors',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
