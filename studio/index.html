@@ -535,7 +535,7 @@ function renderScenes(){
       +'</div>'
       +(s._vid?('<div class="row" style="margin-top:8px"><div><label style="margin-top:0">Clip speed</label><select onchange="setVidSpeed('+i+',this.value)">'+[['0.5','0.5×'],['1','1×'],['1.5','1.5×'],['2','2×']].map(function(o){return '<option value="'+o[0]+'"'+(((s.vidSpeed||1)+'')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div><div><label style="margin-top:0">Clip length</label><input disabled value="'+(s._vid.duration?s._vid.duration.toFixed(1)+'s':'loading…')+'"></div></div>'
         +(s._vid.duration?('<label style="margin-top:8px">✂️ Trim <span id="trimlab'+i+'" style="text-transform:none;letter-spacing:0;color:var(--acc2)">'+(s.vidIn||0).toFixed(1)+'s → '+(s.vidOut||s._vid.duration).toFixed(1)+'s</span></label><div class="row"><div><input type="range" min="0" max="'+s._vid.duration.toFixed(2)+'" step="0.1" value="'+(s.vidIn||0)+'" oninput="setVidTrim('+i+',\'in\',this.value)" aria-label="Trim start"></div><div><input type="range" min="0" max="'+s._vid.duration.toFixed(2)+'" step="0.1" value="'+(s.vidOut||s._vid.duration)+'" oninput="setVidTrim('+i+',\'out\',this.value)" aria-label="Trim end"></div></div>'):'')
-      :'')
+      ):'')
       +'<div class="swatches">'+sw+'</div>'
     +'</div>';
   }).join('');
