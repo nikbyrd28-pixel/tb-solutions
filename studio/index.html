@@ -183,6 +183,41 @@
         </label>
         <p class="muted" style="margin-top:8px">No royalty-free track handy? Leave music empty and add sound later in CapCut. Voiceover: record one on your phone or paste an AI voice file.</p>
       </div>
+
+      <!-- THUMBNAIL STUDIO -->
+      <div class="card">
+        <h2>★ <span>Thumbnail</span> studio <span class="tag">CTR</span></h2>
+        <p class="muted" style="margin:-4px 0 10px">Handcrafted-looking, high-contrast covers built to win the click. A real reaction photo of <b>your face</b> gives the biggest CTR lift — upload one below.</p>
+        <label>Headline (2–5 punchy words)</label>
+        <input id="tbHead" placeholder="I BUILT THIS IN A DAY" maxlength="46">
+        <div class="row">
+          <div><label>Badge (optional)</label><input id="tbBadge" placeholder="$300 · FREE · 3X" maxlength="16"></div>
+          <div><label>Shape</label><select id="tbRatio">
+            <option value="16:9">16:9 · YouTube</option>
+            <option value="9:16">9:16 · Shorts/Reels</option>
+            <option value="1:1">1:1 · Feed</option>
+          </select></div>
+        </div>
+        <label>Subject photo — your face = highest CTR (optional)</label>
+        <input type="file" id="tbPhoto" accept="image/*">
+        <label>Layout</label>
+        <div class="chips" id="tbLayout"></div>
+        <label>Color punch</label>
+        <div class="chips" id="tbPreset"></div>
+        <div class="bar" style="margin-top:8px">
+          <label style="display:flex;align-items:center;gap:7px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--text);margin:0"><input type="checkbox" id="tbArrow" style="width:auto"> Arrow</label>
+          <label style="display:flex;align-items:center;gap:7px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--text);margin:0"><input type="checkbox" id="tbCircle" style="width:auto"> Circle</label>
+          <label style="display:flex;align-items:center;gap:7px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--text);margin:0"><input type="checkbox" id="tbUpper" checked style="width:auto"> UPPERCASE</label>
+        </div>
+        <div class="stage" style="min-height:auto;margin-top:12px;padding:10px">
+          <canvas id="tcv" width="1280" height="720" style="max-width:100%;max-height:44vh;border-radius:10px;background:#000"></canvas>
+        </div>
+        <div class="bar">
+          <button class="btn small" onclick="dlThumb()">⬇️ Download thumbnail</button>
+          <button class="btn ghost small" onclick="seedThumbFromScene()">↩︎ Use my hook line</button>
+          <span class="muted" id="tbState"></span>
+        </div>
+      </div>
     </div>
 
     <!-- RIGHT: live preview + render -->
@@ -210,12 +245,11 @@
         <!-- STILL EXPORTS: thumbnail + post image -->
         <div style="border-top:1px solid var(--line);margin-top:16px;padding-top:14px">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-            <b style="font-size:13px">🖼️ Thumbnail &amp; post image</b>
+            <b style="font-size:13px">📱 Post image</b>
             <select id="stillScene" style="width:auto;max-width:180px;font-size:12px;padding:7px 9px"></select>
           </div>
-          <p class="muted" style="margin:6px 0 10px">Instant high-res PNGs straight from your scenes — no render wait. Pick which line to feature.</p>
+          <p class="muted" style="margin:6px 0 10px">Instant square feed post from any scene — no render wait. For a click-winning cover, use the <b>Thumbnail Studio</b> on the left.</p>
           <div class="bar">
-            <button class="btn small" onclick="exportStill('thumb')">📸 Thumbnail</button>
             <button class="btn small" onclick="exportStill('post')">📱 Post image (square)</button>
           </div>
           <img id="stillPrev" class="hide" alt="preview" style="width:100%;max-height:52vh;object-fit:contain;border-radius:12px;margin-top:12px;border:1px solid var(--line);background:#000" />
@@ -838,6 +872,7 @@ function finishRender(){
   el('dlBar').classList.remove('hide'); el('dlNote').classList.remove('hide');
   el('renderState').innerHTML='<span class="ok">Done ✓ '+(blob.size/1048576).toFixed(1)+'MB — preview & download below.</span>';
   suggestPost();
+  trackEvent('video_render',{dur:+totalDur.toFixed(1),shape:shapeName(),scenes:scenes.length});
   cleanupRender();
 }
 function cleanupRender(){ recording=false; el('renderBtn').disabled=false; el('renderBtn').textContent='🎬 Render my video'; setTimeout(function(){el('progWrap').classList.add('hide')},1200); }
@@ -892,6 +927,151 @@ async function exportStill(kind){
   el('renderState').innerHTML='<span class="ok">'+(kind==='post'?'Post image':'Thumbnail')+' ready ✓ — download below.</span>';
 }
 
+/* ---------- CTR thumbnail studio ---------- */
+var TB_PRESETS=[
+  {name:'Money',   bg:['#12141b','#1d222e'], accent:'#ffd400', head:'#ffffff', stroke:'#07070c', badgeBg:'#22c55e', badgeTxt:'#052611'},
+  {name:'Alarm',   bg:['#7a0d12','#c1121f'], accent:'#ffd400', head:'#ffffff', stroke:'#1a0305', badgeBg:'#ffd400', badgeTxt:'#1a1400'},
+  {name:'Electric',bg:['#0a1230','#131a3f'], accent:'#33e0ff', head:'#ffffff', stroke:'#04061a', badgeBg:'#ff3db6', badgeTxt:'#2a0018'},
+  {name:'Blaze',   bg:['#1a0a06','#3a1206'], accent:'#ff7a1a', head:'#ffffff', stroke:'#180702', badgeBg:'#ffce3d', badgeTxt:'#241800'},
+  {name:'Clean',   bg:['#f3f4f6','#e6e8ee'], accent:'#e01e37', head:'#0b0b12', stroke:'#ffffff', badgeBg:'#e01e37', badgeTxt:'#ffffff', light:true},
+  {name:'Luxe',    bg:['#050507','#100e15'], accent:'#d9b25a', head:'#f3e8c8', stroke:'#04030a', badgeBg:'#d9b25a', badgeTxt:'#1a1405'}
+];
+var tbPreset=0, tbLayout='right', tbImg=null;
+function rr(g,x,y,w,h,r){ r=Math.min(r,h/2,w/2); g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r); g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath(); }
+function coverDraw(g,im,x,y,w,h,filter){
+  g.save(); if(filter){try{g.filter=filter}catch(e){}}
+  var ir=im.width/im.height, rrat=w/h, dw,dh;
+  if(ir>rrat){ dh=h; dw=h*ir; } else { dw=w; dh=w/ir; }
+  g.drawImage(im, x+(w-dw)/2, y+(h-dh)/2, dw, dh); g.restore();
+}
+function fitText(g,text,maxW,maxH,maxLines){
+  var words=String(text).split(/\s+/).filter(Boolean); if(!words.length)words=[' '];
+  for(var fs=Math.floor(maxH*0.95); fs>=18; fs-=2){
+    g.font='900 '+fs+'px "Poppins","Arial Black",sans-serif';
+    var lines=[],cur='';
+    for(var i=0;i<words.length;i++){ var t=cur?cur+' '+words[i]:words[i]; if(g.measureText(t).width>maxW && cur){ lines.push(cur); cur=words[i]; } else cur=t; }
+    if(cur)lines.push(cur);
+    var lh=fs*1.04, blockH=(lines.length-1)*lh+fs, widest=0;
+    lines.forEach(function(l){ var w=g.measureText(l).width; if(w>widest)widest=w; });
+    if(lines.length<=maxLines && blockH<=maxH && widest<=maxW){ return {fs:fs,lines:lines,lh:lh,blockH:blockH}; }
+  }
+  g.font='900 18px "Poppins",sans-serif';
+  return {fs:18,lines:[String(text)],lh:18*1.04,blockH:18};
+}
+function drawThumb(){
+  var cvx=el('tcv'); if(!cvx)return; var g=cvx.getContext('2d');
+  var dims={'16:9':[1280,720],'9:16':[720,1280],'1:1':[1080,1080]}[el('tbRatio').value]||[1280,720];
+  cvx.width=dims[0]; cvx.height=dims[1];
+  var W=cvx.width,H=cvx.height,P=TB_PRESETS[tbPreset],lay=tbLayout;
+  var upper=el('tbUpper').checked;
+  var head=(el('tbHead').value||'').trim()||'YOUR HEADLINE HERE'; if(upper)head=head.toUpperCase();
+  var badge=(el('tbBadge').value||'').trim(); if(upper)badge=badge.toUpperCase();
+  // background
+  var bg=g.createLinearGradient(0,0,W,H); bg.addColorStop(0,P.bg[0]); bg.addColorStop(1,P.bg[1]);
+  g.fillStyle=bg; g.fillRect(0,0,W,H);
+  var glow=g.createRadialGradient(W*0.5,H*0.08,0,W*0.5,H*0.08,Math.max(W,H)*0.9);
+  glow.addColorStop(0,hexA(P.accent,P.light?0.10:0.20)); glow.addColorStop(1,hexA(P.accent,0));
+  g.fillStyle=glow; g.fillRect(0,0,W,H);
+  // zones
+  var pad=W*0.05, textZone, subjRect=null;
+  if(lay==='right'){ subjRect=[W*0.5,0,W*0.5,H]; textZone=[pad,H*0.14,W*0.46-pad,H*0.72]; }
+  else if(lay==='left'){ subjRect=[0,0,W*0.5,H]; textZone=[W*0.5+pad*0.3,H*0.14,W*0.46-pad,H*0.72]; }
+  else if(lay==='center'){ subjRect=[0,0,W,H]; textZone=[pad,H*0.5,W-pad*2,H*0.42]; }
+  else { textZone=[pad,H*0.16,W-pad*2,H*0.68]; }
+  // subject photo
+  if(tbImg && lay!=='full'){
+    g.save(); g.beginPath(); g.rect(subjRect[0],subjRect[1],subjRect[2],subjRect[3]); g.clip();
+    var cx=subjRect[0]+subjRect[2]/2, cy=subjRect[1]+subjRect[3]*0.42;
+    var sp=g.createRadialGradient(cx,cy,0,cx,cy,subjRect[2]*0.75);
+    sp.addColorStop(0,hexA(P.accent,0.45)); sp.addColorStop(1,hexA(P.accent,0));
+    g.fillStyle=sp; g.fillRect(subjRect[0],subjRect[1],subjRect[2],subjRect[3]);
+    coverDraw(g,tbImg,subjRect[0],subjRect[1],subjRect[2],subjRect[3],'contrast(1.08) saturate(1.22)');
+    g.restore();
+    var fg=g.createLinearGradient(0,0,W,0);
+    if(lay==='right'){ fg.addColorStop(0,hexA(P.bg[0],0.97)); fg.addColorStop(0.42,hexA(P.bg[0],0.72)); fg.addColorStop(0.64,hexA(P.bg[0],0)); }
+    else if(lay==='left'){ fg.addColorStop(0.36,hexA(P.bg[0],0)); fg.addColorStop(0.58,hexA(P.bg[0],0.72)); fg.addColorStop(1,hexA(P.bg[0],0.97)); }
+    if(lay==='center'){ var bgr=g.createLinearGradient(0,H*0.32,0,H); bgr.addColorStop(0,hexA('#000000',0)); bgr.addColorStop(1,hexA('#000000',0.82)); g.fillStyle=bgr; }
+    else { g.fillStyle=fg; }
+    g.fillRect(0,0,W,H);
+  }
+  // badge + headline
+  var centerAlign=(lay==='center'||lay==='full');
+  g.textAlign=centerAlign?'center':'left';
+  var alignX=centerAlign? textZone[0]+textZone[2]/2 : textZone[0];
+  var tx=textZone[0], ty=textZone[1], tw=textZone[2], th=textZone[3];
+  var fit=fitText(g,head,tw,th*0.82,(lay==='full'?3:4));
+  var topY=ty;
+  if(badge){
+    var bfs=Math.round(fit.fs*0.44);
+    g.font='800 '+bfs+'px "Poppins",sans-serif';
+    var bw=g.measureText(badge).width, bpx=bfs*0.5, bpy=bfs*0.28, bh=bfs+bpy*2;
+    var bx=centerAlign? alignX-(bw/2)-bpx : tx;
+    g.fillStyle=P.badgeBg; rr(g,bx,topY,bw+bpx*2,bh,bh*0.28); g.fill();
+    g.fillStyle=P.badgeTxt; g.textBaseline='middle'; g.fillText(badge, centerAlign?alignX:bx+bpx, topY+bh/2);
+    g.textBaseline='alphabetic'; topY+=bh+fit.fs*0.42;
+  }
+  var availH=(ty+th)-topY;
+  var firstBase = centerAlign ? topY+(availH-fit.blockH)/2+fit.fs : topY+fit.fs;
+  g.font='900 '+fit.fs+'px "Poppins","Arial Black",sans-serif'; g.lineJoin='round'; g.miterLimit=2;
+  for(var i=0;i<fit.lines.length;i++){
+    var yy=firstBase+i*fit.lh;
+    g.save(); g.shadowColor='rgba(0,0,0,'+(P.light?0.28:0.6)+')'; g.shadowBlur=fit.fs*0.18; g.shadowOffsetY=fit.fs*0.06;
+    g.lineWidth=fit.fs*0.15; g.strokeStyle=P.stroke; g.strokeText(fit.lines[i],alignX,yy); g.restore();
+    g.fillStyle=P.head; g.fillText(fit.lines[i],alignX,yy);
+  }
+  // accent underline
+  var ulY=firstBase+(fit.lines.length-1)*fit.lh+fit.fs*0.24;
+  var ulW=Math.min(tw*0.62,fit.fs*4.2), ulX=centerAlign? alignX-ulW/2 : alignX;
+  g.fillStyle=P.accent; rr(g,ulX,ulY,ulW,Math.max(6,fit.fs*0.1),fit.fs*0.05); g.fill();
+  // arrow
+  if(el('tbArrow').checked && (lay==='right'||lay==='left')){
+    var ay=ty+th*0.9, alen=W*0.13, athk=H*0.028, dir=(lay==='right')?1:-1, x0=(lay==='right')?tx:tx+tw, x1=x0+dir*alen;
+    g.save(); g.fillStyle=P.accent; g.strokeStyle=P.light?'#ffffff':'#0b0b12'; g.lineWidth=athk*0.3; g.lineJoin='round';
+    g.beginPath(); g.moveTo(x0,ay-athk/2); g.lineTo(x1-dir*athk*1.4,ay-athk/2); g.lineTo(x1-dir*athk*1.4,ay-athk*1.3);
+    g.lineTo(x1,ay); g.lineTo(x1-dir*athk*1.4,ay+athk*1.3); g.lineTo(x1-dir*athk*1.4,ay+athk/2); g.lineTo(x0,ay+athk/2);
+    g.closePath(); g.fill(); g.stroke(); g.restore();
+  }
+  // circle highlight
+  if(el('tbCircle').checked && subjRect && lay!=='full'){
+    var ccx=subjRect[0]+subjRect[2]*0.5, ccy=subjRect[1]+subjRect[3]*0.4;
+    g.save(); g.strokeStyle=P.accent; g.lineWidth=Math.max(6,W*0.008);
+    g.beginPath(); g.ellipse(ccx,ccy,subjRect[2]*0.33,subjRect[3]*0.29,-0.14,0,6.2832); g.stroke(); g.restore();
+  }
+  // brand chip
+  var brand=((el('aiBrand')&&el('aiBrand').value)||'tbsol.net').trim();
+  if(brand){
+    var cfs=Math.round(W*0.021); g.font='800 '+cfs+'px "Poppins",sans-serif';
+    var cbw=g.measureText(brand).width, cpx=cfs*0.7, chh=cfs+cpx*1.2, cyp=H-chh-pad*0.5;
+    g.fillStyle=hexA('#000000',0.42); rr(g,pad,cyp,cbw+cpx*2,chh,chh*0.3); g.fill();
+    g.fillStyle='#ffffff'; g.textAlign='left'; g.textBaseline='middle'; g.fillText(brand,pad+cpx,cyp+chh/2);
+    g.textBaseline='alphabetic';
+  }
+}
+function renderTbChips(){
+  var lays=[['right','Subject right'],['left','Subject left'],['center','Photo behind'],['full','Text only']];
+  el('tbLayout').innerHTML=lays.map(function(l){return '<span class="chip'+(tbLayout===l[0]?' on':'')+'" onclick="setTbLayout(\''+l[0]+'\')">'+l[1]+'</span>'}).join('');
+  el('tbPreset').innerHTML=TB_PRESETS.map(function(p,i){return '<span class="chip'+(tbPreset===i?' on':'')+'" onclick="setTbPreset('+i+')" style="border-color:'+p.accent+'">'+p.name+'</span>'}).join('');
+}
+function setTbLayout(k){ tbLayout=k; renderTbChips(); drawThumb(); }
+function setTbPreset(i){ tbPreset=i; renderTbChips(); drawThumb(); }
+function shortHead(t){ return String(t||'').replace(/\s+/g,' ').trim().split(' ').slice(0,6).join(' '); }
+function seedThumbFromScene(){ if(scenes[0]){ el('tbHead').value=shortHead(scenes[0].text); drawThumb(); } }
+function dlThumb(){
+  var cvx=el('tcv'); if(!cvx)return; var url=cvx.toDataURL('image/png');
+  var a=document.createElement('a'); a.href=url; a.download='tb-thumbnail-'+el('tbRatio').value.replace(':','x')+'.png';
+  document.body.appendChild(a); a.click(); a.remove();
+  el('tbState').innerHTML='<span class="ok">Downloaded ✓</span>';
+  trackEvent('thumbnail_download',{ratio:el('tbRatio').value,preset:TB_PRESETS[tbPreset].name,layout:tbLayout});
+}
+function initThumb(){
+  renderTbChips();
+  ['tbHead','tbBadge','tbRatio','tbArrow','tbCircle','tbUpper'].forEach(function(id){ var e=el(id); if(!e)return; e.addEventListener('input',drawThumb); e.addEventListener('change',drawThumb); });
+  var pf=el('tbPhoto'); if(pf) pf.addEventListener('change',function(){ var f=this.files[0]; if(!f)return; var r=new FileReader(); r.onload=function(){ var im=new Image(); im.onload=function(){ tbImg=im; drawThumb(); }; im.src=r.result; }; r.readAsDataURL(f); });
+  if(el('tbHead') && !el('tbHead').value && scenes[0]) el('tbHead').value=shortHead(scenes[0].text);
+}
+/* non-breaking usage beacon — create table studio_events(id bigserial pk, created_at timestamptz default now(), event text, meta jsonb, page text) to capture */
+function trackEvent(name,meta){ try{ fetch(SUPA_URL+'/rest/v1/studio_events',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify({event:String(name),meta:meta||{},page:location.pathname})}).catch(function(){}); }catch(_){} }
+
 /* ---------- fonts ---------- */
 async function ensureFonts(){
   if(fontsReady)return;
@@ -941,7 +1121,8 @@ function init(){
   var imported=false;
   try{ var kit=localStorage.getItem('tb_video_kit'); if(kit){ imported=importKit(kit); localStorage.removeItem('tb_video_kit'); if(imported){ el('aiState').innerHTML='<span class="ok">Imported your Video Kit ✓ — tweak & render</span>'; } } }catch(e){}
   if(!imported) useTpl(0); else { renderScenes(); resetPreview(); }
-  ensureFonts().then(function(){ drawAt(previewT||0); });
+  try{ initThumb(); }catch(e){}
+  ensureFonts().then(function(){ drawAt(previewT||0); try{ drawThumb(); }catch(e){} });
 }
 init();
 
