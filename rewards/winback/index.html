@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Win-back — Loop</title>
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%F0%9F%92%8C%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--text:#eef1fb;--muted:#96a0bd;--line:rgba(122,162,255,.26);--acc:#7aa2ff;--acc2:#5df2e0;--vio:#b98bff;--good:#43f0b0;--warn:#ffb15a;--bg:#06070e}
+  *{box-sizing:border-box}
+  @keyframes drift{0%{background-position:0 0}100%{background-position:60px 60px}}
+  @keyframes popin{0%{transform:translateY(10px);opacity:0}100%{transform:translateY(0);opacity:1}}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.5;min-height:100vh;
+    background:radial-gradient(circle at 12% -6%,rgba(122,162,255,.18),transparent 42%),radial-gradient(circle at 90% 108%,rgba(255,177,90,.1),transparent 45%),var(--bg);position:relative}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.5;background-image:linear-gradient(rgba(122,162,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(122,162,255,.045) 1px,transparent 1px);background-size:60px 60px;animation:drift 18s linear infinite}
+  .wrap{max-width:640px;margin:0 auto;padding:22px 16px 80px;position:relative;z-index:1}
+  .brand{font-weight:900;font-size:17px}
+  .brand span{background:linear-gradient(90deg,var(--acc2),var(--acc),var(--vio));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tag{color:var(--muted);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:18px}
+  .card{background:linear-gradient(150deg,rgba(255,255,255,.05),rgba(255,255,255,.014));border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:14px;animation:popin .3s ease}
+  h1{font-size:22px;margin:0 0 4px}
+  h1 span{background:linear-gradient(90deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+  label{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
+  input{width:100%;background:rgba(2,4,12,.6);border:1px solid var(--line);border-radius:12px;padding:13px 14px;color:var(--text);font:inherit;font-size:16px}
+  input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(122,162,255,.18)}
+  .btn{border:0;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d;border-radius:999px;padding:13px 18px;font:inherit;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 8px 22px rgba(122,162,255,.32);text-decoration:none;display:inline-block;text-align:center}
+  .btn.ghost{background:rgba(122,162,255,.07);border:1px solid var(--line);color:var(--text);box-shadow:none;font-weight:700}
+  .btn.wide{width:100%;margin-top:14px}
+  .btn:disabled{opacity:.5}
+  .err{color:#ff8a9d;font-size:13px;margin-top:10px;text-align:center}
+  .hide{display:none!important}
+  .top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .headline{background:linear-gradient(150deg,rgba(255,177,90,.14),rgba(122,162,255,.06));border:1px solid var(--line);border-radius:18px;padding:18px;text-align:center;margin-bottom:14px}
+  .headline .n{font-size:40px;font-weight:900;line-height:1;background:linear-gradient(135deg,var(--warn),#ff7a59);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .headline p{margin:8px 0 0;color:var(--muted);font-size:14px}
+  .person{display:flex;align-items:center;gap:12px;padding:13px;border:1px solid var(--line);border-radius:16px;margin-top:10px;background:rgba(0,0,0,.22);transition:.2s}
+  .person.done{opacity:.5}
+  .person .av{flex:0 0 44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:18px;color:#05060d;background:linear-gradient(135deg,var(--acc2),var(--acc))}
+  .person .info{flex:1;min-width:0}
+  .person .info b{font-size:15px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .person .info span{font-size:12.5px;color:var(--muted)}
+  .person .info .warm{color:var(--warn);font-weight:700}
+  .acts{display:flex;gap:7px;flex-shrink:0}
+  .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:19px;text-decoration:none;border:1px solid var(--line);background:rgba(122,162,255,.06)}
+  .ic.text{background:linear-gradient(135deg,var(--acc2),var(--acc));border:0}
+  .ic.done{background:rgba(67,240,176,.14);border-color:rgba(67,240,176,.5)}
+  .muted{color:var(--muted);font-size:12.5px}
+  .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:40;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d;font-weight:800;font-size:13px;border-radius:999px;padding:9px 18px;box-shadow:0 10px 30px rgba(122,162,255,.4);animation:popin .25s ease}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">🔁 <span>Loop</span> · Win-back</div>
+  <div class="tag">Bring your regulars back</div>
+
+  <div class="card" id="login">
+    <h1>Win back your <span>regulars</span></h1>
+    <p class="muted">See customers who haven't been in for a while, and text them back in one tap. Use your business code + staff PIN.</p>
+    <label>Business code</label>
+    <input id="code" placeholder="e.g. joesbarber" autocomplete="off" style="text-transform:lowercase">
+    <label>Staff PIN</label>
+    <input id="pin" type="tel" inputmode="numeric" placeholder="Your PIN" autocomplete="off">
+    <button class="btn wide" id="loginBtn" onclick="load()">Show me who to win back →</button>
+    <div class="err hide" id="err"></div>
+  </div>
+
+  <div id="dash" class="hide">
+    <div class="top">
+      <div><h1 id="bizName">Win-back</h1><div class="muted">Customers who haven't visited in 30+ days</div></div>
+      <button class="btn ghost" onclick="location.reload()">Log out</button>
+    </div>
+    <div class="headline" id="headline"></div>
+    <div class="card"><div id="list"></div></div>
+    <p class="muted" style="text-align:center">Tip: a friendly text once a month brings back more revenue than any ad. Powered by TB Solutions.</p>
+  </div>
+</div>
+<script>
+(function(){
+  "use strict";
+  var SUPA='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+  var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+  function el(id){return document.getElementById(id);}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function toast(t){var x=document.createElement('div');x.className='toast';x.textContent=t;document.body.appendChild(x);setTimeout(function(){x.remove();},1300);}
+  var q=new URLSearchParams(location.search);
+  if(q.get('c')) el('code').value=q.get('c').toLowerCase();
+  el('pin').addEventListener('keydown',function(e){ if(e.key==='Enter') load(); });
+  window.load=load;
+
+  var CODE='', BIZ='', REWARD='';
+  function load(){
+    var code=(el('code').value||'').trim().toLowerCase().replace(/[^a-z0-9]/g,''), pin=(el('pin').value||'').trim();
+    if(!code){ showErr('Enter your business code.'); return; }
+    el('err').classList.add('hide');
+    var btn=el('loginBtn'); btn.disabled=true; btn.textContent='Loading…';
+    fetch(SUPA+'/rest/v1/rpc/loyalty_winback',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify({p_client:code,p_pin:pin})})
+    .then(function(r){return r.json();}).then(function(d){
+      if(!d || d.ok===false){ showErr((d&&d.error)||'Could not sign in.'); btn.disabled=false; btn.textContent='Show me who to win back →'; return; }
+      CODE=code; render(d);
+    }).catch(function(){ showErr('Network error — try again.'); btn.disabled=false; btn.textContent='Show me who to win back →'; });
+  }
+  function showErr(m){ el('err').textContent=m; el('err').classList.remove('hide'); }
+  window.render=render;
+  function render(d){
+    el('login').classList.add('hide'); el('dash').classList.remove('hide');
+    BIZ=d.biz_name||d.client; REWARD=d.reward_text||'a reward';
+    el('bizName').textContent='Win back — '+BIZ;
+    var lapsed=d.lapsed||[];
+    el('headline').innerHTML='<div class="n">'+lapsed.length+'</div><p>'+(lapsed.length? 'customers haven\'t been in for 30+ days. That\'s '+lapsed.length+' chances to bring money back — one text each.' : 'Nobody\'s lapsed yet. Keep it up! 🎉')+'</p>';
+    if(!lapsed.length){ el('list').innerHTML='<p class="muted">Everyone\'s visited recently. Come back and check in a few weeks.</p>'; return; }
+    el('list').innerHTML=lapsed.map(function(m,i){
+      var name=m.name||'A member', init=(name.trim().charAt(0)||'?').toUpperCase();
+      var pts=m.points||0, days=m.days||0;
+      var msg='Hi '+name.split(' ')[0]+'! We miss you at '+BIZ+' 🙌 You\'ve got '+pts+' point'+(pts===1?'':'s')+' saved up — come see us this week and put them toward '+REWARD+'!';
+      var reached=lsGet(m.phone);
+      var sms = m.phone ? ('sms:'+m.phone+'?&body='+encodeURIComponent(msg)) : '';
+      var tel = m.phone ? ('tel:'+m.phone) : '';
+      return '<div class="person'+(reached?' done':'')+'" id="pr'+i+'">'
+        +'<div class="av">'+esc(init)+'</div>'
+        +'<div class="info"><b>'+esc(name)+'</b><span><span class="warm">'+days+' days</span> since last visit · '+pts+' pts saved'+(m.phone?'':' · <i>no phone on file</i>')+'</span></div>'
+        +'<div class="acts">'
+        + (m.phone? '<a class="ic text" href="'+esc(sms)+'" onclick="mark(\''+esc(m.phone)+'\','+i+')" title="Text them">📱</a>'
+                   +'<a class="ic" href="'+esc(tel)+'" title="Call">📞</a>' : '')
+        +'</div></div>';
+    }).join('');
+  }
+  window.mark=function(phone,i){ lsSet(phone); var e=el('pr'+i); if(e) e.classList.add('done'); toast('Nice — texted ✓'); };
+  function lsKey(p){ return 'wb_'+CODE+'_'+String(p).replace(/\D/g,''); }
+  function lsGet(p){ try{ return localStorage.getItem(lsKey(p)); }catch(e){ return null; } }
+  function lsSet(p){ try{ localStorage.setItem(lsKey(p),String(Date.now())); }catch(e){} }
+
+  if(q.get('c') && q.get('pin')){ el('pin').value=q.get('pin'); load(); }
+  window.addEventListener('error',function(e){ try{
+    fetch(SUPA+'/rest/v1/client_errors',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify({page:location.pathname,msg:String((e&&e.message)||'').slice(0,300),src:String((e&&e.filename)||'').slice(0,120),line:(e&&e.lineno)||0})}).catch(function(){});
+  }catch(_){} });
+})();
+</script>
+</body>
+</html>
