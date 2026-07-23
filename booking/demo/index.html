@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Book an appointment — live demo · TB Solutions</title>
+<meta name="description" content="A live, hands-on demo of the booking page your shop gets: pick a service, choose your barber, grab a time, and you're booked — no app, no marketplace. Sample data, try it yourself." />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#05060d" />
+<link rel="canonical" href="https://tbsol.net/booking/demo/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Book an appointment — live demo" />
+<meta property="og:description" content="Pick a service, choose your barber, grab a time. A hands-on demo of the booking page your shop gets. Try it — it's sample data." />
+<meta property="og:url" content="https://tbsol.net/booking/demo/" />
+<meta property="og:site_name" content="TB Solutions" />
+<meta property="og:image" content="https://tbsol.net/booking/og.png" />
+<meta name="twitter:card" content="summary_large_image" /><meta name="twitter:image" content="https://tbsol.net/booking/og.png" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%F0%9F%92%88%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{--text:#f2f4ff;--muted:#8f97b8;--dim:#69719a;--line:rgba(122,162,255,.24);--line2:rgba(122,162,255,.4);
+    --acc:#7aa2ff;--acc2:#5df2e0;--vio:#b98bff;--good:#43f0b0;--gold:#ffd45a;--bad:#ff8a9d}
+  *{box-sizing:border-box}
+  @keyframes popin{0%{transform:translateY(10px);opacity:0}100%{transform:translateY(0);opacity:1}}
+  @keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.5;min-height:100vh;
+    background:radial-gradient(circle at 14% -6%,rgba(122,162,255,.18),transparent 42%),radial-gradient(circle at 88% 106%,rgba(93,242,224,.12),transparent 45%),linear-gradient(180deg,#070811,#04050a)}
+  .wrap{max-width:540px;margin:0 auto;padding:18px 15px 60px}
+  .shop{display:flex;align-items:center;gap:11px;margin-bottom:4px}
+  .shop .logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(94,242,224,.22),rgba(185,139,255,.22));font-size:20px}
+  .shop b{font-family:Poppins,sans-serif;font-size:17px}
+  .shop .sub{font-size:12px;color:var(--muted)}
+  .live{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--good);border:1px solid rgba(67,240,176,.3);border-radius:999px;padding:4px 9px}
+  .live i{width:7px;height:7px;border-radius:50%;background:var(--good);animation:pulse 1.6s ease-in-out infinite}
+  /* stepper */
+  .steps{display:flex;gap:6px;margin:14px 0 6px}
+  .steps .s{flex:1;height:5px;border-radius:99px;background:rgba(122,162,255,.16)}
+  .steps .s.on{background:linear-gradient(90deg,var(--acc2),var(--acc))}
+  .stitle{font-family:Poppins,sans-serif;font-size:18px;margin:12px 0 2px}
+  .shint{color:var(--muted);font-size:13px;margin:0 0 12px}
+  .card{background:linear-gradient(150deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:18px;padding:14px;animation:popin .3s ease}
+  .opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid var(--line);background:rgba(2,4,12,.45);border-radius:14px;padding:13px 14px;margin-bottom:9px;cursor:pointer;color:var(--text);font:inherit;transition:border-color .12s,transform .12s}
+  .opt:hover{border-color:var(--line2);transform:translateX(2px)}
+  .opt.sel{border-color:var(--acc2);box-shadow:0 0 0 2px rgba(94,242,224,.2)}
+  .opt .ic{width:38px;height:38px;border-radius:10px;flex:0 0 auto;display:grid;place-items:center;font-weight:800;font-size:16px;background:linear-gradient(135deg,rgba(122,162,255,.25),rgba(185,139,255,.25));color:#fff}
+  .opt .g{flex:1;min-width:0}
+  .opt .t{font-weight:700;font-size:14.5px}
+  .opt .d{font-size:12px;color:var(--muted)}
+  .opt .pr{font-weight:800;font-size:14px;color:var(--acc2);white-space:nowrap}
+  .opt .chk{color:var(--acc2);font-weight:900;opacity:0}
+  .opt.sel .chk{opacity:1}
+  .days{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+  .day{flex:0 0 auto;min-width:58px;text-align:center;border:1px solid var(--line);background:rgba(2,4,12,.45);border-radius:14px;padding:10px 8px;cursor:pointer}
+  .day.sel{border-color:var(--acc2);background:rgba(94,242,224,.08)}
+  .day .dow{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+  .day .dn{font-family:Poppins,sans-serif;font-size:19px;font-weight:800;margin-top:2px}
+  .day .mo{font-size:10px;color:var(--dim)}
+  .slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
+  .slot{border:1px solid var(--line);background:rgba(2,4,12,.45);border-radius:11px;padding:11px 6px;cursor:pointer;font:inherit;font-weight:700;font-size:13.5px;color:var(--text);text-align:center}
+  .slot:hover{border-color:var(--acc2)}
+  .slot.sel{border-color:var(--acc2);background:linear-gradient(135deg,rgba(94,242,224,.16),rgba(122,162,255,.12))}
+  .slot.taken{opacity:.32;text-decoration:line-through;cursor:not-allowed;border-style:dashed}
+  label{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
+  input{width:100%;background:rgba(2,4,12,.6);border:1px solid var(--line);border-radius:12px;padding:13px 14px;color:var(--text);font:inherit;font-size:16px}
+  input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(122,162,255,.2)}
+  .summary{display:flex;flex-direction:column;gap:8px;background:rgba(2,4,12,.4);border:1px solid var(--line);border-radius:14px;padding:13px;margin:2px 0 6px}
+  .srow{display:flex;justify-content:space-between;font-size:13.5px}
+  .srow .k{color:var(--muted)}.srow .v{font-weight:700}
+  .bar{display:flex;gap:10px;margin-top:14px}
+  .btn{flex:1;border:0;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;border-radius:999px;padding:14px;font:inherit;font-weight:900;font-size:15px;cursor:pointer;box-shadow:0 10px 28px rgba(122,162,255,.3)}
+  .btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+  .btn.ghost{flex:0 0 auto;background:rgba(122,162,255,.07);border:1px solid var(--line);color:var(--text);box-shadow:none;font-weight:700;padding:14px 18px}
+  .done{text-align:center;padding:22px 8px}
+  .done .big{font-size:52px;animation:popin .4s ease}
+  .done h2{font-family:Poppins,sans-serif;font-size:23px;margin:8px 0 4px}
+  .done p{color:var(--muted);font-size:14px;margin:0 auto;max-width:34ch}
+  .ticket{background:linear-gradient(150deg,rgba(94,242,224,.1),rgba(185,139,255,.08));border:1px solid var(--line2);border-radius:16px;padding:16px;margin:16px 0;text-align:left}
+  .foot{margin-top:16px;text-align:center;color:var(--dim);font-size:12px}
+  .hide{display:none!important}
+  #toasts{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:8px;align-items:center}
+  .toast{background:rgba(10,14,26,.95);border:1px solid var(--line2);border-radius:12px;padding:10px 15px;font-size:13px;font-weight:600;box-shadow:0 14px 40px rgba(0,0,0,.5);animation:popin .3s ease}
+  canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:55}
+  @media(prefers-reduced-motion:reduce){.card,.toast,.done .big{animation:none!important}.live i{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="shop">
+    <span class="logo">💈</span>
+    <div><b>Maple Street Barbers</b><div class="sub">West Chester, PA · ⭐ 4.9</div></div>
+    <span class="live"><i></i> Live</span>
+  </div>
+
+  <div class="steps" id="stepper"><div class="s on"></div><div class="s"></div><div class="s"></div><div class="s"></div></div>
+
+  <!-- STEP 1: service -->
+  <div id="st1">
+    <div class="stitle">Choose a service</div>
+    <p class="shint">Pick what you're coming in for.</p>
+    <div id="svcList"></div>
+  </div>
+
+  <!-- STEP 2: barber -->
+  <div id="st2" class="hide">
+    <div class="stitle">Choose your barber</div>
+    <p class="shint">Or let us pick whoever's free.</p>
+    <div id="barbList"></div>
+    <div class="bar"><button class="btn ghost" onclick="go(1)">← Back</button></div>
+  </div>
+
+  <!-- STEP 3: date + time -->
+  <div id="st3" class="hide">
+    <div class="stitle">Pick a time</div>
+    <p class="shint" id="st3hint">Choose a day, then an open slot.</p>
+    <div class="days" id="days"></div>
+    <div class="slots" id="slots" style="margin-top:12px"></div>
+    <div class="bar"><button class="btn ghost" onclick="go(2)">← Back</button></div>
+  </div>
+
+  <!-- STEP 4: details + confirm -->
+  <div id="st4" class="hide">
+    <div class="stitle">Confirm your booking</div>
+    <p class="shint">We'll text you a reminder so you don't forget.</p>
+    <div class="summary" id="summary"></div>
+    <label>Your name</label><input id="cName" placeholder="First & last name" autocomplete="name">
+    <label>Mobile number</label><input id="cPhone" type="tel" placeholder="(555) 555-5555" autocomplete="tel">
+    <div class="bar">
+      <button class="btn ghost" onclick="go(3)">← Back</button>
+      <button class="btn" id="confirmBtn" onclick="confirmBooking()">Confirm booking</button>
+    </div>
+  </div>
+
+  <!-- DONE -->
+  <div id="stDone" class="hide">
+    <div class="done">
+      <div class="big">✅</div>
+      <h2>You're booked!</h2>
+      <p>A confirmation and reminder would be texted to you. See you soon. 💈</p>
+      <div class="ticket" id="ticket"></div>
+      <div class="bar">
+        <button class="btn ghost" onclick="addCal()">📅 Add to calendar</button>
+        <button class="btn" onclick="restart()">Book another</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">Hands-on demo · sample data, nothing is really booked. Your shop's real page works exactly like this — your brand, your chair, no marketplace.</div>
+</div>
+
+<div id="toasts"></div>
+<canvas id="fx"></canvas>
+
+<script>
+var SERVICES=[
+  {id:'cut',ic:'✂️',t:'Haircut',d:'30 min',price:30,min:30},
+  {id:'fade',ic:'💈',t:'Skin fade',d:'40 min',price:35,min:40},
+  {id:'beard',ic:'🧔',t:'Beard trim & shape',d:'20 min',price:20,min:20},
+  {id:'combo',ic:'⭐',t:'Cut + beard',d:'45 min',price:45,min:45},
+  {id:'kids',ic:'🧒',t:'Kids cut (under 12)',d:'25 min',price:25,min:25}
+];
+var BARBERS=[
+  {id:'any',ic:'✨',t:'Any barber',d:'First available'},
+  {id:'marcus',ic:'M',t:'Marcus',d:'Fades & designs'},
+  {id:'andre',ic:'A',t:'Andre',d:'Classic cuts & beards'},
+  {id:'sofia',ic:'S',t:'Sofia',d:'Scissor work & styling'}
+];
+var HOURS=[9,10,11,12,13,14,15,16,17]; // opening hours, on the half too
+var sel={svc:null,barber:null,dateISO:null,time:null,name:'',phone:''};
+var step=1;
+function el(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+
+/* deterministic "taken" slots per barber+date+time so re-renders are stable */
+function hash(str){ var h=5381; for(var i=0;i<str.length;i++){ h=((h<<5)+h)+str.charCodeAt(i); h|=0; } return Math.abs(h); }
+function bookingsKey(){ return 'tb_book_demo_v1'; }
+function myBookings(){ try{ return JSON.parse(localStorage.getItem(bookingsKey())||'[]'); }catch(e){ return []; } }
+function isTaken(barber,dateISO,time){
+  // customer's own booked slots
+  if(myBookings().some(function(b){return b.barber===barber&&b.dateISO===dateISO&&b.time===time;})) return true;
+  // seeded busy pattern (~35% of slots), stable
+  return hash(barber+'|'+dateISO+'|'+time)%100 < 35;
+}
+
+/* ---- rendering ---- */
+function renderServices(){
+  el('svcList').innerHTML=SERVICES.map(function(s){
+    return '<button class="opt'+(sel.svc&&sel.svc.id===s.id?' sel':'')+'" onclick="pickSvc(\''+s.id+'\')">'
+      +'<span class="ic">'+s.ic+'</span><span class="g"><span class="t">'+esc(s.t)+'</span><span class="d">'+esc(s.d)+'</span></span>'
+      +'<span class="pr">$'+s.price+'</span><span class="chk">✓</span></button>';
+  }).join('');
+}
+function renderBarbers(){
+  el('barbList').innerHTML=BARBERS.map(function(b){
+    return '<button class="opt'+(sel.barber&&sel.barber.id===b.id?' sel':'')+'" onclick="pickBarber(\''+b.id+'\')">'
+      +'<span class="ic">'+b.ic+'</span><span class="g"><span class="t">'+esc(b.t)+'</span><span class="d">'+esc(b.d)+'</span></span>'
+      +'<span class="chk">✓</span></button>';
+  }).join('');
+}
+var DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function nextDays(n){
+  var out=[], d=new Date(); d.setHours(0,0,0,0);
+  for(var i=0;i<n;i++){ var x=new Date(d.getTime()+i*86400000); out.push(x); }
+  return out;
+}
+function iso(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function renderDays(){
+  var days=nextDays(7);
+  if(!sel.dateISO){ sel.dateISO=iso(days[0]); }
+  el('days').innerHTML=days.map(function(d,i){
+    var is=iso(d);
+    return '<div class="day'+(sel.dateISO===is?' sel':'')+'" onclick="pickDay(\''+is+'\')">'
+      +'<div class="dow">'+(i===0?'Today':DOW[d.getDay()])+'</div><div class="dn">'+d.getDate()+'</div><div class="mo">'+MON[d.getMonth()]+'</div></div>';
+  }).join('');
+  renderSlots();
+}
+function renderSlots(){
+  var barber=(sel.barber&&sel.barber.id)||'any';
+  var times=[];
+  HOURS.forEach(function(h){ times.push(h+':00'); if(h!==17) times.push(h+':30'); });
+  el('slots').innerHTML=times.map(function(tm){
+    var taken=isTaken(barber,sel.dateISO,tm);
+    var lbl=fmtTime(tm);
+    if(taken) return '<div class="slot taken">'+lbl+'</div>';
+    return '<button class="slot'+(sel.time===tm?' sel':'')+'" onclick="pickTime(\''+tm+'\')">'+lbl+'</button>';
+  }).join('');
+}
+function fmtTime(tm){ var p=tm.split(':'),h=+p[0],m=p[1]; var ap=h>=12?'pm':'am'; var hh=h%12; if(hh===0)hh=12; return hh+':'+m+ap; }
+function prettyDate(is){ var p=is.split('-'); var d=new Date(+p[0],+p[1]-1,+p[2]); return DOW[d.getDay()]+', '+MON[d.getMonth()]+' '+d.getDate(); }
+
+/* ---- picks ---- */
+function pickSvc(id){ sel.svc=SERVICES.filter(function(s){return s.id===id;})[0]; renderServices(); setTimeout(function(){go(2);},160); }
+function pickBarber(id){ sel.barber=BARBERS.filter(function(b){return b.id===id;})[0]; renderBarbers(); setTimeout(function(){go(3);},160); }
+function pickDay(is){ sel.dateISO=is; sel.time=null; renderDays(); }
+function pickTime(tm){ sel.time=tm; renderSlots(); setTimeout(function(){go(4);},160); }
+
+function go(n){
+  step=n;
+  [1,2,3,4].forEach(function(i){ el('st'+i).classList.toggle('hide',i!==n); });
+  el('stDone').classList.add('hide');
+  el('stepper').classList.remove('hide');
+  var segs=el('stepper').children; for(var i=0;i<segs.length;i++){ segs[i].classList.toggle('on',i<n); }
+  if(n===2) renderBarbers();
+  if(n===3){ el('st3hint').textContent='With '+((sel.barber&&sel.barber.t)||'any barber')+' · choose a day, then an open slot.'; renderDays(); }
+  if(n===4) renderSummary();
+  window.scrollTo(0,0);
+}
+function renderSummary(){
+  el('summary').innerHTML=
+    row('Service', sel.svc.t+' · $'+sel.svc.price)+
+    row('Barber', (sel.barber&&sel.barber.t)||'Any')+
+    row('When', prettyDate(sel.dateISO)+' at '+fmtTime(sel.time));
+}
+function row(k,v){ return '<div class="srow"><span class="k">'+esc(k)+'</span><span class="v">'+esc(v)+'</span></div>'; }
+
+function confirmBooking(){
+  var name=(el('cName').value||'').trim(), phone=(el('cPhone').value||'').trim();
+  if(name.length<2){ el('cName').focus(); toast('Add your name'); return; }
+  if(phone.replace(/\D/g,'').length<7){ el('cPhone').focus(); toast('Add a valid number'); return; }
+  sel.name=name; sel.phone=phone;
+  var barber=(sel.barber&&sel.barber.id)||'any';
+  var list=myBookings(); list.push({svc:sel.svc.id,barber:barber,dateISO:sel.dateISO,time:sel.time,name:name});
+  try{ localStorage.setItem(bookingsKey(),JSON.stringify(list)); }catch(e){}
+  el('stepper').classList.add('hide');
+  [1,2,3,4].forEach(function(i){ el('st'+i).classList.add('hide'); });
+  el('ticket').innerHTML=
+    '<div style="font-family:Poppins,sans-serif;font-weight:800;font-size:15px;margin-bottom:8px">💈 Maple Street Barbers</div>'+
+    row('Service', sel.svc.t)+row('Barber',(sel.barber&&sel.barber.t)||'Any')+
+    row('When', prettyDate(sel.dateISO)+' · '+fmtTime(sel.time))+row('Name', esc(name));
+  el('stDone').classList.remove('hide');
+  confetti(); window.scrollTo(0,0);
+}
+function restart(){ sel={svc:null,barber:null,dateISO:null,time:null,name:'',phone:''}; el('cName').value='';el('cPhone').value=''; renderServices(); go(1); }
+
+function addCal(){
+  var p=sel.dateISO.split('-'), t=sel.time.split(':');
+  var start=new Date(+p[0],+p[1]-1,+p[2],+t[0],+t[1]);
+  var end=new Date(start.getTime()+(sel.svc.min||30)*60000);
+  function z(d){ return d.getUTCFullYear()+pad(d.getUTCMonth()+1)+pad(d.getUTCDate())+'T'+pad(d.getUTCHours())+pad(d.getUTCMinutes())+'00Z'; }
+  function pad(n){ return String(n).padStart(2,'0'); }
+  var url='https://calendar.google.com/calendar/render?action=TEMPLATE'
+    +'&text='+encodeURIComponent(sel.svc.t+' — Maple Street Barbers')
+    +'&dates='+z(start)+'/'+z(end)
+    +'&details='+encodeURIComponent('Your appointment with '+((sel.barber&&sel.barber.t)||'any barber')+'. (Demo booking.)');
+  window.open(url,'_blank');
+}
+
+function toast(msg){ var t=document.createElement('div'); t.className='toast'; t.textContent=msg; el('toasts').appendChild(t);
+  setTimeout(function(){ t.style.transition='opacity .4s'; t.style.opacity='0'; setTimeout(function(){t.remove();},400); },1900); }
+
+var cx=el('fx'), cxx=cx.getContext('2d'), parts=[], raf=null;
+function sz(){ cx.width=innerWidth; cx.height=innerHeight; } sz(); addEventListener('resize',sz);
+function confetti(){ if(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  var cols=['#5df2e0','#7aa2ff','#b98bff','#ffd45a','#43f0b0'];
+  for(var i=0;i<80;i++){ parts.push({x:innerWidth/2,y:innerHeight*0.32,vx:(Math.random()-0.5)*11,vy:-Math.random()*12-4,g:0.32,c:cols[Math.floor(Math.random()*cols.length)],s:4+Math.random()*5,life:70+Math.floor(Math.random()*40),rot:Math.random()*6}); }
+  if(!raf)raf=requestAnimationFrame(tick); }
+function tick(){ cxx.clearRect(0,0,cx.width,cx.height); parts=parts.filter(function(p){return p.life>0&&p.y<cx.height+30;});
+  parts.forEach(function(p){ p.vy+=p.g;p.x+=p.vx;p.y+=p.vy;p.life--;p.rot+=0.2; cxx.save();cxx.translate(p.x,p.y);cxx.rotate(p.rot);cxx.fillStyle=p.c;cxx.globalAlpha=Math.max(0,Math.min(1,p.life/40));cxx.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.6);cxx.restore(); });
+  if(parts.length)raf=requestAnimationFrame(tick); else{cxx.clearRect(0,0,cx.width,cx.height);raf=null;} }
+
+renderServices(); go(1);
+</script>
+</body>
+</html>
