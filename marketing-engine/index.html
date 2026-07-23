@@ -198,7 +198,7 @@ function setMode(m){
   el('copyTab').classList.toggle('on',copy); el('videoTab').classList.toggle('on',!copy);
   el('engine').classList.toggle('hide',!copy);
   el('videoWrap').classList.toggle('hide',copy);
-  if(!copy && !videoLoaded){ el('videoFrame').src='/studio/?embed=1'; videoLoaded=true; }
+  if(!copy && !videoLoaded){ el('videoFrame').src='/studio/?embed=1&t='+Date.now(); videoLoaded=true; }
   try{ history.replaceState(null,'',copy?'#copy':'#video'); }catch(e){}
 }
 function seedVideo(){
