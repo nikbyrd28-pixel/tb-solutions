@@ -517,7 +517,7 @@ function renderScenes(){
         +'<div><label style="margin-top:0">Caption motion</label><select onchange="upd('+i+',\'anim\',this.value)">'
           +['kinetic|Kinetic words','rise|Rise up','type|Typewriter','pop|Pop in'].map(function(o){var v=o.split('|');return '<option value="'+v[0]+'"'+(s.anim===v[0]?' selected':'')+'>'+v[1]+'</option>'}).join('')
         +'</select></div>'
-        +'<div><label style="margin-top:0">Photo / video background</label><input type="file" accept="image/*,video/*" onchange="setPhoto('+i+',this.files[0])">'+((s.photo||s._vid)?' <button class="iconbtn" style="width:auto;padding:0 8px" onclick="clearPhoto('+i+')">clear</button>':'')+'</div>'
+        +'<div><label style="margin-top:0">Background — photo or video</label><label class="btn ghost small" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px">'+(s._vid?'🎬 Video added':(s.photo?'🖼️ Photo added':'📎 Upload photo or video'))+'<input type="file" accept="image/*,video/*" onchange="setPhoto('+i+',this.files[0])" style="display:none"></label>'+((s.photo||s._vid)?' <button class="iconbtn" style="width:auto;padding:0 8px" onclick="clearPhoto('+i+')">clear</button>':'')+'</div>'
       +'</div>'
       +'<div class="row" style="margin-top:8px">'
         +'<div><label style="margin-top:0">Text position</label><select onchange="upd('+i+',\'textPos\',this.value)">'
