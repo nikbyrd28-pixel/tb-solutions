@@ -326,7 +326,7 @@ var voiceBuffer=null, musicBuffer=null;
 var audioCtx=null, audioSources=[];
 
 function newScene(text,palI,kicker){
-  return {text:text||'Your line here',kicker:kicker||'',seconds:3,palI:(palI==null?scenes.length:palI),photo:null,_img:null,anim:'kinetic'};
+  return {text:text||'Your line here',kicker:kicker||'',seconds:3,palI:(palI==null?scenes.length:palI),photo:null,_img:null,_vid:null,vidUrl:null,media:null,anim:'kinetic'};
 }
 
 /* ---------- templates ---------- */
@@ -439,7 +439,7 @@ function renderScenes(){
         +'<div><label style="margin-top:0">Caption motion</label><select onchange="upd('+i+',\'anim\',this.value)">'
           +['kinetic|Kinetic words','rise|Rise up','type|Typewriter','pop|Pop in'].map(function(o){var v=o.split('|');return '<option value="'+v[0]+'"'+(s.anim===v[0]?' selected':'')+'>'+v[1]+'</option>'}).join('')
         +'</select></div>'
-        +'<div><label style="margin-top:0">Photo background</label><input type="file" accept="image/*" onchange="setPhoto('+i+',this.files[0])">'+(s.photo?' <button class="iconbtn" style="width:auto;padding:0 8px" onclick="clearPhoto('+i+')">clear</button>':'')+'</div>'
+        +'<div><label style="margin-top:0">Photo / video background</label><input type="file" accept="image/*,video/*" onchange="setPhoto('+i+',this.files[0])">'+((s.photo||s._vid)?' <button class="iconbtn" style="width:auto;padding:0 8px" onclick="clearPhoto('+i+')">clear</button>':'')+'</div>'
       +'</div>'
       +'<div class="swatches">'+sw+'</div>'
     +'</div>';
@@ -447,10 +447,32 @@ function renderScenes(){
 }
 function upd(i,k,v){ scenes[i][k]=v; if(k==='seconds'){rebuildTimeline();} drawAt(previewT); if(k==='text'||k==='kicker'){/*live*/} }
 function setPal(i,pi){ scenes[i].palI=pi; scenes[i].photo=null; scenes[i]._img=null; renderScenes(); drawAt(previewT); }
-function setPhoto(i,file){ if(!file)return; var r=new FileReader(); r.onload=function(){ scenes[i].photo=r.result; var im=new Image(); im.onload=function(){scenes[i]._img=im;drawAt(previewT)}; im.src=r.result; renderScenes(); }; r.readAsDataURL(file); }
-function clearPhoto(i){ scenes[i].photo=null; scenes[i]._img=null; renderScenes(); drawAt(previewT); }
+function setPhoto(i,file){
+  if(!file)return; var s=scenes[i]; clearPhoto(i,true);
+  if(/^video\//.test(file.type||'')){
+    // video background — loop it muted; frames are drawn straight onto the canvas
+    var url=URL.createObjectURL(file);
+    var v=document.createElement('video');
+    v.src=url; v.muted=true; v.loop=true; v.playsInline=true; v.setAttribute('playsinline',''); v.preload='auto';
+    v.addEventListener('loadeddata',function(){ try{ v.play(); }catch(e){} drawAt(previewT); renderScenes(); });
+    s._vid=v; s.vidUrl=url; s.photo=null; s._img=null; s.media='video';
+    try{ v.load(); }catch(e){}
+    renderScenes();
+  } else {
+    var r=new FileReader();
+    r.onload=function(){ s.photo=r.result; var im=new Image(); im.onload=function(){ s._img=im; drawAt(previewT); }; im.src=r.result; s.media='photo'; renderScenes(); };
+    r.readAsDataURL(file);
+  }
+}
+function clearPhoto(i,silent){
+  var s=scenes[i]; if(!s) return;
+  if(s._vid){ try{ s._vid.pause(); }catch(e){} }
+  if(s.vidUrl){ try{ URL.revokeObjectURL(s.vidUrl); }catch(e){} }
+  s.photo=null; s._img=null; s._vid=null; s.vidUrl=null; s.media=null;
+  if(!silent){ renderScenes(); drawAt(previewT); }
+}
 function moveScene(i,d){ var j=i+d; if(j<0||j>=scenes.length)return; var t=scenes[i];scenes[i]=scenes[j];scenes[j]=t; rebuildTimeline(); renderScenes(); }
-function dupScene(i){ var c=JSON.parse(JSON.stringify(scenes[i])); c._img=null; if(c.photo){var im=new Image();im.onload=function(){c._img=im;drawAt(previewT)};im.src=c.photo;} scenes.splice(i+1,0,c); rebuildTimeline(); renderScenes(); }
+function dupScene(i){ var c=JSON.parse(JSON.stringify(scenes[i])); c._img=null; c._vid=null; c.vidUrl=null; if(!c.photo)c.media=null; if(c.photo){var im=new Image();im.onload=function(){c._img=im;drawAt(previewT)};im.src=c.photo;} scenes.splice(i+1,0,c); rebuildTimeline(); renderScenes(); }
 function delScene(i){ scenes.splice(i,1); rebuildTimeline(); renderScenes(); drawAt(previewT); }
 function addScene(){ scenes.push(newScene('New line',scenes.length,'')); rebuildTimeline(); renderScenes(); }
 
@@ -494,14 +516,16 @@ function F(weight,size,family){ return weight+' '+size+'px '+(family||'"Poppins"
 
 function drawBg(sc,p,T,W,H){
   var pal=palById(sc.palI||0);
-  if(sc.photo && sc._img){
-    var im=sc._img, motion=(el('motion').value==='on');
-    var z=motion?(1.08+0.14*p):1.1;
-    var iw=im.width, ih=im.height, cr=W/H, ir=iw/ih, dw,dh;
+  var vidReady=(sc._vid && sc._vid.readyState>=2);
+  if(vidReady || (sc.photo && sc._img)){
+    var im=vidReady?sc._vid:sc._img, motion=(el('motion').value==='on');
+    var iw=vidReady?(sc._vid.videoWidth||16):im.width, ih=vidReady?(sc._vid.videoHeight||9):im.height;
+    var z=vidReady?1.02:(motion?(1.08+0.14*p):1.1); // video already moves — skip Ken Burns zoom
+    var cr=W/H, ir=(iw/ih)||(16/9), dw,dh;
     if(ir>cr){ dh=H*z; dw=dh*ir; } else { dw=W*z; dh=dw/ir; }
-    var ox=(W-dw)/2 + (motion? Math.sin(T*0.6)*W*0.02 : 0);
-    var oy=(H-dh)/2 - (motion? p*H*0.04 : 0);
-    ctx.drawImage(im,ox,oy,dw,dh);
+    var ox=(W-dw)/2 + ((!vidReady&&motion)? Math.sin(T*0.6)*W*0.02 : 0);
+    var oy=(H-dh)/2 - ((!vidReady&&motion)? p*H*0.04 : 0);
+    try{ ctx.drawImage(im,ox,oy,dw,dh); }catch(e){}
     var g=ctx.createLinearGradient(0,0,0,H);
     g.addColorStop(0,'rgba(0,0,0,.35)'); g.addColorStop(.5,'rgba(0,0,0,.15)'); g.addColorStop(1,'rgba(0,0,0,.72)');
     ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
