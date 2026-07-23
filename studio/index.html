@@ -232,6 +232,7 @@
           <div>
             <label>🎙️ Voiceover track</label>
             <input type="file" id="voiceFile" accept="audio/*">
+            <div class="bar" style="margin-top:6px"><button class="btn ghost small" id="vRecBtn" onclick="toggleVoiceRec()">🎙️ Record voiceover</button><span class="muted" id="vRecState"></span></div>
             <label>Voice volume</label><input type="range" id="voiceVol" min="0" max="1" step="0.05" value="1">
           </div>
           <div>
@@ -978,6 +979,31 @@ async function loadAudioFile(file,which){
     if(which==='voice')voiceBuffer=buf; else musicBuffer=buf; rebuildTimeline();
   }catch(e){ alert('Could not read that audio file.'); }
 }
+/* record a voiceover with the mic -> becomes the voice track (mixed into preview + render) */
+var vRec=null, vChunks=[], vRecActive=false, vStream=null, vRecStart=0, V_MAX=120;
+async function toggleVoiceRec(){
+  if(vRecActive){ stopVoiceRec(); return; }
+  try{ vStream=await navigator.mediaDevices.getUserMedia({audio:true}); }
+  catch(e){ el('vRecState').innerHTML='<span class="err">Mic blocked — allow access.</span>'; return; }
+  var mime=(window.MediaRecorder&&MediaRecorder.isTypeSupported('audio/webm'))?'audio/webm':'';
+  try{ vRec=new MediaRecorder(vStream, mime?{mimeType:mime}:undefined); }
+  catch(e){ el('vRecState').innerHTML='<span class="err">Recording not supported here.</span>'; cleanupVoice(); return; }
+  vChunks=[]; vRec.ondataavailable=function(e){ if(e.data&&e.data.size) vChunks.push(e.data); };
+  vRec.onstop=function(){
+    var blob=new Blob(vChunks,{type:(vChunks[0]&&vChunks[0].type)||'audio/webm'});
+    el('vRecState').innerHTML='<span class="spin"></span> Processing…';
+    loadAudioFile(blob,'voice').then(function(){
+      el('vRecState').innerHTML = voiceBuffer ? '<span class="ok">Voiceover added ✓ ('+voiceBuffer.duration.toFixed(1)+'s)</span>' : '<span class="err">Could not process the recording.</span>';
+    });
+    cleanupVoice();
+  };
+  vRecActive=true; vRec.start(); vRecStart=performance.now();
+  el('vRecBtn').textContent='■ Stop recording'; voiceTick();
+}
+function voiceTick(){ if(!vRecActive) return; var t=(performance.now()-vRecStart)/1000; el('vRecState').textContent=t.toFixed(1)+'s'; if(t>=V_MAX){ stopVoiceRec(); return; } requestAnimationFrame(voiceTick); }
+function stopVoiceRec(){ if(!vRecActive) return; vRecActive=false; el('vRecBtn').textContent='🎙️ Record voiceover'; try{ vRec.stop(); }catch(e){} }
+function cleanupVoice(){ if(vStream){ vStream.getTracks().forEach(function(t){ try{ t.stop(); }catch(e){} }); vStream=null; } }
+
 function startAudioGraph(dest,offset){
   if(!audioCtx)return; stopAudioGraph();
   var list=[{buf:musicBuffer,vol:parseFloat(el('musicVol').value)},{buf:voiceBuffer,vol:parseFloat(el('voiceVol').value)}];
