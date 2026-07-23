@@ -66,6 +66,13 @@
   canvas#c{max-width:100%;max-height:66vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.6);background:#000}
   .pbar{display:flex;align-items:center;gap:10px;margin-top:12px}
   .pbar input[type=range]{flex:1}
+  .tl{display:flex;gap:2px;margin-top:10px;height:42px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:rgba(0,0,0,.35)}
+  .tlseg{position:relative;min-width:24px;display:flex;flex-direction:column;justify-content:center;gap:1px;padding:4px 6px;cursor:pointer;overflow:hidden;background:rgba(255,255,255,.03);border-left:3px solid var(--c,#8b7bff);transition:background .12s}
+  .tlseg span{font-size:10px;font-weight:800;color:var(--muted);line-height:1}
+  .tlseg em{font-size:9px;font-style:normal;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.1}
+  .tlseg.on{background:rgba(139,123,255,.22)}
+  .tlseg.on span,.tlseg.on em{color:var(--text)}
+  .tlseg:hover{background:rgba(139,123,255,.14)}
   .playbtn{flex:0 0 auto;width:44px;height:44px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#0b0b12;font-size:17px;cursor:pointer}
   .tcode{font:12px ui-monospace,Menlo,monospace;color:var(--muted);white-space:nowrap}
   .progwrap{height:8px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:12px}
@@ -266,6 +273,7 @@
           <input type="range" id="scrub" min="0" max="1000" value="0">
           <span class="tcode" id="tcode">0.0s</span>
         </div>
+        <div class="tl" id="timeline" aria-label="Scene timeline"></div>
         <div class="bar" style="margin-top:14px">
           <button class="btn rec wide" id="renderBtn" onclick="startRender()">🎬 Render my video</button>
         </div>
@@ -530,6 +538,26 @@ function rebuildTimeline(){
   }
   totalDur=raw||1;
   el('scrub').max=1000;
+  renderTimeline();
+}
+function renderTimeline(){
+  var tl=el('timeline'); if(!tl) return;
+  var arr=effScenes();
+  if(!arr.length){ tl.innerHTML=''; return; }
+  tl.innerHTML=arr.map(function(s,i){
+    var dur=(i+1<starts.length?starts[i+1]:totalDur)-starts[i]; dur=Math.max(0.2,dur);
+    var w=Math.max(4,dur/totalDur*100);
+    var label=s._end?'🏁 End card':((s.text||'').replace(/[<>&"]/g,'').slice(0,18)||('Scene '+(i+1)));
+    var pal=palById(s.palI||0);
+    return '<div class="tlseg" style="flex:0 0 '+w.toFixed(2)+'%;--c:'+pal.c[0]+'" onclick="tlJump('+i+')" title="'+label+' · '+dur.toFixed(1)+'s"><span>'+(s._end?'★':(i+1))+'</span><em>'+label+'</em></div>';
+  }).join('');
+  updateTimelineActive();
+}
+function tlJump(i){ if(playing)stopPlay(); jump((starts[i]!=null?starts[i]:0)+0.02); }
+function updateTimelineActive(){
+  var tl=el('timeline'); if(!tl||!tl.children.length) return;
+  var cur=sceneAt(previewT).i;
+  for(var k=0;k<tl.children.length;k++){ tl.children[k].classList.toggle('on', k===cur); }
 }
 function sceneAt(t){
   var arr=effScenes(); if(!arr.length) return {arr:arr,i:0,p:0,local:0,dur:1};
@@ -867,7 +895,7 @@ function placeholder(){
 /* ---------- preview playback ---------- */
 var previewT=0, playing=false, rafId=null, lastNow=0;
 function resetPreview(){ rebuildTimeline(); previewT=0; el('scrub').value=0; el('tcode').textContent='0.0s'; }
-function jump(t){ previewT=clamp(t,0,totalDur); el('scrub').value=Math.round(previewT/totalDur*1000)||0; el('tcode').textContent=previewT.toFixed(1)+'s'; drawAt(previewT); }
+function jump(t){ previewT=clamp(t,0,totalDur); el('scrub').value=Math.round(previewT/totalDur*1000)||0; el('tcode').textContent=previewT.toFixed(1)+'s'; drawAt(previewT); updateTimelineActive(); }
 function loop(now){
   if(!playing)return;
   var dt=(now-lastNow)/1000; lastNow=now;
@@ -876,6 +904,7 @@ function loop(now){
   el('scrub').value=Math.round(previewT/totalDur*1000);
   el('tcode').textContent=previewT.toFixed(1)+'s';
   drawAt(previewT);
+  updateTimelineActive();
   rafId=requestAnimationFrame(loop);
 }
 var loopPreview=true;
