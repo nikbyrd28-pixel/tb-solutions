@@ -338,6 +338,8 @@ function editProgram(client){
       +'<div class="row2"><div><label class="f">Staff PIN</label><input id="rp_pin" value="'+esc(p.pin||'1234')+'"></div>'
       +'<div><label class="f">Points for reward</label><input id="rp_at" type="number" value="'+(p.reward_at||5)+'"></div></div>'
       +'<label class="f">The reward</label><input id="rp_text" value="'+esc(p.reward_text||'a free visit')+'" placeholder="a free haircut">'
+      +'<label class="f">Business display name (shown on card & reviews)</label><input id="rp_biz" value="'+esc(p.biz_name||'')+'" placeholder="Joe&#39;s Barber">'
+      +'<label class="f">⭐ Google review link (their &quot;write a review&quot; URL)</label><input id="rp_greview" value="'+esc(p.google_review_url||'')+'" placeholder="https://g.page/r/.../review">'
       +'<div class="row2"><div><label class="f">Spin cost (points)</label><input id="rp_spin" type="number" value="'+(p.spin_cost||2)+'"></div>'
       +'<div><label class="f">Survey points</label><input id="rp_sv" type="number" value="'+(p.survey_points||1)+'"></div></div>'
       +'<label class="f">Slot difficulty</label>'
@@ -345,7 +347,7 @@ function editProgram(client){
       +'<label class="f">Slot prizes (JSON — label/type/value/weight; type: points, prize, nothing)</label>'
       +'<textarea id="rp_wheel" style="min-height:110px;font-family:monospace;font-size:11px">'+esc(JSON.stringify(p.spin_prizes||[],null,1))+'</textarea>'
       +'<div class="modal-actions"><button class="btn primary" onclick="saveProgram(\''+(client||'')+'\')">Save</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>'
-      +'<p class="hint">Members join at tbsol.net/rewards/?c=SLUG — print the poster and tape it by the register.</p>');
+      +'<p class="hint">Members join at tbsol.net/rewards/?c=SLUG. Their smart review link (5★→Google, low→private) is tbsol.net/review/?c=SLUG. Print the poster and tape it by the register.</p>');
   };
   if(isNew){ done({spin_prizes:[{label:'🏆 GRAND PRIZE',type:'prize',value:'',weight:4},{label:'+3 points',type:'points',value:3,weight:12},{label:'10% off',type:'prize',value:'10% off',weight:14},{label:'+1 point',type:'points',value:1,weight:22},{label:'+2 points',type:'points',value:2,weight:16},{label:'😅 So close!',type:'nothing',value:0,weight:32}]}); }
   else { supa.from('reward_settings').select('*').eq('client',client).limit(1).then(function(r){ done((r.data||[])[0]||{}); }); }
@@ -369,7 +371,7 @@ function saveProgram(client){
   var wheel;
   try{ wheel=JSON.parse(val('rp_wheel')); if(!Array.isArray(wheel)||!wheel.length) throw 0; }catch(e){ alert('Slot prizes JSON is invalid.'); return; }
   var row={ client:slug, pin:val('rp_pin')||'1234', reward_at:Number(val('rp_at'))||5, reward_text:val('rp_text')||'a free visit',
-    spin_cost:Number(val('rp_spin'))||2, survey_points:Number(val('rp_sv'))||1, spin_prizes:wheel };
+    spin_cost:Number(val('rp_spin'))||2, survey_points:Number(val('rp_sv'))||1, spin_prizes:wheel, biz_name:val('rp_biz')||null, google_review_url:val('rp_greview')||null };
   supa.from('reward_settings').upsert(row,{onConflict:'client'}).then(function(r){
     if(r.error){ alert('Save failed: '+r.error.message); return; }
     closeModal(); loadLoyalty();

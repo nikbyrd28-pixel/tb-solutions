@@ -4,75 +4,166 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex" />
-<title>Leave a review — TB Solutions</title>
+<title>How was your visit?</title>
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305070f'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%E2%AD%90%3C/text%3E%3C/svg%3E" />
 <style>
-  :root{--text:#eef1ff;--muted:#96a0c4;--line:rgba(150,190,255,.25);--cyan:#5df2e0;--gold:#f5c04a}
+  :root{--text:#eef1ff;--muted:#96a0c4;--line:rgba(150,190,255,.25);--acc:#5df2e0;--acc2:#6f9dff;--gold:#f5c04a;--good:#43f0b0;--bg:#03040a}
   *{box-sizing:border-box}
-  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.6;min-height:100vh;background:radial-gradient(circle at 20% -10%,rgba(93,242,224,.10),transparent 40%),linear-gradient(180deg,#070a12,#03040a);display:flex;align-items:flex-start;justify-content:center;padding:34px 16px}
-  .wrap{width:min(520px,100%)}
-  .brand{font-weight:900;font-size:18px;margin-bottom:20px}
-  .brand span{color:var(--cyan)}
-  h1{font-size:clamp(24px,5.5vw,32px);margin:0 0 8px}
-  .lead{color:var(--muted);margin:0 0 22px;font-size:15px}
-  .card{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:18px;padding:24px}
-  label{display:block;margin:14px 0 0;font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+  @keyframes pop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+  @keyframes cf{0%{transform:translateY(-10px) rotate(0);opacity:1}100%{transform:translateY(105vh) rotate(720deg);opacity:0}}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.6;min-height:100vh;
+    background:radial-gradient(circle at 20% -10%,color-mix(in srgb,var(--acc) 14%,transparent),transparent 42%),linear-gradient(180deg,#070a12,var(--bg));
+    display:flex;align-items:flex-start;justify-content:center;padding:34px 16px}
+  .wrap{width:min(500px,100%)}
+  .brand{font-weight:900;font-size:18px;margin-bottom:6px}
+  .brand span{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tag{color:var(--muted);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:22px}
+  h1{font-size:clamp(23px,5.5vw,30px);margin:0 0 8px}
+  .lead{color:var(--muted);margin:0 0 20px;font-size:15px}
+  .card{background:linear-gradient(150deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:20px;padding:26px;text-align:center;animation:pop .4s ease}
+  .stars{display:flex;gap:6px;justify-content:center;margin:8px 0 4px;font-size:44px;cursor:pointer;user-select:none}
+  .stars span{filter:grayscale(1);opacity:.4;transition:all .13s;transform-origin:center}
+  .stars span:hover{transform:scale(1.15)}
+  .stars span.on{filter:none;opacity:1;transform:scale(1.1)}
+  .hint{color:var(--muted);font-size:13px;margin-top:4px}
+  label{display:block;margin:14px 0 0;font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.07em;text-transform:uppercase;text-align:left}
   input,textarea{width:100%;background:rgba(0,0,0,.45);border:1px solid var(--line);border-radius:12px;padding:13px 14px;color:var(--text);font:inherit;font-size:15px;margin-top:6px}
-  textarea{min-height:100px;resize:vertical}
-  input:focus,textarea:focus{outline:none;border-color:var(--cyan)}
-  .stars{display:flex;gap:6px;margin-top:8px;font-size:34px;cursor:pointer;user-select:none}
-  .stars span{filter:grayscale(1);opacity:.45;transition:all .12s}
-  .stars span.on{filter:none;opacity:1;transform:scale(1.08)}
-  button{width:100%;margin-top:20px;border:0;background:linear-gradient(135deg,var(--cyan),#6f9dff);color:#03040a;border-radius:999px;padding:15px;font:inherit;font-weight:900;font-size:15px;cursor:pointer}
-  button:disabled{opacity:.6}
-  .ok{display:none;text-align:center;padding:24px 6px}
-  .ok.show{display:block}
-  .fine{color:var(--muted);font-size:12px;margin-top:12px;text-align:center}
+  textarea{min-height:96px;resize:vertical}
+  input:focus,textarea:focus{outline:none;border-color:var(--acc)}
+  .btn{width:100%;margin-top:18px;border:0;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#03040a;border-radius:999px;padding:15px;font:inherit;font-weight:900;font-size:15px;cursor:pointer;text-decoration:none;display:block}
+  .btn.g{background:#fff;color:#1a1a1a}
+  .btn:disabled{opacity:.6}
+  .em{font-size:52px;animation:pop .5s ease}
+  .fine{color:var(--muted);font-size:12px;margin-top:12px}
+  .hide{display:none!important}
+  .cf{position:fixed;top:-16px;font-size:22px;z-index:9;pointer-events:none;animation:cf linear forwards}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="brand">TB <span>Solutions</span></div>
-  <h1>How'd we do? ⭐</h1>
-  <p class="lead">Two minutes, huge help. Your review may be shown on our website.</p>
-  <div class="card">
-    <form id="f">
-      <label>Rating</label>
-      <div class="stars" id="stars">
-        <span data-v="1">⭐</span><span data-v="2">⭐</span><span data-v="3">⭐</span><span data-v="4">⭐</span><span data-v="5">⭐</span>
-      </div>
-      <label>Your name</label><input name="name" required autocomplete="name">
-      <label>Your business</label><input name="business" id="biz">
-      <label>What was it like working with us?</label><textarea name="text" required placeholder="What we built, what changed for your business..."></textarea>
-      <button type="submit" id="btn">Send review</button>
-      <p class="fine">By submitting you agree it may appear on tbsol.net. <a href="/privacy/" style="color:var(--muted)">Privacy</a></p>
-    </form>
-    <div class="ok" id="ok">
-      <div style="font-size:44px">🙏</div>
-      <h1 style="font-size:24px">Thank you!</h1>
-      <p class="lead">That means a lot. — Nick</p>
+  <div class="brand" id="brand">Leave a <span>review</span></div>
+  <div class="tag">30 seconds — huge help</div>
+
+  <!-- STEP 1: rating gate -->
+  <div class="card" id="rateCard">
+    <h1 id="rateH">How was your visit? ⭐</h1>
+    <p class="lead" id="rateLead">Tap a star to let us know.</p>
+    <div class="stars" id="stars">
+      <span data-v="1">⭐</span><span data-v="2">⭐</span><span data-v="3">⭐</span><span data-v="4">⭐</span><span data-v="5">⭐</span>
     </div>
+    <p class="hint" id="rateHint">1 = not great · 5 = loved it</p>
+  </div>
+
+  <!-- STEP 2a: happy → Google -->
+  <div class="card hide" id="happyCard">
+    <div class="em">🎉</div>
+    <h1>Awesome — thank you!</h1>
+    <p class="lead" id="happyLead">Would you mind sharing that on Google? It takes 20 seconds and helps us more than you know.</p>
+    <a class="btn g" id="googleBtn" target="_blank" rel="noopener">⭐ Post my Google review →</a>
+    <button class="btn" id="skipGoogle" style="background:rgba(150,190,255,.08);color:var(--text);border:1px solid var(--line);font-weight:700">Leave it here instead</button>
+    <!-- fallback text review (if no google link, or "leave it here") -->
+    <div id="textReview" class="hide" style="margin-top:8px">
+      <label>Your name</label><input id="hName" autocomplete="name">
+      <label>What did you love?</label><textarea id="hText" placeholder="A few words we can share..."></textarea>
+      <button class="btn" onclick="saveText()">Send review</button>
+    </div>
+  </div>
+
+  <!-- STEP 2b: unhappy → private -->
+  <div class="card hide" id="sadCard">
+    <div class="em">🙏</div>
+    <h1>We're sorry we missed the mark.</h1>
+    <p class="lead">Tell us what went wrong — this goes <b style="color:var(--text)">straight to the owner</b>, privately, so we can make it right.</p>
+    <label>What happened?</label><textarea id="fText" placeholder="Be honest — it really helps."></textarea>
+    <label>Name (optional)</label><input id="fName" autocomplete="name">
+    <label>Phone or email so we can follow up (optional)</label><input id="fContact">
+    <button class="btn" onclick="saveFeedback()">Send privately</button>
+    <p class="fine">This won't be posted publicly.</p>
+  </div>
+
+  <!-- DONE -->
+  <div class="card hide" id="doneCard">
+    <div class="em" id="doneEm">🙏</div>
+    <h1 id="doneH">Thank you!</h1>
+    <p class="lead" id="doneMsg">That means a lot.</p>
   </div>
 </div>
 <script>
 var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
 var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
-var rating=5;
+function el(id){return document.getElementById(id)}
 var q=new URLSearchParams(location.search);
-if(q.get('b')) document.getElementById('biz').value=q.get('b');
-function paint(){ document.querySelectorAll('#stars span').forEach(function(s){ s.classList.toggle('on', Number(s.dataset.v)<=rating); }); }
-document.querySelectorAll('#stars span').forEach(function(s){ s.onclick=function(){ rating=Number(s.dataset.v); paint(); }; });
-paint();
-document.getElementById('f').addEventListener('submit',function(e){
-  e.preventDefault();
-  var f=e.target, btn=document.getElementById('btn');
-  btn.disabled=true; btn.textContent='Sending…';
-  var d={}; new FormData(f).forEach(function(v,k){ d[k]=v; });
-  fetch(SUPA_URL+'/rest/v1/reviews',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
-    body:JSON.stringify({name:d.name||'',business:d.business||'',rating:rating,text:d.text||'',source:'review page'})})
-  .then(function(){ f.style.display='none'; document.getElementById('ok').classList.add('show'); })
-  .catch(function(){ btn.disabled=false; btn.textContent='Send review'; alert('Could not send — try again.'); });
-});
+var slug=(q.get('c')||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+var bizName=q.get('b')||'', googleUrl=q.get('g')||'', rating=0;
+
+/* theme via ?ac=HEX&ac2=HEX */
+(function(){ var hex=/^[0-9a-fA-F]{6}$/, r=document.documentElement.style;
+  if(hex.test(q.get('ac')||'')) r.setProperty('--acc','#'+q.get('ac'));
+  if(hex.test(q.get('ac2')||'')) r.setProperty('--acc2','#'+q.get('ac2'));
+})();
+
+function applyBiz(){
+  if(bizName){
+    el('brand').innerHTML=String(bizName).replace(/[<>&]/g,'')+' <span>reviews</span>';
+    el('rateH').textContent='How was your visit to '+bizName+'?';
+    document.title='Rate '+bizName;
+  }
+  if(googleUrl){ el('googleBtn').href=googleUrl; }
+}
+if(slug){
+  fetch(SUPA_URL+'/rest/v1/rpc/get_program_public',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_client:slug})})
+  .then(function(r){return r.json()}).then(function(p){
+    if(p && !p.error){ if(!bizName) bizName=p.biz_name||(slug.charAt(0).toUpperCase()+slug.slice(1)); if(!googleUrl) googleUrl=p.google_review_url||''; }
+    applyBiz();
+  }).catch(applyBiz);
+} else { applyBiz(); }
+
+function paint(){ [].forEach.call(el('stars').children,function(s){ s.classList.toggle('on', Number(s.dataset.v)<=rating); }); }
+[].forEach.call(el('stars').children,function(s){ s.onclick=function(){ rating=Number(s.dataset.v); paint(); setTimeout(route,220); }; });
+
+function route(){
+  el('rateCard').classList.add('hide');
+  if(rating>=4){
+    el('happyCard').classList.remove('hide');
+    // log the positive rating immediately (approval still required to show on site)
+    postReview('', '');
+    if(googleUrl){ el('googleBtn').classList.remove('hide'); el('skipGoogle').classList.remove('hide'); el('textReview').classList.add('hide'); }
+    else { el('googleBtn').classList.add('hide'); el('skipGoogle').classList.add('hide'); el('textReview').classList.remove('hide'); el('happyLead').textContent='So glad! Mind leaving a few words we can share?'; }
+  } else {
+    el('sadCard').classList.remove('hide');
+  }
+}
+el('skipGoogle').onclick=function(){ el('googleBtn').classList.add('hide'); el('skipGoogle').classList.add('hide'); el('textReview').classList.remove('hide'); };
+el('googleBtn').onclick=function(){ setTimeout(function(){ done('🙏','Thank you!','You just made our day. See you again soon!'); confetti(); },400); };
+
+function postReview(name,text){
+  return fetch(SUPA_URL+'/rest/v1/reviews',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({name:name||'',business:bizName||slug||'',rating:rating,text:text||'',source:'smart-review'})}).catch(function(){});
+}
+function saveText(){
+  var name=el('hName').value.trim(), text=el('hText').value.trim();
+  postReview(name,text).then(function(){ done('🎉','Thank you!','That means a lot — we may feature it. See you soon!'); confetti(); });
+}
+function saveFeedback(){
+  var text=el('fText').value.trim();
+  if(!text){ el('fText').focus(); return; }
+  fetch(SUPA_URL+'/rest/v1/review_feedback',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({client:slug||bizName||'',name:el('fName').value.trim(),phone:el('fContact').value.trim(),rating:rating,text:text})})
+  .then(function(){ done('🙏','Thank you for telling us.','The owner will personally look into this. We appreciate the honesty.'); })
+  .catch(function(){ done('🙏','Thank you.','We appreciate the feedback.'); });
+}
+function done(em,h,msg){
+  ['rateCard','happyCard','sadCard'].forEach(function(id){el(id).classList.add('hide')});
+  el('doneEm').textContent=em; el('doneH').textContent=h; el('doneMsg').textContent=msg;
+  el('doneCard').classList.remove('hide'); window.scrollTo({top:0,behavior:'smooth'});
+}
+function confetti(){ var b=['🎉','✨','⭐','🌟','🎊'];
+  for(var i=0;i<24;i++){ var s=document.createElement('span'); s.className='cf'; s.textContent=b[i%b.length];
+    s.style.left=(Math.random()*100)+'vw'; s.style.animationDuration=(1.6+Math.random()*1.6)+'s'; s.style.animationDelay=(Math.random()*.5)+'s';
+    document.body.appendChild(s); setTimeout(function(el2){return function(){el2.remove()}}(s),3600); }
+}
+
 window.addEventListener('error',function(e){try{
   fetch(SUPA_URL+'/rest/v1/client_errors',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
     body:JSON.stringify({page:location.pathname,msg:String((e&&e.message)||'').slice(0,300),src:String((e&&e.filename)||'').slice(0,120),line:(e&&e.lineno)||0})}).catch(function(){});
