@@ -128,7 +128,7 @@
       <h1>Turn one-time customers into <span class="g">regulars</span>.</h1>
       <p class="lead">Loop gives your customers points, prizes, VIP status and one-tap booking — so they keep coming back and bring their friends. No app to download. No hardware. Just a QR code on your counter.</p>
       <div class="cta-row">
-        <a class="btn big" href="#start">Start free — first month on us</a>
+        <a class="btn big" href="#start">Get started — free</a>
         <a class="btn ghost big" href="https://tbsol.net/rewards/?c=demo" target="_blank" rel="noopener">Try the live card</a>
       </div>
       <div class="trust">
@@ -201,12 +201,12 @@
 
   <!-- PRICING -->
   <section id="pricing">
-    <div class="kick">Simple pricing</div>
-    <h2>One plan. Everything above.</h2>
+    <div class="kick">Get started</div>
+    <h2>Free to get started.</h2>
     <p class="sub">No per-customer fees, no hardware to buy, no long contract. Cancel anytime.</p>
     <div class="price">
-      <div class="amt">$0 <small>first month</small></div>
-      <div style="color:var(--muted);margin-top:4px">then <b style="color:var(--text)">$79/mo</b> — cancel anytime, no setup fee</div>
+      <div class="amt">Start <small>free</small></div>
+      <div style="color:var(--muted);margin-top:4px">No card needed · cancel anytime</div>
       <ul>
         <li>Your branded loyalty card + prize game</li>
         <li>VIP tiers, streaks &amp; referrals</li>
@@ -215,8 +215,8 @@
         <li>Auto review collection</li>
         <li>Setup &amp; support included</li>
       </ul>
-      <a class="btn big" href="#start" style="display:block">Start my free month →</a>
-      <p style="color:var(--muted);font-size:12.5px;margin:12px 0 0">First month free. Cancel anytime. Also bundled inside TB Solutions' Whole Machine plan.</p>
+      <a class="btn big" href="#start" style="display:block">Get started free →</a>
+      <p style="color:var(--muted);font-size:12.5px;margin:12px 0 0">Free to start. Also bundled inside TB Solutions' Whole Machine plan.</p>
     </div>
   </section>
 
@@ -237,19 +237,19 @@
   <section id="start">
     <div class="final">
       <div class="kick">Get started</div>
-      <h2>Start your free month</h2>
-      <p class="sub" style="margin-bottom:0">First month free, then $79/mo — cancel anytime. Card set up for you within a day.</p>
+      <h2>Start for free</h2>
+      <p class="sub" style="margin-bottom:0">Get your Loop card set up free — we'll have you live within a day.</p>
       <form id="f">
         <input name="business" placeholder="Business name *" required>
         <input name="name" placeholder="Your name *" required>
         <input name="email" type="email" placeholder="Email *" required>
         <input name="phone" type="tel" placeholder="Phone *" required>
         <input name="niche" placeholder="What kind of business? (barber, café…)">
-        <button class="btn big" type="button" id="subBtn" onclick="subscribe()">Start my free month →</button>
+        <button class="btn big" type="button" id="subBtn" onclick="subscribe()">Get started free →</button>
         <button class="btn ghost" type="submit" id="sBtn" style="font-size:14px">Rather talk first? Book a free demo</button>
         <p class="err hide" id="subErr" style="color:#ff8a9d;font-size:13px;text-align:center;margin:2px 0 0"></p>
         <p class="ok hide" id="ok">🎉 Got it! We'll reach out shortly to set up your card.</p>
-        <p style="color:var(--muted);font-size:12px;margin:4px 0 0">First month free, then $79/mo · cancel anytime · no card needed to start — we'll set you up. <a href="/privacy/" style="color:var(--muted)">Privacy</a></p>
+        <p style="color:var(--muted);font-size:12px;margin:4px 0 0">Free to start · no card needed · we'll set you up. <a href="/privacy/" style="color:var(--muted)">Privacy</a></p>
       </form>
     </div>
   </section>
@@ -272,12 +272,12 @@ var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
   var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.style.animationDelay='0s';en.target.classList.add('reveal');io.unobserve(en.target);}});},{threshold:.12});
   document.querySelectorAll('section .step,section .feat,.band,.price,.final').forEach(function(x){io.observe(x);});
 })();
-if(new URLSearchParams(location.search).get('canceled')){ setTimeout(function(){ var e=document.getElementById('subErr'); if(e){ e.style.color='var(--muted)'; e.textContent='No rush — start your free month whenever you\'re ready.'; e.classList.remove('hide'); } },300); }
+if(new URLSearchParams(location.search).get('canceled')){ setTimeout(function(){ var e=document.getElementById('subErr'); if(e){ e.style.color='var(--muted)'; e.textContent='No rush — get started whenever you are ready.'; e.classList.remove('hide'); } },300); }
 function subFlash(msg,muted){ var e=document.getElementById('subErr'); if(!e){ alert(msg); return; } e.style.color=muted?'var(--muted)':'#ff8a9d'; e.textContent=msg; e.classList.remove('hide'); }
 function leadCaptured(){
   var f=document.getElementById('f');
   [].forEach.call(f.querySelectorAll('input,button,.err'),function(x){x.style.display='none';});
-  var ok=document.getElementById('ok'); if(ok){ ok.textContent="\u{1F389} Got it! We'll reach out to get you set up \u2014 first month's on us."; ok.classList.remove('hide'); ok.style.display='block'; }
+  var ok=document.getElementById('ok'); if(ok){ ok.textContent="\u{1F389} Got it! We'll reach out to get you set up."; ok.classList.remove('hide'); ok.style.display='block'; }
 }
 function subscribe(){
   var f=document.getElementById('f');
