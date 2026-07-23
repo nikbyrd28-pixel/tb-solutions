@@ -127,6 +127,8 @@
           <input id="bkLine" placeholder="Voom Lux · voomlux.com" maxlength="60">
           <label>Default call-to-action</label>
           <input id="bkCta" placeholder="Book your ride → voomlux.com" maxlength="70">
+          <label>🧠 Knowledge base — facts the AI uses to write better scripts</label>
+          <textarea id="bkKb" style="min-height:74px" placeholder="What the AI should know: what you sell, offers/prices, who it's for, tone, do's &amp; don'ts, proof. e.g. Luxury black-car service in Chester County. Airport runs from $99. Tone: premium, concise. Never mention discounts."></textarea>
           <div class="bar">
             <button class="btn small" onclick="saveBrand()">💾 Save brand</button>
             <button class="btn ghost small" onclick="cancelBrand()">Cancel</button>
@@ -398,7 +400,9 @@ async function aiScript(){
   var btn=el('aiBtn'); btn.disabled=true; el('aiState').innerHTML='<span class="spin"></span> Writing…';
   var built=null;
   try{
-    var prompt='Write a '+n+'-scene short-form vertical video script about: "'+topic+'". Vibe: '+tone+'. '
+    var kb=(curBrand&&curBrand.kb)?String(curBrand.kb).trim():'';
+    var prompt=(kb?('BRAND KNOWLEDGE (use these facts, stay accurate, never contradict them):\n'+kb+'\n\n'):'')
+      +'Write a '+n+'-scene short-form vertical video script about: "'+topic+'". Vibe: '+tone+'. '
       +'Rules: scene 1 is a scroll-stopping HOOK. Middle scenes each deliver ONE punchy idea in 6-11 words. Final scene is a call to action for '+brand+'. '
       +'Return ONLY the scenes, one per line, format exactly: CAPTION || KICKER  (KICKER is 1-3 uppercase words or blank). No numbering, no extra text.';
     var b=new URLSearchParams(); b.append('kind','video_script'); b.append('business',brand); b.append('extra',prompt); b.append('goal',topic);
@@ -1321,6 +1325,7 @@ function selectBrand(id){
 function openBrandEditor(b){
   el('brandEditor').classList.remove('hide');
   el('bkName').value=b?b.name:''; el('bkLine').value=b?(b.line||''):''; el('bkCta').value=b?(b.cta||''):''; el('bkAccent').value=b?(b.accent||'#8b7bff'):'#8b7bff';
+  if(el('bkKb')) el('bkKb').value=b?(b.kb||''):'';
   el('bkDel').style.display=b?'':'none';
 }
 function newBrand(){ editingId=null; openBrandEditor(null); }
@@ -1331,7 +1336,7 @@ function saveBrand(){
   if(!name){ alert('Give the brand a name first.'); return; }
   var b={ id: editingId||('b'+Date.now()), name:name,
     line:(el('bkLine').value||'').replace(/[<>]/g,'').trim()||name,
-    cta:(el('bkCta').value||'').trim(), accent:el('bkAccent').value||'#8b7bff' };
+    cta:(el('bkCta').value||'').trim(), accent:el('bkAccent').value||'#8b7bff', kb:(el('bkKb')?el('bkKb').value||'':'').trim() };
   var i=BRANDS.map(function(x){return x.id}).indexOf(b.id);
   if(i>=0) BRANDS[i]=b; else BRANDS.push(b);
   saveBrands(); el('brandEditor').classList.add('hide'); selectBrand(b.id);
