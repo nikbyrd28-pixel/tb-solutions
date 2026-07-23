@@ -236,6 +236,7 @@ var shapeIdx=0;
 
 /* ---------- state ---------- */
 var scenes=[];
+var activeScene=-1;
 var accent='#8b7bff';
 var logoImg=null;
 var voiceBuffer=null, musicBuffer=null;
@@ -247,12 +248,18 @@ function newScene(text,palI,kicker){
 
 /* ---------- templates ---------- */
 var TEMPLATES=[
-  {e:'💡',t:'Quick Tip',d:'Hook + tip + CTA',sc:[['One thing killing your sales','STOP DOING THIS'],['Your website loads too slow — people leave in 3 seconds',''],['We build sites that load instantly & book calls',''],['Want yours? Free call today','TB SOLUTIONS']]},
-  {e:'🔢',t:'3 Reasons',d:'Listicle style',sc:[['3 reasons you\'re losing customers','LISTEN UP'],['1 · No one can find you on Google',''],['2 · Your site looks outdated on phones',''],['3 · Nobody follows up with your leads',''],['We fix all 3. Book a free call','TB SOLUTIONS']]},
-  {e:'🔁',t:'Before / After',d:'Transformation',sc:[['Before: a website nobody visits','BEFORE'],['Slow, ugly, invisible on Google',''],['After: a machine that books jobs','AFTER'],['Fast, beautiful, always following up',''],['Get your glow-up → tbsol.net','TB SOLUTIONS']]},
-  {e:'🔥',t:'Big Offer',d:'Promo / deal',sc:[['Your business deserves better','NEW'],['A pro website starting at just $300',''],['Built this week. Books you customers.',''],['Spots are limited — claim yours','TB SOLUTIONS']]},
-  {e:'⭐',t:'Testimonial',d:'Social proof',sc:[['"Best decision for my business"','REVIEW'],['My phone hasn\'t stopped ringing',''],['— a happy Chester County owner',''],['You could be next. Free call','TB SOLUTIONS']]},
-  {e:'❓',t:'Myth vs Truth',d:'Bust a myth',sc:[['"Marketing is too expensive"','MYTH'],['Truth: a $300 site pays for itself in one job',''],['You don\'t need a big budget — you need the right setup',''],['Let\'s build yours → tbsol.net','TB SOLUTIONS']]}
+  {e:'💡',t:'Quick Tip',d:'Hook + tip + CTA',sc:[['One thing quietly killing your sales','STOP THIS'],['Your website loads too slow — people leave in 3 seconds',''],['A fast, clean site turns those clicks into booked jobs',''],['Want one built this week?','FREE CALL']]},
+  {e:'🔢',t:'3 Reasons',d:'Listicle',pal:[7,0,4,5,3],sc:[['3 reasons customers pick someone else','LISTEN UP'],['1 · They can\'t find you on Google',''],['2 · Your site looks dated on phones',''],['3 · Nobody follows up with your leads',''],['Good news — we fix all 3','LET\'S TALK']]},
+  {e:'🔁',t:'Before / After',d:'Transformation',pal:[9,9,4,2],sc:[['Before: a website nobody ever visits','BEFORE'],['Slow, clunky, invisible on Google',''],['After: a machine that books jobs 24/7','AFTER'],['Fast, beautiful, always following up','']]},
+  {e:'🎯',t:'Problem → Solution',d:'Pain then fix',pal:[5,5,2,2],sc:[['Losing customers and not sure why?','REAL TALK'],['They\'re searching — but finding your competitor',''],['We put you at the top and capture every lead',''],['Let\'s fix it together','BOOK NOW']]},
+  {e:'🔥',t:'Big Offer',d:'Promo / deal',sc:[['Your business deserves better than a DIY site','NEW'],['A pro website — starting at just $300',''],['Built this week. Made to book you customers.',''],['Only taking a few this month','CLAIM YOURS']]},
+  {e:'⏰',t:'Last Chance',d:'Urgency',pal:[5,5,6,0],sc:[['This deal ends Friday','⏰ HURRY'],['A full website + booking setup — one flat price',''],['Spots are almost gone',''],['Grab yours before it\'s too late','BOOK TODAY']]},
+  {e:'⭐',t:'Testimonial',d:'Social proof',pal:[2,2,4,0],sc:[['"Best decision I made for my business"','★ REVIEW'],['"My phone hasn\'t stopped ringing since"',''],['— a happy local owner',''],['You could be next','YOUR TURN']]},
+  {e:'🏆',t:'Client Win',d:'Case study',pal:[7,4,4,2],sc:[['How we booked a shop 40 new jobs','CASE STUDY'],['New site → found on Google → auto follow-up',''],['All running while they worked',''],['Want results like this?','LET\'S GO']]},
+  {e:'💬',t:'FAQ Answer',d:'Answer a question',pal:[0,0,4,3],sc:[['"How much does a website really cost?"','GOOD Q'],['Way less than you think — from $300',''],['And it pays for itself in one or two jobs',''],['Ask me anything → book a free call','']]},
+  {e:'👋',t:'Meet the Owner',d:'Build trust',pal:[3,3,0,4],sc:[['Hey — I\'m the person behind your marketing','👋 HI'],['No agency runaround, no hidden fees',''],['Just real work that gets you customers',''],['Let\'s grow your business together','']]},
+  {e:'📊',t:'Did You Know',d:'Stat hook',pal:[1,1,5,4],sc:[['75% of people judge your business by its website','WHOA'],['A weak site quietly costs you customers daily',''],['A strong one earns trust in seconds',''],['Let\'s make yours work for you','FIX IT']]},
+  {e:'❓',t:'Myth vs Truth',d:'Bust a myth',pal:[9,9,4,2],sc:[['"Marketing is too expensive"','MYTH'],['Truth: a $300 site pays for itself in one job',''],['You don\'t need a big budget — just the right setup',''],['Let\'s build yours','TRUTH']]}
 ];
 function renderTpls(){
   el('tpls').innerHTML=TEMPLATES.map(function(tp,i){
@@ -261,7 +268,13 @@ function renderTpls(){
 }
 function useTpl(i){
   var tp=TEMPLATES[i];
-  scenes=tp.sc.map(function(row,j){ var s=newScene(row[0],j,row[1]); s.seconds=(j===0?3.2:2.8); return s; });
+  scenes=tp.sc.map(function(row,j){
+    var pal=(tp.pal&&tp.pal[j]!=null)?tp.pal[j]:j;
+    var s=newScene(row[0],pal,row[1]);
+    s.seconds=(j===0?3.0:2.6);
+    s.anim=(j===0?'pop':'kinetic');
+    return s;
+  });
   renderScenes(); resetPreview(); jump(0);
 }
 
@@ -303,20 +316,21 @@ function parseScript(text){
     }).filter(function(r){return r[0].length>1}).slice(0,8);
 }
 function localScript(topic,n,brand){
-  var t=topic.replace(/\.$/,'');
-  var hooks=['Stop scrolling.','Here\'s the truth.','Real talk:','Most owners get this wrong.'];
-  var out=[[hooks[topic.length%hooks.length]+' '+cap(t),'WATCH THIS']];
+  var t=cap(topic.replace(/\.$/,''));
+  var hooks=[['Stop scrolling — you need to hear this','STOP'],['Here\'s what most owners get wrong','LISTEN UP'],['This changes how you get customers','WATCH THIS'],['Read this before you spend on ads','REAL TALK']];
+  var h=hooks[topic.length%hooks.length];
   var mids=[
-    'Your customers are searching — can they find you?',
-    'A great site turns clicks into booked jobs.',
-    'Show up on Google or lose to the shop that does.',
-    'Every missed lead is money walking away.',
-    'It\'s easier (and cheaper) than you think.'
+    'Your customers are searching right now — can they find you?',
+    'A great website turns those clicks into booked jobs',
+    'Show up on Google, or lose to the shop that does',
+    'Every missed lead is money walking out the door',
+    'The right setup follows up for you — automatically',
+    'It\'s simpler and cheaper than you think'
   ];
-  for(var i=0;i<Math.max(2,n-2);i++) out.push([mids[i%mids.length],'']);
-  out.push(['We\'ll build it for you — starting at $300','TB SOLUTIONS']);
-  out.push([ (el('ctaText')&&el('ctaText').value)||'Book your free call → tbsol.net','LET\'S GO']);
-  return out.slice(0,n);
+  var out=[[h[0],h[1]],[t,'']];
+  for(var i=0;i<Math.max(1,n-3);i++) out.push([mids[i%mids.length],'']);
+  out.push([(el('ctaText')&&el('ctaText').value)||'Book your free call → tbsol.net','LET\'S GO']);
+  return out.slice(0,Math.max(3,n));
 }
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
 
@@ -474,15 +488,15 @@ function drawCaption(sc,p,W,H){
     ctx.fillText(sc.kicker,W/2, cy - fs*0.95);
   }
   // motion transforms
-  var appear=clamp(p/0.28,0,1), disappear=clamp((1-p)/0.16,0,1), vis=Math.min(appear,disappear);
+  var appear=clamp(p/0.24,0,1);
   ctx.save();
   ctx.textAlign='center'; ctx.textBaseline='middle';
   var totalWords=words.length, shown=totalWords;
   var yShift=0, alpha=1, scale=1;
-  if(sc.anim==='rise'){ yShift=(1-appear)*fs*0.9; alpha=vis; }
-  else if(sc.anim==='pop'){ scale=0.72+0.28*easeOut(appear); alpha=vis; }
-  else if(sc.anim==='type'){ /* handled per-char */ alpha=disappear; }
-  else if(sc.anim==='kinetic'){ shown=Math.max(1,Math.ceil(clamp(p/0.62,0,1)*totalWords)); alpha=disappear; }
+  if(sc.anim==='rise'){ yShift=(1-appear)*fs*0.9; alpha=appear; }
+  else if(sc.anim==='pop'){ scale=0.74+0.26*easeOut(appear); alpha=appear; }
+  else if(sc.anim==='type'){ /* handled per-char */ alpha=1; }
+  else if(sc.anim==='kinetic'){ shown=Math.max(1,Math.ceil(clamp(p/0.55,0,1)*totalWords)); alpha=1; }
 
   ctx.globalAlpha=alpha;
   ctx.translate(W/2,cy+blockH/2);
