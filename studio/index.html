@@ -97,6 +97,25 @@
   @keyframes sp{to{transform:rotate(360deg)}}
   .ok{color:var(--good);font-size:12.5px}.err{color:var(--bad);font-size:12.5px}
   .tag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#0b0b12;background:linear-gradient(135deg,var(--acc2),var(--acc));border-radius:999px;padding:2px 8px;vertical-align:middle;margin-left:6px}
+  /* horizontal scrollers get momentum + hidden bars on touch */
+  .tl{-webkit-overflow-scrolling:touch}
+  /* ---- sharper mobile UX ---- */
+  @media(max-width:600px){
+    .wrap{padding:12px 12px 96px}
+    /* 16px inputs stop iOS Safari from zooming in on focus */
+    input,select,textarea{font-size:16px}
+    input[type=file]{font-size:13px}
+    /* comfy tap targets */
+    .btn{padding:13px 18px}
+    .btn.small{padding:10px 14px;font-size:13px}
+    .chip{padding:9px 13px;font-size:13px}
+    /* tight two-up rows stack on the smallest screens for legibility */
+    .row{grid-template-columns:1fr}
+    .stage{padding:10px;min-height:auto}
+    label{font-size:12.5px}
+    /* keep the primary action reachable without scrolling to the bottom */
+    #renderBtn{position:sticky;bottom:10px;z-index:40;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+  }
 </style>
 </head>
 <body>
@@ -199,13 +218,24 @@
           <div><label>Transition</label><select id="trans">
             <option value="fade">Crossfade</option>
             <option value="slide">Slide up</option>
+            <option value="push">Push (side)</option>
+            <option value="wipe">Wipe</option>
             <option value="zoom">Zoom</option>
+            <option value="dip">Dip to black</option>
             <option value="cut">Hard cut</option>
           </select></div>
         </div>
         <div class="row">
           <div><label>Accent color</label><input type="color" id="accent" value="#8b7bff" style="height:44px;padding:4px"></div>
           <div><label>Motion (Ken Burns)</label><select id="motion"><option value="on" selected>On — pans & zooms</option><option value="off">Off — still</option></select></div>
+        </div>
+        <div class="row">
+          <div><label>🔊 Transition sound</label><select id="sfx">
+            <option value="off">Off</option>
+            <option value="whoosh" selected>Whoosh on cuts</option>
+            <option value="whoosh_end">Whoosh + end chime</option>
+          </select></div>
+          <div><label>SFX volume</label><input type="range" id="sfxVol" min="0" max="1" step="0.05" value="0.4"></div>
         </div>
         <label>🎨 Color grade</label>
         <select id="grade">
@@ -954,21 +984,33 @@ function draw(t,opts){
   ctx.save();
   try{ ctx.filter=gradeFilter(); }catch(e){}
   if(i>0 && tp<1 && trans!=='cut'){
-    // draw previous bg first
     var prev=arr[i-1];
-    ctx.save();
-    if(trans==='slide'){ ctx.translate(0,-H*tp); }
-    else if(trans==='zoom'){ var z=1+0.12*tp; ctx.translate(W/2,H/2); ctx.scale(z,z); ctx.translate(-W/2,-H/2); }
-    drawBg(prev,1,T,W,H);
-    ctx.restore();
-    // current bg with alpha/slide
-    ctx.save();
-    if(trans==='fade'){ ctx.globalAlpha=tp; }
-    else if(trans==='slide'){ ctx.translate(0,H*(1-tp)); }
-    else if(trans==='zoom'){ ctx.globalAlpha=tp; }
-    drawBg(sc,s.p,T,W,H);
-    ctx.restore();
-    ctx.globalAlpha=1;
+    if(trans==='dip'){
+      // dip to black: prev fades out, then current fades in
+      if(tp<0.5){ drawBg(prev,1,T,W,H); ctx.save(); try{ctx.filter='none';}catch(e){} ctx.globalAlpha=clamp(tp*2,0,1); ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H); ctx.restore(); }
+      else { drawBg(sc,s.p,T,W,H); ctx.save(); try{ctx.filter='none';}catch(e){} ctx.globalAlpha=clamp((1-tp)*2,0,1); ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H); ctx.restore(); }
+    } else if(trans==='wipe'){
+      // current reveals over prev, left to right
+      drawBg(prev,1,T,W,H);
+      ctx.save(); ctx.beginPath(); ctx.rect(0,0,W*tp,H); ctx.clip(); drawBg(sc,s.p,T,W,H); ctx.restore();
+    } else {
+      // draw previous bg first (with optional transform)
+      ctx.save();
+      if(trans==='slide'){ ctx.translate(0,-H*tp); }
+      else if(trans==='push'){ ctx.translate(-W*tp,0); }
+      else if(trans==='zoom'){ var z=1+0.12*tp; ctx.translate(W/2,H/2); ctx.scale(z,z); ctx.translate(-W/2,-H/2); }
+      drawBg(prev,1,T,W,H);
+      ctx.restore();
+      // current bg with alpha/slide/push
+      ctx.save();
+      if(trans==='fade'){ ctx.globalAlpha=tp; }
+      else if(trans==='slide'){ ctx.translate(0,H*(1-tp)); }
+      else if(trans==='push'){ ctx.translate(W*(1-tp),0); }
+      else if(trans==='zoom'){ ctx.globalAlpha=tp; }
+      drawBg(sc,s.p,T,W,H);
+      ctx.restore();
+      ctx.globalAlpha=1;
+    }
   } else {
     drawBg(sc,s.p,T,W,H);
   }
@@ -1042,6 +1084,55 @@ function voiceTick(){ if(!vRecActive) return; var t=(performance.now()-vRecStart
 function stopVoiceRec(){ if(!vRecActive) return; vRecActive=false; el('vRecBtn').textContent='🎙️ Record voiceover'; try{ vRec.stop(); }catch(e){} }
 function cleanupVoice(){ if(vStream){ vStream.getTracks().forEach(function(t){ try{ t.stop(); }catch(e){} }); vStream=null; } }
 
+function sfxMode(){ return el('sfx')?el('sfx').value:'off'; }
+function sfxVol(){ return el('sfxVol')?clamp(parseFloat(el('sfxVol').value),0,1):0.4; }
+function hasSfx(){ return sfxMode()!=='off'; }
+// synth a transition "whoosh": swept band-passed noise, no audio files needed
+function schedWhoosh(dest,when,vol){
+  try{
+    var dur=0.24, sr=audioCtx.sampleRate;
+    var nb=audioCtx.createBuffer(1,Math.max(1,Math.floor(sr*dur)),sr);
+    var d=nb.getChannelData(0); for(var k=0;k<d.length;k++){ d[k]=(Math.random()*2-1); }
+    var src=audioCtx.createBufferSource(); src.buffer=nb;
+    var bp=audioCtx.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=0.9;
+    bp.frequency.setValueAtTime(260,when); bp.frequency.exponentialRampToValueAtTime(3200,when+dur);
+    var g=audioCtx.createGain();
+    g.gain.setValueAtTime(0.0001,when);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.001,0.6*vol),when+0.06);
+    g.gain.exponentialRampToValueAtTime(0.0001,when+dur);
+    src.connect(bp); bp.connect(g); g.connect(dest); src.start(when); try{src.stop(when+dur+0.03);}catch(e){}
+    audioSources.push(src);
+  }catch(e){}
+}
+// synth a soft end "chime"
+function schedChime(dest,when,vol){
+  try{
+    [880,1320].forEach(function(f,idx){
+      var o=audioCtx.createOscillator(); o.type='sine'; o.frequency.value=f;
+      var g=audioCtx.createGain();
+      g.gain.setValueAtTime(0.0001,when);
+      g.gain.exponentialRampToValueAtTime(Math.max(0.001,(idx?0.10:0.2)*vol),when+0.03);
+      g.gain.exponentialRampToValueAtTime(0.0001,when+0.7);
+      o.connect(g); g.connect(dest); o.start(when); try{o.stop(when+0.72);}catch(e){}
+      audioSources.push(o);
+    });
+  }catch(e){}
+}
+function scheduleSfx(dest,offset){
+  if(!hasSfx()||!audioCtx)return;
+  var mode=sfxMode(), vol=sfxVol(), off=clamp(offset||0,0,1e9), now=audioCtx.currentTime;
+  var trans=el('trans')?el('trans').value:'fade';
+  if(trans!=='cut'){
+    for(var k=1;k<starts.length;k++){
+      var st=starts[k]; if(st<off-0.02)continue;
+      schedWhoosh(dest, now+(st-off), vol);
+    }
+  }
+  if(mode==='whoosh_end'){
+    var endAt=Math.max(0,totalDur-0.7);
+    if(endAt>=off-0.02) schedChime(dest, now+(endAt-off), vol);
+  }
+}
 function startAudioGraph(dest,offset){
   if(!audioCtx)return; stopAudioGraph();
   var list=[{buf:musicBuffer,vol:parseFloat(el('musicVol').value)},{buf:voiceBuffer,vol:parseFloat(el('voiceVol').value)}];
@@ -1050,9 +1141,10 @@ function startAudioGraph(dest,offset){
       src.connect(g); g.connect(dest); src.start(0, clamp(offset||0,0,a.buf.duration-0.01)); audioSources.push(src);
     }catch(e){}
   });
+  scheduleSfx(dest,offset);
 }
 function stopAudioGraph(){ audioSources.forEach(function(s){try{s.stop()}catch(e){}}); audioSources=[]; }
-function startPreviewAudio(){ if(!voiceBuffer&&!musicBuffer)return; if(!ensureAudio())return; startAudioGraph(audioCtx.destination, previewT); }
+function startPreviewAudio(){ if(!voiceBuffer&&!musicBuffer&&!hasSfx())return; if(!ensureAudio())return; startAudioGraph(audioCtx.destination, previewT); }
 
 /* ---------- render / record ---------- */
 var recorder=null, recChunks=[], recRAF=null, recStart=0, recording=false;
@@ -1070,7 +1162,7 @@ async function startRender(){
   var stream=cv.captureStream(fps);
   // audio
   var adest=null;
-  if((voiceBuffer||musicBuffer) && ensureAudio()){
+  if((voiceBuffer||musicBuffer||hasSfx()) && ensureAudio()){
     try{ adest=audioCtx.createMediaStreamDestination(); startAudioGraph(adest,0);
       adest.stream.getAudioTracks().forEach(function(tr){ stream.addTrack(tr); });
     }catch(e){}
