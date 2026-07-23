@@ -533,7 +533,9 @@ function renderScenes(){
           +[['','Match global'],['pop','Bold Pop'],['bar','Accent Bar'],['neon','Neon Glow'],['clean','Clean']].map(function(o){return '<option value="'+o[0]+'"'+((s.capStyle||'')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')
         +'</select></div>'
       +'</div>'
-      +(s._vid?('<div class="row" style="margin-top:8px"><div><label style="margin-top:0">Clip speed</label><select onchange="setVidSpeed('+i+',this.value)">'+[['0.5','0.5×'],['1','1×'],['1.5','1.5×'],['2','2×']].map(function(o){return '<option value="'+o[0]+'"'+(((s.vidSpeed||1)+'')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div><div></div></div>'):'')
+      +(s._vid?('<div class="row" style="margin-top:8px"><div><label style="margin-top:0">Clip speed</label><select onchange="setVidSpeed('+i+',this.value)">'+[['0.5','0.5×'],['1','1×'],['1.5','1.5×'],['2','2×']].map(function(o){return '<option value="'+o[0]+'"'+(((s.vidSpeed||1)+'')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div><div><label style="margin-top:0">Clip length</label><input disabled value="'+(s._vid.duration?s._vid.duration.toFixed(1)+'s':'loading…')+'"></div></div>'
+        +(s._vid.duration?('<label style="margin-top:8px">✂️ Trim <span id="trimlab'+i+'" style="text-transform:none;letter-spacing:0;color:var(--acc2)">'+(s.vidIn||0).toFixed(1)+'s → '+(s.vidOut||s._vid.duration).toFixed(1)+'s</span></label><div class="row"><div><input type="range" min="0" max="'+s._vid.duration.toFixed(2)+'" step="0.1" value="'+(s.vidIn||0)+'" oninput="setVidTrim('+i+',\'in\',this.value)" aria-label="Trim start"></div><div><input type="range" min="0" max="'+s._vid.duration.toFixed(2)+'" step="0.1" value="'+(s.vidOut||s._vid.duration)+'" oninput="setVidTrim('+i+',\'out\',this.value)" aria-label="Trim end"></div></div>'):'')
+      :'')
       +'<div class="swatches">'+sw+'</div>'
     +'</div>';
   }).join('');
@@ -560,7 +562,7 @@ function setPhoto(i,file){
     var url=URL.createObjectURL(file);
     var v=document.createElement('video');
     v.src=url; v.muted=true; v.loop=true; v.playsInline=true; v.setAttribute('playsinline',''); v.preload='auto';
-    v.addEventListener('loadeddata',function(){ try{ v.playbackRate=s.vidSpeed||1; }catch(e){} try{ v.play(); }catch(e){} drawAt(previewT); renderScenes(); });
+    v.addEventListener('loadeddata',function(){ try{ v.playbackRate=s.vidSpeed||1; }catch(e){} if(!s.vidOut && v.duration) s.vidOut=v.duration; try{ v.currentTime=s.vidIn||0; }catch(e){} try{ v.play(); }catch(e){} drawAt(previewT); renderScenes(); });
     s._vid=v; s.vidUrl=url; s.photo=null; s._img=null; s.media='video';
     try{ v.load(); }catch(e){}
     renderScenes();
@@ -578,6 +580,14 @@ function clearPhoto(i,silent){
   if(!silent){ renderScenes(); drawAt(previewT); }
 }
 function setVidSpeed(i,v){ var s=scenes[i]; if(!s)return; s.vidSpeed=parseFloat(v)||1; if(s._vid){ try{ s._vid.playbackRate=s.vidSpeed; }catch(e){} } }
+function setVidTrim(i,which,v){
+  var s=scenes[i]; if(!s||!s._vid)return; var dur=s._vid.duration||0; v=parseFloat(v)||0;
+  if(which==='in'){ s.vidIn=Math.max(0,Math.min(v,(s.vidOut||dur)-0.2)); }
+  else { s.vidOut=Math.min(dur,Math.max(v,(s.vidIn||0)+0.2)); }
+  var lab=el('trimlab'+i); if(lab) lab.textContent=(s.vidIn||0).toFixed(1)+'s → '+(s.vidOut||dur).toFixed(1)+'s';
+  try{ s._vid.currentTime=s.vidIn||0; }catch(e){}
+  drawAt(previewT);
+}
 function moveScene(i,d){ var j=i+d; if(j<0||j>=scenes.length)return; pushUndo(); var t=scenes[i];scenes[i]=scenes[j];scenes[j]=t; rebuildTimeline(); renderScenes(); }
 function dupScene(i){ pushUndo(); var c=JSON.parse(JSON.stringify(scenes[i])); c._img=null; c._vid=null; c.vidUrl=null; if(!c.photo)c.media=null; if(c.photo){var im=new Image();im.onload=function(){c._img=im;drawAt(previewT)};im.src=c.photo;} scenes.splice(i+1,0,c); rebuildTimeline(); renderScenes(); }
 function delScene(i){ pushUndo(); scenes.splice(i,1); rebuildTimeline(); renderScenes(); drawAt(previewT); }
@@ -652,6 +662,7 @@ function drawBg(sc,p,T,W,H){
     if(ir>cr){ dh=H*z; dw=dh*ir; } else { dw=W*z; dh=dw/ir; }
     var ox=(W-dw)/2 + ((!vidReady&&motion)? Math.sin(T*0.6)*W*0.02 : 0);
     var oy=(H-dh)/2 - ((!vidReady&&motion)? p*H*0.04 : 0);
+    if(vidReady){ var _vin=sc.vidIn||0, _vout=(sc.vidOut||sc._vid.duration||0); if(_vout>_vin){ var _ct=sc._vid.currentTime; if(_ct>_vout || _ct<_vin-0.06){ try{ sc._vid.currentTime=_vin; }catch(e){} } } }
     try{ ctx.drawImage(im,ox,oy,dw,dh); }catch(e){}
     var g=ctx.createLinearGradient(0,0,0,H);
     g.addColorStop(0,'rgba(0,0,0,.35)'); g.addColorStop(.5,'rgba(0,0,0,.15)'); g.addColorStop(1,'rgba(0,0,0,.72)');
