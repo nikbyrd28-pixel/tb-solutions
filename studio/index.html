@@ -441,6 +441,18 @@ function renderScenes(){
         +'</select></div>'
         +'<div><label style="margin-top:0">Photo / video background</label><input type="file" accept="image/*,video/*" onchange="setPhoto('+i+',this.files[0])">'+((s.photo||s._vid)?' <button class="iconbtn" style="width:auto;padding:0 8px" onclick="clearPhoto('+i+')">clear</button>':'')+'</div>'
       +'</div>'
+      +'<div class="row" style="margin-top:8px">'
+        +'<div><label style="margin-top:0">Text position</label><select onchange="upd('+i+',\'textPos\',this.value)">'
+          +['center|Middle','top|Top','bottom|Bottom'].map(function(o){var v=o.split('|');return '<option value="'+v[0]+'"'+((s.textPos||'center')===v[0]?' selected':'')+'>'+v[1]+'</option>'}).join('')
+        +'</select></div>'
+        +'<div><label style="margin-top:0">Text size</label><select onchange="upd('+i+',\'textScale\',parseFloat(this.value))">'
+          +[['0.8','S'],['1','M'],['1.25','L'],['1.5','XL']].map(function(v){return '<option value="'+v[0]+'"'+(((s.textScale||1)+'')===v[0]?' selected':'')+'>'+v[1]+'</option>'}).join('')
+        +'</select></div>'
+      +'</div>'
+      +'<div class="row" style="margin-top:8px">'
+        +'<div><label style="margin-top:0">Text colour</label><input type="color" value="'+(s.textColor||'#ffffff')+'" oninput="upd('+i+',\'textColor\',this.value)" style="height:40px;padding:3px"></div>'
+        +'<div></div>'
+      +'</div>'
       +'<div class="swatches">'+sw+'</div>'
     +'</div>';
   }).join('');
@@ -648,17 +660,20 @@ function wrapWords(words,maxW,font){
   if(cur.length)lines.push(cur);
   return lines;
 }
+var capColor='#fff';
 function drawCaption(sc,p,W,H){
   var style=el('capStyle').value;
+  capColor=sc.textColor||'#fff';
   var text=(sc.text||'').replace(/\s+/g,' ').trim(); if(!text)return;
   var words=text.split(' ');
-  var fs=Math.round(W*(words.length>10?0.072:0.088));
+  var fs=Math.round(W*(words.length>10?0.072:0.088)*(sc.textScale||1));
   var font=F(900,fs);
   var maxW=W*0.82;
   var lines=wrapWords(words,maxW,font);
   var lh=fs*1.14;
   var blockH=lines.length*lh;
-  var cy=(shapeIdx===0? H*0.54 : H*0.5) - blockH/2;
+  var posFrac=(sc.textPos==='top')?0.26:(sc.textPos==='bottom')?0.80:(shapeIdx===0?0.54:0.5);
+  var cy=H*posFrac - blockH/2;
   // kicker
   if(sc.kicker){
     ctx.font=F(800,Math.round(W*0.032));
@@ -724,16 +739,16 @@ function drawWord(word,cx,cy,font,style,active,fs,wordAlpha){
     var padx=fs*0.18, pady=fs*0.1;
     ctx.fillStyle=active?accent:'rgba(11,11,18,.82)';
     roundRect(cx-ww/2-padx,cy-fs*0.58-pady*0, ww+padx*2, fs*0.98, fs*0.14); ctx.fill();
-    ctx.fillStyle=active?'#0b0b12':'#fff';
+    ctx.fillStyle=active?'#0b0b12':capColor;
   } else if(style==='neon'){
-    ctx.shadowColor=accent; ctx.shadowBlur=fs*0.5; ctx.fillStyle='#fff';
+    ctx.shadowColor=accent; ctx.shadowBlur=fs*0.5; ctx.fillStyle=capColor;
   } else if(style==='pop'){
     ctx.lineJoin='round'; ctx.miterLimit=2;
     ctx.shadowColor='rgba(0,0,0,.7)'; ctx.shadowBlur=fs*0.22; ctx.shadowOffsetY=fs*0.06;
     ctx.lineWidth=fs*0.17; ctx.strokeStyle='rgba(6,7,14,.92)'; ctx.strokeText(word,cx,cy);
-    ctx.shadowBlur=0; ctx.shadowOffsetY=0; ctx.fillStyle='#fff';
+    ctx.shadowBlur=0; ctx.shadowOffsetY=0; ctx.fillStyle=capColor;
   } else { // clean
-    ctx.shadowColor='rgba(0,0,0,.5)'; ctx.shadowBlur=fs*0.2; ctx.fillStyle='#fff';
+    ctx.shadowColor='rgba(0,0,0,.5)'; ctx.shadowBlur=fs*0.2; ctx.fillStyle=capColor;
   }
   ctx.fillText(word,cx,cy);
   ctx.restore();
