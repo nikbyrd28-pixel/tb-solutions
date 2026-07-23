@@ -451,8 +451,11 @@ function renderScenes(){
       +'</div>'
       +'<div class="row" style="margin-top:8px">'
         +'<div><label style="margin-top:0">Text colour</label><input type="color" value="'+(s.textColor||'#ffffff')+'" oninput="upd('+i+',\'textColor\',this.value)" style="height:40px;padding:3px"></div>'
-        +'<div></div>'
+        +'<div><label style="margin-top:0">Caption style</label><select onchange="upd('+i+',\'capStyle\',this.value)">'
+          +[['','Match global'],['pop','Bold Pop'],['bar','Accent Bar'],['neon','Neon Glow'],['clean','Clean']].map(function(o){return '<option value="'+o[0]+'"'+((s.capStyle||'')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')
+        +'</select></div>'
       +'</div>'
+      +(s._vid?('<div class="row" style="margin-top:8px"><div><label style="margin-top:0">Clip speed</label><select onchange="setVidSpeed('+i+',this.value)">'+[['0.5','0.5×'],['1','1×'],['1.5','1.5×'],['2','2×']].map(function(o){return '<option value="'+o[0]+'"'+(((s.vidSpeed||1)+'')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div><div></div></div>'):'')
       +'<div class="swatches">'+sw+'</div>'
     +'</div>';
   }).join('');
@@ -466,7 +469,7 @@ function setPhoto(i,file){
     var url=URL.createObjectURL(file);
     var v=document.createElement('video');
     v.src=url; v.muted=true; v.loop=true; v.playsInline=true; v.setAttribute('playsinline',''); v.preload='auto';
-    v.addEventListener('loadeddata',function(){ try{ v.play(); }catch(e){} drawAt(previewT); renderScenes(); });
+    v.addEventListener('loadeddata',function(){ try{ v.playbackRate=s.vidSpeed||1; }catch(e){} try{ v.play(); }catch(e){} drawAt(previewT); renderScenes(); });
     s._vid=v; s.vidUrl=url; s.photo=null; s._img=null; s.media='video';
     try{ v.load(); }catch(e){}
     renderScenes();
@@ -483,6 +486,7 @@ function clearPhoto(i,silent){
   s.photo=null; s._img=null; s._vid=null; s.vidUrl=null; s.media=null;
   if(!silent){ renderScenes(); drawAt(previewT); }
 }
+function setVidSpeed(i,v){ var s=scenes[i]; if(!s)return; s.vidSpeed=parseFloat(v)||1; if(s._vid){ try{ s._vid.playbackRate=s.vidSpeed; }catch(e){} } }
 function moveScene(i,d){ var j=i+d; if(j<0||j>=scenes.length)return; var t=scenes[i];scenes[i]=scenes[j];scenes[j]=t; rebuildTimeline(); renderScenes(); }
 function dupScene(i){ var c=JSON.parse(JSON.stringify(scenes[i])); c._img=null; c._vid=null; c.vidUrl=null; if(!c.photo)c.media=null; if(c.photo){var im=new Image();im.onload=function(){c._img=im;drawAt(previewT)};im.src=c.photo;} scenes.splice(i+1,0,c); rebuildTimeline(); renderScenes(); }
 function delScene(i){ scenes.splice(i,1); rebuildTimeline(); renderScenes(); drawAt(previewT); }
@@ -662,7 +666,7 @@ function wrapWords(words,maxW,font){
 }
 var capColor='#fff';
 function drawCaption(sc,p,W,H){
-  var style=el('capStyle').value;
+  var style=sc.capStyle||el('capStyle').value;
   capColor=sc.textColor||'#fff';
   var text=(sc.text||'').replace(/\s+/g,' ').trim(); if(!text)return;
   var words=text.split(' ');
