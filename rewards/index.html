@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex" />
 <title>Rewards</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#05060d">
 <link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
 <link rel="preconnect" href="https://api.qrserver.com">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230a0a0f'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%E2%AD%90%3C/text%3E%3C/svg%3E" />
@@ -167,7 +171,7 @@
         <img class="qr" id="mQr" alt="Your member QR" loading="lazy">
         <p class="muted">Show this at the counter — staff scans it, you get your point. ⚡</p>
         <button class="btn ghost" onclick="saveCard()" style="margin-top:8px">📌 Save my card to my phone</button>
-        <p class="muted hide" id="savedMsg" style="margin-top:6px">Saved — keep this link to open your card anytime ✓</p>
+        <p class="muted hide" id="savedMsg" style="margin-top:6px">Saved ✓ — or tap your browser menu → <b>Add to Home Screen</b> for one-tap access.</p>
       </div>
     </div>
 
@@ -262,6 +266,28 @@ var THEMES={ voomlux:{acc:'#d8b96a',acc2:'#f0d79a',bg:'#0a0a0a',line:'rgba(216,1
   if(th.bg) document.body.style.background='radial-gradient(circle at 20% -10%,'+th.acc+'22,transparent 40%),linear-gradient(180deg,'+th.bg+','+th.bg+')';
 })();
 if(slug){ document.title=display+' Rewards'; document.getElementById('brand').innerHTML=display.replace(/[<>&]/g,'')+' <span>rewards</span>'; }
+
+/* installable card: dynamic, slug-aware web manifest + brand icon (no service worker, fail-safe) */
+(function(){
+  try{
+    var cs=getComputedStyle(document.documentElement);
+    var acc=(cs.getPropertyValue('--acc')||'#7aa2ff').trim(), acc2=(cs.getPropertyValue('--acc2')||'#5ad0f0').trim();
+    var icon='';
+    try{
+      var c=document.createElement('canvas'); c.width=c.height=512; var g=c.getContext('2d');
+      g.fillStyle='#05060d'; g.fillRect(0,0,512,512);
+      var grd=g.createLinearGradient(0,0,512,512); grd.addColorStop(0,acc2); grd.addColorStop(1,acc); g.fillStyle=grd;
+      var x=56,y=56,w=400,h=400,r=96; g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r); g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath(); g.fill();
+      g.fillStyle='#05060d'; g.textAlign='center'; g.textBaseline='middle'; g.font='900 300px system-ui,Arial';
+      g.fillText(((display||'★').trim().charAt(0)||'★').toUpperCase(),256,290);
+      icon=c.toDataURL('image/png');
+    }catch(e){}
+    var man={ name:(display||'Rewards')+' Rewards', short_name:(display||'Rewards').slice(0,12), start_url:location.pathname+location.search, scope:'/rewards/', display:'standalone', background_color:'#05060d', theme_color:acc };
+    if(icon) man.icons=[{src:icon,sizes:'512x512',type:'image/png',purpose:'any maskable'}];
+    var l=document.createElement('link'); l.rel='manifest'; l.href=URL.createObjectURL(new Blob([JSON.stringify(man)],{type:'application/manifest+json'})); document.head.appendChild(l);
+    if(icon){ var ai=document.createElement('link'); ai.rel='apple-touch-icon'; ai.href=icon; document.head.appendChild(ai); }
+  }catch(e){}
+})();
 
 function el(id){return document.getElementById(id)}
 function rpc(fn,args){
