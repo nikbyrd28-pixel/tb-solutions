@@ -210,7 +210,10 @@ function animCounts(){
     (function tick(){ s=Math.min(to,s+step); e.textContent=s.toLocaleString(); if(s<to) requestAnimationFrame(tick); })();
   });
 }
-if(q.get('c') && q.get('pin')){ el('pin').value=q.get('pin'); load(); }
+// Never auto-login from a URL PIN — that leaks the credential into history, logs and referrers.
+// Scrub any ?pin= that was passed, keep the business-code prefill, and focus the PIN field.
+if(q.get('pin')){ try{ history.replaceState(null,'',location.pathname+(q.get('c')?('?c='+encodeURIComponent(q.get('c').toLowerCase().replace(/[^a-z0-9]/g,''))):'')); }catch(e){} }
+if(q.get('c')){ try{ el('pin').focus(); }catch(e){} }
 
 window.addEventListener('error',function(e){try{
   fetch(SUPA_URL+'/rest/v1/client_errors',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},

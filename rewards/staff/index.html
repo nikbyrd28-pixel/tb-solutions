@@ -150,9 +150,14 @@ function boot(){
 }
 function saveSetup(){
   var slug=(el('sSlug').value||'').toLowerCase().replace(/[^a-z0-9]/g,''), pin=el('sPin').value.trim();
-  if(!slug||!pin){ el('sErr').textContent='Need both the business code and PIN.'; el('sErr').classList.remove('hide'); return; }
-  localStorage.setItem('rw_staff',JSON.stringify({slug:slug,pin:pin}));
-  location.reload();
+  if(!slug||!pin){ el('sErr').style.color=''; el('sErr').textContent='Need both the business code and PIN.'; el('sErr').classList.remove('hide'); return; }
+  // Verify the code + PIN before saving, so a typo is caught here — not on the first customer's punch.
+  el('sErr').style.color='var(--muted)'; el('sErr').textContent='Checking…'; el('sErr').classList.remove('hide');
+  rpc('loyalty_owner_dashboard',{p_client:slug,p_pin:pin}).then(function(d){
+    if(!d || d.ok===false || d.error){ el('sErr').style.color=''; el('sErr').textContent='That business code + PIN don’t match — double-check with the owner.'; el('sErr').classList.remove('hide'); return; }
+    localStorage.setItem('rw_staff',JSON.stringify({slug:slug,pin:pin}));
+    location.reload();
+  }).catch(function(){ el('sErr').style.color=''; el('sErr').textContent='Network hiccup — try again in a moment.'; el('sErr').classList.remove('hide'); });
 }
 function resetSetup(){ if(confirm('Change business / PIN on this device?')){ localStorage.removeItem('rw_staff'); location.reload(); } }
 

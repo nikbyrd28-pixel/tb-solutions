@@ -288,7 +288,8 @@ function subscribe(){
   document.getElementById('subErr').classList.add('hide');
   fetch(SUPA_URL+'/rest/v1/intakes',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
     body:JSON.stringify({business:biz,name:name,email:email,phone:phone,about:'🔁 Loop signup',interest:'Loyalty program (Loop)',goal:'get more repeat customers',timeline:'ASAP',ref:(window.tbRef?window.tbRef():''),notes:'Loop free-month signup'})})
-  .then(function(){ leadCaptured(); }).catch(function(){ leadCaptured(); });
+  .then(function(r){ if(!r.ok) throw 0; leadCaptured(); })
+  .catch(function(){ btn.disabled=false; btn.textContent='Get started free →'; subFlash('Could not send just now — please try again in a moment.'); });
 }
 // lead form → intakes (lands in TB Command)
 document.getElementById('f').addEventListener('submit',function(e){
