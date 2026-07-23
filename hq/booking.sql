@@ -342,3 +342,38 @@ end $$;
 
 grant execute on function public.loyalty_settings_get(text, text) to anon, authenticated;
 grant execute on function public.save_reward_settings(text, text, text, integer, integer, integer, integer, jsonb, boolean, text, text, text) to anon, authenticated;
+
+-- ============================================================================
+-- Customer-side booking management (view + cancel own upcoming appointments)
+-- ============================================================================
+create or replace function public.member_appointments(p_code text)
+returns jsonb language plpgsql security definer set search_path to 'public','pg_temp' as $$
+declare m public.reward_members; s public.reward_settings; tz text; rows jsonb;
+begin
+  select * into m from public.reward_members where code = p_code limit 1;
+  if m.id is null then return jsonb_build_object('ok', false, 'error', 'not found'); end if;
+  select * into s from public.reward_settings where client = m.client;
+  tz := coalesce(s.book_tz, 'America/New_York');
+  select coalesce(jsonb_agg(x order by x_start), '[]'::jsonb) into rows from (
+    select jsonb_build_object('id', a.id, 'service', coalesce(a.service->>'name','Appointment'),
+      'staff_name', a.staff_name, 'start_at', a.start_at, 'mins', a.mins,
+      'when', to_char(a.start_at at time zone tz, 'Dy Mon DD, HH12:MI AM')) as x, a.start_at as x_start
+    from public.reward_appointments a
+    where a.member_code = p_code and a.status = 'confirmed' and a.start_at > now()
+  ) t;
+  return jsonb_build_object('ok', true, 'appts', rows);
+end $$;
+
+create or replace function public.member_cancel_appointment(p_code text, p_id bigint)
+returns jsonb language plpgsql security definer set search_path to 'public','pg_temp' as $$
+declare n int;
+begin
+  update public.reward_appointments set status = 'cancelled'
+    where id = p_id and member_code = p_code and status = 'confirmed' and start_at > now();
+  get diagnostics n = row_count;
+  if n = 0 then return jsonb_build_object('ok', false, 'error', 'Could not cancel — it may have already passed.'); end if;
+  return jsonb_build_object('ok', true);
+end $$;
+
+grant execute on function public.member_appointments(text)              to anon, authenticated;
+grant execute on function public.member_cancel_appointment(text, bigint) to anon, authenticated;

@@ -137,6 +137,10 @@
   .dchip b{display:block;font-size:17px;margin-top:2px}
   .slots{max-height:210px;overflow-y:auto}
   .slots .chip{min-width:74px;padding:9px 6px}
+  .upc-h{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--acc2);margin:10px 0 2px;text-align:left}
+  .upc{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:8px;background:rgba(122,162,255,.06);text-align:left}
+  .upc b{font-size:14px}
+  .upc-x{background:rgba(255,138,157,.12);border:1px solid rgba(255,138,157,.4);color:#ff8a9d;border-radius:9px;padding:7px 12px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
   /* arcade */
   .coinchip{font-weight:800;font-size:13px;color:#ffcf5a}
   .arcade-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
@@ -264,6 +268,7 @@
     <div class="card" id="bookCard">
       <b>📅 Book your next visit</b>
       <p class="muted" id="bookIntro" style="margin:6px 0 2px">Pick a service and grab a real time — confirmed on the spot. Book to earn <b style="color:var(--text)">🪙 coins</b>.</p>
+      <div id="bookUpcoming" class="hide"></div>
 
       <!-- real self-service flow (built by JS from the shop's live config) -->
       <div id="bookFlow" class="hide"></div>
@@ -511,10 +516,30 @@ function showBookState(s){
   var intro=el('bookIntro'); if(intro) intro.classList.toggle('hide', s==='done');
   var rb=el('remindBtn'); if(rb) rb.classList.toggle('hide', s==='done');
 }
+function loadUpcoming(){
+  if(!member||!member.code) return;
+  rpc('member_appointments',{p_code:member.code}).then(function(d){
+    var box=el('bookUpcoming'); if(!box) return;
+    if(!d||!d.ok||!(d.appts&&d.appts.length)){ box.classList.add('hide'); box.innerHTML=''; return; }
+    box.classList.remove('hide');
+    box.innerHTML='<div class="upc-h">📌 Your upcoming visits</div>'+d.appts.map(function(a){
+      return '<div class="upc"><div><b>'+esc(a.service)+'</b>'+(a.staff_name?(' · '+esc(a.staff_name)):'')+'<div class="muted" style="font-size:12.5px">'+esc(a.when)+'</div></div>'
+        +'<button class="upc-x" onclick="cancelAppt('+a.id+')">Cancel</button></div>';
+    }).join('');
+  }).catch(function(){});
+}
+function cancelAppt(id){
+  if(!confirm('Cancel this appointment?')) return;
+  rpc('member_cancel_appointment',{p_code:member.code,p_id:id}).then(function(d){
+    if(d&&d.ok){ toast('Appointment cancelled'); loadUpcoming(); }
+    else { toast((d&&d.error)||'Could not cancel'); }
+  }).catch(function(){ toast('Network error'); });
+}
 function initBooking(m){
   var card=el('bookCard'); if(!card) return;
   if(m.booking_on===false){ card.classList.add('hide'); return; }
   card.classList.remove('hide');
+  loadUpcoming();
   BOOK={cfg:null,svc:null,staff:'',date:null,time:null,result:null};
   showBookState('flow');
   el('bookFlow').innerHTML='<div class="rwspin"></div><p class="muted center" style="margin-top:10px">Loading times…</p>';
@@ -595,7 +620,7 @@ function confirmBooking(){
     var cl=el('bkCoinLine');
     if(member && r.coins_awarded>0){ member.coins=(member.coins||0)+r.coins_awarded; renderCoins(member); if(cl) cl.textContent='+'+r.coins_awarded+' 🪙 coins for booking!'; }
     else if(cl) cl.textContent='';
-    showBookState('done'); lsSet('rw_booked_'); if(member){renderQuests(member);renderAchievements(member);} confetti(); haptic([30,60,40]);
+    showBookState('done'); lsSet('rw_booked_'); if(member){renderQuests(member);renderAchievements(member);} loadUpcoming(); confetti(); haptic([30,60,40]);
   }).catch(function(){ el('bkErr2').textContent='Network hiccup — try again.'; el('bkErr2').classList.remove('hide'); btn.disabled=false; btn.textContent=old; });
 }
 function addBookingToCal(){
