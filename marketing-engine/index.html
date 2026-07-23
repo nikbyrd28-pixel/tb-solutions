@@ -116,6 +116,7 @@
         <button class="btn small" onclick="saveAsset()">💾 Save to library</button>
         <button class="btn ghost small" onclick="copyOut()">📋 Copy</button>
         <button class="btn ghost small" onclick="generate()">🔁 Regenerate</button>
+        <button class="btn small hide" id="toStudioBtn" onclick="toStudio()">🎬 Turn into a video</button>
       </div>
       <div class="ok hide" id="saveOk">Saved ✓</div>
     </div>
@@ -211,6 +212,7 @@ async function generate(){
     el('outText').textContent=j.text;
     el('outCard').classList.remove('hide');
     el('saveOk').classList.add('hide');
+    el('toStudioBtn').classList.toggle('hide', sel!=='video_script');
     el('outCard').scrollIntoView({behavior:'smooth'});
   }catch(e){
     el('gErr').textContent='Generation failed — is the "TB — Marketing Engine AI" workflow Active in n8n? ('+e.message+')';
@@ -221,6 +223,7 @@ async function generate(){
 }
 
 function copyOut(){ if(lastOut) navigator.clipboard.writeText(lastOut.content) }
+function toStudio(){ if(!lastOut) return; try{ localStorage.setItem('tb_video_kit', lastOut.content); }catch(e){} window.open('/studio/','_blank'); }
 
 async function saveAsset(){
   if(!lastOut) return;
