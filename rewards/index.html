@@ -137,6 +137,30 @@
   .dchip b{display:block;font-size:17px;margin-top:2px}
   .slots{max-height:210px;overflow-y:auto}
   .slots .chip{min-width:74px;padding:9px 6px}
+  /* arcade */
+  .coinchip{font-weight:800;font-size:13px;color:#ffcf5a}
+  .arcade-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+  .gtile{border:1px solid var(--line);background:rgba(122,162,255,.06);color:var(--text);border-radius:16px;padding:16px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;font:inherit;transition:transform .1s,box-shadow .12s}
+  .gtile:active{transform:scale(.96)}
+  .gtile:hover{box-shadow:0 0 18px color-mix(in srgb,var(--acc) 30%,transparent)}
+  .gtile .ge{font-size:34px;line-height:1}
+  .gtile b{font-size:14px}
+  .gtile span{font-size:11px}
+  /* game overlay */
+  .gv{position:fixed;inset:0;z-index:300;background:linear-gradient(180deg,#070811,#04050a);display:flex;flex-direction:column;align-items:center}
+  .gv-top{width:100%;max-width:470px;display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
+  .gv-title{font-weight:900;font-size:15px}
+  .gv-x{background:rgba(255,255,255,.08);border:1px solid var(--line);color:var(--text);border-radius:999px;width:36px;height:36px;font-size:16px;cursor:pointer}
+  .gv-hud{width:100%;max-width:470px;display:flex;justify-content:space-between;align-items:center;padding:0 20px 8px;font-weight:900;font-size:24px}
+  .gv-hud .gv-coins{font-size:15px;color:#ffcf5a}
+  #gameCanvas{border-radius:16px;touch-action:none;background:#05060d;box-shadow:0 0 44px color-mix(in srgb,var(--acc) 22%,transparent)}
+  .gv-controls{display:flex;gap:12px;justify-content:center;margin-top:14px}
+  .gv-controls button{width:66px;height:54px;border-radius:14px;border:1px solid var(--line);background:rgba(122,162,255,.1);color:var(--text);font-size:22px;font-weight:900;cursor:pointer}
+  .gv-controls button:active{background:color-mix(in srgb,var(--acc) 30%,transparent);transform:scale(.95)}
+  .gv-overlay{position:absolute;inset:0;display:grid;place-items:center;background:rgba(4,5,10,.74);backdrop-filter:blur(3px);z-index:2;padding:16px}
+  .gv-card{background:linear-gradient(150deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid var(--line);border-radius:22px;padding:26px 26px;text-align:center;max-width:330px;width:100%}
+  .gv-card h2{margin:8px 0;font-size:22px}
+  .gv-card .btn{width:100%}
 </style>
 </head>
 <body>
@@ -195,7 +219,7 @@
 
     <div class="card center">
       <b>🎰 Spin the slots</b>
-      <p class="muted" style="margin:6px 0 0">Feeling lucky? Spend <span id="spinCost">2</span> points for a shot at the grand prize — or save them for the sure thing.</p>
+      <p class="muted" style="margin:6px 0 0">Feeling lucky? Spend <span id="spinCost">2</span> 🪙 coins for a shot at the grand prize. Earn coins by playing, booking, or referring.</p>
       <div class="slot" id="slot">
         <div class="reel"><div class="reelstrip" id="reel0"></div></div>
         <div class="reel"><div class="reelstrip" id="reel1"></div></div>
@@ -208,14 +232,13 @@
       <div class="err hide" id="wErr"></div>
     </div>
 
-    <div class="card center" id="arcadeCard">
-      <b>🎮 Loop Arcade</b>
-      <p class="muted" style="margin:6px 0 10px">Play while you wait and earn <b style="color:var(--text)">🪙 coins</b> — the only ways to earn are <b style="color:var(--text)">play</b>, <b style="color:var(--text)">book</b>, or <b style="color:var(--text)">refer a friend</b>. Spend coins on spins &amp; prizes.</p>
-      <div class="chips" style="justify-content:center">
-        <span class="chip" style="cursor:default;opacity:.85">🐦 Loop Flyer<small>coming soon</small></span>
-        <span class="chip" style="cursor:default;opacity:.85">🚦 Chair Hopper<small>coming soon</small></span>
+    <div class="card" id="arcadeCard">
+      <div class="qh"><b>🎮 Loop Arcade</b><span class="coinchip" id="coinBal">🪙 0</span></div>
+      <p class="muted" style="margin:6px 0 10px">Play while you wait to earn <b style="color:var(--text)">🪙 coins</b> — then spend them on spins &amp; prizes. Coins come <b style="color:var(--text)">only</b> from playing, booking, or referring a friend.</p>
+      <div class="arcade-grid">
+        <button class="gtile" onclick="openGame('flyer')"><div class="ge">🐦</div><b>Loop Flyer</b><span class="muted" id="hiFlyer">Best 0</span></button>
+        <button class="gtile" onclick="openGame('hopper')"><div class="ge">🚦</div><b>Chair Hopper</b><span class="muted" id="hiHopper">Best 0</span></button>
       </div>
-      <p class="muted" style="margin-top:10px;font-size:12px">Games drop here soon — your coins are already saved to your card.</p>
     </div>
 
     <div class="card hide" id="prizeCard">
@@ -277,6 +300,37 @@
     </div>
 
     <p class="muted center">Powered by <a href="https://tbsol.net" style="color:var(--acc);text-decoration:none;font-weight:700">TB Solutions</a> · <a href="/rewards/staff/" style="color:var(--muted);text-decoration:none">staff</a></p>
+  </div>
+</div>
+
+<!-- Loop Arcade overlay -->
+<div id="gameOverlay" class="gv hide" aria-hidden="true">
+  <div class="gv-top" id="gvTop"><div class="gv-title" id="gvTitle">Loop Arcade</div><button class="gv-x" onclick="closeGame()" aria-label="Close game">✕</button></div>
+  <div class="gv-hud" id="gvHudRow"><span id="gvScore">0</span><span class="gv-coins">🪙 <b id="gvCoins">0</b></span></div>
+  <canvas id="gameCanvas"></canvas>
+  <div class="gv-controls hide" id="gvControls">
+    <button onclick="hopLeft()" aria-label="Move left">◀</button>
+    <button onclick="hopUp()" aria-label="Hop forward">▲</button>
+    <button onclick="hopRight()" aria-label="Move right">▶</button>
+  </div>
+  <div class="gv-overlay" id="gvStart">
+    <div class="gv-card">
+      <div id="gvIcon" style="font-size:44px;line-height:1">🐦</div>
+      <h2 id="gvName">Loop Flyer</h2>
+      <p class="muted" id="gvHow"></p>
+      <p class="muted">Best: <b id="gvBest">0</b></p>
+      <button class="btn" onclick="startGame()">▶ Play</button>
+    </div>
+  </div>
+  <div class="gv-overlay hide" id="gvOver">
+    <div class="gv-card">
+      <div style="font-size:40px;line-height:1">🏁</div>
+      <h2>Score <span id="gvFinal">0</span></h2>
+      <p class="ok" id="gvEarned"></p>
+      <p class="muted hide" id="gvCap"></p>
+      <button class="btn" onclick="startGame()">▶ Play again</button>
+      <button class="btn ghost" onclick="closeGame()" style="margin-top:8px">Back to my card</button>
+    </div>
   </div>
 </div>
 
@@ -357,7 +411,14 @@ function showCard(m){
   if(m.wheel) renderSlot(m);
   renderPrizes(m);
   renderSvStars();
+  renderCoins(m);
   initBooking(m);
+}
+function renderCoins(m){
+  var c=m.coins||0;
+  var cb=el('coinBal'); if(cb) cb.textContent='🪙 '+c;
+  var hf=el('hiFlyer'); if(hf) hf.textContent='Best '+((m.games&&m.games.flyer)||0);
+  var hh=el('hiHopper'); if(hh) hh.textContent='Best '+((m.games&&m.games.hopper)||0);
 }
 var RANKS=[{n:'Bronze',min:0,e:'🥉'},{n:'Silver',min:25,e:'🥈'},{n:'Gold',min:75,e:'🥇'},{n:'VIP',min:200,e:'💎'}];
 var XP_PER_LEVEL=10, _lastLevel=null;
@@ -378,7 +439,7 @@ function renderPlayer(m){
 }
 function renderStats(m){
   var box=el('statRow'); if(!box) return;
-  var stats=[['⭐',(m.lifetime||m.points||0),'lifetime'],['🔥',(m.streak||0),'streak'],['🎰',(m.spins||0),'spins'],['🎁',(m.prizes||[]).length,'prizes']];
+  var stats=[['🪙',(m.coins||0),'coins'],['⭐',(m.lifetime||m.points||0),'lifetime'],['🔥',(m.streak||0),'streak'],['🎁',(m.prizes||[]).length,'prizes']];
   box.innerHTML=stats.map(function(s){ return '<div class="st"><b>'+s[0]+' '+s[1]+'</b><span>'+s[2]+'</span></div>'; }).join('');
 }
 function levelUp(level){
@@ -394,8 +455,9 @@ function renderQuests(m){
   var qs=[
     {i:'📅',b:'Book your next visit',s:'Lock in your spot',done:!!lsGet('rw_booked_'),act:"scrollToId('bookCard')"},
     {i:'📝',b:'Take the 30-sec survey',s:'Earn a free point',done:!!recentSurvey,act:"scrollToId('surveyCard')"},
-    {i:'🎰',b:'Spin the slots',s:'Try your luck for a prize',done:(m.spins||0)>0,act:"scrollToId('slot')"},
-    {i:'💸',b:'Refer a friend',s:'+1 now, +2 when they book',done:!!lsGet('rw_shared_'),act:"shareRef()"},
+    {i:'🎮',b:'Play the arcade',s:'Earn 🪙 coins',done:!!(m.games&&(m.games.flyer||m.games.hopper)),act:"scrollToArcade()"},
+    {i:'🎰',b:'Spin the slots',s:'Spend coins for a prize',done:(m.spins||0)>0,act:"scrollToId('slot')"},
+    {i:'💸',b:'Refer a friend',s:'Earn 🪙 when they join',done:!!lsGet('rw_shared_'),act:"shareRef()"},
     {i:'🔥',b:'Keep your streak alive',s:'Visit again soon',done:(m.streak||0)>=2,act:""}
   ];
   if((m.lifetime||0)>=3){ qs.splice(1,0,{i:'⭐',b:'Leave a quick review',s:'30 seconds — means the world',done:!!lsGet('rw_reviewed_'),act:"goReview()"}); }
@@ -530,7 +592,9 @@ function confirmBooking(){
     if(!r||!r.ok){ el('bkErr2').textContent=(r&&r.error)||'Could not book — pick another time.'; el('bkErr2').classList.remove('hide'); btn.disabled=false; btn.textContent=old; if(r&&/just booked/i.test(r.error||'')) loadSlots(); return; }
     BOOK.result=r;
     el('bkDoneLine').innerHTML='Booked! <b>'+esc(r.service)+'</b>'+(r.staff_name?(' with <b>'+esc(r.staff_name)+'</b>'):'')+'<br>'+esc(r.when);
-    var cl=el('bkCoinLine'); if(cl) cl.textContent='';
+    var cl=el('bkCoinLine');
+    if(member && r.coins_awarded>0){ member.coins=(member.coins||0)+r.coins_awarded; renderCoins(member); if(cl) cl.textContent='+'+r.coins_awarded+' 🪙 coins for booking!'; }
+    else if(cl) cl.textContent='';
     showBookState('done'); lsSet('rw_booked_'); if(member){renderQuests(member);renderAchievements(member);} confetti(); haptic([30,60,40]);
   }).catch(function(){ el('bkErr2').textContent='Network hiccup — try again.'; el('bkErr2').classList.remove('hide'); btn.disabled=false; btn.textContent=old; });
 }
@@ -544,6 +608,183 @@ function addBookingToCal(){
   window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text='+text+'&details='+det+'&dates='+fmt(st)+'/'+fmt(en),'_blank','noopener');
 }
 function resetBooking(){ initBooking(member||{}); }
+
+/* ================= Loop Arcade ================= */
+var G={mode:null,run:false,raf:0,cvs:null,ctx:null,W:0,H:0,dpr:1,score:0,last:0,wired:false,
+  by:0,bvy:0,pipes:[],
+  rowMap:{},pcol:4,prow:0,rh:48};
+function cssVar(n,f){ try{ return (getComputedStyle(document.documentElement).getPropertyValue(n)||'').trim()||f; }catch(e){ return f; } }
+function roundRect(ctx,x,y,w,h,r){ r=Math.min(r,w/2,h/2); ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+function openGame(mode){
+  if(!member){ return; }
+  G.mode=mode;
+  var ov=el('gameOverlay'); ov.classList.remove('hide'); ov.setAttribute('aria-hidden','false');
+  el('gvControls').classList.toggle('hide', mode!=='hopper');
+  el('gvName').textContent = mode==='flyer'?'Loop Flyer':'Chair Hopper';
+  el('gvTitle').textContent = el('gvName').textContent;
+  el('gvIcon').textContent = mode==='flyer'?'🐦':'🚦';
+  el('gvHow').textContent = mode==='flyer'
+    ? 'Tap to fly up. Dodge the clippers. The further you go, the more coins you earn.'
+    : 'Tap ▲ to hop forward, ◀ ▶ to dodge traffic. Cross as far as you can for coins.';
+  el('gvBest').textContent = (member.games&&member.games[mode])||0;
+  el('gvCoins').textContent = member.coins||0;
+  el('gvScore').textContent = '0';
+  el('gvStart').classList.remove('hide'); el('gvOver').classList.add('hide');
+  setupCanvas(); wireGame(); G.run=false; drawIdle();
+}
+function setupCanvas(){
+  var c=el('gameCanvas'); G.cvs=c; G.ctx=c.getContext('2d');
+  var dpr=Math.min(2, window.devicePixelRatio||1); G.dpr=dpr;
+  var host=el('gameOverlay');
+  var used=el('gvTop').offsetHeight + el('gvHudRow').offsetHeight + (G.mode==='hopper'?el('gvControls').offsetHeight+14:0) + 24;
+  var cssW=Math.min(460, host.clientWidth-24);
+  var cssH=Math.max(340, host.clientHeight - used - 16);
+  c.style.width=cssW+'px'; c.style.height=cssH+'px';
+  c.width=Math.round(cssW*dpr); c.height=Math.round(cssH*dpr);
+  G.ctx.setTransform(dpr,0,0,dpr,0,0);
+  G.W=cssW; G.H=cssH;
+}
+function wireGame(){
+  if(G.wired) return; G.wired=true;
+  el('gameCanvas').addEventListener('pointerdown',function(e){
+    e.preventDefault();
+    if(!G.run) return;
+    if(G.mode==='flyer'){ flap(); return; }
+    var r=G.cvs.getBoundingClientRect(), x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
+    if(y<0.55) hopUp(); else if(x<0.5) hopLeft(); else hopRight();
+  });
+  document.addEventListener('keydown',function(e){
+    if(el('gameOverlay').classList.contains('hide')) return;
+    if(G.mode==='flyer'){ if(e.code==='Space'||e.code==='ArrowUp'){ e.preventDefault(); if(G.run)flap(); else startGame(); } }
+    else { if(e.code==='ArrowUp'){e.preventDefault();hopUp();} else if(e.code==='ArrowLeft'){hopLeft();} else if(e.code==='ArrowRight'){hopRight();} }
+  });
+}
+function startGame(){
+  el('gvStart').classList.add('hide'); el('gvOver').classList.add('hide');
+  setupCanvas();
+  G.score=0; el('gvScore').textContent='0';
+  if(G.mode==='flyer'){ G.by=G.H*0.4; G.bvy=0; G.pipes=[]; spawnPipe(); }
+  else { G.rowMap={}; G.pcol=4; G.prow=0; G.rh=Math.max(42,Math.floor(G.H/9)); }
+  G.run=true; G.last=performance.now(); cancelAnimationFrame(G.raf); G.raf=requestAnimationFrame(gloop);
+}
+function gloop(ts){
+  if(!G.run) return;
+  var dt=Math.min(48, ts-G.last)/16.67; G.last=ts;
+  if(G.mode==='flyer') updFlyer(dt); else updHopper(dt);
+  if(G.run) G.raf=requestAnimationFrame(gloop);
+}
+function drawIdle(){ var ctx=G.ctx; if(!ctx) return; ctx.clearRect(0,0,G.W,G.H); ctx.fillStyle='#05060d'; ctx.fillRect(0,0,G.W,G.H); }
+/* ---- Flyer (flappy) ---- */
+function flap(){ if(G.mode==='flyer'&&G.run){ G.bvy=-6.9; haptic(6); } }
+function spawnPipe(){ var gap=Math.max(120,G.H*0.34); var top=34+Math.random()*(G.H-gap-90); G.pipes.push({x:G.W+30,top:top,gap:gap,passed:false}); }
+function updFlyer(dt){
+  var W=G.W,H=G.H;
+  G.bvy += 0.48*dt; G.by += G.bvy*dt;
+  var speed=(2.5+G.score*0.03)*dt;
+  for(var i=0;i<G.pipes.length;i++) G.pipes[i].x-=speed;
+  if(!G.pipes.length || G.pipes[G.pipes.length-1].x < W-165) spawnPipe();
+  G.pipes=G.pipes.filter(function(p){return p.x>-70;});
+  var bx=W*0.28, br=Math.max(9,H*0.026);
+  for(var i=0;i<G.pipes.length;i++){ var p=G.pipes[i];
+    if(!p.passed && p.x+40<bx){ p.passed=true; G.score++; el('gvScore').textContent=G.score; haptic(4); }
+    if(bx+br>p.x && bx-br<p.x+42 && (G.by-br<p.top || G.by+br>p.top+p.gap)) return gameOver();
+  }
+  if(G.by+br>H || G.by-br<0) return gameOver();
+  drawFlyer(bx,br);
+}
+function drawFlyer(bx,br){
+  var ctx=G.ctx,W=G.W,H=G.H,acc=cssVar('--acc','#7aa2ff'),acc2=cssVar('--acc2','#5ad0f0');
+  var bg=ctx.createLinearGradient(0,0,0,H); bg.addColorStop(0,'#0a1024'); bg.addColorStop(1,'#05060d'); ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+  for(var i=0;i<G.pipes.length;i++){ var p=G.pipes[i];
+    var pg=ctx.createLinearGradient(p.x,0,p.x+42,0); pg.addColorStop(0,acc); pg.addColorStop(1,acc2); ctx.fillStyle=pg;
+    roundRect(ctx,p.x,0,42,p.top,7); ctx.fill();
+    roundRect(ctx,p.x,p.top+p.gap,42,H-(p.top+p.gap),7); ctx.fill();
+  }
+  ctx.save(); ctx.translate(bx,G.by); ctx.rotate(Math.max(-0.5,Math.min(0.9,G.bvy*0.06)));
+  ctx.shadowColor=acc2; ctx.shadowBlur=14; ctx.fillStyle=acc2; ctx.beginPath(); ctx.arc(0,0,br,0,6.283); ctx.fill();
+  ctx.shadowBlur=0; ctx.fillStyle='#05060d'; ctx.beginPath(); ctx.arc(br*0.38,-br*0.22,br*0.2,0,6.283); ctx.fill();
+  ctx.fillStyle='#ffcf5a'; ctx.beginPath(); ctx.moveTo(br*0.9,0); ctx.lineTo(br*1.5,-br*0.25); ctx.lineTo(br*1.5,br*0.25); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+/* ---- Hopper (crossy-lite) ---- */
+var HCOLS=9;
+function makeRow(idx){
+  if(idx<2) return {type:'safe',cars:[]};
+  if(Math.random()<0.4) return {type:'safe',cars:[]};
+  var dir=Math.random()<0.5?1:-1, speed=(0.5+Math.random()*1.1+idx*0.01)*dir, cars=[], n=1+(Math.random()<0.45?1:0);
+  for(var k=0;k<n;k++) cars.push({x:Math.random()*1.3-0.15, w:0.13+Math.random()*0.07});
+  return {type:'road',cars:cars,speed:speed};
+}
+function rowAt(i){ if(!G.rowMap[i]) G.rowMap[i]=makeRow(i); return G.rowMap[i]; }
+function hopUp(){ if(G.mode!=='hopper'||!G.run) return; G.prow++; if(G.prow>G.score){ G.score=G.prow; el('gvScore').textContent=G.score; } haptic(6); checkHopper(); }
+function hopLeft(){ if(G.mode!=='hopper'||!G.run) return; G.pcol=Math.max(0,G.pcol-1); haptic(4); checkHopper(); }
+function hopRight(){ if(G.mode!=='hopper'||!G.run) return; G.pcol=Math.min(HCOLS-1,G.pcol+1); haptic(4); checkHopper(); }
+function checkHopper(){
+  var r=rowAt(G.prow); if(r.type!=='road') return;
+  var px=(G.pcol+0.5)/HCOLS, ph=0.5/HCOLS;
+  for(var i=0;i<r.cars.length;i++){ var c=r.cars[i]; if(px+ph>c.x && px-ph<c.x+c.w) return gameOver(); }
+}
+function updHopper(dt){
+  var W=G.W,H=G.H,rh=G.rh;
+  for(var idx=G.prow-3; idx<=G.prow+12; idx++){ var r=rowAt(idx); if(r.type==='road'){
+    for(var i=0;i<r.cars.length;i++){ var c=r.cars[i]; c.x += r.speed*0.006*dt; if(c.x>1.25)c.x-=1.5; if(c.x<-0.35)c.x+=1.5; }
+  }}
+  checkHopper();
+  if(!G.run) return;
+  drawHopper();
+}
+function drawHopper(){
+  var ctx=G.ctx,W=G.W,H=G.H,rh=G.rh,acc=cssVar('--acc','#7aa2ff'),acc2=cssVar('--acc2','#5ad0f0');
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#05060d'; ctx.fillRect(0,0,W,H);
+  var baseY=H*0.72, cw=W/HCOLS;
+  var top=Math.ceil(baseY/rh)+2, bot=Math.ceil((H-baseY)/rh)+2;
+  for(var d=top; d>=-bot; d--){
+    var idx=G.prow+d, y=baseY - d*rh, r=rowAt(idx);
+    if(y+rh< -rh || y-rh>H+rh) continue;
+    if(r.type==='safe'){ ctx.fillStyle=(idx%2===0)?'#123125':'#0e2a1f'; ctx.fillRect(0,y-rh/2,W,rh); }
+    else{
+      ctx.fillStyle='#14161f'; ctx.fillRect(0,y-rh/2,W,rh);
+      ctx.strokeStyle='rgba(255,255,255,.25)'; ctx.setLineDash([10,10]); ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); ctx.setLineDash([]);
+      for(var i=0;i<r.cars.length;i++){ var c=r.cars[i], cx=c.x*W, cwid=c.w*W;
+        var cg=ctx.createLinearGradient(cx,0,cx+cwid,0); cg.addColorStop(0,acc); cg.addColorStop(1,acc2); ctx.fillStyle=cg;
+        roundRect(ctx,cx,y-rh*0.32,cwid,rh*0.64,8); ctx.fill();
+        ctx.fillStyle='rgba(255,255,255,.35)'; roundRect(ctx,cx+cwid*0.12,y-rh*0.18,cwid*0.3,rh*0.36,4); ctx.fill();
+      }
+    }
+  }
+  // player
+  var px=(G.pcol+0.5)*cw, py=baseY;
+  ctx.shadowColor=acc2; ctx.shadowBlur=14; ctx.fillStyle='#ffcf5a';
+  roundRect(ctx,px-cw*0.34,py-cw*0.34,cw*0.68,cw*0.68,10); ctx.fill(); ctx.shadowBlur=0;
+  ctx.fillStyle='#05060d'; ctx.font='900 '+Math.floor(cw*0.5)+'px system-ui,Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('💈', px, py+1);
+}
+/* ---- shared game over ---- */
+function gameOver(){
+  if(!G.run) return; G.run=false; cancelAnimationFrame(G.raf); haptic([20,50,20]);
+  var sc=G.score, mode=G.mode;
+  el('gvFinal').textContent=sc; el('gvEarned').textContent='Saving…'; el('gvCap').classList.add('hide');
+  el('gvOver').classList.remove('hide');
+  if(!member||!member.code){ el('gvEarned').textContent='Score '+sc; return; }
+  rpc('game_reward',{p_code:member.code,p_game:mode,p_score:sc}).then(function(m){
+    if(m&&!m.error){
+      member=m;
+      el('gvEarned').textContent = (m.coins_earned>0) ? ('+'+m.coins_earned+' 🪙 coins!') : 'No coins this round';
+      if(m.capped){ el('gvCap').textContent='Daily coin cap reached — play tomorrow for more.'; el('gvCap').classList.remove('hide'); }
+      el('gvCoins').textContent=m.coins||0;
+      el('gvBest').textContent=(m.games&&m.games[mode])||sc;
+      countUp(m.points); renderPlayer(m); renderStats(m); renderQuests(m); renderAchievements(m); renderCoins(m); if(m.wheel) renderSlot(m);
+      if(m.coins_earned>0) confetti();
+    } else { el('gvEarned').textContent='Score '+sc+' saved!'; }
+  }).catch(function(){ el('gvEarned').textContent='Score '+sc+' saved!'; });
+}
+function closeGame(){
+  G.run=false; cancelAnimationFrame(G.raf);
+  var ov=el('gameOverlay'); ov.classList.add('hide'); ov.setAttribute('aria-hidden','true');
+  if(member){ renderCoins(member); renderSlot(member); }
+}
+function scrollToArcade(){ scrollToId('arcadeCard'); }
 function join(){
   el('jErr').classList.add('hide');
   if(!slug){ el('jErr').textContent='This link is missing its business code (?c=...).'; el('jErr').classList.remove('hide'); return; }
@@ -613,9 +854,9 @@ function renderSlot(m){
   // legend of possible prizes
   el('wchips').innerHTML=slotLabels.map(function(l,i){return '<span class="wchip" id="wc'+i+'">'+symOf(l)+' '+String(l).replace(/[<>&]/g,'')+'</span>';}).join('');
   el('spinCost').textContent=m.spin_cost||2;
-  var cost=m.spin_cost||2, can=m.points>=cost;
+  var cost=m.spin_cost||2, coins=m.coins||0, can=coins>=cost;
   el('spinBtn').disabled=!can;
-  el('spinBtn').textContent = can ? ('🎰 Spin — '+cost+' points') : ('🔒 Earn '+(cost-m.points)+' more point'+((cost-m.points)===1?'':'s')+' to spin');
+  el('spinBtn').textContent = can ? ('🎰 Spin — '+cost+' coins') : ('🔒 Earn '+(cost-coins)+' more coin'+((cost-coins)===1?'':'s')+' — play a game');
   el('slot').classList.remove('win');
 }
 function spinReels(targets, done){
@@ -647,7 +888,7 @@ function spin(){
   el('slot').classList.remove('win');
   var n=(slotLabels||[]).length; for(var i=0;i<n;i++){ var wc=el('wc'+i); if(wc) wc.classList.remove('win'); }
   var btn=el('spinBtn'); btn.disabled=true;
-  rpc('spin_wheel',{p_code:member.code}).then(function(m){
+  rpc('coin_spin',{p_code:member.code}).then(function(m){
     if(m.error){ el('wErr').textContent=m.error; el('wErr').classList.remove('hide'); btn.disabled=false; return; }
     var res=m.result||{}, idx=res.index||0;
     var win = res.type && res.type!=='nothing';
