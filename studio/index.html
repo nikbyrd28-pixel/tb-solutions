@@ -145,6 +145,15 @@
           <div><label>Accent color</label><input type="color" id="accent" value="#8b7bff" style="height:44px;padding:4px"></div>
           <div><label>Motion (Ken Burns)</label><select id="motion"><option value="on" selected>On — pans & zooms</option><option value="off">Off — still</option></select></div>
         </div>
+        <label>Animated background <span style="color:var(--acc2)">✦ moving</span></label>
+        <select id="bgfx">
+          <option value="particles" selected>✨ Floating particles</option>
+          <option value="bokeh">🫧 Soft bokeh orbs</option>
+          <option value="waves">🌊 Flowing waves</option>
+          <option value="beams">🔆 Light beams</option>
+          <option value="grid">🕹️ Synthwave grid</option>
+          <option value="aurora">🌌 Aurora mesh (subtle)</option>
+        </select>
         <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--text);margin-top:14px">
           <input type="checkbox" id="endCard" checked style="width:auto"> Add a branded end card (logo + call-to-action)
         </label>
@@ -423,9 +432,10 @@ function drawBg(sc,p,T,W,H){
     ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
     return;
   }
-  // gradient mesh
+  // base color + drifting glow mesh
   ctx.fillStyle=pal.c[2]; ctx.fillRect(0,0,W,H);
   var motion=(el('motion').value==='on'); var m=motion?1:0;
+  var fx=(el('bgfx')?el('bgfx').value:'particles');
   var blobs=[
     {x:.25+Math.sin(T*0.5)*.06*m, y:.22+Math.cos(T*0.4)*.05*m, r:.85, c:pal.c[0]},
     {x:.78+Math.cos(T*0.45)*.06*m, y:.7+Math.sin(T*0.5)*.05*m, r:.8, c:pal.c[1]},
@@ -434,23 +444,96 @@ function drawBg(sc,p,T,W,H){
   ctx.globalCompositeOperation='lighter';
   blobs.forEach(function(b){
     var rg=ctx.createRadialGradient(b.x*W,b.y*H,0,b.x*W,b.y*H,b.r*Math.max(W,H));
-    rg.addColorStop(0,hexA(b.c,.55)); rg.addColorStop(.5,hexA(b.c,.18)); rg.addColorStop(1,hexA(b.c,0));
+    rg.addColorStop(0,hexA(b.c,.5)); rg.addColorStop(.5,hexA(b.c,.16)); rg.addColorStop(1,hexA(b.c,0));
     ctx.fillStyle=rg; ctx.fillRect(0,0,W,H);
   });
   ctx.globalCompositeOperation='source-over';
-  // subtle grid
-  ctx.strokeStyle='rgba(255,255,255,.05)'; ctx.lineWidth=Math.max(1,W/720);
-  var gs=W/9, off=(motion?(T*14)%gs:0);
-  for(var x=-gs+off;x<W;x+=gs){ ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke(); }
-  for(var y=-gs+off;y<H;y+=gs){ ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke(); }
+  // animated FX layer
+  if(fx==='particles') fxParticles(pal,T,W,H,m);
+  else if(fx==='bokeh') fxBokeh(pal,T,W,H,m);
+  else if(fx==='waves') fxWaves(pal,T,W,H,m);
+  else if(fx==='beams') fxBeams(pal,T,W,H,m);
+  else if(fx==='grid') fxGrid(pal,T,W,H,m);
+  else fxAurora(T,W,H,m);
   // vignette
   var vg=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.3,W/2,H/2,Math.max(W,H)*.75);
   vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,.5)');
   ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
-  // bottom legibility
-  var bg=ctx.createLinearGradient(0,H*0.4,0,H);
-  bg.addColorStop(0,'rgba(0,0,0,0)'); bg.addColorStop(1,'rgba(0,0,0,.55)');
+  // center legibility scrim (keeps captions crisp on any bg)
+  var bg=ctx.createLinearGradient(0,H*0.28,0,H);
+  bg.addColorStop(0,'rgba(0,0,0,.10)'); bg.addColorStop(.5,'rgba(0,0,0,.28)'); bg.addColorStop(1,'rgba(0,0,0,.45)');
   ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+}
+function hash1(n){ var s=Math.sin(n)*43758.5453; return s-Math.floor(s); }
+function fxAurora(T,W,H,m){
+  ctx.strokeStyle='rgba(255,255,255,.05)'; ctx.lineWidth=Math.max(1,W/720);
+  var gs=W/9, off=(m?(T*14)%gs:0);
+  for(var x=-gs+off;x<W;x+=gs){ ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke(); }
+  for(var y=-gs+off;y<H;y+=gs){ ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke(); }
+}
+function fxParticles(pal,T,W,H,m){
+  ctx.save();
+  var N=56, sz=W/540;
+  for(var i=0;i<N;i++){
+    var hx=hash1(i*12.9898), hy=hash1(i*78.233), hs=hash1(i*3.71);
+    var speed=0.015+hs*0.05;
+    var x=hx*W + Math.sin(T*0.5+i)*W*0.012*m;
+    var y=H*(1-((hy + T*speed*m)%1));
+    var r=(1+hs*3)*sz, a=0.14+hs*0.4;
+    ctx.beginPath(); ctx.fillStyle=hexA((i%3)?pal.c[0]:'#ffffff', a);
+    ctx.arc(x,y,r,0,6.2832); ctx.fill();
+  }
+  ctx.restore();
+}
+function fxBokeh(pal,T,W,H,m){
+  var N=13;
+  for(var i=0;i<N;i++){
+    var hx=hash1(i*1.77), hy=hash1(i*4.31), hs=hash1(i*9.13);
+    var x=((hx+Math.sin(T*0.15+i)*0.04*m)%1)*W;
+    var y=(1-((hy+T*0.012*(0.5+hs)*m)%1))*H;
+    var r=(28+hs*95)*(W/720);
+    var c=(i%2)?pal.c[0]:pal.c[1];
+    var rg=ctx.createRadialGradient(x,y,0,x,y,r);
+    rg.addColorStop(0,hexA(c,0.22)); rg.addColorStop(.7,hexA(c,0.05)); rg.addColorStop(1,hexA(c,0));
+    ctx.fillStyle=rg; ctx.beginPath(); ctx.arc(x,y,r,0,6.2832); ctx.fill();
+  }
+}
+function fxWaves(pal,T,W,H,m){
+  ctx.save(); ctx.globalCompositeOperation='lighter';
+  for(var b=0;b<3;b++){
+    var yBase=H*(0.6+b*0.14), amp=H*0.028*(1+b*0.5), ph=T*(0.6+b*0.35)*m;
+    ctx.beginPath(); ctx.moveTo(0,H);
+    for(var x=0;x<=W;x+=W/48){ ctx.lineTo(x, yBase+Math.sin(x/W*6.283*(1.4+b*0.5)+ph)*amp); }
+    ctx.lineTo(W,H); ctx.closePath();
+    ctx.fillStyle=hexA((b%2)?pal.c[1]:pal.c[0], 0.09+b*0.03); ctx.fill();
+  }
+  ctx.restore();
+}
+function fxBeams(pal,T,W,H,m){
+  ctx.save(); ctx.translate(W/2,H*0.26); ctx.rotate(T*0.05*m);
+  ctx.globalCompositeOperation='lighter';
+  var R=Math.max(W,H)*1.35;
+  for(var i=0;i<12;i++){
+    var a0=i/12*6.2832, a1=a0+0.10;
+    ctx.beginPath(); ctx.moveTo(0,0);
+    ctx.lineTo(Math.cos(a0)*R,Math.sin(a0)*R); ctx.lineTo(Math.cos(a1)*R,Math.sin(a1)*R); ctx.closePath();
+    ctx.fillStyle=hexA((i%2)?pal.c[0]:pal.c[1], 0.055); ctx.fill();
+  }
+  ctx.restore();
+}
+function fxGrid(pal,T,W,H,m){
+  ctx.save();
+  var horizon=H*0.56;
+  ctx.strokeStyle=hexA(pal.c[1],0.4); ctx.lineWidth=Math.max(1,W/560);
+  for(var i=-6;i<=6;i++){ ctx.beginPath(); ctx.moveTo(W/2, horizon); ctx.lineTo(W/2+i*(W/5.5), H); ctx.stroke(); }
+  var off=(T*0.28*m)%1;
+  for(var j=0;j<11;j++){ var f=((j+off)/11), y=horizon+f*f*(H-horizon);
+    ctx.globalAlpha=0.55*(1-f*0.4); ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  ctx.globalAlpha=1;
+  // horizon glow
+  var hg=ctx.createLinearGradient(0,horizon-H*0.12,0,horizon); hg.addColorStop(0,hexA(pal.c[0],0)); hg.addColorStop(1,hexA(pal.c[0],0.3));
+  ctx.fillStyle=hg; ctx.fillRect(0,horizon-H*0.12,W,H*0.12);
+  ctx.restore();
 }
 function hexA(hex,a){
   var h=hex.replace('#',''); if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
@@ -764,7 +847,7 @@ async function ensureFonts(){
 
 /* ---------- wire inputs ---------- */
 el('accent').addEventListener('input',function(){ accent=this.value; drawAt(previewT); });
-['capStyle','trans','motion','endCard','ctaText','aiBrand'].forEach(function(id){ el(id).addEventListener('input',function(){ rebuildTimeline(); drawAt(previewT); }); });
+['capStyle','trans','motion','bgfx','endCard','ctaText','aiBrand'].forEach(function(id){ el(id).addEventListener('input',function(){ rebuildTimeline(); drawAt(previewT); }); });
 el('matchVoice').addEventListener('change',function(){ rebuildTimeline(); drawAt(previewT); });
 el('musicVol').addEventListener('input',function(){});
 el('voiceVol').addEventListener('input',function(){});
