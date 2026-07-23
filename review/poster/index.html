@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Review table-tent</title>
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305070f'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%E2%AD%90%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--acc:#5df2e0;--acc2:#6f9dff;--gold:#f5c04a;--ink:#0a0a0f}
+  *{box-sizing:border-box}
+  @keyframes drift{0%{background-position:0 0}100%{background-position:60px 60px}}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;background:linear-gradient(180deg,#070811,#04050a);color:#f2f4ff;display:flex;flex-direction:column;align-items:center;padding:24px 16px;position:relative}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.5;background-image:linear-gradient(rgba(122,162,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(122,162,255,.05) 1px,transparent 1px);background-size:60px 60px;animation:drift 14s linear infinite}
+  .sheet{position:relative;z-index:1;background:linear-gradient(150deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid color-mix(in srgb,var(--acc) 40%,transparent);width:min(520px,100%);border-radius:26px;box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 40px color-mix(in srgb,var(--acc) 14%,transparent);padding:44px 34px;text-align:center;backdrop-filter:blur(10px)}
+  .badge{display:inline-block;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#04050a;border-radius:999px;padding:6px 16px;font-weight:900;font-size:12px;letter-spacing:.18em;text-transform:uppercase;box-shadow:0 0 18px color-mix(in srgb,var(--acc) 50%,transparent)}
+  h1{font-size:36px;line-height:1.12;margin:16px 0 6px}
+  h1 span{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stars{font-size:38px;letter-spacing:6px;margin:6px 0 4px;color:var(--gold);filter:drop-shadow(0 0 10px rgba(245,192,74,.5))}
+  .sub{color:#8f97b8;font-size:16px;margin:0 0 20px}
+  .sub b{color:#f2f4ff}
+  .qr{width:240px;height:240px;border-radius:22px;padding:12px;background:#fff;box-shadow:0 0 34px color-mix(in srgb,var(--acc) 45%,transparent)}
+  .steps{text-align:left;margin:24px auto 0;max-width:360px}
+  .step{display:flex;gap:12px;align-items:flex-start;margin:12px 0;font-size:15px;color:#c8cde6}
+  .step b{color:#f2f4ff}
+  .n{flex:0 0 28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#04050a;display:grid;place-items:center;font-weight:900;font-size:14px;box-shadow:0 0 12px color-mix(in srgb,var(--acc) 50%,transparent)}
+  .foot{margin-top:24px;color:#5e6584;font-size:12px;letter-spacing:.08em}
+  .printbtn{position:relative;z-index:1;margin:20px 0;border:0;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#04050a;border-radius:999px;padding:14px 26px;font:inherit;font-weight:900;font-size:15px;cursor:pointer;box-shadow:0 0 22px color-mix(in srgb,var(--acc) 45%,transparent)}
+  @media print{
+    body{background:#fff;padding:0;color:var(--ink)} body::before{display:none}
+    .sheet{box-shadow:none;border:0;border-radius:0;width:100%;background:#fff;color:var(--ink);backdrop-filter:none}
+    h1{color:var(--ink)} h1 span{background:none;-webkit-text-fill-color:var(--acc2);color:var(--acc2)}
+    .sub{color:#444}.sub b{color:var(--ink)} .step{color:#333}.step b{color:var(--ink)}
+    .badge,.n{background:var(--acc2);color:#fff;box-shadow:none} .stars{color:#e0a900;filter:none}
+    .qr{border:6px solid var(--ink);box-shadow:none} .foot{color:#999} .printbtn{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <span class="badge">⭐ How'd we do?</span>
+  <h1>Rate <span id="bizName">us</span><br>in 20 seconds</h1>
+  <div class="stars">★ ★ ★ ★ ★</div>
+  <p class="sub">Loved your visit? A quick review means <b>the world</b> to a local business like ours. 🙏</p>
+  <img class="qr" id="qr" alt="Scan to leave a review">
+  <div class="steps">
+    <div class="step"><div class="n">1</div><div><b>Scan the code</b> with your phone camera — no app needed.</div></div>
+    <div class="step"><div class="n">2</div><div><b>Tap your rating</b> — one tap, that's it.</div></div>
+    <div class="step"><div class="n">3</div><div><b>Share on Google</b> and make our day. Takes 20 seconds. ⚡</div></div>
+  </div>
+  <div class="foot">Powered by TB Solutions · tbsol.net</div>
+</div>
+<button class="printbtn" onclick="window.print()">🖨️ Print this table-tent</button>
+<script>
+(function(){
+  var SUPA='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+  var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+  var q=new URLSearchParams(location.search);
+  var slug=(q.get('c')||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  var name=(q.get('name')||q.get('b')||'').replace(/[<>&]/g,'');
+  var hex=/^[0-9a-fA-F]{6}$/, r=document.documentElement.style;
+  if(hex.test(q.get('ac')||'')) r.setProperty('--acc','#'+q.get('ac'));
+  if(hex.test(q.get('ac2')||'')) r.setProperty('--acc2','#'+q.get('ac2'));
+
+  function paint(){
+    if(name){ document.getElementById('bizName').textContent=name; document.title=name+' — review table-tent'; }
+    var link='https://tbsol.net/review/?c='+slug;
+    document.getElementById('qr').src='https://api.qrserver.com/v1/create-qr-code/?size=480x480&data='+encodeURIComponent(link);
+  }
+  if(slug){
+    fetch(SUPA+'/rest/v1/rpc/get_program_public',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify({p_client:slug})})
+    .then(function(x){return x.json()}).then(function(p){ if(p&&!p.error&&!name&&p.biz_name) name=String(p.biz_name).replace(/[<>&]/g,''); paint(); }).catch(paint);
+  } else { paint(); }
+})();
+</script>
+</body>
+</html>
