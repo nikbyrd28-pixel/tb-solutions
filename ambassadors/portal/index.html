@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Ambassador portal · TB Solutions</title>
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%F0%9F%A4%9D%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{--text:#f2f4ff;--muted:#8f97b8;--dim:#69719a;--line:rgba(122,162,255,.24);--line2:rgba(122,162,255,.4);
+    --acc:#7aa2ff;--acc2:#5df2e0;--vio:#b98bff;--good:#43f0b0;--gold:#ffd45a}
+  *{box-sizing:border-box}
+  @keyframes popin{0%{transform:translateY(10px);opacity:0}100%{transform:translateY(0);opacity:1}}
+  @keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.5;min-height:100vh;
+    background:radial-gradient(circle at 14% -6%,rgba(122,162,255,.18),transparent 42%),radial-gradient(circle at 88% 106%,rgba(93,242,224,.12),transparent 45%),linear-gradient(180deg,#070811,#04050a)}
+  .wrap{max-width:540px;margin:0 auto;padding:22px 15px 70px}
+  .brand{font-weight:900;letter-spacing:.04em;font-size:14px}
+  .brand span{background:linear-gradient(90deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tag{color:var(--muted);font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin:2px 0 16px}
+  .card{background:linear-gradient(150deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:13px;animation:popin .3s ease}
+  h1,h2,h3{font-family:Poppins,Inter,sans-serif;margin:0}
+  h1{font-size:21px}h1 span{background:linear-gradient(90deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+  label{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
+  input{width:100%;background:rgba(2,4,12,.6);border:1px solid var(--line);border-radius:13px;padding:13px 14px;color:var(--text);font:inherit;font-size:16px}
+  input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(122,162,255,.2)}
+  .btn{width:100%;margin-top:14px;border:0;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;border-radius:999px;padding:14px;font:inherit;font-weight:900;font-size:15px;cursor:pointer;box-shadow:0 10px 28px rgba(122,162,255,.32)}
+  .btn:disabled{opacity:.55}
+  .btn.ghost{background:rgba(122,162,255,.07);border:1px solid var(--line);color:var(--text);box-shadow:none;font-weight:700}
+  .link{background:none;border:0;color:var(--acc2);font:inherit;font-weight:700;cursor:pointer;text-decoration:underline;padding:0;margin-top:12px;font-size:13px}
+  .err{color:#ff8a9d;font-size:13px;margin-top:10px;text-align:center}
+  .hide{display:none!important}
+  .rank{display:flex;align-items:center;gap:13px}
+  .rank .medal{font-size:34px;filter:drop-shadow(0 0 12px rgba(255,212,74,.4))}
+  .rank .rt{font-weight:900;font-size:18px}.rank .rs{font-size:12.5px;color:var(--muted);margin-top:1px}
+  .lvbar{height:9px;border-radius:99px;background:rgba(122,162,255,.14);overflow:hidden;margin-top:9px}
+  .lvbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc2),var(--acc));box-shadow:0 0 12px var(--acc);transition:width .8s cubic-bezier(.2,.8,.2,1)}
+  .stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .stat{background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:15px;padding:14px 8px;text-align:center}
+  .stat .n{font-size:27px;font-weight:900;font-family:Poppins,sans-serif;background:linear-gradient(135deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
+  .stat .l{font-size:11px;color:var(--muted);margin-top:6px}
+  .earn{text-align:center;padding:4px 0 2px}
+  .earn .amt{font-size:38px;font-weight:900;font-family:Poppins,sans-serif;background:linear-gradient(135deg,#43f0b0,var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(67,240,176,.35));font-variant-numeric:tabular-nums}
+  .earn .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+  .reward{margin-top:12px;border:1px dashed var(--line2);border-radius:13px;padding:11px 13px;display:flex;align-items:center;gap:11px;background:rgba(255,212,74,.05)}
+  .reward .e{font-size:22px}.reward b{font-size:14px}.reward small{display:block;color:var(--muted);font-size:12px}
+  h2.lbl{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 11px;font-weight:800}
+  .linkbox{display:flex;gap:8px;align-items:center;background:rgba(2,4,12,.6);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13px;color:var(--muted);overflow:hidden}
+  .linkbox code{color:var(--acc2);font-family:ui-monospace,Menlo,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+  .share{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:9px}
+  .share button{border:1px solid var(--line);background:rgba(122,162,255,.06);color:var(--text);border-radius:12px;padding:11px 6px;font:inherit;font-weight:700;font-size:12.5px;cursor:pointer}
+  .share button:hover{border-color:var(--acc2)}
+  .lead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px}
+  .lead:last-child{border-bottom:0}.lead .who{font-weight:600}
+  .lead .st{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+  .st.win{color:var(--good);border-color:rgba(67,240,176,.45);background:rgba(67,240,176,.08)}
+  .lb{display:flex;align-items:center;gap:11px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:14px}
+  .lb:last-child{border-bottom:0}.lb .pos{width:22px;text-align:center;font-weight:800;color:var(--dim)}
+  .lb.me{background:linear-gradient(90deg,rgba(94,242,224,.08),transparent);border-radius:10px;padding-left:8px;margin-left:-8px}
+  .lb.me .nm{color:var(--acc2)}.lb .nm{flex:1;font-weight:600}.lb .pts{font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
+  .muted{color:var(--muted);font-size:12.5px}
+  #toasts{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:8px;align-items:center;width:max-content;max-width:92vw}
+  .toast{background:rgba(10,14,26,.95);border:1px solid var(--line2);border-radius:12px;padding:10px 15px;font-size:13px;font-weight:600;box-shadow:0 14px 40px rgba(0,0,0,.5);animation:popin .3s ease}
+  .live{float:right;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--good);border:1px solid rgba(67,240,176,.3);border-radius:999px;padding:4px 9px}
+  .live i{width:7px;height:7px;border-radius:50%;background:var(--good);animation:pulse 1.6s ease-in-out infinite}
+  .spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.25);border-top-color:var(--acc2);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-3px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  @media(prefers-reduced-motion:reduce){.card,.toast{animation:none!important}.live i,.lvbar i,.spin{animation:none}}
+  .foot{margin-top:18px;text-align:center;color:var(--dim);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand" id="bhead">🤝 <span>Ambassadors</span> <span class="live"><i></i> Live</span></div>
+  <div class="tag" id="btag">Refer friends · earn rewards</div>
+
+  <!-- loading -->
+  <div class="card" id="loading"><p class="muted" style="text-align:center;margin:6px 0"><span class="spin"></span> Loading…</p></div>
+
+  <!-- program missing -->
+  <div class="card hide" id="missing">
+    <h1>Program not found</h1>
+    <p class="muted" style="margin-top:8px">This ambassador link isn't set up yet. If you're a business owner, you can start a program from the <a href="/ambassadors/" style="color:var(--acc2)">Ambassadors page</a>.</p>
+  </div>
+
+  <!-- JOIN -->
+  <div class="card hide" id="join">
+    <h1 id="joinHead">Join <span>the crew</span></h1>
+    <p class="muted" id="joinSub" style="margin:6px 0 0"></p>
+    <label>Your name</label>
+    <input id="jName" placeholder="First & last name" autocomplete="name">
+    <label>Email</label>
+    <input id="jEmail" type="email" placeholder="you@email.com" autocomplete="email">
+    <label>Phone <span style="text-transform:none;color:var(--dim)">(optional)</span></label>
+    <input id="jPhone" type="tel" placeholder="(555) 555-5555" autocomplete="tel">
+    <button class="btn" id="joinBtn" onclick="doJoin()">Get my referral link →</button>
+    <div class="err hide" id="joinErr"></div>
+    <button class="link" onclick="showCodeEntry()">Already have a code? Sign in</button>
+  </div>
+
+  <!-- CODE ENTRY -->
+  <div class="card hide" id="codeEntry">
+    <h1>Welcome <span>back</span></h1>
+    <p class="muted" style="margin:6px 0 0">Enter your ambassador code to see your dashboard.</p>
+    <label>Your code</label>
+    <input id="cCode" placeholder="e.g. ALEX10" style="text-transform:uppercase" autocomplete="off">
+    <button class="btn" id="codeBtn" onclick="doCode()">See my dashboard →</button>
+    <div class="err hide" id="codeErr"></div>
+    <button class="link" onclick="showJoin()">New here? Join instead</button>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dash" class="hide">
+    <div class="card">
+      <div class="rank">
+        <div class="medal" id="medal">🥉</div>
+        <div style="flex:1;min-width:0">
+          <div class="rt" id="rname">—</div>
+          <div class="rs" id="rsub">—</div>
+          <div class="lvbar"><i id="lvfill"></i></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stats">
+        <div class="stat"><div class="n" id="sRef">0</div><div class="l">Friends referred</div></div>
+        <div class="stat"><div class="n" id="sBooked">0</div><div class="l">Booked</div></div>
+        <div class="stat"><div class="n" id="sPts">0</div><div class="l">Points</div></div>
+      </div>
+      <div class="earn" style="margin-top:15px">
+        <div class="amt" id="earn">$0</div><div class="sub">earned in rewards so far</div>
+      </div>
+      <div class="reward"><span class="e" id="rwIcon">🎁</span><div><b id="rwTitle">—</b><small id="rwSub"></small></div></div>
+    </div>
+    <div class="card">
+      <h2 class="lbl">🔗 Your referral link</h2>
+      <div class="linkbox"><code id="reflink">—</code></div>
+      <div class="share">
+        <button onclick="share('copy')">📋 Copy</button>
+        <button onclick="share('text')">💬 Text</button>
+        <button onclick="share('more')">↗ Share</button>
+      </div>
+      <p class="muted" style="margin:10px 0 0">Anyone who taps your link and becomes a customer is tracked to you automatically.</p>
+    </div>
+    <div class="card">
+      <h2 class="lbl">🏆 Leaderboard</h2>
+      <div id="board"><p class="muted">—</p></div>
+    </div>
+    <div class="card">
+      <h2 class="lbl">📈 Your referrals</h2>
+      <div id="recent"><p class="muted">No referrals yet — share your link!</p></div>
+    </div>
+    <button class="btn ghost" onclick="refresh()">↻ Refresh</button>
+    <button class="link" style="display:block;margin:14px auto 0" onclick="signOut()">Sign out</button>
+  </div>
+
+  <div class="foot" id="foot"></div>
+</div>
+<div id="toasts"></div>
+
+<script>
+var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+function el(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function show(id){['loading','missing','join','codeEntry','dash'].forEach(function(x){el(x).classList.toggle('hide',x!==id);});}
+
+var q=new URLSearchParams(location.search);
+var SLUG=(q.get('c')||q.get('slug')||'').trim();
+var PROG=null, DASH=null;
+var LSKEY='tb_amb_code_'+SLUG;
+
+function rpc(fn,body){
+  return fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',
+    headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify(body||{})}).then(function(r){return r.json();});
+}
+function toast(msg,cls){ var t=document.createElement('div'); t.className='toast '+(cls||''); t.innerHTML=msg; el('toasts').appendChild(t);
+  setTimeout(function(){ t.style.transition='opacity .4s,transform .4s'; t.style.opacity='0'; t.style.transform='translateY(8px)'; setTimeout(function(){t.remove();},400); },2400); }
+
+async function boot(){
+  if(!SLUG){ show('missing'); return; }
+  try{
+    PROG=await rpc('amb_program',{p_slug:SLUG});
+  }catch(e){ PROG={ok:false}; }
+  if(!PROG || !PROG.ok){ show('missing'); return; }
+  el('bhead').innerHTML='🤝 '+esc(PROG.business)+' · <span>Ambassadors</span> <span class="live"><i></i> Live</span>';
+  el('btag').textContent='Refer friends · earn '+esc(PROG.reward_text);
+  el('joinSub').textContent='Share '+esc(PROG.business)+' with friends and earn '+esc(PROG.reward_text)+' for every '+PROG.per+' who join.';
+  el('foot').innerHTML='Powered by <a href="/ambassadors/" style="color:var(--dim)">Ambassadors</a> · TB Solutions';
+  var saved=null; try{ saved=localStorage.getItem(LSKEY); }catch(e){}
+  var codeParam=q.get('code');
+  if(codeParam){ loadDash(codeParam.trim()); }
+  else if(saved){ loadDash(saved); }
+  else { show('join'); }
+}
+
+function showJoin(){ show('join'); }
+function showCodeEntry(){ show('codeEntry'); }
+
+function flash(id,msg){ var e=el(id); e.textContent=msg; e.classList.remove('hide'); }
+async function doJoin(){
+  var name=(el('jName').value||'').trim(), email=(el('jEmail').value||'').trim(), phone=(el('jPhone').value||'').trim();
+  el('joinErr').classList.add('hide');
+  if(name.length<2){ el('jName').focus(); return flash('joinErr','Enter your name.'); }
+  if(!email || email.indexOf('@')<1){ el('jEmail').focus(); return flash('joinErr','Enter a valid email.'); }
+  var b=el('joinBtn'); b.disabled=true; b.textContent='Creating your link…';
+  var r=await rpc('amb_join',{p_slug:SLUG,p_name:name,p_email:email,p_phone:phone||null}).catch(function(){return {ok:false,error:'Network error — try again.'};});
+  if(!r || !r.ok){ b.disabled=false; b.textContent='Get my referral link →'; return flash('joinErr',(r&&r.error)||'Could not join — try again.'); }
+  try{ localStorage.setItem(LSKEY,r.code); }catch(e){}
+  toast(r.existing?'Welcome back! 👋':'You\'re in — link ready! 🎉');
+  loadDash(r.code);
+}
+async function doCode(){
+  var code=(el('cCode').value||'').trim();
+  el('codeErr').classList.add('hide');
+  if(!code){ el('cCode').focus(); return flash('codeErr','Enter your code.'); }
+  var b=el('codeBtn'); b.disabled=true; b.textContent='Loading…';
+  var ok=await loadDash(code);
+  if(!ok){ b.disabled=false; b.textContent='See my dashboard →'; }
+}
+
+async function loadDash(code){
+  show('loading');
+  var d=await rpc('amb_dashboard',{p_slug:SLUG,p_code:code}).catch(function(){return {ok:false,error:'Network error'};});
+  if(!d || !d.ok){ show('codeEntry'); flash('codeErr',(d&&d.error)||'Code not found.'); return false; }
+  DASH=d; try{ localStorage.setItem(LSKEY,d.code); }catch(e){}
+  renderDash(d);
+  var lb=await rpc('amb_leaderboard',{p_slug:SLUG}).catch(function(){return null;});
+  renderBoard(lb, d.code);
+  show('dash');
+  return true;
+}
+
+function renderDash(d){
+  var per=d.per||3, total=d.total||0, booked=d.booked||0, pts=total*10+booked*25;
+  el('sRef').textContent=total; el('sBooked').textContent=booked; el('sPts').textContent=pts;
+  var rewards=Math.floor(total/per);
+  el('earn').textContent = d.reward_value>0 ? ('$'+(rewards*Number(d.reward_value)).toLocaleString()) : (rewards+' ×');
+  el('earn').nextElementSibling.textContent = d.reward_value>0 ? 'earned in rewards so far' : (rewards===1?'reward earned':'rewards earned');
+  // rank by referrals
+  var RANKS=[[0,'🥉','Rookie'],[3,'🥈','Riser'],[6,'🥇','Star'],[10,'💎','Elite'],[16,'👑','Legend']];
+  var rk=RANKS[0]; for(var i=0;i<RANKS.length;i++){ if(total>=RANKS[i][0]) rk=RANKS[i]; }
+  var next=RANKS.filter(function(x){return x[0]>total;})[0];
+  el('medal').textContent=rk[1];
+  el('rname').textContent=d.name+' · '+d.code;
+  el('rsub').textContent=next?(rk[2]+' · '+(next[0]-total)+' more friends to '+next[2]):(rk[2]+' · top tier! 👑');
+  el('lvfill').style.width=(next?Math.min(100,(total/next[0])*100):100)+'%';
+  // reward tracker
+  var toNext=per-(total%per);
+  if(total>0 && total%per===0){ el('rwIcon').textContent='✅'; el('rwTitle').textContent='Reward unlocked — '+d.reward_text+'!'; el('rwSub').textContent='Next reward at '+(total+per)+' friends.'; }
+  else { el('rwIcon').textContent='🎁'; el('rwTitle').textContent=toNext+' more friend'+(toNext>1?'s':'')+' → '+d.reward_text; el('rwSub').textContent='Every '+per+' friends who join unlocks '+d.reward_text+'.'; }
+  // referral link -> capture page carries ?ref=code
+  var link=location.origin+'/capture/?c='+encodeURIComponent(SLUG)+'&name='+encodeURIComponent(d.business)+'&ref='+encodeURIComponent(d.code);
+  window._reflink=link;
+  el('reflink').textContent=link.replace(/^https?:\/\//,'');
+  // recent
+  var rec=d.recent||[];
+  el('recent').innerHTML = rec.length ? rec.map(function(x){
+    var win=['Booked','Won','Converted','Client','Closed','Complete'].indexOf(x.status)>=0;
+    return '<div class="lead"><span class="who">'+esc(x.who)+'</span><span class="st'+(win?' win':'')+'">'+esc(x.status)+'</span></div>';
+  }).join('') : '<p class="muted">No referrals yet — share your link to get started!</p>';
+}
+function renderBoard(lb,myCode){
+  if(!lb || !lb.ok || !lb.rows || !lb.rows.length){ el('board').innerHTML='<p class="muted">Be the first on the board — share your link!</p>'; return; }
+  el('board').innerHTML=lb.rows.slice(0,8).map(function(r,i){
+    var me=r.code===myCode;
+    var pos=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
+    return '<div class="lb'+(me?' me':'')+'"><span class="pos">'+pos+'</span><span class="nm">'+(me?'You':esc(r.name))+'</span><span class="pts">'+r.pts+' pts</span></div>';
+  }).join('');
+}
+function refresh(){ if(DASH) loadDash(DASH.code); }
+function signOut(){ try{ localStorage.removeItem(LSKEY); }catch(e){} DASH=null; el('cCode').value=''; show('join'); }
+
+function share(kind){
+  var link=window._reflink||''; if(!link)return;
+  var biz=(PROG&&PROG.business)||'us';
+  var msg='Come check out '+biz+' — use my link and we both get a reward: '+link;
+  if(kind==='copy'){ try{navigator.clipboard.writeText(link);}catch(e){} toast('Link copied ✓'); }
+  else if(kind==='text'){ try{location.href='sms:?&body='+encodeURIComponent(msg);}catch(e){} }
+  else { if(navigator.share){ navigator.share({title:biz,text:msg,url:link}).catch(function(){}); } else { try{navigator.clipboard.writeText(link);}catch(e){} toast('Link copied ✓'); } }
+}
+
+el('cCode')&&el('cCode').addEventListener('keydown',function(e){ if(e.key==='Enter') doCode(); });
+boot();
+window.addEventListener('error',function(e){try{
+  fetch(SUPA_URL+'/rest/v1/client_errors',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({page:location.pathname,msg:String((e&&e.message)||'').slice(0,300),src:String((e&&e.filename)||'').slice(0,120),line:(e&&e.lineno)||0})}).catch(function(){});
+}catch(_){}});
+</script>
+</body>
+</html>
