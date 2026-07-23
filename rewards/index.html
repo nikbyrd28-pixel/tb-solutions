@@ -242,6 +242,8 @@
       <div class="wchips" id="wchips"></div>
       <div class="spinres" id="spinRes"></div>
       <button class="btn" id="spinBtn" onclick="spin()">🎰 Spin</button>
+      <button class="btn" id="dailyBtn" onclick="dailySpin()" style="margin-top:8px;background:linear-gradient(135deg,#43f0b0,var(--acc2))">🎁 Free daily spin — on us!</button>
+      <div class="muted" id="dailyNote" style="margin-top:6px">One free spin every day. No coins needed.</div>
       <div class="err hide" id="wErr"></div>
     </div>
 
@@ -919,6 +921,7 @@ function renderSlot(m){
   el('spinBtn').disabled=!can;
   el('spinBtn').textContent = can ? ('🎰 Spin — '+cost+' coins') : ('🔒 Earn '+(cost-coins)+' more coin'+((cost-coins)===1?'':'s')+' — play a game');
   el('slot').classList.remove('win');
+  setDaily(m.last_daily_spin===todayStr());
 }
 function spinReels(targets, done){
   var pool=slotSyms.length?slotSyms:[{sym:'⭐',label:''}];
@@ -968,6 +971,34 @@ function spin(){
       var wc=el('wc'+idx); if(wc) wc.classList.add('win');
       if(win){ el('slot').classList.add('win'); el('spinRes').textContent='🎉 You won: '+res.label+'!'; haptic([30,60,40]); confetti(); }
       else { el('spinRes').textContent='😅 '+(res.label||'So close')+' — spin again!'; haptic(12); }
+      showCard(m);
+    });
+  });
+}
+function todayStr(){ var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+function setDaily(done){
+  var b=el('dailyBtn'), n=el('dailyNote'); if(!b) return;
+  if(done){ b.disabled=true; b.textContent='✓ Free spin claimed today'; if(n) n.textContent='Come back tomorrow for another free spin! 🎁'; }
+  else { b.disabled=false; b.textContent='🎁 Free daily spin — on us!'; if(n) n.textContent='One free spin every day. No coins needed.'; }
+}
+function dailySpin(){
+  el('wErr').classList.add('hide'); el('spinRes').textContent=''; el('slot').classList.remove('win');
+  var n=(slotLabels||[]).length; for(var i=0;i<n;i++){ var wc0=el('wc'+i); if(wc0) wc0.classList.remove('win'); }
+  var btn=el('dailyBtn'); btn.disabled=true;
+  rpc('daily_spin',{p_code:member.code}).then(function(m){
+    if(m.error){ if(m.already){ setDaily(true); } else { el('wErr').textContent=m.error; el('wErr').classList.remove('hide'); btn.disabled=false; } return; }
+    var res=m.result||{}, idx=res.index||0, win=res.type&&res.type!=='nothing', winSym=symOf(res.label);
+    var targets;
+    if(win){ targets=[winSym,winSym,winSym]; }
+    else{
+      var uniq=slotSyms.map(function(s){return s.sym;}).filter(function(x,i,a){return a.indexOf(x)===i;});
+      function rnd(){ return uniq[Math.floor(Math.random()*uniq.length)]||'🍋'; }
+      var a=winSym||rnd(), b=rnd(), c=rnd(); if(a===b&&b===c){ b=uniq[(uniq.indexOf(a)+1)%uniq.length]||'🍋'; } targets=[a,b,c];
+    }
+    spinReels(targets, function(){
+      var wc=el('wc'+idx); if(wc) wc.classList.add('win');
+      if(win){ el('slot').classList.add('win'); el('spinRes').textContent='🎁 FREE WIN: '+res.label+'!'; haptic([30,60,40]); confetti(); }
+      else { el('spinRes').textContent='😅 '+(res.label||'So close')+' — free spin again tomorrow!'; haptic(12); }
       showCard(m);
     });
   });
