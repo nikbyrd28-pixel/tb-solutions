@@ -53,10 +53,18 @@
   .hide{display:none!important}
   .staff{border-style:dashed;backdrop-filter:none}
   .center{text-align:center}
-  .wheelbox{position:relative;width:238px;height:238px;margin:16px auto;animation:floaty 5s ease-in-out infinite}
-  .wheel{width:100%;height:100%;border-radius:50%;border:4px solid color-mix(in srgb,var(--acc) 55%,transparent);transition:transform 3.2s cubic-bezier(.15,.9,.25,1);
-    box-shadow:0 0 34px color-mix(in srgb,var(--acc) 40%,transparent),0 0 4px var(--acc) inset}
-  .ptr{position:absolute;top:-11px;left:50%;transform:translateX(-50%);font-size:26px;z-index:2;filter:drop-shadow(0 0 8px var(--acc))}
+  .slot{display:flex;gap:8px;justify-content:center;margin:16px auto;padding:14px;border-radius:18px;position:relative;width:max-content;max-width:100%;
+    background:linear-gradient(160deg,rgba(122,162,255,.10),rgba(0,0,0,.4));border:2px solid color-mix(in srgb,var(--acc) 55%,transparent);
+    box-shadow:0 0 34px color-mix(in srgb,var(--acc) 35%,transparent),0 0 4px var(--acc) inset;animation:floaty 5s ease-in-out infinite}
+  .reel{width:76px;height:252px;overflow:hidden;border-radius:12px;background:rgba(0,0,0,.55);border:1px solid var(--line);position:relative}
+  .reelstrip{display:flex;flex-direction:column;will-change:transform}
+  .cell{height:84px;flex:0 0 84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+  .cell .sy{font-size:36px;line-height:1;filter:drop-shadow(0 0 8px color-mix(in srgb,var(--acc) 40%,transparent))}
+  .cell .lb{font-size:8.5px;color:var(--muted);max-width:70px;text-align:center;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .payline{position:absolute;left:8px;right:8px;top:50%;height:84px;transform:translateY(-50%);border-radius:10px;pointer-events:none;
+    border:2px solid var(--acc2);box-shadow:0 0 18px color-mix(in srgb,var(--acc2) 55%,transparent)}
+  .slot.win .payline{border-color:#ffd54a;box-shadow:0 0 30px rgba(255,213,74,.75)}
+  .slot.win .reel{border-color:#ffd54a}
   .wchips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:12px}
   .wchip{border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:12px;color:var(--muted)}
   .wchip.win{border-color:var(--acc);color:var(--text);background:color-mix(in srgb,var(--acc) 20%,transparent);font-weight:800;box-shadow:0 0 14px color-mix(in srgb,var(--acc) 50%,transparent)}
@@ -96,12 +104,17 @@
     </div>
 
     <div class="card center">
-      <b>🎡 Spin the wheel</b>
-      <p class="muted" style="margin:6px 0 0">Feeling lucky? Spend <span id="spinCost">2</span> points for a chance at the grand prize — or save them for the sure thing.</p>
-      <div class="wheelbox"><div class="ptr">🔻</div><div class="wheel" id="wheel"></div></div>
+      <b>🎰 Spin the slots</b>
+      <p class="muted" style="margin:6px 0 0">Feeling lucky? Spend <span id="spinCost">2</span> points for a shot at the grand prize — or save them for the sure thing.</p>
+      <div class="slot" id="slot">
+        <div class="reel"><div class="reelstrip" id="reel0"></div></div>
+        <div class="reel"><div class="reelstrip" id="reel1"></div></div>
+        <div class="reel"><div class="reelstrip" id="reel2"></div></div>
+        <div class="payline"></div>
+      </div>
       <div class="wchips" id="wchips"></div>
       <div class="spinres" id="spinRes"></div>
-      <button class="btn" id="spinBtn" onclick="spin()">🎡 Spin</button>
+      <button class="btn" id="spinBtn" onclick="spin()">🎰 Spin</button>
       <div class="err hide" id="wErr"></div>
     </div>
 
@@ -179,7 +192,7 @@ function showCard(m){
   var myUrl=location.origin+'/rewards/?c='+slug+'&m='+m.code;
   el('mQr').src=qrUrl(myUrl,196);
   el('refQr').src=qrUrl(location.origin+'/capture/?c='+slug+'&name='+encodeURIComponent(display)+'&ref='+m.code,160);
-  if(m.wheel) renderWheel(m);
+  if(m.wheel) renderSlot(m);
   renderPrizes(m);
   renderSvStars();
 }
@@ -216,18 +229,54 @@ function shareRef(){
   else { navigator.clipboard.writeText(link); el('copied').classList.remove('hide'); }
 }
 
-var WHEEL_COLORS=['rgba(122,162,255,.55)','rgba(90,208,240,.35)'];
-var wheelTurns=0, svRating=5;
-function renderWheel(m){
-  var labels=m.wheel||[]; var n=labels.length||6;
-  var seg=360/n, stops=[];
-  for(var i=0;i<n;i++){ stops.push(WHEEL_COLORS[i%2]+' '+(i*seg)+'deg '+((i+1)*seg)+'deg'); }
-  el('wheel').style.background='conic-gradient('+stops.join(',')+')';
-  el('wchips').innerHTML=labels.map(function(l,i){return '<span class="wchip" id="wc'+i+'">'+String(l).replace(/[<>&]/g,'')+'</span>';}).join('');
+var CELL_H=84, svRating=5;
+var slotLabels=[], slotSyms=[];
+function symOf(label){
+  var s=String(label||'').toLowerCase();
+  if(/grand|jackpot|top prize|🏆/.test(s)) return '🏆';
+  if(/free/.test(s)) return '🎁';
+  if(/%|\boff\b|discount|deal|save/.test(s)) return '🏷️';
+  if(/point/.test(s)) return '⭐';
+  if(/nothing|so close|try again|\bagain\b|miss|no win|😅/.test(s)) return '🍋';
+  return '💎';
+}
+function shortLabel(l){ l=String(l||'').replace(/[<>&]/g,''); return l.length>11?l.slice(0,11):l; }
+function reelCell(sym,label){ return '<div class="cell"><span class="sy">'+sym+'</span><span class="lb">'+shortLabel(label)+'</span></div>'; }
+function renderSlot(m){
+  slotLabels=m.wheel||[];
+  slotSyms=slotLabels.map(function(l){return {sym:symOf(l),label:l};});
+  if(!slotSyms.length) slotSyms=[{sym:'⭐',label:'point'},{sym:'💎',label:'prize'},{sym:'🍋',label:'try again'}];
+  // idle reels: a few symbols each, offset so they don't line up
+  [0,1,2].forEach(function(r){
+    var strip=el('reel'+r); if(!strip) return;
+    strip.style.transition='none'; strip.style.transform='translateY(0)';
+    var cells=''; for(var i=0;i<6;i++){ var s=slotSyms[(i+r)%slotSyms.length]; cells+=reelCell(s.sym,s.label); }
+    strip.innerHTML=cells;
+  });
+  // legend of possible prizes
+  el('wchips').innerHTML=slotLabels.map(function(l,i){return '<span class="wchip" id="wc'+i+'">'+symOf(l)+' '+String(l).replace(/[<>&]/g,'')+'</span>';}).join('');
   el('spinCost').textContent=m.spin_cost||2;
   var cost=m.spin_cost||2, can=m.points>=cost;
   el('spinBtn').disabled=!can;
-  el('spinBtn').textContent = can ? ('🎡 Spin — '+cost+' points') : ('🔒 Earn '+(cost-m.points)+' more point'+((cost-m.points)===1?'':'s')+' to spin');
+  el('spinBtn').textContent = can ? ('🎰 Spin — '+cost+' points') : ('🔒 Earn '+(cost-m.points)+' more point'+((cost-m.points)===1?'':'s')+' to spin');
+  el('slot').classList.remove('win');
+}
+function spinReels(targets, done){
+  var pool=slotSyms.length?slotSyms:[{sym:'⭐',label:''}];
+  [0,1,2].forEach(function(r){
+    var strip=el('reel'+r); if(!strip) return;
+    var total=16+r*4, T=total-2, cells=[];
+    for(var i=0;i<total;i++){ var s=pool[Math.floor(Math.random()*pool.length)]; cells.push(reelCell(s.sym,s.label)); }
+    var tl=(pool.filter(function(s){return s.sym===targets[r];})[0]||{label:''}).label;
+    cells[T]=reelCell(targets[r],tl);
+    strip.style.transition='none'; strip.style.transform='translateY(0)';
+    strip.innerHTML=cells.join('');
+    void strip.offsetHeight; // reflow so the transition runs
+    var y=(T-1)*CELL_H, dur=2.2+r*0.5;
+    strip.style.transition='transform '+dur+'s cubic-bezier(.12,.72,.15,1)';
+    strip.style.transform='translateY(-'+y+'px)';
+  });
+  setTimeout(done, (2.2+2*0.5)*1000+180);
 }
 function renderPrizes(m){
   var ps=m.prizes||[];
@@ -238,22 +287,30 @@ function renderPrizes(m){
 }
 function spin(){
   el('wErr').classList.add('hide'); el('spinRes').textContent='';
+  el('slot').classList.remove('win');
+  var n=(slotLabels||[]).length; for(var i=0;i<n;i++){ var wc=el('wc'+i); if(wc) wc.classList.remove('win'); }
   var btn=el('spinBtn'); btn.disabled=true;
   rpc('spin_wheel',{p_code:member.code}).then(function(m){
     if(m.error){ el('wErr').textContent=m.error; el('wErr').classList.remove('hide'); btn.disabled=false; return; }
-    var labels=m.wheel||[]; var n=labels.length||6; var seg=360/n;
-    var idx=(m.result&&m.result.index)||0;
-    wheelTurns+=5;
-    var target=wheelTurns*360 - (idx*seg + seg/2);
-    el('wheel').style.transform='rotate('+target+'deg)';
-    for(var i=0;i<n;i++){ var c=el('wc'+i); if(c) c.classList.remove('win'); }
-    setTimeout(function(){
-      var c=el('wc'+idx); if(c) c.classList.add('win');
-      var res=m.result||{};
-      el('spinRes').textContent = res.type==='nothing' ? '😅 '+res.label+' — spin again!' : '🎉 You won: '+res.label+'!';
-      if(res.type!=='nothing') confetti();
+    var res=m.result||{}, idx=res.index||0;
+    var win = res.type && res.type!=='nothing';
+    var winSym=symOf(res.label);
+    // predetermined result → land reels to match: 3-of-a-kind on a win, mixed on a miss
+    var targets;
+    if(win){ targets=[winSym,winSym,winSym]; }
+    else{
+      var uniq=slotSyms.map(function(s){return s.sym;}).filter(function(x,i,a){return a.indexOf(x)===i;});
+      function rnd(){ return uniq[Math.floor(Math.random()*uniq.length)]||'🍋'; }
+      var a=winSym||rnd(), b=rnd(), c=rnd();
+      if(a===b&&b===c){ b=uniq[(uniq.indexOf(a)+1)%uniq.length]||'🍋'; }
+      targets=[a,b,c];
+    }
+    spinReels(targets, function(){
+      var wc=el('wc'+idx); if(wc) wc.classList.add('win');
+      if(win){ el('slot').classList.add('win'); el('spinRes').textContent='🎉 You won: '+res.label+'!'; confetti(); }
+      else { el('spinRes').textContent='😅 '+(res.label||'So close')+' — spin again!'; }
       showCard(m);
-    }, 3300);
+    });
   });
 }
 function claim(i){

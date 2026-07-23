@@ -142,7 +142,7 @@
       <button data-view="clientleads"><span class="ic">🤝</span> Client Leads</button>
       <button data-view="pipelines"><span class="ic">📊</span> Pipelines</button>
       <button data-view="reviews"><span class="ic">⭐</span> Reviews</button>
-      <button data-view="loyalty"><span class="ic">🎡</span> Loyalty</button>
+      <button data-view="loyalty"><span class="ic">🎰</span> Loyalty</button>
       <button data-view="analytics"><span class="ic">📈</span> Analytics</button>
       <button data-view="social"><span class="ic">📣</span> Social</button>
       <button data-view="tools"><span class="ic">✦</span> Marketing Tools</button>
@@ -268,7 +268,7 @@ var SITES=[
     ['📖','CRM guide','https://tbsol.net/crm/guide/','Client how-to']
   ]},
   {g:'Rewards product', items:[
-    ['🎡','Rewards card (demo)','https://tbsol.net/rewards/?c=demo','What customers see'],
+    ['🎰','Rewards card (demo)','https://tbsol.net/rewards/?c=demo','What customers see'],
     ['📷','Staff console','https://tbsol.net/rewards/staff/','Scan · punch · redeem'],
     ['🖨️','Poster (demo)','https://tbsol.net/rewards/poster/?c=demo','Print for the counter']
   ]},
@@ -292,7 +292,7 @@ function vSites(){
 
 /* ---- Loyalty: rewards program manager ---- */
 function vLoyalty(){
-  return '<div class="topbar"><div><h1>🎡 Loyalty</h1><p class="sub">Rewards programs you run for clients — punch cards, prize wheel, surveys, referrals</p></div>'
+  return '<div class="topbar"><div><h1>🎰 Loyalty</h1><p class="sub">Rewards programs you run for clients — punch cards, prize slots, surveys, referrals</p></div>'
     +'<button class="btn primary" onclick="editProgram()">+ New program</button></div>'
     +'<div id="loyBody"><div class="empty">Loading…</div></div>';
 }
@@ -337,9 +337,9 @@ function editProgram(client){
       +'<label class="f">The reward</label><input id="rp_text" value="'+esc(p.reward_text||'a free visit')+'" placeholder="a free haircut">'
       +'<div class="row2"><div><label class="f">Spin cost (points)</label><input id="rp_spin" type="number" value="'+(p.spin_cost||2)+'"></div>'
       +'<div><label class="f">Survey points</label><input id="rp_sv" type="number" value="'+(p.survey_points||1)+'"></div></div>'
-      +'<label class="f">Wheel difficulty</label>'
+      +'<label class="f">Slot difficulty</label>'
       +'<div style="display:flex;gap:8px;margin-top:6px"><button type="button" class="btn sm ghost" onclick="wheelPreset(8,22)">😊 Easy</button><button type="button" class="btn sm ghost" onclick="wheelPreset(4,32)">⚖️ Fair</button><button type="button" class="btn sm ghost" onclick="wheelPreset(2,46)">😈 Hard</button></div>'
-      +'<label class="f">Wheel prizes (JSON — label/type/value/weight; type: points, prize, nothing)</label>'
+      +'<label class="f">Slot prizes (JSON — label/type/value/weight; type: points, prize, nothing)</label>'
       +'<textarea id="rp_wheel" style="min-height:110px;font-family:monospace;font-size:11px">'+esc(JSON.stringify(p.spin_prizes||[],null,1))+'</textarea>'
       +'<div class="modal-actions"><button class="btn primary" onclick="saveProgram(\''+(client||'')+'\')">Save</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>'
       +'<p class="hint">Members join at tbsol.net/rewards/?c=SLUG — print the poster and tape it by the register.</p>');
@@ -364,7 +364,7 @@ function saveProgram(client){
   var slug=isNew?String(val('rp_client')||'').toLowerCase().replace(/[^a-z0-9]/g,''):client;
   if(!slug){ alert('Give it a slug.'); return; }
   var wheel;
-  try{ wheel=JSON.parse(val('rp_wheel')); if(!Array.isArray(wheel)||!wheel.length) throw 0; }catch(e){ alert('Wheel JSON is invalid.'); return; }
+  try{ wheel=JSON.parse(val('rp_wheel')); if(!Array.isArray(wheel)||!wheel.length) throw 0; }catch(e){ alert('Slot prizes JSON is invalid.'); return; }
   var row={ client:slug, pin:val('rp_pin')||'1234', reward_at:Number(val('rp_at'))||5, reward_text:val('rp_text')||'a free visit',
     spin_cost:Number(val('rp_spin'))||2, survey_points:Number(val('rp_sv'))||1, spin_prizes:wheel };
   supa.from('reward_settings').upsert(row,{onConflict:'client'}).then(function(r){
