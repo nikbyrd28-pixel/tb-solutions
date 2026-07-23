@@ -272,7 +272,10 @@
           </select></div>
         </div>
         <label>Subject photo — your face = highest CTR (optional)</label>
-        <input type="file" id="tbPhoto" accept="image/*">
+        <div class="bar">
+          <label class="btn ghost small" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px">📎 Upload photo<input type="file" accept="image/*" onchange="setTbSubject(this.files[0])" style="display:none"></label>
+          <label class="btn ghost small" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px">📷 Take a photo<input type="file" accept="image/*" capture="user" onchange="setTbSubject(this.files[0])" style="display:none"></label>
+        </div>
         <label>Layout</label>
         <div class="chips" id="tbLayout"></div>
         <label>Color punch</label>
@@ -1288,10 +1291,11 @@ function dlThumb(){
   el('tbState').innerHTML='<span class="ok">Downloaded ✓</span>';
   trackEvent('thumbnail_download',{ratio:el('tbRatio').value,preset:TB_PRESETS[tbPreset].name,layout:tbLayout});
 }
+function setTbSubject(f){ if(!f)return; var r=new FileReader(); r.onload=function(){ var im=new Image(); im.onload=function(){ tbImg=im; drawThumb(); }; im.src=r.result; }; r.readAsDataURL(f); }
 function initThumb(){
   renderTbChips();
   ['tbHead','tbBadge','tbRatio','tbArrow','tbCircle','tbUpper'].forEach(function(id){ var e=el(id); if(!e)return; e.addEventListener('input',drawThumb); e.addEventListener('change',drawThumb); });
-  var pf=el('tbPhoto'); if(pf) pf.addEventListener('change',function(){ var f=this.files[0]; if(!f)return; var r=new FileReader(); r.onload=function(){ var im=new Image(); im.onload=function(){ tbImg=im; drawThumb(); }; im.src=r.result; }; r.readAsDataURL(f); });
+  /* subject photo/camera handled inline via setTbSubject() */
   if(el('tbHead') && !el('tbHead').value && scenes[0]) el('tbHead').value=shortHead(scenes[0].text);
 }
 /* non-breaking usage beacon — create table studio_events(id bigserial pk, created_at timestamptz default now(), event text, meta jsonb, page text) to capture */
