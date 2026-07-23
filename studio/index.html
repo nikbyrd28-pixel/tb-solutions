@@ -88,6 +88,28 @@
   <div class="layout">
     <!-- LEFT: controls -->
     <div>
+      <!-- BRAND KITS -->
+      <div class="card">
+        <h2>★ <span>Brand</span> — who's this for?</h2>
+        <p class="muted" style="margin:-4px 0 10px">Save each brand once — its colour, sign-off and call-to-action apply to every video, thumbnail and post. One content engine for all your brands.</p>
+        <div class="chips" id="brandChips"></div>
+        <div id="brandEditor" class="hide" style="margin-top:12px;border-top:1px solid var(--line);padding-top:12px">
+          <div class="row">
+            <div><label style="margin-top:0">Brand name</label><input id="bkName" placeholder="Voom Lux" maxlength="40"></div>
+            <div><label style="margin-top:0">Accent colour</label><input type="color" id="bkAccent" value="#8b7bff" style="height:44px;padding:4px"></div>
+          </div>
+          <label>Sign-off line (shows on the video)</label>
+          <input id="bkLine" placeholder="Voom Lux · voomlux.com" maxlength="60">
+          <label>Default call-to-action</label>
+          <input id="bkCta" placeholder="Book your ride → voomlux.com" maxlength="70">
+          <div class="bar">
+            <button class="btn small" onclick="saveBrand()">💾 Save brand</button>
+            <button class="btn ghost small" onclick="cancelBrand()">Cancel</button>
+            <button class="btn ghost small" id="bkDel" onclick="deleteBrand()" style="margin-left:auto">🗑 Delete</button>
+          </div>
+        </div>
+      </div>
+
       <!-- AI SCRIPT -->
       <div class="card">
         <h2>1 · <span>AI script</span> — start here</h2>
@@ -1092,6 +1114,69 @@ el('voiceFile').addEventListener('change',function(){ loadAudioFile(this.files[0
 el('musicFile').addEventListener('change',function(){ loadAudioFile(this.files[0],'music'); });
 el('logoFile').addEventListener('change',function(){ var f=this.files[0]; if(!f)return; var r=new FileReader(); r.onload=function(){ var im=new Image(); im.onload=function(){ logoImg=im; drawAt(previewT); }; im.src=r.result; }; r.readAsDataURL(f); });
 
+/* ---------- brand kits (multi-brand content engine) ---------- */
+var BRANDS=[], curBrand=null, editingId=null;
+function loadBrands(){
+  try{ BRANDS=JSON.parse(localStorage.getItem('tb_brandkits')||'null')||[]; }catch(e){ BRANDS=[]; }
+  if(!BRANDS.length){
+    BRANDS=[
+      {id:'tb',   name:'TB Solutions', line:'TB Solutions · tbsol.net',        cta:'Book your free call → tbsol.net',      accent:'#8b7bff'},
+      {id:'loop', name:'Loop',         line:'Loop · tbsol.net/loyalty',        cta:'Start free → tbsol.net/loyalty',       accent:'#7aa2ff'}
+    ];
+    saveBrands();
+  }
+}
+function saveBrands(){ try{ localStorage.setItem('tb_brandkits',JSON.stringify(BRANDS)); }catch(e){} }
+function brandById(id){ return BRANDS.filter(function(x){return x.id===id})[0]||null; }
+function renderBrandChips(){
+  var chips=BRANDS.map(function(b){
+    var nm=String(b.name||'').replace(/[<>&"']/g,'');
+    return '<span class="chip'+(curBrand&&curBrand.id===b.id?' on':'')+'" onclick="selectBrand(\''+b.id+'\')" style="border-color:'+b.accent+'"><span style="display:inline-block;width:9px;height:9px;border-radius:3px;background:'+b.accent+';margin-right:6px;vertical-align:-1px"></span>'+nm+'</span>';
+  }).join('');
+  chips+='<span class="chip" onclick="newBrand()">＋ New brand</span>';
+  if(curBrand) chips+='<span class="chip" onclick="editBrand(\''+curBrand.id+'\')">✎ Edit</span>';
+  el('brandChips').innerHTML=chips;
+}
+function selectBrand(id){
+  var b=brandById(id); if(!b) return; curBrand=b;
+  try{ localStorage.setItem('tb_brand_cur',id); }catch(e){}
+  if(el('aiBrand')) el('aiBrand').value=b.line||b.name||'';
+  if(el('ctaText') && b.cta) el('ctaText').value=b.cta;
+  if(el('accent')){ el('accent').value=b.accent||'#8b7bff'; accent=el('accent').value; }
+  renderBrandChips(); rebuildTimeline(); drawAt(previewT); if(window.drawThumb) drawThumb();
+}
+function openBrandEditor(b){
+  el('brandEditor').classList.remove('hide');
+  el('bkName').value=b?b.name:''; el('bkLine').value=b?(b.line||''):''; el('bkCta').value=b?(b.cta||''):''; el('bkAccent').value=b?(b.accent||'#8b7bff'):'#8b7bff';
+  el('bkDel').style.display=b?'':'none';
+}
+function newBrand(){ editingId=null; openBrandEditor(null); }
+function editBrand(id){ var b=brandById(id); if(!b) return; editingId=id; openBrandEditor(b); }
+function cancelBrand(){ el('brandEditor').classList.add('hide'); }
+function saveBrand(){
+  var name=(el('bkName').value||'').replace(/[<>&"']/g,'').trim();
+  if(!name){ alert('Give the brand a name first.'); return; }
+  var b={ id: editingId||('b'+Date.now()), name:name,
+    line:(el('bkLine').value||'').replace(/[<>]/g,'').trim()||name,
+    cta:(el('bkCta').value||'').trim(), accent:el('bkAccent').value||'#8b7bff' };
+  var i=BRANDS.map(function(x){return x.id}).indexOf(b.id);
+  if(i>=0) BRANDS[i]=b; else BRANDS.push(b);
+  saveBrands(); el('brandEditor').classList.add('hide'); selectBrand(b.id);
+}
+function deleteBrand(){
+  if(!editingId) return;
+  if(!confirm('Delete this brand kit?')) return;
+  BRANDS=BRANDS.filter(function(x){return x.id!==editingId});
+  if(!BRANDS.length) BRANDS=[{id:'tb',name:'TB Solutions',line:'TB Solutions · tbsol.net',cta:'Book your free call → tbsol.net',accent:'#8b7bff'}];
+  saveBrands(); el('brandEditor').classList.add('hide'); curBrand=null; selectBrand(BRANDS[0].id);
+}
+function initBrandSel(){
+  loadBrands();
+  var saved=null; try{ saved=localStorage.getItem('tb_brand_cur'); }catch(e){}
+  var b0=(saved&&brandById(saved))||BRANDS[0];
+  if(b0) selectBrand(b0.id); else renderBrandChips();
+}
+
 /* ---------- init ---------- */
 function importKit(text){
   var lines=String(text).split('\n').map(function(l){return l.trim()}).filter(Boolean);
@@ -1114,6 +1199,7 @@ function importKit(text){
 function init(){
   renderTpls(); renderShapeChips();
   setShape(0);
+  try{ initBrandSel(); }catch(e){}
   try{ var qp=new URLSearchParams(location.search);
     if(qp.get('embed')){ var bk=document.querySelector('a.back'); if(bk) bk.style.display='none'; }
     var bd=localStorage.getItem('tb_video_brand'); if(bd){ if(el('aiBrand'))el('aiBrand').value=bd; localStorage.removeItem('tb_video_brand'); }
