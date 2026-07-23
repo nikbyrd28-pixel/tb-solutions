@@ -160,7 +160,7 @@
       <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <h2 style="margin:0">2 · <span>Scenes</span></h2>
-          <button class="btn ghost small" onclick="addScene()">+ Add scene</button>
+          <span style="display:flex;gap:6px"><button class="btn ghost small" id="undoBtn" onclick="undo()" title="Undo (Ctrl+Z)" disabled>↶</button><button class="btn ghost small" id="redoBtn" onclick="redo()" title="Redo (Ctrl+Shift+Z)" disabled>↷</button><button class="btn ghost small" onclick="addScene()">+ Add scene</button></span>
         </div>
         <div id="sceneList"></div>
       </div>
@@ -372,6 +372,7 @@ function renderTpls(){
   }).join('');
 }
 function useTpl(i){
+  pushUndo();
   var tp=TEMPLATES[i];
   scenes=tp.sc.map(function(row,j){
     var pal=(tp.pal&&tp.pal[j]!=null)?tp.pal[j]:j;
@@ -483,9 +484,22 @@ function renderScenes(){
   }).join('');
 }
 function upd(i,k,v){ scenes[i][k]=v; if(k==='seconds'){rebuildTimeline();} drawAt(previewT); if(k==='text'||k==='kicker'){/*live*/} }
-function setPal(i,pi){ scenes[i].palI=pi; scenes[i].photo=null; scenes[i]._img=null; renderScenes(); drawAt(previewT); }
+function setPal(i,pi){ pushUndo(); scenes[i].palI=pi; scenes[i].photo=null; scenes[i]._img=null; renderScenes(); drawAt(previewT); }
+/* ---------- undo / redo (structural changes) ---------- */
+var histUndo=[], histRedo=[], HIST_MAX=60, histReady=false;
+function snapProject(){ return JSON.stringify(serializeScenes()); }
+function pushUndo(){ if(!histReady) return; histUndo.push(snapProject()); if(histUndo.length>HIST_MAX) histUndo.shift(); histRedo.length=0; updateUndoBtns(); }
+function applyScenesJSON(json){
+  var arr; try{ arr=JSON.parse(json); }catch(e){ return; }
+  scenes=arr.map(function(o){ var s=Object.assign(newScene(o.text,o.palI,o.kicker),o); s._img=null; s._vid=null; s.vidUrl=null;
+    if(s.photo){ (function(sc){ var im=new Image(); im.onload=function(){ sc._img=im; drawAt(previewT); }; im.src=sc.photo; })(s); } return s; });
+  renderScenes(); rebuildTimeline(); drawAt(previewT);
+}
+function undo(){ if(!histUndo.length) return; histRedo.push(snapProject()); applyScenesJSON(histUndo.pop()); updateUndoBtns(); }
+function redo(){ if(!histRedo.length) return; histUndo.push(snapProject()); applyScenesJSON(histRedo.pop()); updateUndoBtns(); }
+function updateUndoBtns(){ var u=el('undoBtn'), r=el('redoBtn'); if(u)u.disabled=!histUndo.length; if(r)r.disabled=!histRedo.length; }
 function setPhoto(i,file){
-  if(!file)return; var s=scenes[i]; clearPhoto(i,true);
+  if(!file)return; var s=scenes[i]; pushUndo(); clearPhoto(i,true);
   if(/^video\//.test(file.type||'')){
     // video background — loop it muted; frames are drawn straight onto the canvas
     var url=URL.createObjectURL(file);
@@ -509,10 +523,10 @@ function clearPhoto(i,silent){
   if(!silent){ renderScenes(); drawAt(previewT); }
 }
 function setVidSpeed(i,v){ var s=scenes[i]; if(!s)return; s.vidSpeed=parseFloat(v)||1; if(s._vid){ try{ s._vid.playbackRate=s.vidSpeed; }catch(e){} } }
-function moveScene(i,d){ var j=i+d; if(j<0||j>=scenes.length)return; var t=scenes[i];scenes[i]=scenes[j];scenes[j]=t; rebuildTimeline(); renderScenes(); }
-function dupScene(i){ var c=JSON.parse(JSON.stringify(scenes[i])); c._img=null; c._vid=null; c.vidUrl=null; if(!c.photo)c.media=null; if(c.photo){var im=new Image();im.onload=function(){c._img=im;drawAt(previewT)};im.src=c.photo;} scenes.splice(i+1,0,c); rebuildTimeline(); renderScenes(); }
-function delScene(i){ scenes.splice(i,1); rebuildTimeline(); renderScenes(); drawAt(previewT); }
-function addScene(){ scenes.push(newScene('New line',scenes.length,'')); rebuildTimeline(); renderScenes(); }
+function moveScene(i,d){ var j=i+d; if(j<0||j>=scenes.length)return; pushUndo(); var t=scenes[i];scenes[i]=scenes[j];scenes[j]=t; rebuildTimeline(); renderScenes(); }
+function dupScene(i){ pushUndo(); var c=JSON.parse(JSON.stringify(scenes[i])); c._img=null; c._vid=null; c.vidUrl=null; if(!c.photo)c.media=null; if(c.photo){var im=new Image();im.onload=function(){c._img=im;drawAt(previewT)};im.src=c.photo;} scenes.splice(i+1,0,c); rebuildTimeline(); renderScenes(); }
+function delScene(i){ pushUndo(); scenes.splice(i,1); rebuildTimeline(); renderScenes(); drawAt(previewT); }
+function addScene(){ pushUndo(); scenes.push(newScene('New line',scenes.length,'')); rebuildTimeline(); renderScenes(); }
 
 /* ---------- shape chips ---------- */
 function renderShapeChips(){
@@ -1343,6 +1357,15 @@ function init(){
   ensureFonts().then(function(){ drawAt(previewT||0); try{ drawThumb(); }catch(e){} });
 }
 init();
+histReady=true; updateUndoBtns();
+document.addEventListener('keydown',function(e){
+  var tag=(document.activeElement&&document.activeElement.tagName)||'';
+  if(tag==='TEXTAREA'||tag==='INPUT'||tag==='SELECT') return;
+  if(!(e.ctrlKey||e.metaKey)) return;
+  var k=(e.key||'').toLowerCase();
+  if(k==='z'){ e.preventDefault(); if(e.shiftKey) redo(); else undo(); }
+  else if(k==='y'){ e.preventDefault(); redo(); }
+});
 
 window.addEventListener('error',function(e){try{
   fetch(SUPA_URL+'/rest/v1/client_errors',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
