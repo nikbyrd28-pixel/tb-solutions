@@ -150,9 +150,18 @@
   .gtile .ge{font-size:34px;line-height:1}
   .gtile b{font-size:14px}
   .gtile span{font-size:11px}
+  .lbtab{border:1px solid var(--line);background:rgba(122,162,255,.06);color:var(--muted);border-radius:999px;padding:5px 11px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+  .lbtab.on{background:color-mix(in srgb,var(--acc) 24%,transparent);color:#fff;border-color:var(--acc)}
+  .lbrow{display:flex;align-items:center;gap:10px;padding:7px 6px;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px}
+  .lbrow:last-child{border-bottom:0}
+  .lbrow .rk{width:26px;font-weight:900;text-align:center}
+  .lbrow .nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lbrow .sc{font-weight:900;color:var(--acc2)}
+  .lbrow.me{background:rgba(122,162,255,.12);border-radius:9px}
+  .gv-sound{background:rgba(255,255,255,.08);border:1px solid var(--line);color:var(--text);border-radius:999px;height:36px;padding:0 12px;font-size:14px;cursor:pointer;margin-right:8px}
   /* game overlay */
   .gv{position:fixed;inset:0;z-index:300;background:linear-gradient(180deg,#070811,#04050a);display:flex;flex-direction:column;align-items:center}
-  .gv-top{width:100%;max-width:470px;display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
+  .gv-top{width:100%;max-width:470px;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;position:relative;z-index:5}
   .gv-title{font-weight:900;font-size:15px}
   .gv-x{background:rgba(255,255,255,.08);border:1px solid var(--line);color:var(--text);border-radius:999px;width:36px;height:36px;font-size:16px;cursor:pointer}
   .gv-hud{width:100%;max-width:470px;display:flex;justify-content:space-between;align-items:center;padding:0 20px 8px;font-weight:900;font-size:24px}
@@ -243,6 +252,13 @@
         <button class="gtile" onclick="openGame('flyer')"><div class="ge">🐦</div><b>Loop Flyer</b><span class="muted" id="hiFlyer">Best 0</span></button>
         <button class="gtile" onclick="openGame('hopper')"><div class="ge">🚦</div><b>Chair Hopper</b><span class="muted" id="hiHopper">Best 0</span></button>
       </div>
+      <div class="qh" style="margin-top:16px"><b>🏆 Shop leaderboard</b>
+        <span style="display:flex;gap:6px">
+          <button class="lbtab on" id="lbFlyer" onclick="loadBoard('flyer')">🐦 Flyer</button>
+          <button class="lbtab" id="lbHopper" onclick="loadBoard('hopper')">🚦 Hopper</button>
+        </span>
+      </div>
+      <div id="arcadeBoard"><p class="muted" style="margin:8px 0 0">Loading…</p></div>
     </div>
 
     <div class="card hide" id="prizeCard">
@@ -310,7 +326,7 @@
 
 <!-- Loop Arcade overlay -->
 <div id="gameOverlay" class="gv hide" aria-hidden="true">
-  <div class="gv-top" id="gvTop"><div class="gv-title" id="gvTitle">Loop Arcade</div><button class="gv-x" onclick="closeGame()" aria-label="Close game">✕</button></div>
+  <div class="gv-top" id="gvTop"><div class="gv-title" id="gvTitle">Loop Arcade</div><div><button class="gv-sound" id="gvSound" onclick="toggleGSound()" aria-label="Sound">🔊</button><button class="gv-x" onclick="closeGame()" aria-label="Close game">✕</button></div></div>
   <div class="gv-hud" id="gvHudRow"><span id="gvScore">0</span><span class="gv-coins">🪙 <b id="gvCoins">0</b></span></div>
   <canvas id="gameCanvas"></canvas>
   <div class="gv-controls hide" id="gvControls">
@@ -417,6 +433,7 @@ function showCard(m){
   renderPrizes(m);
   renderSvStars();
   renderCoins(m);
+  loadBoard(curBoard);
   initBooking(m);
 }
 function renderCoins(m){
@@ -638,6 +655,24 @@ function resetBooking(){ initBooking(member||{}); }
 var G={mode:null,run:false,raf:0,cvs:null,ctx:null,W:0,H:0,dpr:1,score:0,last:0,wired:false,
   by:0,bvy:0,pipes:[],
   rowMap:{},pcol:4,prow:0,rh:48};
+var GSND=true, gactx=null, curBoard='flyer';
+try{ GSND = localStorage.getItem('loop_snd')!=='0'; }catch(e){}
+function toggleGSound(){ GSND=!GSND; try{ localStorage.setItem('loop_snd',GSND?'1':'0'); }catch(e){} var b=el('gvSound'); if(b) b.textContent=GSND?'🔊':'🔇'; if(GSND) gbeep(660,.06); }
+function gbeep(freq,dur,type){ if(!GSND) return; try{ gactx=gactx||new (window.AudioContext||window.webkitAudioContext)(); var o=gactx.createOscillator(),g=gactx.createGain(); o.type=type||'square'; o.frequency.value=freq; o.connect(g); g.connect(gactx.destination); g.gain.setValueAtTime(.06,gactx.currentTime); g.gain.exponentialRampToValueAtTime(.0001,gactx.currentTime+(dur||.08)); o.start(); o.stop(gactx.currentTime+(dur||.08)); }catch(e){} }
+function loadBoard(game){
+  curBoard=game;
+  var lf=el('lbFlyer'),lh=el('lbHopper'); if(lf)lf.classList.toggle('on',game==='flyer'); if(lh)lh.classList.toggle('on',game==='hopper');
+  var box=el('arcadeBoard'); if(!box) return; box.innerHTML='<p class="muted" style="margin:8px 0 0">Loading…</p>';
+  rpc('arcade_leaderboard',{p_client:slug,p_game:game}).then(function(d){
+    var rows=(d&&d.rows)||[];
+    if(!rows.length){ box.innerHTML='<p class="muted" style="margin:8px 0 0">No scores yet — play to claim #1!</p>'; return; }
+    var medals=['🥇','🥈','🥉'], myName=(member&&member.name)||'', myScore=(member&&member.games&&member.games[game]);
+    box.innerHTML=rows.map(function(r,i){
+      var me=(r.name===myName && r.score===myScore);
+      return '<div class="lbrow'+(me?' me':'')+'"><span class="rk">'+(medals[i]||('#'+(i+1)))+'</span><span class="nm">'+esc(r.name)+(me?' (you)':'')+'</span><span class="sc">'+r.score+'</span></div>';
+    }).join('');
+  }).catch(function(){ box.innerHTML='<p class="muted" style="margin:8px 0 0">Could not load.</p>'; });
+}
 function cssVar(n,f){ try{ return (getComputedStyle(document.documentElement).getPropertyValue(n)||'').trim()||f; }catch(e){ return f; } }
 function roundRect(ctx,x,y,w,h,r){ r=Math.min(r,w/2,h/2); ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
 function openGame(mode){
@@ -655,6 +690,7 @@ function openGame(mode){
   el('gvCoins').textContent = member.coins||0;
   el('gvScore').textContent = '0';
   el('gvStart').classList.remove('hide'); el('gvOver').classList.add('hide');
+  var sb=el('gvSound'); if(sb) sb.textContent=GSND?'🔊':'🔇';
   setupCanvas(); wireGame(); G.run=false; drawIdle();
 }
 function setupCanvas(){
@@ -700,7 +736,7 @@ function gloop(ts){
 }
 function drawIdle(){ var ctx=G.ctx; if(!ctx) return; ctx.clearRect(0,0,G.W,G.H); ctx.fillStyle='#05060d'; ctx.fillRect(0,0,G.W,G.H); }
 /* ---- Flyer (flappy) ---- */
-function flap(){ if(G.mode==='flyer'&&G.run){ G.bvy=-6.9; haptic(6); } }
+function flap(){ if(G.mode==='flyer'&&G.run){ G.bvy=-6.9; haptic(6); gbeep(760,.05); } }
 function spawnPipe(){ var gap=Math.max(120,G.H*0.34); var top=34+Math.random()*(G.H-gap-90); G.pipes.push({x:G.W+30,top:top,gap:gap,passed:false}); }
 function updFlyer(dt){
   var W=G.W,H=G.H;
@@ -711,7 +747,7 @@ function updFlyer(dt){
   G.pipes=G.pipes.filter(function(p){return p.x>-70;});
   var bx=W*0.28, br=Math.max(9,H*0.026);
   for(var i=0;i<G.pipes.length;i++){ var p=G.pipes[i];
-    if(!p.passed && p.x+40<bx){ p.passed=true; G.score++; el('gvScore').textContent=G.score; haptic(4); }
+    if(!p.passed && p.x+40<bx){ p.passed=true; G.score++; el('gvScore').textContent=G.score; haptic(4); gbeep(900,.05,'triangle'); }
     if(bx+br>p.x && bx-br<p.x+42 && (G.by-br<p.top || G.by+br>p.top+p.gap)) return gameOver();
   }
   if(G.by+br>H || G.by-br<0) return gameOver();
@@ -741,9 +777,9 @@ function makeRow(idx){
   return {type:'road',cars:cars,speed:speed};
 }
 function rowAt(i){ if(!G.rowMap[i]) G.rowMap[i]=makeRow(i); return G.rowMap[i]; }
-function hopUp(){ if(G.mode!=='hopper'||!G.run) return; G.prow++; if(G.prow>G.score){ G.score=G.prow; el('gvScore').textContent=G.score; } haptic(6); checkHopper(); }
-function hopLeft(){ if(G.mode!=='hopper'||!G.run) return; G.pcol=Math.max(0,G.pcol-1); haptic(4); checkHopper(); }
-function hopRight(){ if(G.mode!=='hopper'||!G.run) return; G.pcol=Math.min(HCOLS-1,G.pcol+1); haptic(4); checkHopper(); }
+function hopUp(){ if(G.mode!=='hopper'||!G.run) return; G.prow++; if(G.prow>G.score){ G.score=G.prow; el('gvScore').textContent=G.score; gbeep(880,.05,'triangle'); } haptic(6); checkHopper(); }
+function hopLeft(){ if(G.mode!=='hopper'||!G.run) return; G.pcol=Math.max(0,G.pcol-1); haptic(4); gbeep(500,.04); checkHopper(); }
+function hopRight(){ if(G.mode!=='hopper'||!G.run) return; G.pcol=Math.min(HCOLS-1,G.pcol+1); haptic(4); gbeep(500,.04); checkHopper(); }
 function checkHopper(){
   var r=rowAt(G.prow); if(r.type!=='road') return;
   var px=(G.pcol+0.5)/HCOLS, ph=0.5/HCOLS;
@@ -787,7 +823,7 @@ function drawHopper(){
 }
 /* ---- shared game over ---- */
 function gameOver(){
-  if(!G.run) return; G.run=false; cancelAnimationFrame(G.raf); haptic([20,50,20]);
+  if(!G.run) return; G.run=false; cancelAnimationFrame(G.raf); haptic([20,50,20]); gbeep(180,.25,'sawtooth');
   var sc=G.score, mode=G.mode;
   el('gvFinal').textContent=sc; el('gvEarned').textContent='Saving…'; el('gvCap').classList.add('hide');
   el('gvOver').classList.remove('hide');
@@ -799,7 +835,7 @@ function gameOver(){
       if(m.capped){ el('gvCap').textContent='Daily coin cap reached — play tomorrow for more.'; el('gvCap').classList.remove('hide'); }
       el('gvCoins').textContent=m.coins||0;
       el('gvBest').textContent=(m.games&&m.games[mode])||sc;
-      countUp(m.points); renderPlayer(m); renderStats(m); renderQuests(m); renderAchievements(m); renderCoins(m); if(m.wheel) renderSlot(m);
+      countUp(m.points); renderPlayer(m); renderStats(m); renderQuests(m); renderAchievements(m); renderCoins(m); if(m.wheel) renderSlot(m); loadBoard(mode);
       if(m.coins_earned>0) confetti();
     } else { el('gvEarned').textContent='Score '+sc+' saved!'; }
   }).catch(function(){ el('gvEarned').textContent='Score '+sc+' saved!'; });
