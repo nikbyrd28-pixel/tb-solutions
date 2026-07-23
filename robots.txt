@@ -6,4 +6,5 @@ Disallow: /setup/
 Disallow: /portal/
 Disallow: /support/
 Disallow: /start/
+Disallow: /studio/
 Sitemap: https://tbsol.net/sitemap.xml
