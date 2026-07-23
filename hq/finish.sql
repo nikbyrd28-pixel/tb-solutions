@@ -9,7 +9,7 @@
 
 
 -- ############################################################
--- PART 1 of 4 — CORE TABLES (leads, clients, tasks, tickets, intakes)
+-- PART 1 of 5 — CORE TABLES (leads, clients, tasks, tickets, intakes)
 -- ############################################################
 
 -- ============================================================
@@ -144,7 +144,7 @@ create policy "own rows" on public.kv for all using (auth.uid()=user_id) with ch
 
 
 -- ############################################################
--- PART 2 of 4 — PORTAL PRIVACY, ANALYTICS, SOCIAL, UPDATES
+-- PART 2 of 5 — PORTAL PRIVACY, ANALYTICS, SOCIAL, UPDATES
 -- ############################################################
 
 -- ============================================================
@@ -227,7 +227,7 @@ create policy "admin reads intakes" on public.intakes
 
 
 -- ############################################################
--- PART 3 of 4 — UPLOADS, PROSPECTS, CLIENT LEADS, AUTOMATION
+-- PART 3 of 5 — UPLOADS, PROSPECTS, CLIENT LEADS, AUTOMATION
 -- ############################################################
 
 -- ============================================================
@@ -346,7 +346,7 @@ create policy "admin manages client leads" on public.client_leads
 
 
 -- ############################################################
--- PART 4 of 4 — CLIENT LOGINS (each client sees only THEIR leads)
+-- PART 4 of 5 — CLIENT LOGINS (each client sees only THEIR leads)
 -- Lets a client (e.g. VoomLux) log into their own dashboard at
 -- tbsol.net/clients/crm and see/work only their own leads.
 -- To give a client access: (1) create their login in
@@ -389,6 +389,53 @@ create policy "client user reads their leads" on public.client_leads
 -- keeps them from moving a lead to a client that isn't theirs.
 drop policy if exists "client user updates their leads" on public.client_leads;
 create policy "client user updates their leads" on public.client_leads
+  for update to authenticated
+  using (client in (select cu.client from public.client_users cu
+                    where cu.email = (auth.jwt()->>'email')))
+  with check (client in (select cu.client from public.client_users cu
+                    where cu.email = (auth.jwt()->>'email')));
+
+
+-- ############################################################
+-- PART 5 of 5 — REVIEW GETTER (ask happy customers for Google reviews)
+-- Logs every review request you send and tracks whether it converted.
+-- Works for you AND for clients (sold as a product) via client slug.
+-- ############################################################
+create table if not exists public.review_requests (
+  id          bigint generated always as identity primary key,
+  client      text not null default 'tb-solutions',  -- who's asking (slug)
+  name        text,
+  email       text,
+  phone       text,
+  review_link text,                                   -- the Google review URL
+  status      text not null default 'Sent',           -- Sent | Reviewed | Declined
+  created_at  timestamptz not null default now()
+);
+create index if not exists review_requests_idx on public.review_requests(client, status, created_at);
+alter table public.review_requests enable row level security;
+
+-- You (admin) can do everything.
+drop policy if exists "admin manages reviews" on public.review_requests;
+create policy "admin manages reviews" on public.review_requests
+  for all to authenticated
+  using ((auth.jwt()->>'email') = 'nikbyrd28@gmail.com')
+  with check ((auth.jwt()->>'email') = 'nikbyrd28@gmail.com');
+
+-- A logged-in client can read/add/update review requests for THEIR slug only.
+drop policy if exists "client reads their reviews" on public.review_requests;
+create policy "client reads their reviews" on public.review_requests
+  for select to authenticated
+  using (client in (select cu.client from public.client_users cu
+                    where cu.email = (auth.jwt()->>'email')));
+
+drop policy if exists "client adds their reviews" on public.review_requests;
+create policy "client adds their reviews" on public.review_requests
+  for insert to authenticated
+  with check (client in (select cu.client from public.client_users cu
+                    where cu.email = (auth.jwt()->>'email')));
+
+drop policy if exists "client updates their reviews" on public.review_requests;
+create policy "client updates their reviews" on public.review_requests
   for update to authenticated
   using (client in (select cu.client from public.client_users cu
                     where cu.email = (auth.jwt()->>'email')))

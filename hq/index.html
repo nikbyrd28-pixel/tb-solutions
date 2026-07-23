@@ -132,6 +132,7 @@
       <button data-view="intakes"><span class="ic">📥</span> Intakes <em class="nbadge" id="nb_intakes" hidden></em></button>
       <button data-view="requests"><span class="ic">🛟</span> Requests <em class="nbadge" id="nb_requests" hidden></em></button>
       <button data-view="clientleads"><span class="ic">🤝</span> Client Leads</button>
+      <button data-view="reviews"><span class="ic">⭐</span> Reviews</button>
       <button data-view="analytics"><span class="ic">📈</span> Analytics</button>
       <button data-view="social"><span class="ic">📣</span> Social</button>
       <button data-view="tools"><span class="ic">✦</span> Marketing Tools</button>
@@ -235,7 +236,7 @@ function overdue(d){ return d && d<todayISO(); }
 function dueToday(d){ return d===todayISO(); }
 
 /* ================= VIEWS ================= */
-function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,prospects:vProspects,intakes:vIntakes,requests:vRequests,clientleads:vClientLeads,analytics:vAnalytics,social:vSocial,tools:vTools,data:vData}[cur])(); if(cur==='tools') initTools(); if(cur==='requests') loadRequests(); if(cur==='analytics') loadAnalytics(); if(cur==='intakes') loadIntakes(); if(cur==='prospects') loadProspects(); if(cur==='clientleads') loadClientLeads(); }
+function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,prospects:vProspects,intakes:vIntakes,requests:vRequests,clientleads:vClientLeads,reviews:vReviews,analytics:vAnalytics,social:vSocial,tools:vTools,data:vData}[cur])(); if(cur==='tools') initTools(); if(cur==='requests') loadRequests(); if(cur==='analytics') loadAnalytics(); if(cur==='intakes') loadIntakes(); if(cur==='prospects') loadProspects(); if(cur==='clientleads') loadClientLeads(); if(cur==='reviews') loadReviews(); }
 
 /* ---- Client Leads (per-client CRM) + B2B campaigns ---- */
 var CL_STATUS=['New','Contacted','Booked','Won','Lost'];
@@ -281,6 +282,70 @@ function sendB2B(){
   closeModal();
   alert('Sequence launched for '+co+' 🚀 The intro email sends now; follow-ups fire automatically on day 3 and day 7. Track runs in n8n → Executions.');
 }
+
+/* ---- Reviews (ask happy customers for a Google review) ---- */
+var REVIEW_HOOK='https://n8n-fouz.srv1786777.hstgr.cloud/webhook/review-request';
+var REVIEW_STATUS=['Sent','Reviewed','Declined'];
+function vReviews(){
+  if(!cloud) return '<div class="topbar"><div><h1>Reviews</h1></div></div><div class="empty">Log in with cloud sync to send review requests and track them.</div>';
+  var link=esc(localStorage.getItem('tb_rev_link')||'');
+  var biz=esc(localStorage.getItem('tb_rev_biz')||'TB Solutions');
+  return '<div class="topbar"><div><h1>Review Getter</h1><p class="sub">Ask a happy customer for a Google review — auto-sends the email + a 3-day nudge</p></div></div>'
+    +'<div id="rvStats" class="grid stat-row" style="margin-bottom:16px"></div>'
+    +'<div class="card">'
+      +'<label class="f">Whose reviews? (business name)</label><input id="rv_biz" value="'+biz+'" placeholder="TB Solutions">'
+      +'<label class="f">Your Google review link <a href="https://support.google.com/business/answer/7035772" target="_blank" rel="noopener" style="color:var(--blue);font-size:12px">(where do I get this?)</a></label>'
+      +'<input id="rv_link" value="'+link+'" placeholder="https://g.page/r/...  or  https://search.google.com/local/writereview?placeid=...">'
+      +'<div class="row2"><div><label class="f">Customer name</label><input id="rv_name" placeholder="Jane"></div>'
+      +'<div><label class="f">Customer email</label><input id="rv_email" type="email" placeholder="jane@email.com"></div></div>'
+      +'<button class="btn primary" style="margin-top:14px" onclick="sendReview()">⭐ Send review request</button>'
+      +' <span id="rv_msg" style="color:var(--green);font-weight:700;margin-left:10px"></span>'
+      +'<p class="hint" style="margin-top:10px">Only ask real, happy customers — and always send the same link to everyone. Your link is remembered so you only paste it once.</p>'
+    +'</div>'
+    +'<div id="rvBody" style="margin-top:16px"><div class="empty">Loading…</div></div>';
+}
+function loadReviews(){
+  if(!cloud) return;
+  supa.from('review_requests').select('*').order('created_at',{ascending:false}).limit(300).then(function(r){
+    var el=document.getElementById('rvBody'); if(!el) return;
+    if(r.error){ el.innerHTML='<div class="empty">Could not load — run hq/finish.sql (updated) in Supabase, then reload.</div>'; return; }
+    var rows=r.data||[];
+    var reviewed=rows.filter(function(x){return x.status==='Reviewed';}).length;
+    var pct=rows.length?Math.round(reviewed/rows.length*100):0;
+    var st=document.getElementById('rvStats');
+    if(st) st.innerHTML='<div class="stat"><b>'+rows.length+'</b><span>Requests sent</span></div>'
+      +'<div class="stat"><b>'+reviewed+'</b><span>Reviews landed</span></div>'
+      +'<div class="stat"><b>'+pct+'%</b><span>Conversion</span></div>';
+    if(!rows.length){ el.innerHTML='<div class="empty">No review requests yet. Send your first one above — more Google reviews = higher local ranking = more calls.</div>'; return; }
+    el.innerHTML='<div class="card" style="padding:4px 4px"><table><thead><tr><th>Customer</th><th class="hide-sm">Business</th><th class="hide-sm">Sent</th><th>Status</th></tr></thead><tbody>'
+      + rows.map(function(x){
+          return '<tr><td><b>'+esc(x.name||'—')+'</b><br><small style="color:var(--muted)">'+esc(x.email||'')+'</small></td>'
+            +'<td class="hide-sm" style="color:var(--muted)">'+esc(x.client||'')+'</td>'
+            +'<td class="hide-sm" style="color:var(--muted)">'+(x.created_at?new Date(x.created_at).toLocaleDateString():'')+'</td>'
+            +'<td><select class="status-sel" onchange="setReviewStatus('+(+x.id)+',this.value)">'+REVIEW_STATUS.map(function(s){return '<option'+(x.status===s?' selected':'')+'>'+s+'</option>';}).join('')+'</select></td></tr>';
+        }).join('')
+      +'</tbody></table></div>';
+  });
+}
+function sendReview(){
+  if(!cloud) return;
+  var biz=(document.getElementById('rv_biz').value||'').trim()||'TB Solutions';
+  var name=(document.getElementById('rv_name').value||'').trim();
+  var email=(document.getElementById('rv_email').value||'').trim();
+  var link=(document.getElementById('rv_link').value||'').trim();
+  if(!name||!email||!link){ alert('Add the customer name, their email, and your Google review link.'); return; }
+  localStorage.setItem('tb_rev_link',link); localStorage.setItem('tb_rev_biz',biz);
+  var slug=biz.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'tb-solutions';
+  supa.from('review_requests').insert({client:slug,name:name,email:email,review_link:link,status:'Sent'}).then(function(r){
+    if(r.error){ alert('Could not save: '+r.error.message); return; }
+    loadReviews();
+  });
+  var b=new URLSearchParams(); b.append('name',name); b.append('email',email); b.append('review_link',link); b.append('business',biz); b.append('ts',new Date().toISOString());
+  fetch(REVIEW_HOOK,{method:'POST',mode:'no-cors',body:b}).catch(function(){});
+  document.getElementById('rv_name').value=''; document.getElementById('rv_email').value='';
+  var m=document.getElementById('rv_msg'); if(m){ m.textContent='Sent to '+name+' ✓'; setTimeout(function(){ if(m) m.textContent=''; },4000); }
+}
+function setReviewStatus(id,v){ if(!cloud) return; supa.from('review_requests').update({status:v}).eq('id',id).then(function(r){ if(r.error) alert('Could not update: '+r.error.message); else loadReviews(); }); }
 
 /* ---- Prospects (people who created a portal account) ---- */
 var _prospects=[];

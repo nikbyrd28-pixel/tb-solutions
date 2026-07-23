@@ -1,0 +1,76 @@
+{
+  "name": "Review Getter — ask for a Google review (+ day-3 nudge)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Review Getter\nSends a customer a friendly \"leave us a Google review\" email, then a gentle reminder 3 days later.\n\n### How it's fed\nUse the **Reviews** tab in TB Command (or the client dashboard) — tap **Ask for a review**. It POSTs here with:\nname, email, review_link, business\n\n### Setup\n1. Attach your Gmail SMTP credential on BOTH Email nodes.\n2. Save → flip **Active**.\n\nThat's it. Every request you send from TB Command now emails the customer automatically.\n\n⚠️ Only ask real, happy customers — and send everyone the same link (don't hide it from unhappy ones). That keeps you on the right side of Google's rules.",
+        "height": 380,
+        "width": 390
+      },
+      "id": "note1",
+      "name": "Read me",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-180, 40]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "review-request",
+        "options": {}
+      },
+      "id": "wh1",
+      "name": "Review Request In",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [280, 300],
+      "webhookId": "review-request"
+    },
+    {
+      "parameters": {
+        "fromEmail": "nikbyrd28@gmail.com",
+        "toEmail": "={{ $json.body.email }}",
+        "subject": "=Quick favor, {{ $json.body.name }}? 🙏",
+        "emailFormat": "text",
+        "text": "=Hi {{ $json.body.name }},\n\nThank you again — it was a pleasure working with you!\n\nIf you have 30 seconds, a quick Google review would mean the world and helps other people find {{ $json.body.business }}. Here's the direct link (it's fast):\n\n👉 {{ $json.body.review_link }}\n\nJust a sentence or two is perfect. Thank you so much!\n\n{{ $json.body.business }}",
+        "options": {}
+      },
+      "id": "em1",
+      "name": "Ask for review",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [540, 300]
+    },
+    {
+      "parameters": { "resume": "timeInterval", "amount": 3, "unit": "days" },
+      "id": "w1",
+      "name": "Wait 3 days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [780, 300],
+      "webhookId": "review-request-wait"
+    },
+    {
+      "parameters": {
+        "fromEmail": "nikbyrd28@gmail.com",
+        "toEmail": "={{ $json.body.email }}",
+        "subject": "=One more quick thing, {{ $json.body.name }} 🌟",
+        "emailFormat": "text",
+        "text": "=Hi {{ $json.body.name }},\n\nJust floating this back up in case it slipped by — a quick Google review really helps {{ $json.body.business }} out:\n\n👉 {{ $json.body.review_link }}\n\nAlready left one? Thank you so much — please ignore this! 🙏\n\n{{ $json.body.business }}",
+        "options": {}
+      },
+      "id": "em2",
+      "name": "Gentle reminder",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1020, 300]
+    }
+  ],
+  "connections": {
+    "Review Request In": { "main": [[{ "node": "Ask for review", "type": "main", "index": 0 }]] },
+    "Ask for review": { "main": [[{ "node": "Wait 3 days", "type": "main", "index": 0 }]] },
+    "Wait 3 days": { "main": [[{ "node": "Gentle reminder", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {}
+}
