@@ -75,6 +75,19 @@
   .tlseg:hover{background:rgba(139,123,255,.14)}
   :focus-visible{outline:2px solid var(--acc2);outline-offset:2px;border-radius:4px}
   @media (prefers-reduced-motion:reduce){ .spin{animation:none} *{transition-duration:.001ms!important} }
+  /* teleprompter recorder */
+  #recOverlay{position:fixed;inset:0;z-index:300;background:#04050a;display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px;overflow:auto}
+  #recOverlay.hide{display:none!important}
+  .recTele{width:100%;max-width:640px;text-align:center;font-family:Poppins,sans-serif;font-weight:800;font-size:clamp(18px,4.6vw,27px);line-height:1.25;color:#fff;background:rgba(122,162,255,.12);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-height:52px}
+  #recCanvas{max-width:100%;max-height:52vh;border-radius:14px;background:#000;box-shadow:0 16px 50px rgba(0,0,0,.6)}
+  #camVideo{display:none}
+  .recBar{display:flex;align-items:center;gap:14px;color:var(--muted);font-weight:700}
+  .recBar button{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text);font-size:16px;cursor:pointer}
+  .recCtrls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center}
+  .recCtrls .btn.rec.on{background:linear-gradient(135deg,#ff6a7a,#ffb15a)}
+  #recResult{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;max-width:640px}
+  #recResult.hide{display:none}
+  #recOut{width:100%;max-height:48vh;border-radius:12px;background:#000}
   .playbtn{flex:0 0 auto;width:44px;height:44px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#0b0b12;font-size:17px;cursor:pointer}
   .tcode{font:12px ui-monospace,Menlo,monospace;color:var(--muted);white-space:nowrap}
   .progwrap{height:8px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:12px}
@@ -283,6 +296,9 @@
         <div class="bar" style="margin-top:14px">
           <button class="btn rec wide" id="renderBtn" onclick="startRender()">🎬 Render my video</button>
         </div>
+        <div class="bar" style="margin-top:8px">
+          <button class="btn ghost wide" onclick="openRecorder()">🎥 Record yourself reading the script (teleprompter · 30s)</button>
+        </div>
         <div class="progwrap hide" id="progWrap"><i id="prog"></i></div>
         <div class="muted" id="renderState" style="margin-top:8px"></div>
         <video id="out" class="hide" controls playsinline></video>
@@ -314,6 +330,24 @@
         <p class="muted" id="postIdea">Render a video and I'll suggest a caption + hashtags you can paste straight into your post.</p>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- TELEPROMPTER RECORDER -->
+<div id="recOverlay" class="hide">
+  <div class="recTele" id="recTele">Your line here</div>
+  <canvas id="recCanvas" width="720" height="1280"></canvas>
+  <video id="camVideo" autoplay muted playsinline></video>
+  <div class="recBar"><button onclick="recPrev()" title="Previous line" aria-label="Previous line">◀</button><span id="recLineNo">1/1</span><button onclick="recNext()" title="Next line" aria-label="Next line">▶</button></div>
+  <div class="recCtrls">
+    <button class="btn rec" id="recBtn" onclick="toggleRec()">● Record</button>
+    <span class="muted" id="recTimer">0.0s / 30s</span>
+    <button class="btn ghost" onclick="closeRecorder()">Close</button>
+  </div>
+  <div id="recResult" class="hide">
+    <video id="recOut" controls playsinline></video>
+    <a class="btn" id="recDl" download="tb-recording.webm">⬇️ Download clip</a>
+    <p class="muted" style="text-align:center;margin:0">Your voice + captions are baked in. Post it, or drop it back in as a scene background.</p>
   </div>
 </div>
 
@@ -1221,6 +1255,93 @@ el('voiceVol').addEventListener('input',function(){});
 el('voiceFile').addEventListener('change',function(){ loadAudioFile(this.files[0],'voice'); });
 el('musicFile').addEventListener('change',function(){ loadAudioFile(this.files[0],'music'); });
 el('logoFile').addEventListener('change',function(){ var f=this.files[0]; if(!f)return; var r=new FileReader(); r.onload=function(){ var im=new Image(); im.onload=function(){ logoImg=im; drawAt(previewT); }; im.src=r.result; }; r.readAsDataURL(f); });
+
+/* ---------- teleprompter recorder (camera + burned captions + mic audio) ---------- */
+var camStream=null, recCanvas=null, recCtx=null, recVideo=null, recRAF=null, recLines=[], recIdx=0;
+var recRec=null, recChunks2=[], recActive=false, recStart2=0, REC_MAX=30;
+async function openRecorder(){
+  recLines = scenes.map(function(s){ return (s.text||'').replace(/\s+/g,' ').trim(); }).filter(Boolean);
+  if(!recLines.length) recLines=['Write a script or pick a template first'];
+  recIdx=0;
+  el('recResult').classList.add('hide');
+  el('recOverlay').classList.remove('hide');
+  var sh=SHAPES[shapeIdx], w=sh[1], h=sh[2], f=1280/Math.max(w,h); if(f<1){ w=Math.round(w*f); h=Math.round(h*f); }
+  recCanvas=el('recCanvas'); recCanvas.width=w; recCanvas.height=h; recCtx=recCanvas.getContext('2d');
+  recVideo=el('camVideo');
+  updateRecLine();
+  try{
+    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},audio:true});
+    recVideo.srcObject=camStream; await recVideo.play();
+  }catch(e){ el('recTele').textContent='Camera/mic blocked — allow access in your browser, then reopen.'; }
+  try{ ensureFonts(); }catch(e){}
+  if(recRAF) cancelAnimationFrame(recRAF); recLoop();
+}
+function updateRecLine(){ if(el('recTele')) el('recTele').textContent=recLines[recIdx]||''; if(el('recLineNo')) el('recLineNo').textContent=(recIdx+1)+'/'+recLines.length; }
+function recNext(){ if(recIdx<recLines.length-1){ recIdx++; updateRecLine(); } }
+function recPrev(){ if(recIdx>0){ recIdx--; updateRecLine(); } }
+function drawRecCap(g,text,W,H){
+  if(!text) return;
+  var sc=g.createLinearGradient(0,H*0.58,0,H); sc.addColorStop(0,'rgba(0,0,0,0)'); sc.addColorStop(1,'rgba(0,0,0,.62)');
+  g.fillStyle=sc; g.fillRect(0,H*0.58,W,H*0.42);
+  g.textAlign='center'; g.textBaseline='alphabetic';
+  var fit=fitText(g,String(text).toUpperCase(),W*0.86,H*0.16,3);
+  var y=H*0.9 - fit.blockH + fit.fs;
+  g.font='900 '+fit.fs+'px "Poppins","Arial Black",sans-serif'; g.lineJoin='round'; g.miterLimit=2;
+  for(var i=0;i<fit.lines.length;i++){ var ly=y+i*fit.lh;
+    g.lineWidth=fit.fs*0.16; g.strokeStyle='rgba(6,7,14,.92)'; g.strokeText(fit.lines[i],W/2,ly);
+    g.fillStyle='#fff'; g.fillText(fit.lines[i],W/2,ly);
+  }
+}
+function recLoop(){
+  if(!recCtx){ return; }
+  var W=recCanvas.width, H=recCanvas.height, g=recCtx, v=recVideo;
+  if(v && v.readyState>=2){
+    var vw=v.videoWidth||16, vh=v.videoHeight||9, cr=W/H, ir=vw/vh, dw, dh;
+    if(ir>cr){ dh=H; dw=H*ir; } else { dw=W; dh=W/ir; }
+    try{ g.drawImage(v,(W-dw)/2,(H-dh)/2,dw,dh); }catch(e){ g.fillStyle='#0b0b12'; g.fillRect(0,0,W,H); }
+  } else { g.fillStyle='#0b0b12'; g.fillRect(0,0,W,H); }
+  drawRecCap(g, recLines[recIdx], W, H);
+  var brand=((el('aiBrand')&&el('aiBrand').value)||'').trim();
+  if(brand){ g.font='700 '+Math.round(W*0.03)+'px Inter,sans-serif'; g.textAlign='center'; g.textBaseline='middle'; g.globalAlpha=.85; g.fillStyle='#fff'; g.fillText(brand,W/2,H-H*0.035); g.globalAlpha=1; }
+  recRAF=requestAnimationFrame(recLoop);
+}
+function toggleRec(){ recActive ? stopRec() : startRec(); }
+function startRec(){
+  if(recActive || !recCanvas) return;
+  var stream;
+  try{ stream=recCanvas.captureStream(30); }catch(e){ el('recTimer').textContent='Recording not supported here — try Chrome.'; return; }
+  if(camStream){ camStream.getAudioTracks().forEach(function(t){ try{ stream.addTrack(t); }catch(e){} }); }
+  var mime=pickMime();
+  try{ recRec=new MediaRecorder(stream, mime?{mimeType:mime,videoBitsPerSecond:8000000}:undefined); }
+  catch(e){ el('recTimer').textContent='Recording not supported here — try Chrome.'; return; }
+  recChunks2=[]; recRec.ondataavailable=function(e){ if(e.data&&e.data.size) recChunks2.push(e.data); };
+  recRec.onstop=function(){ finishRec(); };
+  recActive=true; recStart2=performance.now(); recRec.start(100);
+  el('recBtn').textContent='■ Stop'; el('recBtn').classList.add('on');
+  el('recResult').classList.add('hide');
+  recTick();
+}
+function recTick(){
+  if(!recActive) return;
+  var t=(performance.now()-recStart2)/1000;
+  el('recTimer').textContent=t.toFixed(1)+'s / '+REC_MAX+'s';
+  if(t>=REC_MAX){ stopRec(); return; }
+  requestAnimationFrame(recTick);
+}
+function stopRec(){ if(!recActive) return; recActive=false; try{ recRec.stop(); }catch(e){} el('recBtn').textContent='● Record'; el('recBtn').classList.remove('on'); }
+function finishRec(){
+  var blob=new Blob(recChunks2,{type:(recChunks2[0]&&recChunks2[0].type)||'video/webm'});
+  var url=URL.createObjectURL(blob);
+  el('recOut').src=url; var dl=el('recDl'); dl.href=url; dl.download='tb-recording-'+shapeName()+'.webm';
+  el('recResult').classList.remove('hide');
+}
+function closeRecorder(){
+  stopRec();
+  if(recRAF){ cancelAnimationFrame(recRAF); recRAF=null; } recCtx=null;
+  if(camStream){ camStream.getTracks().forEach(function(t){ try{ t.stop(); }catch(e){} }); camStream=null; }
+  if(recVideo){ try{ recVideo.srcObject=null; }catch(e){} }
+  el('recOverlay').classList.add('hide');
+}
 
 /* ---------- projects (save / reopen; free, browser-stored) ---------- */
 var curProj=null;
