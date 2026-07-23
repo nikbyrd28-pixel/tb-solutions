@@ -13,6 +13,7 @@
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
   <meta name="author" content="TB Solutions" />
   <link rel="canonical" href="https://tbsol.net/" />
+  <script defer src="/track.js"></script>
   <meta property="og:type" content="website" />
   <meta property="og:title" content="TB Solutions | Digital Marketing & Web Design — Chester County, PA" />
   <meta property="og:description" content="Chester County digital marketing studio — out-of-this-world websites, AI growth agent, local SEO, ads, and lead systems. Book a free marketing plan call." />
@@ -955,7 +956,7 @@
     };
     document.addEventListener('click', function(e){
       var t=e.target.closest('[data-book]');
-      if(t){ e.preventDefault(); window.open(CAL_URL,'_blank','noopener'); }
+      if(t){ e.preventDefault(); if(window.trackLead)trackLead('Booking click'); window.open(CAL_URL,'_blank','noopener'); }
     });
 
     // AJAX submit for FormSubmit-backed forms
@@ -968,7 +969,7 @@
         var label = btn ? btn.textContent : '';
         if(btn){ btn.disabled=true; btn.textContent='Sending...'; }
         var data={}; new FormData(form).forEach(function(v,k){ if(k[0]!=='_') data[k]=v; });
-        if(window.n8nSend) window.n8nSend(Object.assign({source:'website form',ts:new Date().toISOString()}, data));
+        if(window.n8nSend) window.n8nSend(Object.assign({source:'website form',ts:new Date().toISOString(),ad_source:(window.adSrc?adSrc():'')}, data));
         var action=form.getAttribute('action').replace('formsubmit.co/','formsubmit.co/ajax/');
         fetch(action,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)})
           .then(function(r){ return r.json(); })
@@ -978,6 +979,7 @@
       });
     }
     ajaxForm(document.getElementById('leadForm'), function(){
+      if(window.trackLead)trackLead('Website lead');
       var lf=document.getElementById('leadForm');
       lf.innerHTML='<div class="book-success show" style="text-align:left"><div class="tick">✓</div><h3>Thanks — got it!</h3><p class="sub">Nick will reply shortly with your free website & Google review. Check your phone.</p></div>';
     });
