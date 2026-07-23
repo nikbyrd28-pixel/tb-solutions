@@ -104,6 +104,17 @@
   .band li b{color:var(--text)}
   .for{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:8px}
   .for span{border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-size:14px;color:var(--muted);background:rgba(255,255,255,.02)}
+  /* comparison */
+  .cmp{max-width:680px;margin:0 auto;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:rgba(255,255,255,.015)}
+  .cmp .row{display:grid;grid-template-columns:1fr 96px 96px;align-items:center;border-bottom:1px solid rgba(255,255,255,.06)}
+  .cmp .row:last-child{border-bottom:0}
+  .cmp .row>div{padding:13px 14px;font-size:14px}
+  .cmp .row.h{background:rgba(122,162,255,.08);font-weight:800}
+  .cmp .c{text-align:center;font-weight:800}
+  .cmp .loop{background:rgba(93,242,224,.06)}
+  .cmp .yes{color:var(--good)}
+  .cmp .no{color:#ff8a9d;font-weight:700;font-size:12.5px}
+  @media(max-width:520px){.cmp .row{grid-template-columns:1fr 62px 62px}.cmp .row>div{padding:11px 8px;font-size:12.5px}.cmp .no{font-size:11px}}
   /* pricing */
   .price{max-width:440px;margin:0 auto;background:linear-gradient(160deg,rgba(122,162,255,.12),rgba(0,0,0,.3));border:1px solid var(--acc);border-radius:26px;padding:34px;text-align:center;box-shadow:0 0 40px rgba(122,162,255,.2)}
   .price .amt{font-family:Poppins;font-size:46px;font-weight:900;line-height:1}
@@ -226,6 +237,25 @@
         <li><span class="bi">💎</span><div><b>Status.</b> Climbing to VIP feels good — and VIPs spend more and stay longer.</div></li>
       </ul>
     </div>
+  </section>
+
+  <!-- VS BOOKSY -->
+  <section>
+    <div class="kick">Loop vs the booking apps</div>
+    <h2>Why shops switch to Loop</h2>
+    <p class="sub">The big booking apps rent you your own customers — and market your competitors to them. Loop is built the other way around.</p>
+    <div class="cmp">
+      <div class="row h"><div>&nbsp;</div><div class="c">🔁 Loop</div><div class="c">Booking apps</div></div>
+      <div class="row"><div>No app for customers</div><div class="c loop yes">✓</div><div class="c no">Usually</div></div>
+      <div class="row"><div>Never advertises competitors to your clients</div><div class="c loop yes">✓</div><div class="c no">✗</div></div>
+      <div class="row"><div>No per-booking marketplace fees</div><div class="c loop yes">✓</div><div class="c no">✗</div></div>
+      <div class="row"><div>Your client list stays yours</div><div class="c loop yes">✓</div><div class="c no">Rented</div></div>
+      <div class="row"><div>Points, prizes &amp; VIP tiers</div><div class="c loop yes">✓</div><div class="c no">Limited</div></div>
+      <div class="row"><div>Arcade games that pull people back</div><div class="c loop yes">✓</div><div class="c no">✗</div></div>
+      <div class="row"><div>Real self-service booking</div><div class="c loop yes">✓</div><div class="c yes">✓</div></div>
+      <div class="row"><div>No hardware</div><div class="c loop yes">✓</div><div class="c yes">✓</div></div>
+    </div>
+    <p class="sub" style="margin-top:22px">🔔 <b style="color:var(--text)">Text &amp; email booking reminders</b> to crush no-shows — <b style="color:var(--acc2)">coming soon</b>.</p>
   </section>
 
   <!-- PRICING -->
