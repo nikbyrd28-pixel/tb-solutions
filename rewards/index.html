@@ -81,6 +81,14 @@
   .streak{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:#ffb15a;background:rgba(255,177,90,.1);border:1px solid rgba(255,177,90,.35);border-radius:999px;padding:5px 12px;margin-top:10px}
   label.f{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px;text-align:left}
   #pcanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.6}
+  @media (prefers-reduced-motion:reduce){ *,*::before,*::after{animation:none!important;transition:none!important} #pcanvas{display:none} }
+  :focus-visible{outline:2px solid var(--acc2);outline-offset:2px}
+  .rwspin{width:34px;height:34px;border:3px solid rgba(122,162,255,.2);border-top-color:var(--acc);border-radius:50%;animation:rwsp .8s linear infinite;margin:2px auto 0}
+  @keyframes rwsp{to{transform:rotate(360deg)}}
+  .statrow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0 2px}
+  .statrow .st{border:1px solid var(--line);border-radius:12px;padding:7px 12px;min-width:64px;background:rgba(122,162,255,.05)}
+  .statrow .st b{display:block;font-size:15px;color:var(--text);line-height:1.1}
+  .statrow .st span{font-size:9.5px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
   .wrap{position:relative;z-index:2}
   .player{overflow:hidden;position:relative}
   .pcard-top{display:flex;align-items:center;gap:14px;text-align:left}
@@ -129,6 +137,9 @@
     <p class="muted" style="margin-top:10px">Already a member? Same button — your phone number finds your card. <a href="/privacy/" style="color:var(--muted)">Privacy</a></p>
   </div>
 
+  <!-- LOADING -->
+  <div class="card center hide" id="loadingCard"><div class="rwspin"></div><p class="muted" style="margin-top:12px">Loading your card…</p></div>
+
   <!-- CARD -->
   <div id="cardView" class="hide">
     <div class="card player">
@@ -148,6 +159,7 @@
         <div class="big" id="mPoints">0</div>
         <div class="muted">points to spend</div>
         <div class="punches" id="punches" style="justify-content:center"></div>
+        <div class="statrow" id="statRow"></div>
         <p class="muted" id="rewardLine"></p>
         <p class="ok hide" id="readyLine">🎉 Reward unlocked — show this at the counter!</p>
         <img class="qr" id="mQr" alt="Your member QR" loading="lazy">
@@ -255,6 +267,7 @@ function qrUrl(data,size){ return 'https://api.qrserver.com/v1/create-qr-code/?s
 function showCard(m){
   member=m;
   try{ localStorage.setItem('rw_'+slug, m.code); }catch(e){}
+  showLoading(false);
   el('joinCard').classList.add('hide');
   el('cardView').classList.remove('hide');
   el('mName').textContent=(m.name||'Your')+"'s card";
@@ -269,6 +282,7 @@ function showCard(m){
   el('mQr').src=qrUrl(myUrl,196);
   el('refQr').src=qrUrl(location.origin+'/capture/?c='+slug+'&name='+encodeURIComponent(display)+'&ref='+m.code,160);
   renderPlayer(m);
+  renderStats(m);
   renderQuests(m);
   renderAchievements(m);
   if(m.wheel) renderSlot(m);
@@ -292,6 +306,11 @@ function renderPlayer(m){
   el('streakWrap').innerHTML=(m.streak&&m.streak>=2)?('<div class="streak">🔥 '+m.streak+'-visit streak — don\'t break it!</div>'):'';
   if(_lastLevel!=null && level>_lastLevel){ levelUp(level); }
   _lastLevel=level;
+}
+function renderStats(m){
+  var box=el('statRow'); if(!box) return;
+  var stats=[['⭐',(m.lifetime||m.points||0),'lifetime'],['🔥',(m.streak||0),'streak'],['🎰',(m.spins||0),'spins'],['🎁',(m.prizes||[]).length,'prizes']];
+  box.innerHTML=stats.map(function(s){ return '<div class="st"><b>'+s[0]+' '+s[1]+'</b><span>'+s[2]+'</span></div>'; }).join('');
 }
 function levelUp(level){
   var f=document.createElement('div'); f.className='levelup'; f.textContent='LEVEL '+level+'! ⚡';
@@ -355,8 +374,16 @@ function join(){
     rpc('get_member',{p_code:m.code}).then(function(full){ showCard(full.error?m:full); });
   });
 }
+function showLoading(b){ var e=el('loadingCard'); if(e) e.classList.toggle('hide',!b); }
 function loadByCode(code){
-  rpc('get_member',{p_code:code}).then(function(m){ if(!m.error) showCard(m); else el('joinCard').classList.remove('hide'); });
+  showLoading(true);
+  rpc('get_member',{p_code:code}).then(function(m){
+    showLoading(false);
+    if(!m.error) showCard(m); else el('joinCard').classList.remove('hide');
+  }).catch(function(){
+    showLoading(false); el('joinCard').classList.remove('hide');
+    if(el('jErr')){ el('jErr').textContent='Connection hiccup — check your signal and tap Join again.'; el('jErr').classList.remove('hide'); }
+  });
 }
 function staffAdd(){
   var pin=prompt('Staff PIN:'); if(!pin) return;
@@ -487,7 +514,9 @@ function sendSurvey(){
     showCard(m);
   });
 }
+function reducedMotion(){ return !!(window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches); }
 function confetti(){
+  if(reducedMotion()) return;
   var bits=['🎉','✨','⭐','💎','🎊'];
   for(var i=0;i<26;i++){
     var s=document.createElement('span'); s.className='cf';
@@ -518,7 +547,7 @@ else if(saved){ el('joinCard').classList.add('hide'); loadByCode(saved); }
 
 /* ambient game particles */
 (function(){
-  var c=document.getElementById('pcanvas'); if(!c) return; var x=c.getContext('2d');
+  var c=document.getElementById('pcanvas'); if(!c) return; if(reducedMotion()) return; var x=c.getContext('2d');
   var W,H,parts=[];
   function resize(){ W=c.width=innerWidth; H=c.height=innerHeight; }
   resize(); addEventListener('resize',resize);
