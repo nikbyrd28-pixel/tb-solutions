@@ -69,6 +69,16 @@
   .diffbtn{cursor:pointer}
   .diffbtn.on{background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d;border:0;box-shadow:0 8px 22px rgba(122,162,255,.32)}
   .odds{border:1px dashed var(--line);border-radius:12px;padding:10px 12px;margin-top:10px;background:rgba(122,162,255,.05);font-size:13px}
+  .agday{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--acc2);margin:14px 0 6px}
+  .appt{display:grid;grid-template-columns:64px 1fr auto;gap:10px;align-items:center;padding:9px 4px;border-bottom:1px solid rgba(255,255,255,.06)}
+  .appt:last-child{border-bottom:0}
+  .appt-t{font-weight:800;font-size:13px;color:var(--text)}
+  .appt-b b{font-size:14px}
+  .appt-a{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .mini{border:1px solid var(--line);background:rgba(122,162,255,.08);color:var(--text);border-radius:9px;padding:6px 9px;font-size:11px;font-weight:800;cursor:pointer}
+  .mini.good{border-color:rgba(67,240,176,.5);color:var(--good)}
+  .mini.bad{border-color:rgba(255,138,157,.5);color:#ff8a9d}
+  @media(max-width:520px){.appt{grid-template-columns:52px 1fr;grid-auto-rows:auto}.appt-a{grid-column:1/-1;justify-content:flex-start}}
 </style>
 </head>
 <body>
@@ -100,6 +110,11 @@
 
     <div class="card">
       <div class="stats" id="stats"></div>
+    </div>
+
+    <div class="card">
+      <h2>📅 <b>Appointments</b> — your live schedule</h2>
+      <div id="agenda"><p class="muted">Loading…</p></div>
     </div>
 
     <div class="card">
@@ -259,6 +274,36 @@ function render(d){
   el('lkPoster').onclick=function(){ window.open(base+'/rewards/poster/?c='+d.client,'_blank'); };
   el('lkStaff').href=base+'/rewards/staff/';
   loadSettings();
+  loadAgenda();
+}
+/* ============ Live appointment agenda ============ */
+function loadAgenda(){
+  rpc('booking_admin',{p_client:CODE,p_pin:PIN,p_from:'',p_to:''}).then(function(d){
+    var box=el('agenda'); if(!box) return;
+    if(!d||!d.ok){ box.innerHTML='<p class="muted">'+esc((d&&d.error)||'Could not load schedule.')+'</p>'; return; }
+    var appts=(d.appts||[]).filter(function(a){return a.status!=='cancelled';});
+    if(!appts.length){ box.innerHTML='<p class="muted">No upcoming appointments yet. When members book from their card, they land here automatically.</p>'; return; }
+    var byday={}, order=[];
+    appts.forEach(function(a){ if(!byday[a.date]){byday[a.date]=[];order.push(a.date);} byday[a.date].push(a); });
+    box.innerHTML=order.map(function(dt){
+      return '<div class="agday">'+esc(byday[dt][0].day)+'</div>'+byday[dt].map(apptRow).join('');
+    }).join('');
+  }).catch(function(){ var b=el('agenda'); if(b) b.innerHTML='<p class="muted">Network error loading schedule.</p>'; });
+}
+function apptRow(a){
+  var stColor=a.status==='done'?'var(--good)':a.status==='noshow'?'#ff8a9d':'var(--muted)';
+  function btn(cls,label,status){ return '<button class="mini '+cls+'" onclick="setAppt('+a.id+',\''+status+'\')">'+label+'</button>'; }
+  var ctrls=(a.status==='confirmed')
+    ? btn('good','✓ Done','done')+btn('','No-show','noshow')+btn('bad','Cancel','cancelled')
+    : '<span class="st" style="color:'+stColor+'">'+esc(a.status)+'</span>';
+  return '<div class="appt"><div class="appt-t">'+esc(a.time)+'</div>'
+    +'<div class="appt-b"><b>'+esc(a.name||'Member')+'</b><div class="muted">'+esc(a.service)+(a.staff_name?(' · '+esc(a.staff_name)):'')+(a.price?(' · '+esc(a.price)):'')+'</div></div>'
+    +'<div class="appt-a">'+ctrls+'</div></div>';
+}
+function setAppt(id,status){
+  rpc('booking_set_status',{p_client:CODE,p_pin:PIN,p_id:id,p_status:status}).then(function(d){
+    if(d&&d.ok){ toast('Updated ✓'); loadAgenda(); } else { toast((d&&d.error)||'Could not update'); }
+  }).catch(function(){ toast('Network error'); });
 }
 
 /* ============ Rewards & game difficulty editor ============ */
