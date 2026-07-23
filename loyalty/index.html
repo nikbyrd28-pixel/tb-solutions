@@ -245,11 +245,11 @@
         <input name="email" type="email" placeholder="Email *" required>
         <input name="phone" type="tel" placeholder="Phone *" required>
         <input name="niche" placeholder="What kind of business? (barber, café…)">
-        <button class="btn big" type="button" id="subBtn" onclick="subscribe()">💳 Start my free month →</button>
+        <button class="btn big" type="button" id="subBtn" onclick="subscribe()">Start my free month →</button>
         <button class="btn ghost" type="submit" id="sBtn" style="font-size:14px">Rather talk first? Book a free demo</button>
         <p class="err hide" id="subErr" style="color:#ff8a9d;font-size:13px;text-align:center;margin:2px 0 0"></p>
         <p class="ok hide" id="ok">🎉 Got it! We'll reach out shortly to set up your card.</p>
-        <p style="color:var(--muted);font-size:12px;margin:4px 0 0">First month free, then $79/mo · cancel anytime · secure checkout by <b style="color:var(--text)">Stripe</b>. <a href="/privacy/" style="color:var(--muted)">Privacy</a></p>
+        <p style="color:var(--muted);font-size:12px;margin:4px 0 0">First month free, then $79/mo · cancel anytime · no card needed to start — we'll set you up. <a href="/privacy/" style="color:var(--muted)">Privacy</a></p>
       </form>
     </div>
   </section>
@@ -283,17 +283,12 @@ function subscribe(){
   var f=document.getElementById('f');
   var biz=(f.business.value||'').trim(), email=(f.email.value||'').trim(), name=(f.name.value||'').trim(), phone=(f.phone.value||'').trim();
   if(!biz){ f.business.focus(); return subFlash('Add your business name first.'); }
-  if(!email || email.indexOf('@')<1){ f.email.focus(); return subFlash('Add a valid email for your receipt.'); }
-  var btn=document.getElementById('subBtn'); btn.disabled=true; btn.textContent='Opening secure checkout…';
+  if(!email || email.indexOf('@')<1){ f.email.focus(); return subFlash('Add a valid email so we can reach you.'); }
+  var btn=document.getElementById('subBtn'); btn.disabled=true; btn.textContent='Sending…';
   document.getElementById('subErr').classList.add('hide');
   fetch(SUPA_URL+'/rest/v1/intakes',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
-    body:JSON.stringify({business:biz,name:name,email:email,phone:phone,about:'🔁 Loop — started checkout',interest:'Loyalty program (Loop) — subscribing',goal:'get more repeat customers',timeline:'ASAP',ref:(window.tbRef?window.tbRef():''),notes:'Clicked Start my free month'})}).catch(function(){});
-  fetch(SUPA_URL+'/functions/v1/loop-checkout',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify({business:biz,email:email,name:name,phone:phone})})
-  .then(function(r){return r.json()}).then(function(d){
-    if(d && d.url){ location.href=d.url; return; }
-    try{ if(d&&d.error) console.log('Loop checkout:', d.error); }catch(e){}
-    leadCaptured();
-  }).catch(function(){ btn.disabled=false; btn.textContent='💳 Start my free month →'; subFlash('Network hiccup — please try again.'); });
+    body:JSON.stringify({business:biz,name:name,email:email,phone:phone,about:'🔁 Loop signup',interest:'Loyalty program (Loop)',goal:'get more repeat customers',timeline:'ASAP',ref:(window.tbRef?window.tbRef():''),notes:'Loop free-month signup'})})
+  .then(function(){ leadCaptured(); }).catch(function(){ leadCaptured(); });
 }
 // lead form → intakes (lands in TB Command)
 document.getElementById('f').addEventListener('submit',function(e){
