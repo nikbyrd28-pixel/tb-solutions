@@ -59,6 +59,16 @@
   .muted{color:var(--muted);font-size:12.5px}
   .links{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
   .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:40;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d;font-weight:800;font-size:13px;border-radius:999px;padding:9px 18px;box-shadow:0 10px 30px rgba(122,162,255,.4);animation:popin .25s ease}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:520px){.grid2{grid-template-columns:1fr}}
+  select{width:100%;background:rgba(2,4,12,.6);border:1px solid var(--line);border-radius:12px;padding:12px 12px;color:var(--text);font:inherit;font-size:15px}
+  .prow{display:grid;grid-template-columns:1fr 108px 78px 34px;gap:8px;align-items:center;margin-top:8px}
+  @media(max-width:520px){.prow{grid-template-columns:1fr 1fr;grid-auto-rows:auto}}
+  .prow input,.prow select{padding:10px 10px;font-size:14px}
+  .prow .rm{background:rgba(255,138,157,.12);border:1px solid rgba(255,138,157,.4);color:#ff8a9d;border-radius:10px;padding:9px 0;font-weight:800;cursor:pointer}
+  .diffbtn{cursor:pointer}
+  .diffbtn.on{background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d;border:0;box-shadow:0 8px 22px rgba(122,162,255,.32)}
+  .odds{border:1px dashed var(--line);border-radius:12px;padding:10px 12px;margin-top:10px;background:rgba(122,162,255,.05);font-size:13px}
 </style>
 </head>
 <body>
@@ -106,6 +116,52 @@
     <div class="card">
       <h2>📅 <b>Recent bookings</b></h2>
       <div id="bookings"></div>
+    </div>
+
+    <div class="card" id="settingsCard">
+      <h2>⚙️ <b>Rewards &amp; game difficulty</b> — you're in control</h2>
+      <div id="setLoad" class="muted">Loading your settings…</div>
+      <div id="setForm" class="hide">
+        <label>Business name</label>
+        <input id="setBiz" placeholder="Joe's Barbershop">
+
+        <div class="grid2">
+          <div><label>Reward customers earn</label><input id="setRewardText" placeholder="a free cut"></div>
+          <div><label>Points needed to earn it</label><input id="setRewardAt" type="number" min="1" inputmode="numeric"></div>
+        </div>
+        <div class="grid2">
+          <div><label>Points per visit</label><input id="setPPV" type="number" min="1" inputmode="numeric"></div>
+          <div><label>Spin cost (points)</label><input id="setSpinCost" type="number" min="1" inputmode="numeric"></div>
+        </div>
+
+        <label>Prize-game difficulty</label>
+        <div class="links" id="diffBtns">
+          <button class="btn ghost diffbtn" data-d="easy"   onclick="applyDiff('easy')">😀 Easy · more wins</button>
+          <button class="btn ghost diffbtn" data-d="normal" onclick="applyDiff('normal')">😐 Normal</button>
+          <button class="btn ghost diffbtn" data-d="hard"   onclick="applyDiff('hard')">😈 Hard · rare wins</button>
+        </div>
+
+        <label>Prizes &amp; odds — set the label and its relative chance</label>
+        <div id="prizeEditor"></div>
+        <button class="btn ghost" onclick="addPrize()" style="margin-top:10px">+ Add a prize</button>
+        <div class="odds" id="oddsNote"></div>
+
+        <div class="grid2" style="margin-top:14px">
+          <div><label>Survey reward (points)</label><input id="setSurvey" type="number" min="0" inputmode="numeric"></div>
+          <div><label>Arcade difficulty <span style="text-transform:none;letter-spacing:0;color:var(--muted)">(coins per game — live when the arcade launches)</span></label>
+            <select id="setGameDiff"><option value="easy">Generous</option><option value="normal">Balanced</option><option value="hard">Stingy</option></select></div>
+        </div>
+
+        <label style="display:flex;align-items:center;gap:9px;margin-top:16px;text-transform:none;letter-spacing:0;font-size:14.5px;cursor:pointer">
+          <input type="checkbox" id="setBooking" style="width:20px;height:20px;margin:0;accent-color:#7aa2ff"> Online booking is ON
+        </label>
+        <label>Google review link (optional)</label>
+        <input id="setReview" placeholder="https://g.page/your-shop/review">
+
+        <button class="btn wide" id="saveSetBtn" onclick="saveSettings()">💾 Save settings</button>
+        <div class="err hide" id="setErr"></div>
+        <div class="muted hide" id="setOk" style="text-align:center;color:var(--good);margin-top:8px;font-weight:800">Saved ✓ — your card updates instantly.</div>
+      </div>
     </div>
 
     <div class="card">
@@ -202,7 +258,94 @@ function render(d){
   el('lkJoin').onclick=function(){ cp(base+'/rewards/?c='+d.client); };
   el('lkPoster').onclick=function(){ window.open(base+'/rewards/poster/?c='+d.client,'_blank'); };
   el('lkStaff').href=base+'/rewards/staff/';
+  loadSettings();
 }
+
+/* ============ Rewards & game difficulty editor ============ */
+function rpc(fn,args){ return fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(args)}).then(function(r){return r.json();}); }
+var PRIZES=[], curDiff=null;
+var PRIZE_TYPES=[['points','⭐ Points'],['discount','🏷️ Discount'],['prize','🎁 Free item'],['grand','🏆 Grand prize'],['nothing','🍋 Try again']];
+var DIFF_W={ easy:{grand:6,prize:10,discount:14,points:20,nothing:25}, normal:{grand:3,prize:6,discount:10,points:18,nothing:45}, hard:{grand:1,prize:3,discount:6,points:14,nothing:75} };
+function loadSettings(){
+  rpc('loyalty_settings_get',{p_client:CODE,p_pin:PIN}).then(function(d){
+    if(!d||!d.ok){ el('setLoad').textContent=(d&&d.error)||'Could not load settings.'; return; }
+    el('setLoad').classList.add('hide'); el('setForm').classList.remove('hide');
+    el('setBiz').value=d.biz_name||'';
+    el('setRewardText').value=d.reward_text||'';
+    el('setRewardAt').value=d.reward_at||5;
+    el('setPPV').value=d.points_per_visit||1;
+    el('setSpinCost').value=d.spin_cost||2;
+    el('setSurvey').value=(d.survey_points==null?1:d.survey_points);
+    el('setBooking').checked=d.booking_on!==false;
+    el('setReview').value=d.google_review_url||'';
+    el('setGameDiff').value=d.game_difficulty||'normal';
+    PRIZES=(d.spin_prizes||[]).map(function(p){return {label:p.label||'Prize',type:p.type||'points',weight:(p.weight==null?10:p.weight)};});
+    if(!PRIZES.length) PRIZES=[{label:'Free '+(d.reward_text||'reward'),type:'grand',weight:2},{label:'20% off',type:'discount',weight:10},{label:'+2 points',type:'points',weight:18},{label:'So close — try again',type:'nothing',weight:45}];
+    curDiff=null; renderPrizeEditor(); highlightDiff();
+  }).catch(function(){ el('setLoad').textContent='Network error loading settings.'; });
+}
+function renderPrizeEditor(){
+  el('prizeEditor').innerHTML=PRIZES.map(function(p,i){
+    return '<div class="prow">'
+     +'<input class="pl" value="'+esc(p.label)+'" placeholder="Prize name" oninput="renderOdds()">'
+     +'<select class="pt" onchange="renderOdds()">'+PRIZE_TYPES.map(function(t){return '<option value="'+t[0]+'"'+(t[0]===p.type?' selected':'')+'>'+t[1]+'</option>';}).join('')+'</select>'
+     +'<input class="pw" type="number" min="0" inputmode="numeric" value="'+(p.weight||0)+'" oninput="renderOdds()" title="relative chance">'
+     +'<button class="rm" onclick="removePrize('+i+')" title="remove">✕</button>'
+     +'</div>';
+  }).join('');
+  renderOdds();
+}
+function readPrizes(){
+  var arr=[];
+  [].forEach.call(document.querySelectorAll('#prizeEditor .prow'),function(r){
+    var label=(r.querySelector('.pl').value||'').trim();
+    var type=r.querySelector('.pt').value;
+    var weight=Math.max(0,parseInt(r.querySelector('.pw').value,10)||0);
+    if(label) arr.push({label:label,type:type,weight:weight});
+  });
+  PRIZES=arr; return arr;
+}
+function addPrize(){ readPrizes(); PRIZES.push({label:'New prize',type:'points',weight:10}); renderPrizeEditor(); }
+function removePrize(i){ readPrizes(); PRIZES.splice(i,1); if(!PRIZES.length) PRIZES.push({label:'So close — try again',type:'nothing',weight:45}); renderPrizeEditor(); }
+function applyDiff(level){ readPrizes(); curDiff=level; PRIZES.forEach(function(p){ var w=DIFF_W[level][p.type]; if(w!=null) p.weight=w; }); renderPrizeEditor(); highlightDiff(); }
+function highlightDiff(){ [].forEach.call(document.querySelectorAll('.diffbtn'),function(b){ b.classList.toggle('on', b.getAttribute('data-d')===curDiff); }); }
+function renderOdds(){
+  readPrizes();
+  var total=PRIZES.reduce(function(a,p){return a+(p.weight||0);},0);
+  var grand=PRIZES.filter(function(p){return p.type==='grand';}).reduce(function(a,p){return a+(p.weight||0);},0);
+  var winW=PRIZES.filter(function(p){return p.type!=='nothing';}).reduce(function(a,p){return a+(p.weight||0);},0);
+  var box=el('oddsNote'); if(!box) return;
+  if(!total){ box.innerHTML='Add at least one prize with a chance above 0.'; return; }
+  var winPct=Math.round(winW/total*100);
+  var grandTxt=grand>0?('🏆 Grand prize hits about <b>1 in '+Math.max(1,Math.round(total/grand))+'</b> spins.'):'No grand prize set.';
+  box.innerHTML='Players win something on about <b>'+winPct+'%</b> of spins. '+grandTxt+' Odds run server-side — customers can’t game them.';
+}
+function saveSettings(){
+  readPrizes();
+  if(!PRIZES.length){ setSetErr('Add at least one prize.'); return; }
+  var sv=(el('setSurvey').value||'').trim();
+  var btn=el('saveSetBtn'); btn.disabled=true; btn.textContent='Saving…';
+  el('setErr').classList.add('hide'); el('setOk').classList.add('hide');
+  rpc('save_reward_settings',{
+    p_client:CODE, p_pin:PIN,
+    p_reward_text:(el('setRewardText').value||'').trim(),
+    p_reward_at:parseInt(el('setRewardAt').value,10)||null,
+    p_points_per_visit:parseInt(el('setPPV').value,10)||null,
+    p_spin_cost:parseInt(el('setSpinCost').value,10)||null,
+    p_survey_points: sv===''?null:(parseInt(sv,10)||0),
+    p_spin_prizes:PRIZES,
+    p_booking_on:el('setBooking').checked,
+    p_biz_name:(el('setBiz').value||'').trim(),
+    p_google_review_url:(el('setReview').value||'').trim(),
+    p_game_difficulty:el('setGameDiff').value
+  }).then(function(d){
+    btn.disabled=false; btn.textContent='💾 Save settings';
+    if(!d||!d.ok){ setSetErr((d&&d.error)||'Could not save.'); return; }
+    el('setOk').classList.remove('hide'); toast('Settings saved ✓');
+    setTimeout(function(){ el('setOk').classList.add('hide'); },3200);
+  }).catch(function(){ btn.disabled=false; btn.textContent='💾 Save settings'; setSetErr('Network error — try again.'); });
+}
+function setSetErr(m){ el('setErr').textContent=m; el('setErr').classList.remove('hide'); }
 function cap(s){ return String(s||'').charAt(0).toUpperCase()+String(s||'').slice(1); }
 function animCounts(){
   [].forEach.call(document.querySelectorAll('#stats .n'),function(e){

@@ -283,3 +283,62 @@ grant execute on function public.book_appointment(text, text, text, text, jsonb,
 grant execute on function public.booking_admin(text, text, text, text)                            to anon, authenticated;
 grant execute on function public.booking_set_status(text, text, bigint, text)                     to anon, authenticated;
 grant execute on function public.save_booking_config(text, text, jsonb, jsonb, jsonb, integer, integer, integer, text, text, boolean) to anon, authenticated;
+
+-- ============================================================================
+-- Reward + prize-game difficulty editor (barber dashboard)
+-- ============================================================================
+alter table public.reward_settings add column if not exists game_difficulty text default 'normal';
+
+create or replace function public.loyalty_settings_get(p_client text, p_pin text)
+returns jsonb language plpgsql security definer set search_path to 'public','pg_temp' as $$
+declare s public.reward_settings;
+begin
+  select * into s from public.reward_settings where client = lower(coalesce(p_client,''));
+  if not found then return jsonb_build_object('ok', false, 'error', 'No program with that code.'); end if;
+  if coalesce(s.pin,'') = '' or coalesce(p_pin,'') <> s.pin then
+    return jsonb_build_object('ok', false, 'error', 'Wrong PIN.');
+  end if;
+  return jsonb_build_object(
+    'ok', true, 'client', s.client, 'biz_name', s.biz_name,
+    'reward_text', coalesce(s.reward_text,'a reward'),
+    'reward_at', coalesce(s.reward_at,5),
+    'points_per_visit', coalesce(s.points_per_visit,1),
+    'spin_cost', coalesce(s.spin_cost,2),
+    'survey_points', coalesce(s.survey_points,1),
+    'spin_prizes', coalesce(s.spin_prizes,'[]'::jsonb),
+    'booking_on', coalesce(s.booking_on,true),
+    'google_review_url', s.google_review_url,
+    'game_difficulty', coalesce(s.game_difficulty,'normal'));
+end $$;
+
+create or replace function public.save_reward_settings(
+  p_client text, p_pin text,
+  p_reward_text text, p_reward_at integer, p_points_per_visit integer,
+  p_spin_cost integer, p_survey_points integer, p_spin_prizes jsonb,
+  p_booking_on boolean, p_biz_name text, p_google_review_url text,
+  p_game_difficulty text)
+returns jsonb language plpgsql security definer set search_path to 'public','pg_temp' as $$
+declare s public.reward_settings;
+begin
+  select * into s from public.reward_settings where client = lower(coalesce(p_client,''));
+  if not found then return jsonb_build_object('ok', false, 'error', 'No program with that code.'); end if;
+  if coalesce(s.pin,'') = '' or coalesce(p_pin,'') <> s.pin then
+    return jsonb_build_object('ok', false, 'error', 'Wrong PIN.');
+  end if;
+  update public.reward_settings set
+    reward_text      = coalesce(nullif(p_reward_text,''), reward_text),
+    reward_at        = greatest(1, coalesce(p_reward_at, reward_at)),
+    points_per_visit = greatest(1, coalesce(p_points_per_visit, points_per_visit)),
+    spin_cost        = greatest(1, coalesce(p_spin_cost, spin_cost)),
+    survey_points    = greatest(0, coalesce(p_survey_points, survey_points)),
+    spin_prizes      = coalesce(p_spin_prizes, spin_prizes),
+    booking_on       = coalesce(p_booking_on, booking_on),
+    biz_name         = coalesce(nullif(p_biz_name,''), biz_name),
+    google_review_url= coalesce(p_google_review_url, google_review_url),
+    game_difficulty  = coalesce(nullif(p_game_difficulty,''), game_difficulty)
+  where client = lower(p_client);
+  return jsonb_build_object('ok', true);
+end $$;
+
+grant execute on function public.loyalty_settings_get(text, text) to anon, authenticated;
+grant execute on function public.save_reward_settings(text, text, text, integer, integer, integer, integer, jsonb, boolean, text, text, text) to anon, authenticated;
