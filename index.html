@@ -433,6 +433,8 @@
   </style>
 </head>
 <body>
+<script>(function(){try{var u=new URLSearchParams(location.search),r=(u.get("ref")||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,16);if(r){localStorage.setItem("tb_ref",JSON.stringify({r:r,t:Date.now()}));}window.tbRef=function(){try{var d=JSON.parse(localStorage.getItem("tb_ref")||"null");if(d&&d.r&&(Date.now()-d.t)<3888000000)return d.r;}catch(e){}return"";};}catch(e){window.tbRef=function(){return"";};}})();</script>
+
   <div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
   <canvas id="stars" aria-hidden="true"></canvas>
   <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>

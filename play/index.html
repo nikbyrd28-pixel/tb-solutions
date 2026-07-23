@@ -74,6 +74,8 @@
 </style>
 </head>
 <body>
+<script>(function(){try{var u=new URLSearchParams(location.search),r=(u.get("ref")||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,16);if(r){localStorage.setItem("tb_ref",JSON.stringify({r:r,t:Date.now()}));}window.tbRef=function(){try{var d=JSON.parse(localStorage.getItem("tb_ref")||"null");if(d&&d.r&&(Date.now()-d.t)<3888000000)return d.r;}catch(e){}return"";};}catch(e){window.tbRef=function(){return"";};}})();</script>
+
 <div class="shell">
   <div class="hud">
     <div class="brand"><a href="/">TB <span>Solutions</span></a></div>
@@ -222,7 +224,7 @@ function lockIn(){
     body:JSON.stringify({
       business: pick.biz, name:name, phone:phone, email:el('cEmail').value.trim(),
       website: pick.siteLabel, about:'🎮 Talk to Nick — the game', goal:pick.goalLabel, interest:pick.rec.name,
-      budget:'$'+pick.budget, timeline:'ASAP',
+      budget:'$'+pick.budget, timeline:'ASAP', ref:(window.tbRef?window.tbRef():''),
       notes:'Game picks: '+pick.biz+' · site: '+pick.siteLabel+' · '+pick.goalLabel+' · comfort $'+pick.budget+' → '+pick.rec.name
     })})
   .then(function(r){ if(!r.ok) throw 0;
