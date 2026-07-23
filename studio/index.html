@@ -107,6 +107,8 @@
           <button class="btn small" onclick="saveProject(false)">Save</button>
           <button class="btn ghost small" onclick="newProject()">＋ New</button>
           <button class="btn ghost small" onclick="deleteProject()" title="Delete">🗑</button>
+          <button class="btn ghost small" onclick="exportProjectFile()" title="Download project file">⬇︎</button>
+          <label class="btn ghost small" style="cursor:pointer" title="Open a project file">⬆︎<input type="file" accept=".json,application/json" onchange="importProjectFile(this.files[0]);this.value=''" style="display:none"></label>
           <span class="muted" id="projState"></span>
         </div>
       </div>
@@ -1259,6 +1261,30 @@ function deleteProject(){
   if(!confirm('Delete project "'+name+'"?')) return;
   var idx=loadProjIndex(); delete idx[name]; saveProjIndex(idx);
   if(curProj===name) curProj=null; refreshProjSel(); el('projState').textContent='Deleted';
+}
+function currentProjectObj(){ return { name:curProj||'tb-project', scenes:serializeScenes(), look:{ shape:shapeIdx, capStyle:el('capStyle').value, trans:el('trans').value, motion:el('motion').value, accent:el('accent').value, bgfx:el('bgfx').value, endCard:el('endCard').checked, cta:el('ctaText').value, brand:el('aiBrand').value } }; }
+function exportProjectFile(){
+  var blob=new Blob([JSON.stringify(currentProjectObj(),null,2)],{type:'application/json'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=(curProj||'tb-project').replace(/[^a-z0-9\-_]+/gi,'-')+'.tbproj.json';
+  document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },500);
+  el('projState').textContent='Downloaded ✓';
+}
+function importProjectFile(file){
+  if(!file) return; var r=new FileReader();
+  r.onload=function(){ var proj; try{ proj=JSON.parse(r.result); }catch(e){ alert('That file is not a TB Studio project.'); return; }
+    if(!proj||!proj.scenes){ alert('That file is not a TB Studio project.'); return; }
+    pushUndo();
+    scenes=(proj.scenes||[]).map(function(o){ var s=Object.assign(newScene(o.text,o.palI,o.kicker),o); s._img=null; s._vid=null; s.vidUrl=null;
+      if(s.photo){ (function(sc){ var im=new Image(); im.onload=function(){ sc._img=im; drawAt(previewT); }; im.src=sc.photo; })(s); } return s; });
+    var lk=proj.look||{};
+    if(lk.shape!=null) setShape(lk.shape); if(lk.capStyle) el('capStyle').value=lk.capStyle; if(lk.trans) el('trans').value=lk.trans;
+    if(lk.motion) el('motion').value=lk.motion; if(lk.accent){ el('accent').value=lk.accent; accent=lk.accent; } if(lk.bgfx) el('bgfx').value=lk.bgfx;
+    if(lk.endCard!=null) el('endCard').checked=!!lk.endCard; if(lk.cta!=null) el('ctaText').value=lk.cta; if(lk.brand!=null) el('aiBrand').value=lk.brand;
+    if(proj.name) curProj=proj.name;
+    renderScenes(); rebuildTimeline(); resetPreview(); drawAt(0); el('projState').textContent='Imported ✓';
+  };
+  r.readAsText(file);
 }
 
 /* ---------- brand kits (multi-brand content engine) ---------- */
