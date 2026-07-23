@@ -88,6 +88,20 @@
   <div class="layout">
     <!-- LEFT: controls -->
     <div>
+      <!-- PROJECTS -->
+      <div class="card">
+        <h2>★ <span>Projects</span> — save &amp; reopen</h2>
+        <div class="bar">
+          <select id="projSel" style="flex:1;min-width:130px"></select>
+          <button class="btn ghost small" onclick="loadProject()">Open</button>
+          <button class="btn small" onclick="saveProject(true)">💾 Save as</button>
+          <button class="btn small" onclick="saveProject(false)">Save</button>
+          <button class="btn ghost small" onclick="newProject()">＋ New</button>
+          <button class="btn ghost small" onclick="deleteProject()" title="Delete">🗑</button>
+          <span class="muted" id="projState"></span>
+        </div>
+      </div>
+
       <!-- BRAND KITS -->
       <div class="card">
         <h2>★ <span>Brand</span> — who's this for?</h2>
@@ -1157,6 +1171,51 @@ el('voiceFile').addEventListener('change',function(){ loadAudioFile(this.files[0
 el('musicFile').addEventListener('change',function(){ loadAudioFile(this.files[0],'music'); });
 el('logoFile').addEventListener('change',function(){ var f=this.files[0]; if(!f)return; var r=new FileReader(); r.onload=function(){ var im=new Image(); im.onload=function(){ logoImg=im; drawAt(previewT); }; im.src=r.result; }; r.readAsDataURL(f); });
 
+/* ---------- projects (save / reopen; free, browser-stored) ---------- */
+var curProj=null;
+function loadProjIndex(){ try{ return JSON.parse(localStorage.getItem('tb_projects')||'{}')||{}; }catch(e){ return {}; } }
+function saveProjIndex(o){ try{ localStorage.setItem('tb_projects',JSON.stringify(o)); return true; }catch(e){ alert('Browser storage is full — delete an old project (photos take space).'); return false; } }
+function serializeScenes(){ return scenes.map(function(s){ return {text:s.text,kicker:s.kicker,seconds:s.seconds,palI:s.palI,photo:s.photo||null,anim:s.anim,textPos:s.textPos||null,textScale:s.textScale||null,textColor:s.textColor||null,capStyle:s.capStyle||null}; }); }
+function refreshProjSel(sel){
+  var idx=loadProjIndex(), names=Object.keys(idx).sort();
+  el('projSel').innerHTML = names.length ? names.map(function(n){ return '<option'+((n===sel)?' selected':'')+'>'+n.replace(/[<>&]/g,'')+'</option>'; }).join('') : '<option value="">No saved projects yet</option>';
+}
+function saveProject(asNew){
+  var name = (asNew||!curProj) ? prompt('Name this project:', curProj||'My video') : curProj;
+  if(!name) return;
+  name=name.replace(/[<>&"']/g,'').trim().slice(0,40); if(!name) return;
+  var idx=loadProjIndex();
+  idx[name]={ scenes:serializeScenes(), look:{ shape:shapeIdx, capStyle:el('capStyle').value, trans:el('trans').value, motion:el('motion').value, accent:el('accent').value, bgfx:el('bgfx').value, endCard:el('endCard').checked, cta:el('ctaText').value, brand:el('aiBrand').value } };
+  if(saveProjIndex(idx)){ curProj=name; refreshProjSel(name); el('projState').textContent='Saved ✓'; }
+}
+function loadProject(){
+  var name=el('projSel').value; if(!name) return;
+  var proj=loadProjIndex()[name]; if(!proj) return;
+  scenes=(proj.scenes||[]).map(function(o){ var s=Object.assign(newScene(o.text,o.palI,o.kicker),o); s._img=null; s._vid=null; s.vidUrl=null;
+    if(s.photo){ (function(sc){ var im=new Image(); im.onload=function(){ sc._img=im; drawAt(previewT); }; im.src=sc.photo; })(s); } return s; });
+  var lk=proj.look||{};
+  if(lk.shape!=null) setShape(lk.shape);
+  if(lk.capStyle) el('capStyle').value=lk.capStyle;
+  if(lk.trans) el('trans').value=lk.trans;
+  if(lk.motion) el('motion').value=lk.motion;
+  if(lk.accent){ el('accent').value=lk.accent; accent=lk.accent; }
+  if(lk.bgfx) el('bgfx').value=lk.bgfx;
+  if(lk.endCard!=null) el('endCard').checked=!!lk.endCard;
+  if(lk.cta!=null) el('ctaText').value=lk.cta;
+  if(lk.brand!=null) el('aiBrand').value=lk.brand;
+  curProj=name; renderScenes(); rebuildTimeline(); resetPreview(); drawAt(0); el('projState').textContent='Opened ✓';
+}
+function newProject(){
+  if(scenes.length && !confirm('Start a new blank project? Save this one first if you want to keep it.')) return;
+  curProj=null; scenes=[]; renderScenes(); rebuildTimeline(); resetPreview(); drawAt(0); el('projState').textContent='New project';
+}
+function deleteProject(){
+  var name=el('projSel').value; if(!name) return;
+  if(!confirm('Delete project "'+name+'"?')) return;
+  var idx=loadProjIndex(); delete idx[name]; saveProjIndex(idx);
+  if(curProj===name) curProj=null; refreshProjSel(); el('projState').textContent='Deleted';
+}
+
 /* ---------- brand kits (multi-brand content engine) ---------- */
 var BRANDS=[], curBrand=null, editingId=null;
 function loadBrands(){
@@ -1243,6 +1302,7 @@ function init(){
   renderTpls(); renderShapeChips();
   setShape(0);
   try{ initBrandSel(); }catch(e){}
+  try{ refreshProjSel(); }catch(e){}
   try{ var qp=new URLSearchParams(location.search);
     if(qp.get('embed')){ var bk=document.querySelector('a.back'); if(bk) bk.style.display='none'; }
     var bd=localStorage.getItem('tb_video_brand'); if(bd){ if(el('aiBrand'))el('aiBrand').value=bd; localStorage.removeItem('tb_video_brand'); }
