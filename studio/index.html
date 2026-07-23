@@ -207,6 +207,16 @@
           <div><label>Accent color</label><input type="color" id="accent" value="#8b7bff" style="height:44px;padding:4px"></div>
           <div><label>Motion (Ken Burns)</label><select id="motion"><option value="on" selected>On — pans & zooms</option><option value="off">Off — still</option></select></div>
         </div>
+        <label>🎨 Color grade</label>
+        <select id="grade">
+          <option value="none">None</option>
+          <option value="warm">Warm</option>
+          <option value="cool">Cool</option>
+          <option value="vivid">Vivid pop</option>
+          <option value="cine">Cinematic</option>
+          <option value="mono">B&amp;W</option>
+          <option value="dream">Dreamy</option>
+        </select>
         <label>Animated background <span style="color:var(--acc2)">✦ moving</span></label>
         <select id="bgfx">
           <option value="particles" selected>✨ Floating particles</option>
@@ -910,6 +920,16 @@ function drawEndCard(sc,p,W,H){
   ctx.restore();
 }
 
+var GRADES={
+  none:'none',
+  warm:'saturate(1.15) sepia(0.18) brightness(1.03) contrast(1.05)',
+  cool:'saturate(1.12) hue-rotate(-8deg) brightness(1.02) contrast(1.05)',
+  vivid:'saturate(1.4) contrast(1.12) brightness(1.02)',
+  cine:'contrast(1.18) saturate(1.28) brightness(0.98)',
+  mono:'grayscale(1) contrast(1.12) brightness(1.03)',
+  dream:'saturate(1.06) brightness(1.09) contrast(0.93)'
+};
+function gradeFilter(){ var v=el('grade')?el('grade').value:'none'; return GRADES[v]||'none'; }
 function draw(t,opts){
   var W=cv.width,H=cv.height,T=t;
   var s=sceneAt(t); var arr=s.arr, i=s.i, sc=arr[i];
@@ -918,6 +938,7 @@ function draw(t,opts){
   var trans=el('trans').value, tw=0.42;
   var tp=clamp(s.local/tw,0,1);
   ctx.save();
+  try{ ctx.filter=gradeFilter(); }catch(e){}
   if(i>0 && tp<1 && trans!=='cut'){
     // draw previous bg first
     var prev=arr[i-1];
@@ -938,6 +959,7 @@ function draw(t,opts){
     drawBg(sc,s.p,T,W,H);
   }
   ctx.restore();
+  try{ ctx.filter='none'; }catch(e){}
   if(sc._end){ drawEndCard(sc,s.p,W,H); }
   else { drawCaption(sc,s.p,W,H); drawWatermark(W,H); }
   if(!(opts&&opts.noProgress)) drawProgress(t,W,H);
@@ -1276,7 +1298,7 @@ async function ensureFonts(){
 
 /* ---------- wire inputs ---------- */
 el('accent').addEventListener('input',function(){ accent=this.value; drawAt(previewT); });
-['capStyle','trans','motion','bgfx','endCard','ctaText','aiBrand'].forEach(function(id){ el(id).addEventListener('input',function(){ rebuildTimeline(); drawAt(previewT); }); });
+['capStyle','trans','motion','bgfx','grade','endCard','ctaText','aiBrand'].forEach(function(id){ var e=el(id); if(e) e.addEventListener('input',function(){ rebuildTimeline(); drawAt(previewT); }); });
 el('matchVoice').addEventListener('change',function(){ rebuildTimeline(); drawAt(previewT); });
 el('musicVol').addEventListener('input',function(){});
 el('voiceVol').addEventListener('input',function(){});
@@ -1411,7 +1433,7 @@ function saveProject(asNew){
   if(!name) return;
   name=name.replace(/[<>&"']/g,'').trim().slice(0,40); if(!name) return;
   var idx=loadProjIndex();
-  idx[name]={ scenes:serializeScenes(), look:{ shape:shapeIdx, capStyle:el('capStyle').value, trans:el('trans').value, motion:el('motion').value, accent:el('accent').value, bgfx:el('bgfx').value, endCard:el('endCard').checked, cta:el('ctaText').value, brand:el('aiBrand').value } };
+  idx[name]={ scenes:serializeScenes(), look:{ shape:shapeIdx, capStyle:el('capStyle').value, trans:el('trans').value, motion:el('motion').value, accent:el('accent').value, bgfx:el('bgfx').value, grade:(el('grade')?el('grade').value:'none'), endCard:el('endCard').checked, cta:el('ctaText').value, brand:el('aiBrand').value } };
   if(saveProjIndex(idx)){ curProj=name; refreshProjSel(name); el('projState').textContent='Saved ✓'; }
 }
 function loadProject(){
@@ -1425,7 +1447,7 @@ function loadProject(){
   if(lk.trans) el('trans').value=lk.trans;
   if(lk.motion) el('motion').value=lk.motion;
   if(lk.accent){ el('accent').value=lk.accent; accent=lk.accent; }
-  if(lk.bgfx) el('bgfx').value=lk.bgfx;
+  if(lk.bgfx) el('bgfx').value=lk.bgfx; if(lk.grade&&el('grade')) el('grade').value=lk.grade;
   if(lk.endCard!=null) el('endCard').checked=!!lk.endCard;
   if(lk.cta!=null) el('ctaText').value=lk.cta;
   if(lk.brand!=null) el('aiBrand').value=lk.brand;
@@ -1441,7 +1463,7 @@ function deleteProject(){
   var idx=loadProjIndex(); delete idx[name]; saveProjIndex(idx);
   if(curProj===name) curProj=null; refreshProjSel(); el('projState').textContent='Deleted';
 }
-function currentProjectObj(){ return { name:curProj||'tb-project', scenes:serializeScenes(), look:{ shape:shapeIdx, capStyle:el('capStyle').value, trans:el('trans').value, motion:el('motion').value, accent:el('accent').value, bgfx:el('bgfx').value, endCard:el('endCard').checked, cta:el('ctaText').value, brand:el('aiBrand').value } }; }
+function currentProjectObj(){ return { name:curProj||'tb-project', scenes:serializeScenes(), look:{ shape:shapeIdx, capStyle:el('capStyle').value, trans:el('trans').value, motion:el('motion').value, accent:el('accent').value, bgfx:el('bgfx').value, grade:(el('grade')?el('grade').value:'none'), endCard:el('endCard').checked, cta:el('ctaText').value, brand:el('aiBrand').value } }; }
 function exportProjectFile(){
   var blob=new Blob([JSON.stringify(currentProjectObj(),null,2)],{type:'application/json'});
   var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
@@ -1458,7 +1480,7 @@ function importProjectFile(file){
       if(s.photo){ (function(sc){ var im=new Image(); im.onload=function(){ sc._img=im; drawAt(previewT); }; im.src=sc.photo; })(s); } return s; });
     var lk=proj.look||{};
     if(lk.shape!=null) setShape(lk.shape); if(lk.capStyle) el('capStyle').value=lk.capStyle; if(lk.trans) el('trans').value=lk.trans;
-    if(lk.motion) el('motion').value=lk.motion; if(lk.accent){ el('accent').value=lk.accent; accent=lk.accent; } if(lk.bgfx) el('bgfx').value=lk.bgfx;
+    if(lk.motion) el('motion').value=lk.motion; if(lk.accent){ el('accent').value=lk.accent; accent=lk.accent; } if(lk.bgfx) el('bgfx').value=lk.bgfx; if(lk.grade&&el('grade')) el('grade').value=lk.grade;
     if(lk.endCard!=null) el('endCard').checked=!!lk.endCard; if(lk.cta!=null) el('ctaText').value=lk.cta; if(lk.brand!=null) el('aiBrand').value=lk.brand;
     if(proj.name) curProj=proj.name;
     renderScenes(); rebuildTimeline(); resetPreview(); drawAt(0); el('projState').textContent='Imported ✓';
