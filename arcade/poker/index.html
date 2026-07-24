@@ -54,7 +54,10 @@
 <div class="top">
   <a id="backBtn" href="#">← Card</a>
   <h1>Video <span>Poker</span></h1>
-  <span class="bal" id="bal">🪙 —</span>
+  <span style="display:flex;gap:8px;align-items:center">
+    <button id="muteBtn" title="Music" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(150,190,255,.3);color:#eef1ff;font-size:14px;cursor:pointer">🔊</button>
+    <span class="bal" id="bal">🪙 —</span>
+  </span>
 </div>
 
 <div class="wrap" id="wrap">
@@ -95,10 +98,16 @@
   el('backBtn').href='/rewards/?c='+slug; el('gateBtn').href='/rewards/?c='+slug;
   if(!code){ el('wrap').classList.add('hide'); el('controls').classList.add('hide'); el('gate').classList.remove('hide'); return; }
 
-  var AC=null;
+  var AC=null, muted=false; try{ muted=localStorage.getItem('arcade_muted')==='1'; }catch(e){}
   function actx(){ if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(AC&&AC.state==='suspended')AC.resume(); return AC; }
-  function beep(f,dur,type,vol,slideTo){ var a=actx(); if(!a)return; var o=a.createOscillator(),g=a.createGain(); o.type=type||'sine'; o.frequency.value=f;
+  function beep(f,dur,type,vol,slideTo){ if(muted) return; var a=actx(); if(!a)return; var o=a.createOscillator(),g=a.createGain(); o.type=type||'sine'; o.frequency.value=f;
     if(slideTo)o.frequency.exponentialRampToValueAtTime(slideTo,a.currentTime+dur); g.gain.value=vol||0.05; g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+dur); o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+dur); }
+  var MUS=(function(){ var ac=null,on=false,tmr=0,step=0; var seq=[0,4,7,11,7,4,9,5,7,12,7,4,2,5,9,4];
+    function tone(f,d,ty,v){ if(!ac)return; var o=ac.createOscillator(),g=ac.createGain(); o.type=ty; o.frequency.value=f; g.gain.value=v; g.gain.exponentialRampToValueAtTime(0.0001,ac.currentTime+d); o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+d); }
+    function fr(n){ return 130.81*Math.pow(2,n/12); }
+    function tick(){ if(!on)return; var n=seq[step%seq.length]; tone(fr(n-12),0.5,'sine',0.05); if(step%4===0) tone(fr(n),0.4,'triangle',0.02); step++; tmr=setTimeout(tick,340); }
+    return { start:function(a){ if(on)return; ac=a; if(!ac)return; on=true; step=0; tick(); }, stop:function(){ on=false; clearTimeout(tmr); } };
+  })();
   var sDeal=function(){beep(300,0.07,'sine',0.05,180);};
   var sHold=function(){beep(660,0.05,'square',0.04);};
   var sWin=function(){beep(660,0.1,'triangle',0.07,990);setTimeout(function(){beep(990,0.12,'triangle',0.06);},90);setTimeout(function(){beep(1320,0.14,'triangle',0.05);},180);};
@@ -131,8 +140,11 @@
       Array.prototype.forEach.call(document.querySelectorAll('.chip'),function(c){c.classList.toggle('sel',c===ch);}); });
   });
 
+  function setMuteLabel(){ var b=el('muteBtn'); if(b) b.textContent=muted?'🔇':'🔊'; }
+  setMuteLabel();
+  if(el('muteBtn')) el('muteBtn').addEventListener('click',function(e){ e.stopPropagation(); muted=!muted; try{localStorage.setItem('arcade_muted',muted?'1':'0');}catch(_){} setMuteLabel(); if(muted){ MUS.stop(); } else { MUS.start(actx()); } });
   el('actBtn').addEventListener('click',function(){
-    if(busy)return; actx();
+    if(busy)return; actx(); if(!muted) MUS.start(actx());
     if(phase==='bet'){
       busy=true; el('actBtn').disabled=true; highlightPay(null); banner('Dealing…');
       rpc('vp_deal',{p_code:code,p_bet:bet}).then(function(st){

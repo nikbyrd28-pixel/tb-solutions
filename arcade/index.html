@@ -237,8 +237,14 @@ refreshBests();
 var SND=true, actx=null;
 try{ SND = localStorage.getItem('loop_arcade_snd')!=='0'; }catch(e){}
 el('soundBtn').textContent = SND?'🔊 Sound on':'🔇 Sound off';
-function toggleSound(){ SND=!SND; try{ localStorage.setItem('loop_arcade_snd',SND?'1':'0'); }catch(e){} el('soundBtn').textContent=SND?'🔊 Sound on':'🔇 Sound off'; if(SND) beep(660,.06); }
+function toggleSound(){ SND=!SND; try{ localStorage.setItem('loop_arcade_snd',SND?'1':'0'); }catch(e){} el('soundBtn').textContent=SND?'🔊 Sound on':'🔇 Sound off'; if(SND){ beep(660,.06); if(G.run) MUS.start(); } else MUS.stop(); }
 function beep(freq,dur,type){ if(!SND) return; try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); var o=actx.createOscillator(),g=actx.createGain(); o.type=type||'square'; o.frequency.value=freq; o.connect(g); g.connect(actx.destination); g.gain.setValueAtTime(.06,actx.currentTime); g.gain.exponentialRampToValueAtTime(.0001,actx.currentTime+(dur||.08)); o.start(); o.stop(actx.currentTime+(dur||.08)); }catch(e){} }
+var MUS=(function(){ var on=false,tmr=0,step=0; var seq=[0,7,12,7,3,10,7,3,5,12,7,5,3,7,10,7];
+  function tone(f,d,ty,v){ if(!actx)return; var o=actx.createOscillator(),g=actx.createGain(); o.type=ty; o.frequency.value=f; g.gain.value=v; g.gain.exponentialRampToValueAtTime(0.0001,actx.currentTime+d); o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime+d); }
+  function fr(n){ return 130.81*Math.pow(2,n/12); }
+  function tick(){ if(!on)return; var n=seq[step%seq.length]; tone(fr(n-12),0.22,'triangle',0.04); if(step%2===0) tone(fr(n+12),0.14,'square',0.02); step++; tmr=setTimeout(tick,230); }
+  return { start:function(){ if(on||!SND)return; try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); }catch(e){return;} on=true; step=0; tick(); }, stop:function(){ on=false; clearTimeout(tmr); } };
+})();
 function haptic(p){ try{ if(navigator.vibrate) navigator.vibrate(p||10); }catch(e){} }
 function reducedMotion(){ return !!(window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches); }
 function confetti(){ if(reducedMotion()) return; var bits=['🎉','✨','⭐','🪙','🎊']; for(var i=0;i<24;i++){ var s=document.createElement('span'); s.className='cf'; s.textContent=bits[i%bits.length]; s.style.left=(Math.random()*100)+'vw'; s.style.animationDuration=(1.6+Math.random()*1.6)+'s'; s.style.animationDelay=(Math.random()*.4)+'s'; document.body.appendChild(s); setTimeout(function(e){return function(){e.remove()}}(s),3600); } }
@@ -294,7 +300,7 @@ function startGame(){
   G.score=0; el('gvScore').textContent='0';
   if(G.mode==='flyer'){ G.by=G.H*0.4; G.bvy=0; G.pipes=[]; spawnPipe(); }
   else { G.rowMap={}; G.pcol=4; G.prow=0; G.rh=Math.max(42,Math.floor(G.H/9)); }
-  G.run=true; G.last=performance.now(); cancelAnimationFrame(G.raf); G.raf=requestAnimationFrame(gloop);
+  MUS.start(); G.run=true; G.last=performance.now(); cancelAnimationFrame(G.raf); G.raf=requestAnimationFrame(gloop);
 }
 function gloop(ts){ if(!G.run) return; var dt=Math.min(48, ts-G.last)/16.67; G.last=ts; if(G.mode==='flyer') updFlyer(dt); else updHopper(dt); if(G.run) G.raf=requestAnimationFrame(gloop); }
 function drawIdle(){ var ctx=G.ctx; if(!ctx) return; ctx.clearRect(0,0,G.W,G.H); ctx.fillStyle='#05060d'; ctx.fillRect(0,0,G.W,G.H); }
@@ -378,7 +384,7 @@ function drawHopper(){
   ctx.fillText('💈', px, py+1);
 }
 function gameOver(){
-  if(!G.run) return; G.run=false; cancelAnimationFrame(G.raf); haptic([20,50,20]); beep(180,.25,'sawtooth');
+  if(!G.run) return; G.run=false; cancelAnimationFrame(G.raf); MUS.stop(); haptic([20,50,20]); beep(180,.25,'sawtooth');
   var sc=G.score, mode=G.mode, best=bestOf(mode), isBest=sc>best;
   if(isBest){ setBest(mode,sc); best=sc; }
   el('gvFinal').textContent=sc;
@@ -388,7 +394,7 @@ function gameOver(){
   refreshBests();
   if(isBest && sc>0) confetti();
 }
-function closeGame(){ G.run=false; cancelAnimationFrame(G.raf); var ov=el('gameOverlay'); ov.classList.add('hide'); ov.setAttribute('aria-hidden','true'); refreshBests(); }
+function closeGame(){ G.run=false; cancelAnimationFrame(G.raf); MUS.stop(); var ov=el('gameOverlay'); ov.classList.add('hide'); ov.setAttribute('aria-hidden','true'); refreshBests(); }
 </script>
 </body>
 </html>

@@ -939,8 +939,14 @@ var G={mode:null,run:false,raf:0,cvs:null,ctx:null,W:0,H:0,dpr:1,score:0,last:0,
   rowMap:{},pcol:4,prow:0,rh:48};
 var GSND=true, gactx=null, curBoard='flyer';
 try{ GSND = localStorage.getItem('loop_snd')!=='0'; }catch(e){}
-function toggleGSound(){ GSND=!GSND; try{ localStorage.setItem('loop_snd',GSND?'1':'0'); }catch(e){} var b=el('gvSound'); if(b) b.textContent=GSND?'🔊':'🔇'; if(GSND) gbeep(660,.06); }
+function toggleGSound(){ GSND=!GSND; try{ localStorage.setItem('loop_snd',GSND?'1':'0'); }catch(e){} var b=el('gvSound'); if(b) b.textContent=GSND?'🔊':'🔇'; if(GSND){ gbeep(660,.06); if(G.run) GMUS.start(); } else GMUS.stop(); }
 function gbeep(freq,dur,type){ if(!GSND) return; try{ gactx=gactx||new (window.AudioContext||window.webkitAudioContext)(); var o=gactx.createOscillator(),g=gactx.createGain(); o.type=type||'square'; o.frequency.value=freq; o.connect(g); g.connect(gactx.destination); g.gain.setValueAtTime(.06,gactx.currentTime); g.gain.exponentialRampToValueAtTime(.0001,gactx.currentTime+(dur||.08)); o.start(); o.stop(gactx.currentTime+(dur||.08)); }catch(e){} }
+var GMUS=(function(){ var on=false,tmr=0,step=0; var seq=[0,7,12,7,3,10,7,3,5,12,7,5,3,7,10,7];
+  function tone(f,d,ty,v){ if(!gactx)return; var o=gactx.createOscillator(),g=gactx.createGain(); o.type=ty; o.frequency.value=f; g.gain.value=v; g.gain.exponentialRampToValueAtTime(0.0001,gactx.currentTime+d); o.connect(g); g.connect(gactx.destination); o.start(); o.stop(gactx.currentTime+d); }
+  function fr(n){ return 130.81*Math.pow(2,n/12); }
+  function tick(){ if(!on)return; var n=seq[step%seq.length]; tone(fr(n-12),0.22,'triangle',0.04); if(step%2===0) tone(fr(n+12),0.14,'square',0.02); step++; tmr=setTimeout(tick,230); }
+  return { start:function(){ if(on||!GSND)return; try{ gactx=gactx||new (window.AudioContext||window.webkitAudioContext)(); }catch(e){return;} on=true; step=0; tick(); }, stop:function(){ on=false; clearTimeout(tmr); } };
+})();
 var LB_TABS={flyer:'lbFlyer',hopper:'lbHopper',runner:'lbRunner',slicer:'lbSlicer',stacker:'lbStacker',tetris:'lbTetris',hockey:'lbHockey',week:'lbWeek'};
 function loadBoard(game){
   curBoard=game;
@@ -1010,7 +1016,7 @@ function startGame(){
   G.score=0; el('gvScore').textContent='0';
   if(G.mode==='flyer'){ G.by=G.H*0.4; G.bvy=0; G.pipes=[]; spawnPipe(); }
   else { G.rowMap={}; G.pcol=4; G.prow=0; G.rh=Math.max(42,Math.floor(G.H/9)); }
-  G.run=true; G.last=performance.now(); cancelAnimationFrame(G.raf); G.raf=requestAnimationFrame(gloop);
+  GMUS.start(); G.run=true; G.last=performance.now(); cancelAnimationFrame(G.raf); G.raf=requestAnimationFrame(gloop);
 }
 function gloop(ts){
   if(!G.run) return;
@@ -1107,7 +1113,7 @@ function drawHopper(){
 }
 /* ---- shared game over ---- */
 function gameOver(){
-  if(!G.run) return; G.run=false; cancelAnimationFrame(G.raf); haptic([20,50,20]); gbeep(180,.25,'sawtooth');
+  if(!G.run) return; G.run=false; cancelAnimationFrame(G.raf); GMUS.stop(); haptic([20,50,20]); gbeep(180,.25,'sawtooth');
   var sc=G.score, mode=G.mode;
   el('gvFinal').textContent=sc; el('gvEarned').textContent='Saving…'; el('gvCap').classList.add('hide');
   el('gvOver').classList.remove('hide');
@@ -1130,7 +1136,7 @@ function gameOver(){
   }).catch(function(){ if(!el('gameOverlay').classList.contains('hide')) el('gvEarned').textContent='Score '+sc+' saved!'; });
 }
 function closeGame(){
-  G.run=false; cancelAnimationFrame(G.raf);
+  G.run=false; cancelAnimationFrame(G.raf); GMUS.stop();
   var ov=el('gameOverlay'); ov.classList.add('hide'); ov.setAttribute('aria-hidden','true');
   if(member){ renderCoins(member); renderSlot(member); }
 }
