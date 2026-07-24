@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<meta name="robots" content="noindex" />
+<meta name="theme-color" content="#0a2a1a" />
+<title>Loop Blackjack</title>
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230a2a1a'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%F0%9F%83%8F%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--felt:#0d3a24;--felt2:#0a2a1a;--gold:#ffd34d;--acc:#5df2e0}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;min-height:100%;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:#eef1ff;user-select:none;
+    background:radial-gradient(ellipse at 50% 22%,#125036,var(--felt) 46%,var(--felt2) 100%)}
+  body{min-height:100dvh;display:flex;flex-direction:column}
+  .top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;gap:10px}
+  .top a{color:#bfe6d4;text-decoration:none;font-size:13px;font-weight:700}
+  .bal{background:rgba(0,0,0,.28);border:1px solid rgba(255,211,77,.4);border-radius:999px;padding:7px 14px;font-weight:900;color:var(--gold);font-size:14px}
+  h1{margin:0;font-size:16px;font-weight:900;letter-spacing:.02em}
+  h1 span{color:var(--gold)}
+  .table{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:6px 16px 18px;max-width:520px;width:100%;margin:0 auto}
+  .zone{width:100%;text-align:center;min-height:132px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .zlabel{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:8px}
+  .zlabel .v{display:inline-block;margin-left:8px;background:rgba(0,0,0,.3);border-radius:999px;padding:1px 9px;color:#fff}
+  .hand{display:flex;gap:8px;justify-content:center;min-height:104px;align-items:center;perspective:600px}
+  .card{width:70px;height:100px;border-radius:9px;background:#fbfbff;color:#16324a;position:relative;box-shadow:0 6px 16px rgba(0,0,0,.4);
+    display:flex;align-items:center;justify-content:center;font-weight:900;animation:deal .34s cubic-bezier(.2,.9,.3,1.2) both;flex:0 0 auto}
+  @keyframes deal{from{opacity:0;transform:translateY(-34px) rotate(-8deg) scale(.9)}to{opacity:1;transform:none}}
+  .card.red{color:#e23b52}
+  .card .rk{position:absolute;top:5px;left:7px;font-size:15px;line-height:1}
+  .card .rk small{display:block;font-size:12px}
+  .card .mid{font-size:34px}
+  .card .rk.br{top:auto;left:auto;bottom:5px;right:7px;transform:rotate(180deg)}
+  .card.back{background:repeating-linear-gradient(45deg,#1b4d8f,#1b4d8f 6px,#2a63b0 6px,#2a63b0 12px);border:2px solid #fff}
+  .card.back::after{content:'💈';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:26px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
+  .banner{min-height:34px;font-weight:900;font-size:22px;margin:6px 0;letter-spacing:.01em}
+  .banner.win{color:var(--gold)} .banner.lose{color:#ff8a9d} .banner.push{color:#bfe6d4}
+  .controls{width:100%;max-width:520px}
+  .bets{display:flex;gap:10px;justify-content:center;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+  .chip{width:52px;height:52px;border-radius:50%;border:3px dashed rgba(255,255,255,.6);background:radial-gradient(circle at 50% 40%,#1a6b45,#0c3b25);color:#fff;font-weight:900;font-size:15px;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.35)}
+  .chip.sel{border-color:var(--gold);color:var(--gold);box-shadow:0 0 16px rgba(255,211,77,.5);transform:translateY(-3px)}
+  .chip:disabled{opacity:.3;cursor:not-allowed}
+  .btnrow{display:flex;gap:12px}
+  .btn{flex:1;border:0;border-radius:14px;padding:16px;font:inherit;font-weight:900;font-size:17px;cursor:pointer;color:#04150d;
+    background:linear-gradient(135deg,var(--acc),#6f9dff);box-shadow:0 8px 22px rgba(93,242,224,.3)}
+  .btn.gold{background:linear-gradient(135deg,var(--gold),#ff9d5a)}
+  .btn.ghost{background:rgba(255,255,255,.1);color:#eef1ff;box-shadow:none}
+  .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.4)}
+  .hide{display:none!important}
+  .gate{margin:auto;text-align:center;max-width:320px;padding:30px}
+  .gate .btn{margin-top:16px}
+  .note{color:rgba(255,255,255,.6);font-size:12px;text-align:center;margin-top:10px}
+  .pill{display:inline-block;background:rgba(255,211,77,.16);border:1px solid rgba(255,211,77,.4);color:var(--gold);border-radius:999px;padding:2px 10px;font-size:12px;font-weight:800;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="top">
+  <a id="backBtn" href="#">← Card</a>
+  <h1>Loop <span>Blackjack</span></h1>
+  <span class="bal" id="bal">🪙 —</span>
+</div>
+
+<div class="table" id="table">
+  <div class="zone">
+    <div class="zlabel">Dealer <span class="v hide" id="dvWrap">= <b id="dval">0</b></span></div>
+    <div class="hand" id="dealerHand"></div>
+  </div>
+
+  <div class="banner" id="banner"></div>
+
+  <div class="zone">
+    <div class="zlabel">You <span class="v hide" id="pvWrap">= <b id="pval">0</b></span></div>
+    <div class="hand" id="playerHand"></div>
+  </div>
+</div>
+
+<div class="controls" style="padding:0 16px 20px;margin:0 auto">
+  <div id="betRow" class="bets">
+    <span style="font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6)">Bet</span>
+    <button class="chip" data-b="1">1</button>
+    <button class="chip sel" data-b="5">5</button>
+    <button class="chip" data-b="10">10</button>
+    <button class="chip" data-b="25">25</button>
+  </div>
+  <div class="btnrow" id="dealRow">
+    <button class="btn gold" id="dealBtn">🃏 Deal</button>
+  </div>
+  <div class="btnrow hide" id="playRow">
+    <button class="btn" id="hitBtn">＋ Hit</button>
+    <button class="btn ghost" id="standBtn">✋ Stand</button>
+  </div>
+  <p class="note">Blackjack pays 3:2 · dealer stands on 17 · bet 1–25 coins. Coins are for fun &amp; prizes — no cash value.</p>
+</div>
+
+<div class="gate hide" id="gate">
+  <div style="font-size:48px">🃏</div>
+  <h1 style="font-size:22px;margin:12px 0">Play from your Loop card</h1>
+  <p style="color:#bfe6d4">Blackjack uses the 🪙 coins on your loyalty card. Open your card to play and bet.</p>
+  <a class="btn gold" id="gateBtn" href="#" style="display:block;text-decoration:none">Open my card →</a>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var SUPA='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+  var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+  var q=new URLSearchParams(location.search);
+  var slug=(q.get('c')||'demo').toLowerCase().replace(/[^a-z0-9]/g,'')||'demo';
+  var code=(q.get('m')||'').slice(0,40);
+  function rpc(fn,args){ return fetch(SUPA+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify(args)}).then(function(r){return r.json();}); }
+  var el=function(id){return document.getElementById(id);};
+  el('backBtn').href = '/rewards/?c='+slug;
+  el('gateBtn').href = '/rewards/?c='+slug;
+
+  if(!code){ el('table').classList.add('hide'); document.querySelector('.controls').classList.add('hide'); el('gate').classList.remove('hide'); return; }
+
+  /* audio */
+  var AC=null;
+  function actx(){ if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(AC&&AC.state==='suspended')AC.resume(); return AC; }
+  function beep(f,dur,type,vol,slideTo){ var a=actx(); if(!a)return; var o=a.createOscillator(),g=a.createGain(); o.type=type||'sine'; o.frequency.value=f;
+    if(slideTo)o.frequency.exponentialRampToValueAtTime(slideTo,a.currentTime+dur); g.gain.value=vol||0.05; g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+dur);
+    o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+dur); }
+  var sDeal=function(){beep(300,0.08,'sine',0.05,180);};
+  var sWin=function(){beep(660,0.1,'triangle',0.07,990);setTimeout(function(){beep(990,0.12,'triangle',0.06);},90);setTimeout(function(){beep(1320,0.14,'triangle',0.05);},180);};
+  var sLose=function(){beep(300,0.4,'sawtooth',0.07,90);};
+  var sPush=function(){beep(500,0.14,'sine',0.05);};
+
+  var SUIT={S:'♠',H:'♥',D:'♦',C:'♣'}, RED={H:1,D:1};
+  function rankTxt(r){ return r==='T'?'10':r; }
+  function cardHtml(cd){
+    var r=cd.slice(0,cd.length-1), s=cd.slice(-1), red=RED[s]?' red':'';
+    return '<div class="card'+red+'"><span class="rk">'+rankTxt(r)+'<small>'+SUIT[s]+'</small></span>'
+      +'<span class="mid">'+SUIT[s]+'</span><span class="rk br">'+rankTxt(r)+'<small>'+SUIT[s]+'</small></span></div>';
+  }
+  function renderHands(st, hideHole){
+    el('playerHand').innerHTML = (st.player||[]).map(cardHtml).join('');
+    var dl=(st.dealer||[]).slice();
+    var dh='';
+    dh += dl.map(cardHtml).join('');
+    if(hideHole){ dh += '<div class="card back"></div>'; }
+    el('dealerHand').innerHTML = dh;
+    el('pval').textContent=st.player_val!=null?st.player_val:''; el('pvWrap').classList.toggle('hide',st.player_val==null);
+    if(st.dealer_val!=null && !hideHole){ el('dval').textContent=st.dealer_val; el('dvWrap').classList.remove('hide'); }
+    else { el('dvWrap').classList.add('hide'); }
+  }
+  function setBal(c){ if(c!=null) el('bal').textContent='🪙 '+c; }
+
+  var bet=5, busy=false;
+  Array.prototype.forEach.call(document.querySelectorAll('.chip'),function(ch){
+    ch.addEventListener('click',function(){ if(busy)return; bet=+ch.getAttribute('data-b');
+      Array.prototype.forEach.call(document.querySelectorAll('.chip'),function(c){c.classList.toggle('sel',c===ch);}); });
+  });
+
+  function showPlay(on){ el('dealRow').classList.toggle('hide',on); el('playRow').classList.toggle('hide',!on); el('betRow').style.opacity=on?'.4':'1'; }
+  function banner(txt,cls){ var b=el('banner'); b.textContent=txt||''; b.className='banner'+(cls?(' '+cls):''); }
+
+  function settleUI(st){
+    showPlay(false);
+    renderHands(st,false);
+    setBal(st.coins);
+    if(st.result==='win'){ banner('You win +'+st.payout+' 🪙','win'); sWin(); }
+    else if(st.result==='blackjack'){ banner('BLACKJACK! +'+st.payout+' 🪙','win'); sWin(); }
+    else if(st.result==='push'){ banner('Push — bet returned','push'); sPush(); }
+    else { banner('Dealer wins','lose'); sLose(); }
+  }
+
+  el('dealBtn').addEventListener('click',function(){
+    if(busy)return; busy=true; actx(); banner(''); el('dealBtn').disabled=true;
+    rpc('bj_deal',{p_code:code,p_bet:bet}).then(function(st){
+      el('dealBtn').disabled=false; busy=false;
+      if(!st||st.error){ banner(st&&st.error||'Error','lose'); return; }
+      setBal(st.coins); sDeal();
+      if(st.status==='done'){ settleUI(st); }
+      else { renderHands(st,true); showPlay(true); banner(''); }
+    }).catch(function(){ el('dealBtn').disabled=false; busy=false; });
+  });
+  el('hitBtn').addEventListener('click',function(){
+    if(busy)return; busy=true; el('hitBtn').disabled=true; el('standBtn').disabled=true;
+    rpc('bj_hit',{p_code:code}).then(function(st){
+      busy=false; el('hitBtn').disabled=false; el('standBtn').disabled=false;
+      if(!st||st.error){ banner(st&&st.error||'Error','lose'); return; }
+      sDeal();
+      if(st.status==='done'){ settleUI(st); } else { renderHands(st,true); }
+    }).catch(function(){ busy=false; el('hitBtn').disabled=false; el('standBtn').disabled=false; });
+  });
+  el('standBtn').addEventListener('click',function(){
+    if(busy)return; busy=true; el('hitBtn').disabled=true; el('standBtn').disabled=true;
+    rpc('bj_stand',{p_code:code}).then(function(st){
+      busy=false; el('hitBtn').disabled=false; el('standBtn').disabled=false;
+      if(!st||st.error){ banner(st&&st.error||'Error','lose'); return; }
+      settleUI(st);
+    }).catch(function(){ busy=false; el('hitBtn').disabled=false; el('standBtn').disabled=false; });
+  });
+
+  // load balance
+  rpc('get_member',{p_code:code}).then(function(m){ if(m&&m.coins!=null) setBal(m.coins); }).catch(function(){});
+})();
+</script>
+</body>
+</html>

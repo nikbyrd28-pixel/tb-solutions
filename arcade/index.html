@@ -126,6 +126,14 @@
       <div class="best" id="bestStack">Best 0</div>
       <span class="play">▶ Play</span>
     </a>
+    <a class="gcard" id="cardBlackjack" href="/arcade/blackjack/">
+      <div class="tag" style="background:var(--gold)">Casino</div>
+      <div class="em">🃏</div>
+      <h3>Blackjack</h3>
+      <p>Bet coins, beat the dealer.</p>
+      <div class="best">Blackjack pays 3:2</div>
+      <span class="play">▶ Play</span>
+    </a>
   </div>
 
   <div class="promo">
@@ -189,6 +197,7 @@ refreshBests();
     var v=0; try{ v=+localStorage.getItem(g[3]+client)||0; }catch(e){}
     var b=el(g[2]); if(b) b.textContent='Best '+v;
   });
+  var bj=el('cardBlackjack'); if(bj) bj.href='/arcade/blackjack/'+qs;
 })();
 /* ---- sound (WebAudio blips) ---- */
 var SND=true, actx=null;
