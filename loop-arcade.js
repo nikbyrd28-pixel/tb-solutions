@@ -77,6 +77,30 @@
         s.connect(f); f.connect(g); g.connect(master); s.start();
       } catch (e) {}
     }
+    // ---- background music: a light looping chiptune (bass + arp) ----------
+    var musOn = false, musT = null, musStep = 0, musRate = 236;
+    var BASS = [0, 0, 7, 0, 5, 0, 7, 3, 0, 0, 10, 7, 5, 3, 7, 0];
+    var ARP = [12, 16, 19, 16, 17, 19, 24, 19, 15, 19, 22, 19, 17, 15, 12, 7];
+    function fr(n) { return 130.81 * Math.pow(2, n / 12); }
+    function mnote(f, d, ty, v) {
+      var c = ensure(); if (!c) return;
+      try {
+        var o = c.createOscillator(), g = c.createGain();
+        o.type = ty; o.frequency.value = f; g.gain.setValueAtTime(v, c.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + d);
+        o.connect(g); g.connect(master); o.start(); o.stop(c.currentTime + d + 0.02);
+      } catch (e) {}
+    }
+    function mtick() {
+      if (!musOn) return;
+      if (SND && ensure()) {
+        var b = BASS[musStep % BASS.length], l = ARP[musStep % ARP.length];
+        mnote(fr(b - 12), 0.24, 'triangle', 0.05);
+        mnote(fr(l), 0.14, 'square', 0.022);
+        if (musStep % 4 === 2) mnote(fr(l + 7), 0.10, 'square', 0.016);
+      }
+      musStep++; musT = setTimeout(mtick, musRate);
+    }
     return {
       flap: function () { tone(660, 0.09, 'square', 0.22, 380); },
       score: function () { tone(880, 0.08, 'triangle', 0.26, 1180); },
@@ -86,6 +110,12 @@
       land: function () { tone(300, 0.05, 'sine', 0.14); },
       crash: function () { noise(0.4, 0.34); tone(150, 0.4, 'sawtooth', 0.28, 60); },
       ui: function () { tone(560, 0.05, 'sine', 0.16); },
+      levelup: function () { [0, 4, 7, 12].forEach(function (n, i) { setTimeout(function () { tone(fr(12 + n), 0.16, 'triangle', 0.24); }, i * 70); }); },
+      music: {
+        start: function (rate) { if (musOn) { if (rate) musRate = rate; return; } musOn = true; musStep = 0; musRate = rate || 236; mtick(); },
+        setRate: function (r) { musRate = r; },
+        stop: function () { musOn = false; clearTimeout(musT); }
+      },
       resume: ensure
     };
   })();
@@ -110,6 +140,7 @@
       '.la-right{font-size:15px;font-weight:800;color:#ffcf5a;display:flex;gap:12px;align-items:center}' +
       '.la-combo{font-size:13px;font-weight:900;color:#5ad0f0;opacity:0;transition:opacity .2s}' +
       '.la-combo.show{opacity:1}' +
+      '#la-level{font-size:13px;font-weight:900;color:#b98bff}' +
       '.la-stage{position:relative;border-radius:18px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 44px rgba(122,162,255,.18)}' +
       '.la-cv{display:block;touch-action:none;background:#05060d}' +
       '.la-ctrls{display:flex;gap:12px;justify-content:center;margin-top:14px}' +
@@ -142,7 +173,7 @@
       '<button class="la-ic" id="la-pause" aria-label="Pause">❚❚</button>' +
       '<button class="la-ic" id="la-close" aria-label="Close">✕</button></div></div>' +
       '<div class="la-hud"><span class="la-score" id="la-score">0</span>' +
-      '<span class="la-right"><span class="la-combo" id="la-combo"></span><span id="la-best2">★ 0</span></span></div>' +
+      '<span class="la-right"><span class="la-combo" id="la-combo"></span><span id="la-level">Lv 1</span><span id="la-best2">★ 0</span></span></div>' +
       '<div class="la-stage"><canvas class="la-cv" id="la-cv"></canvas>' +
       '<div class="la-ov" id="la-start"><div class="la-card">' +
       '<div class="la-em" id="la-icon">🐦</div><h2 id="la-name">Loop Flyer</h2>' +
@@ -161,7 +192,7 @@
 
     dom = {
       root: root, title: g('la-title'), sound: g('la-sound'), pause: g('la-pause'), close: g('la-close'),
-      score: g('la-score'), best2: g('la-best2'), combo: g('la-combo'),
+      score: g('la-score'), best2: g('la-best2'), combo: g('la-combo'), level: g('la-level'),
       stage: root.querySelector('.la-stage'), cv: g('la-cv'),
       start: g('la-start'), icon: g('la-icon'), name: g('la-name'), how: g('la-how'), best: g('la-best'), play: g('la-play'),
       pausescr: g('la-pausescr'), resume: g('la-resume'), quit: g('la-quit'),
@@ -176,7 +207,7 @@
     // ---- bind listeners ONCE ----
     dom.sound.onclick = function () {
       SND = !SND; try { localStorage.setItem('loop_snd', SND ? '1' : '0'); } catch (e) {}
-      dom.sound.textContent = SND ? '🔊' : '🔇'; if (SND) Audio.resume(), Audio.ui();
+      dom.sound.textContent = SND ? '🔊' : '🔇'; if (SND) { Audio.resume(); Audio.ui(); if (E.running && !E.paused) Audio.music.start(); } else { Audio.music.stop(); }
     };
     dom.close.onclick = close;
     dom.quit.onclick = close;
@@ -232,7 +263,7 @@
     score: 0, shownScore: 0, best: 0, game: null,
     shake: 0, hitstop: 0, flash: 0, alpha: 0,
     parts: [], floats: [], accent: '#7aa2ff', accent2: '#5ad0f0',
-    clock: 0, combo: 0, comboAt: 0, lastSc: 0, skyGrad: null, skyH: 0
+    clock: 0, combo: 0, comboAt: 0, lastSc: 0, skyGrad: null, skyH: 0, moonGrad: null, level: 1
   };
 
   // ---- particle pool -----------------------------------------------------
@@ -637,6 +668,8 @@
       if (E.combo >= 3) { dom.combo.textContent = '🔥 x' + E.combo; dom.combo.classList.add('show'); }
       if (E.score > 0 && E.score % 10 === 0) { addShake(0.2); floatText(E.W / 2, E.H * 0.28, E.score + '!', E.accent2); Audio.near(); }
     } else if (E.combo && E.clock - E.comboAt > 2600) { E.combo = 0; dom.combo.classList.remove('show'); }
+    var _lv = 1 + Math.floor(E.score / 6);
+    if (_lv > E.level) { E.level = _lv; if (dom.level) dom.level.textContent = 'Lv ' + _lv; Audio.levelup(); floatText(E.W / 2, E.H * 0.34, 'LEVEL ' + _lv + '!', '#c9a3ff'); E.flash = Math.max(E.flash, 0.6); addShake(0.28); Audio.music.setRate(Math.max(150, 236 - _lv * 7)); }
     // smooth score readout
     if (E.shownScore !== E.score) { E.shownScore += Math.sign(E.score - E.shownScore); dom.score.textContent = E.shownScore; if (E.score > E.best) { dom.best2.textContent = '★ ' + E.score; } }
     render(clamp(E.acc / STEP, 0, 1));
@@ -665,8 +698,8 @@
     dom.name.textContent = dom.title.textContent;
     dom.icon.textContent = E.mode === 'flyer' ? '🐦' : '🚦';
     dom.how.textContent = E.mode === 'flyer'
-      ? 'Tap / Space to fly. Dodge the clippers, grab ★ coins. It speeds up — how far can you go?'
-      : 'Tap ▲ to hop, ◀ ▶ to dodge traffic. Grab ★ coins on the grass. Don\'t get hit!';
+      ? 'Tap / Space to fly. Dodge the clippers, grab ★ coins. Level up every 6 — how far can you go?'
+      : 'Tap ▲ to hop, ◀ ▶ to dodge traffic. Grab ★ coins. Level up every 6 hops — don\'t get hit!';
     dom.best.textContent = E.best; dom.best2.textContent = '★ ' + E.best;
     dom.score.textContent = '0'; dom.combo.classList.remove('show');
     dom.ctrls.classList.toggle('hide', E.mode !== 'hopper');
@@ -681,6 +714,7 @@
     E.game = E.mode === 'flyer' ? Flyer() : Hopper();
     resize();
     E.score = 0; E.shownScore = 0; E.combo = 0; E.lastSc = 0; E.clock = 0; dom.score.textContent = '0';
+    E.level = 1; if (dom.level) dom.level.textContent = 'Lv 1'; Audio.music.start(236);
     dom.combo.classList.remove('show');
     dom.start.classList.add('hide'); dom.over.classList.add('hide'); dom.pausescr.classList.add('hide');
     E.game.reset();
@@ -688,14 +722,14 @@
     cancelAnimationFrame(E.raf); E.raf = requestAnimationFrame(frame);
   }
   function pause() {
-    if (!E.running || E.paused) return; E.paused = true; dom.pausescr.classList.remove('hide'); dom.pause.textContent = '▶'; Audio.ui();
+    if (!E.running || E.paused) return; E.paused = true; Audio.music.stop(); dom.pausescr.classList.remove('hide'); dom.pause.textContent = '▶'; Audio.ui();
   }
   function resume() {
     if (!E.paused) return; E.paused = false; dom.pausescr.classList.add('hide'); dom.pause.textContent = '❚❚';
-    E.last = performance.now(); Audio.resume(); Audio.ui();
+    E.last = performance.now(); Audio.resume(); Audio.ui(); Audio.music.start();
   }
   function gameOver() {
-    if (E.over) return; E.over = true; E.running = false; cancelAnimationFrame(E.raf);
+    if (E.over) return; E.over = true; E.running = false; cancelAnimationFrame(E.raf); Audio.music.stop();
     var sc = E.score, mode = E.mode;
     dom.final.textContent = sc; dom.l1.textContent = ''; dom.l2.textContent = '';
     var localBest = Math.max(E.best, sc), newBest = sc > E.best;
@@ -728,7 +762,7 @@
     }
   }
   function close() {
-    E.running = false; E.paused = false; cancelAnimationFrame(E.raf); clearFX();
+    E.running = false; E.paused = false; cancelAnimationFrame(E.raf); Audio.music.stop(); clearFX();
     dom.root.classList.remove('on'); dom.root.setAttribute('aria-hidden', 'true');
     if (E.cfg && E.cfg.onClose) try { E.cfg.onClose(); } catch (e) {}
   }
