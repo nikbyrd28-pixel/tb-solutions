@@ -140,7 +140,7 @@
   function clearLines(){
     var cleared=0;
     for(var r=ROWS-1;r>=0;r--){ var full=true; for(var c=0;c<COLS;c++){ if(!board[r][c]){ full=false; break; } } if(full){ board.splice(r,1); board.unshift(new Array(COLS).fill(null)); cleared++; r++; } }
-    if(cleared){ var pts=[0,100,300,500,800][cleared]*level; score+=pts; lines+=cleared; level=1+Math.floor(lines/10); dropInt=Math.max(90, 800 - (level-1)*70);
+    if(cleared){ var pts=[0,100,300,500,800][cleared]*level; score+=pts; lines+=cleared; var _pl=level; level=1+Math.floor(lines/10); if(level>_pl && window.LoopFX) LoopFX.levelUp(level); dropInt=Math.max(90, 800 - (level-1)*70);
       if(cleared===4){ sTetris(); if(window.LoopFX){ LoopFX.confetti(18); LoopFX.flash('rgba(122,162,255,.45)'); } } else sLine(cleared);
       el('hScore').textContent=score; el('hLines').textContent=lines; el('hLevel').textContent=level; }
   }

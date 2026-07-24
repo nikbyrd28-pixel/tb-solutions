@@ -101,7 +101,7 @@
   })();
 
   /* ---------- state ---------- */
-  var GROUND, player, obstacles, coins, parts, running=false, dead=false, t=0, dist=0, coinCount=0, combo=0, speed=0, spawnT=0, coinT=0, shake=0, best=0, poleAng=0, groundOff=0;
+  var GROUND, player, obstacles, coins, parts, running=false, dead=false, t=0, dist=0, coinCount=0, combo=0, speed=0, spawnT=0, coinT=0, shake=0, best=0, poleAng=0, groundOff=0, lvl=1;
   try{ best=+localStorage.getItem('bd_best_'+client)||0; }catch(e){}
   el('bestHint').textContent = best? ('Best: '+best+' m'):'';
   el('backBtn').href = code? ('/rewards/?c='+client) : '/loyalty/';
@@ -110,7 +110,7 @@
     GROUND=H*0.80;
     player={x:W*0.22,y:GROUND,vy:0,r:22,onGround:true,jumps:0,run:0,rot:0};
     obstacles=[]; coins=[]; parts=[];
-    dist=0; coinCount=0; combo=0; speed=Math.min(W,520)*0.72; spawnT=0.6; coinT=1.1; shake=0; t=0; dead=false;
+    dist=0; coinCount=0; combo=0; speed=Math.min(W,520)*0.72; spawnT=0.6; coinT=1.1; shake=0; t=0; dead=false; lvl=1;
     lastMile=0;
   }
   var jumpV, grav, lastMile=0;
@@ -149,7 +149,7 @@
   }
   function update(dt){
     t+=dt; speed+=dt*7; // ramp
-    dist+=speed*dt/42; var d=Math.floor(dist);
+    dist+=speed*dt/42; var d=Math.floor(dist); var _nl=1+Math.floor(d/200); if(_nl>lvl){ lvl=_nl; if(window.LoopFX)LoopFX.levelUp(lvl); }
     poleAng+=dt*6; groundOff=(groundOff+speed*dt)% 48;
     // milestones
     if(d>=lastMile+100){ lastMile=Math.floor(d/100)*100; sMile(); shake=Math.max(shake,5); }

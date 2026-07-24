@@ -168,8 +168,16 @@
 
   function atEl(el) { if (!el) return { x: innerWidth / 2, y: innerHeight / 2 }; var r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
 
+  // one-call celebration for hitting a new level (banner + confetti + flash + chime)
+  function levelUp(n) {
+    sfx('power'); haptic([15, 40, 15]);
+    floatText(innerWidth / 2, innerHeight * 0.34, 'LEVEL ' + n + '!', '#c9a3ff', 30);
+    burst(innerWidth / 2, innerHeight * 0.34, { n: 16, color: '#c9a3ff', min: 2, max: 6, up: 1 });
+    confetti(14); flash('rgba(185,139,255,.32)');
+  }
+
   window.LoopFX = {
-    sfx: sfx, haptic: haptic, shake: shake, burst: burst, float: floatText, flash: flash, confetti: confetti, atEl: atEl,
+    sfx: sfx, haptic: haptic, shake: shake, burst: burst, float: floatText, flash: flash, confetti: confetti, atEl: atEl, levelUp: levelUp,
     setMuted: function (b) { MUTED = !!b; try { localStorage.setItem('loop_snd', b ? '0' : '1'); } catch (e) {} },
     isMuted: function () { return MUTED; },
     version: '1.0'

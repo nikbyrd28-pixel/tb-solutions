@@ -95,7 +95,7 @@
   })();
 
   /* ---------- state ---------- */
-  var objs, parts, blade, running=false, dead=false, t=0, score=0, lives=3, spawnT=0, shake=0, best=0, bestCombo=0;
+  var objs, parts, blade, running=false, dead=false, t=0, score=0, lives=3, spawnT=0, shake=0, best=0, bestCombo=0, lvl=1;
   var comboCount=0, comboTimer=0, popups=[];
   try{ best=+localStorage.getItem('fc_best_'+client)||0; }catch(e){}
   el('bestHint').textContent = best? ('Best score: '+best):'';
@@ -105,7 +105,7 @@
     {g:'💇',pts:1,col:'#8b6f4e'},{g:'✂️',pts:1,col:'#9fb4ff'},{g:'🧴',pts:1,col:'#5df2e0'},
     {g:'🪮',pts:1,col:'#b98bff'},{g:'💈',pts:2,col:'#ff6a7a'}
   ];
-  function reset(){ objs=[]; parts=[]; blade=[]; popups=[]; score=0; lives=3; t=0; spawnT=0.4; shake=0; flash=0; dead=false; down=false; comboCount=0; comboTimer=0; bestCombo=0; sliceThisSwipe=0; }
+  function reset(){ objs=[]; parts=[]; blade=[]; popups=[]; score=0; lives=3; t=0; spawnT=0.4; shake=0; flash=0; dead=false; down=false; comboCount=0; comboTimer=0; bestCombo=0; sliceThisSwipe=0; lvl=1; }
 
   /* ---------- spawning ---------- */
   function spawn(){
@@ -147,6 +147,7 @@
     var mult = sliceThisSwipe>=2 ? sliceThisSwipe : 1;
     var gain = pts*mult;
     score += gain;
+    var _nl=1+Math.floor(score/12); if(_nl>lvl){ lvl=_nl; if(window.LoopFX)LoopFX.levelUp(lvl); }
     if(o.type==='coin') sCoin(); else sSlice(sliceThisSwipe);
     burst(o.x,o.y,o.col,12);
     // slice halves fly apart
