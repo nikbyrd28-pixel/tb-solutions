@@ -149,7 +149,39 @@
   .gtile:hover{box-shadow:0 0 18px color-mix(in srgb,var(--acc) 30%,transparent)}
   a.gtile{text-decoration:none}
   .gtile .newb{position:absolute;top:6px;right:8px;font-size:8.5px;font-weight:900;letter-spacing:.06em;color:#04050a;background:var(--good,#43f0b0);border-radius:999px;padding:1px 6px}
+  .gtile .x2{position:absolute;top:6px;left:8px;font-size:9px;font-weight:900;color:#04050a;background:var(--gold,#ffcf5a);border-radius:999px;padding:1px 6px}
   .gtile{position:relative}
+  /* daily challenge + tournament banners */
+  .dchal{display:flex;align-items:center;gap:12px;border:1px solid rgba(255,207,90,.4);background:linear-gradient(120deg,rgba(255,207,90,.14),rgba(255,138,157,.08));border-radius:14px;padding:12px 14px;margin:2px 0 12px;text-align:left}
+  .dchal .de{font-size:30px;line-height:1}
+  .dchal .db{flex:1;min-width:0}
+  .dchal .dk{font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--gold)}
+  .dchal .dt{font-size:14px;font-weight:800}
+  .dchal .dp{font-size:12px;color:var(--muted)}
+  .dchal .go{border:0;border-radius:999px;padding:9px 16px;font:inherit;font-weight:900;font-size:13px;cursor:pointer;background:linear-gradient(135deg,var(--gold,#ffcf5a),#ff9d5a);color:#04050a;white-space:nowrap;text-decoration:none}
+  .tourney{border:1px solid rgba(122,162,255,.3);background:rgba(122,162,255,.06);border-radius:14px;padding:12px 14px;margin:12px 0 0}
+  .tourney .th{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .tourney .tk{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--acc2)}
+  .tourney .tdays{font-size:11px;color:var(--muted)}
+  .tourney .tp{font-size:13px;margin:4px 0 2px}
+  .tourney .tp b{color:var(--gold)}
+  .tourney .trank{font-size:12px;color:var(--acc)}
+  /* coin store */
+  .store{margin-top:14px}
+  .store-h{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--acc2);margin:0 0 6px}
+  .sitem{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:8px;background:rgba(122,162,255,.05)}
+  .sitem .sl{flex:1;font-size:14px;font-weight:700}
+  .sitem .sc{font-size:12px;font-weight:900;color:var(--gold);white-space:nowrap}
+  .sitem button{border:0;border-radius:999px;padding:8px 14px;font:inherit;font-weight:800;font-size:12px;cursor:pointer;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;white-space:nowrap}
+  .sitem button:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(1)}
+  /* membership */
+  #memberCard .mm-h{display:flex;align-items:center;gap:10px}
+  #memberCard .mm-badge{font-size:26px}
+  #memberCard .mm-price{font-weight:900;color:var(--gold);font-size:15px}
+  #memberCard ul{margin:10px 0;padding-left:20px;color:var(--muted);font-size:13.5px}
+  #memberCard ul li{margin:3px 0}
+  #memberCard .mm-join{width:100%;border:0;border-radius:12px;padding:13px;font:inherit;font-weight:900;font-size:15px;cursor:pointer;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a}
+  #memberCard .mm-join:disabled{opacity:.55}
   .gtile .ge{font-size:34px;line-height:1}
   .gtile b{font-size:14px}
   .gtile span{font-size:11px}
@@ -253,9 +285,14 @@
     <div class="card" id="arcadeCard">
       <div class="qh"><b>🎮 Loop Arcade</b><span class="coinchip" id="coinBal">🪙 0</span></div>
       <p class="muted" style="margin:6px 0 10px">Play while you wait to earn <b style="color:var(--text)">🪙 coins</b> — then spend them on spins &amp; prizes. Coins come <b style="color:var(--text)">only</b> from playing, booking, or referring a friend.</p>
+      <div class="dchal hide" id="dailyChal">
+        <div class="de" id="dchEmoji">🔥</div>
+        <div class="db"><div class="dk">Today's Challenge · 2× coins</div><div class="dt" id="dchName">—</div><div class="dp">Double coins on this game today only.</div></div>
+        <a class="go" id="dchGo" href="#">Play →</a>
+      </div>
       <div class="arcade-grid">
-        <button class="gtile" onclick="openGame('flyer')"><div class="ge">🐦</div><b>Loop Flyer</b><span class="muted" id="hiFlyer">Best 0</span></button>
-        <button class="gtile" onclick="openGame('hopper')"><div class="ge">🚦</div><b>Chair Hopper</b><span class="muted" id="hiHopper">Best 0</span></button>
+        <button class="gtile" id="tileFlyer" onclick="openGame('flyer')"><div class="ge">🐦</div><b>Loop Flyer</b><span class="muted" id="hiFlyer">Best 0</span></button>
+        <button class="gtile" id="tileHopper" onclick="openGame('hopper')"><div class="ge">🚦</div><b>Chair Hopper</b><span class="muted" id="hiHopper">Best 0</span></button>
         <a class="gtile" id="gRunner" href="/arcade/run/"><span class="newb">NEW</span><div class="ge">💈</div><b>Barber Dash</b><span class="muted" id="hiRunner">Best 0</span></a>
         <a class="gtile" id="gSlice" href="/arcade/slice/"><span class="newb">NEW</span><div class="ge">✂️</div><b>Fresh Cuts</b><span class="muted" id="hiSlice">Best 0</span></a>
         <a class="gtile" id="gStack" href="/arcade/stack/"><span class="newb">NEW</span><div class="ge">🧱</div><b>Perfect Fade</b><span class="muted" id="hiStack">Best 0</span></a>
@@ -267,9 +304,28 @@
           <button class="lbtab" id="lbRunner" onclick="loadBoard('runner')">💈 Dash</button>
           <button class="lbtab" id="lbSlicer" onclick="loadBoard('slicer')">✂️ Cuts</button>
           <button class="lbtab" id="lbStacker" onclick="loadBoard('stacker')">🧱 Fade</button>
+          <button class="lbtab" id="lbWeek" onclick="loadBoard('week')">🏆 Week</button>
         </span>
       </div>
       <div id="arcadeBoard"><p class="muted" style="margin:8px 0 0">Loading…</p></div>
+
+      <div class="tourney hide" id="tourneyBox">
+        <div class="th"><span class="tk">🏆 Weekly Tournament</span><span class="tdays" id="tourDays"></span></div>
+        <div class="tp" id="tourPrize"></div>
+        <div class="trank" id="tourRank"></div>
+      </div>
+
+      <div class="store hide" id="coinStore">
+        <div class="store-h">🪙 Coin store — cash in your coins</div>
+        <div id="storeItems"></div>
+      </div>
+    </div>
+
+    <div class="card hide" id="memberCard">
+      <div class="mm-h"><span class="mm-badge">💈</span><div><b id="mmName">Membership</b><div class="mm-price" id="mmPrice"></div></div></div>
+      <p class="muted" id="mmNote" style="margin:8px 0 0"></p>
+      <ul id="mmPerks"></ul>
+      <button class="mm-join" id="mmJoin" onclick="joinMembership()">Join →</button>
     </div>
 
     <div class="card hide" id="prizeCard">
@@ -445,6 +501,7 @@ function showCard(m){
   renderSvStars();
   renderCoins(m);
   loadBoard(curBoard);
+  loadArcadeStatus(m);
   initBooking(m);
 }
 function renderCoins(m){
@@ -457,6 +514,74 @@ function renderCoins(m){
   var qs='?c='+encodeURIComponent(slug)+(m.code?('&m='+encodeURIComponent(m.code)):'');
   var links=[['gRunner','/arcade/run/','hiRunner','runner'],['gSlice','/arcade/slice/','hiSlice','slicer'],['gStack','/arcade/stack/','hiStack','stacker']];
   links.forEach(function(x){ var a=el(x[0]); if(a) a.href=x[1]+qs; var b=el(x[2]); if(b) b.textContent='Best '+(g[x[3]]||0); });
+}
+/* ---- engagement engine: daily 2x challenge, weekly tournament, coin store, membership ---- */
+var GAMEINFO={
+  flyer:{name:'Loop Flyer',emoji:'🐦',tile:'tileFlyer',inline:true},
+  hopper:{name:'Chair Hopper',emoji:'🚦',tile:'tileHopper',inline:true},
+  runner:{name:'Barber Dash',emoji:'💈',tile:'gRunner',path:'/arcade/run/'},
+  slicer:{name:'Fresh Cuts',emoji:'✂️',tile:'gSlice',path:'/arcade/slice/'},
+  stacker:{name:'Perfect Fade',emoji:'🧱',tile:'gStack',path:'/arcade/stack/'}
+};
+var ARC=null;
+function loadArcadeStatus(m){
+  rpc('get_arcade_status',{p_client:slug,p_code:m.code}).then(function(d){
+    if(!d||d.error) return; ARC=d;
+    var f=d.featured, gi=GAMEINFO[f];
+    if(gi){
+      el('dchEmoji').textContent=gi.emoji;
+      el('dchName').textContent=gi.name+' — 2× coins today';
+      var go=el('dchGo');
+      if(gi.inline){ go.setAttribute('href','#'); go.onclick=function(e){ e.preventDefault(); openGame(f); }; }
+      else { go.onclick=null; go.setAttribute('href', gi.path+'?c='+encodeURIComponent(slug)+(m.code?('&m='+encodeURIComponent(m.code)):'')); }
+      el('dailyChal').classList.remove('hide');
+      var old=document.querySelectorAll('.gtile .x2'); for(var i=0;i<old.length;i++) old[i].remove();
+      var tile=el(gi.tile); if(tile){ var b=document.createElement('span'); b.className='x2'; b.textContent='2×'; tile.appendChild(b); }
+    }
+    if(d.tournament_prize){
+      el('tourPrize').innerHTML='Top player this week wins <b>'+esc(d.tournament_prize)+'</b>';
+      var dl=d.days_left|0; el('tourDays').textContent = dl>0?(dl+' day'+(dl===1?'':'s')+' left'):'last day!';
+      if(d.my_rank && d.my_week!=null){ el('tourRank').textContent='You: #'+d.my_rank+' · '+d.my_week+' 🪙 earned this week'; }
+      else { el('tourRank').textContent='Play this week to enter the tournament!'; }
+      el('tourneyBox').classList.remove('hide');
+    }
+    var store=d.coin_store||[];
+    if(store.length){
+      el('storeItems').innerHTML=store.map(function(it){
+        var cost=+it.cost||0, afford=(m.coins||0)>=cost, lab=esc(it.label);
+        return '<div class="sitem"><span class="sl">'+lab+'</span><span class="sc">🪙 '+cost+'</span>'
+          +'<button '+(afford?'':'disabled')+' data-c="'+cost+'" data-l="'+lab+'" onclick="redeemStore(this)">'+(afford?'Redeem':('Need '+(cost-(m.coins||0))))+'</button></div>';
+      }).join('');
+      el('coinStore').classList.remove('hide');
+    }
+    var mem=d.membership;
+    if(mem && mem.on){
+      el('mmName').textContent=mem.name||'Membership';
+      el('mmPrice').textContent=mem.price||'';
+      el('mmNote').textContent=mem.note||'';
+      var perks=mem.perks||[]; el('mmPerks').innerHTML=perks.map(function(p){return '<li>'+esc(p)+'</li>';}).join('');
+      el('memberCard').classList.remove('hide');
+    }
+  }).catch(function(){});
+}
+function redeemStore(btn){
+  if(!member||!btn) return;
+  var cost=+btn.getAttribute('data-c'), label=btn.getAttribute('data-l');
+  if(!window.confirm('Redeem "'+label+'" for '+cost+' 🪙?')) return;
+  btn.disabled=true;
+  rpc('coin_redeem',{p_code:member.code,p_cost:cost,p_label:label}).then(function(r){
+    if(!r||r.error){ toast((r&&r.error)||'Could not redeem.'); btn.disabled=false; return; }
+    member=r; renderCoins(r); renderPrizes(r); loadArcadeStatus(r); confetti();
+    toast('🎁 Redeemed! Show it at the counter.');
+  }).catch(function(){ btn.disabled=false; });
+}
+function joinMembership(){
+  if(!member) return;
+  var b=el('mmJoin'); b.disabled=true; b.textContent='Sending…';
+  rpc('membership_join',{p_code:member.code}).then(function(r){
+    if(r&&r.joined){ b.textContent='✓ Requested — ask your barber next visit'; toast('💈 Nice! Your barber will get you set up.'); }
+    else { b.disabled=false; b.textContent='Join →'; }
+  }).catch(function(){ b.disabled=false; b.textContent='Join →'; });
 }
 var RANKS=[{n:'Bronze',min:0,e:'🥉'},{n:'Silver',min:25,e:'🥈'},{n:'Gold',min:75,e:'🥇'},{n:'VIP',min:200,e:'💎'}];
 var XP_PER_LEVEL=10, _lastLevel=null;
@@ -675,7 +800,7 @@ var GSND=true, gactx=null, curBoard='flyer';
 try{ GSND = localStorage.getItem('loop_snd')!=='0'; }catch(e){}
 function toggleGSound(){ GSND=!GSND; try{ localStorage.setItem('loop_snd',GSND?'1':'0'); }catch(e){} var b=el('gvSound'); if(b) b.textContent=GSND?'🔊':'🔇'; if(GSND) gbeep(660,.06); }
 function gbeep(freq,dur,type){ if(!GSND) return; try{ gactx=gactx||new (window.AudioContext||window.webkitAudioContext)(); var o=gactx.createOscillator(),g=gactx.createGain(); o.type=type||'square'; o.frequency.value=freq; o.connect(g); g.connect(gactx.destination); g.gain.setValueAtTime(.06,gactx.currentTime); g.gain.exponentialRampToValueAtTime(.0001,gactx.currentTime+(dur||.08)); o.start(); o.stop(gactx.currentTime+(dur||.08)); }catch(e){} }
-var LB_TABS={flyer:'lbFlyer',hopper:'lbHopper',runner:'lbRunner',slicer:'lbSlicer',stacker:'lbStacker'};
+var LB_TABS={flyer:'lbFlyer',hopper:'lbHopper',runner:'lbRunner',slicer:'lbSlicer',stacker:'lbStacker',week:'lbWeek'};
 function loadBoard(game){
   curBoard=game;
   for(var gk in LB_TABS){ var t=el(LB_TABS[gk]); if(t) t.classList.toggle('on',gk===game); }
