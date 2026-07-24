@@ -193,6 +193,24 @@
   #memberCard ul li{margin:3px 0}
   #memberCard .mm-join{width:100%;border:0;border-radius:12px;padding:13px;font:inherit;font-weight:900;font-size:15px;cursor:pointer;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a}
   #memberCard .mm-join:disabled{opacity:.55}
+  /* milestone */
+  #mileCard .mile-h{display:flex;align-items:center;gap:11px}
+  #mileCard .mile-ic{font-size:28px}
+  #mileCard .mile-goal{font-size:12px;color:var(--muted)}
+  #mileCard .mile-bar{height:12px;border-radius:999px;background:rgba(122,162,255,.12);overflow:hidden;margin:12px 0 6px}
+  #mileCard .mile-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold),#ff9d5a);transition:width .6s cubic-bezier(.2,.9,.3,1);width:0}
+  #mileCard .mile-sub{font-size:13px}
+  #mileCard.ready{border-color:rgba(255,207,90,.6);box-shadow:0 0 26px rgba(255,207,90,.28)}
+  #mileCard .mile-claim{width:100%;border:0;border-radius:12px;padding:14px;margin-top:10px;font:inherit;font-weight:900;font-size:16px;cursor:pointer;background:linear-gradient(135deg,var(--gold),#ff9d5a);color:#04050a;animation:pulse 1.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+  /* lottery */
+  #lotoCard{background:linear-gradient(150deg,rgba(185,139,255,.12),rgba(255,207,90,.08))}
+  #lotoCard .loto-h{font-size:18px}#lotoCard .loto-h b{color:var(--gold)}
+  #lotoCard .loto-odds{font-size:13px;color:var(--muted);margin:4px 0 10px}
+  #lotoCard .loto-reveal{min-height:22px;font-weight:900;font-size:16px;text-align:center;margin-bottom:8px}
+  #lotoCard .loto-reveal.win{color:var(--gold)}#lotoCard .loto-reveal.lose{color:var(--muted)}
+  #lotoCard .loto-draw{width:100%;border:0;border-radius:12px;padding:14px;font:inherit;font-weight:900;font-size:16px;cursor:pointer;background:linear-gradient(135deg,var(--vio),var(--acc2));color:#04050a}
+  #lotoCard .loto-draw:disabled{opacity:.5}
   .gtile .ge{font-size:34px;line-height:1}
   .gtile b{font-size:14px}
   .gtile span{font-size:11px}
@@ -346,6 +364,20 @@
       <p class="muted" id="mmNote" style="margin:8px 0 0"></p>
       <ul id="mmPerks"></ul>
       <button class="mm-join" id="mmJoin" onclick="joinMembership()">Join →</button>
+    </div>
+
+    <div class="card hide" id="mileCard">
+      <div class="mile-h"><span class="mile-ic" id="mileIcon">🔒</span><div><b id="mileLabel">Milestone reward</b><div class="mile-goal" id="mileGoal"></div></div></div>
+      <div class="mile-bar"><div class="mile-fill" id="mileFill"></div></div>
+      <div class="mile-sub muted" id="mileSub"></div>
+      <button class="mile-claim hide" id="mileClaim" onclick="claimMilestone()">🎉 Unlock &amp; claim</button>
+    </div>
+
+    <div class="card hide" id="lotoCard">
+      <div class="loto-h">🎰 <b id="lotoJack">Grand Jackpot</b></div>
+      <div class="loto-odds" id="lotoOdds"></div>
+      <div class="loto-reveal" id="lotoReveal"></div>
+      <button class="loto-draw" id="lotoDraw" onclick="drawLottery()">🎟️ Draw a ticket</button>
     </div>
 
     <div class="card hide" id="prizeCard">
@@ -619,7 +651,51 @@ function loadArcadeStatus(m){
       var perks=mem.perks||[]; el('mmPerks').innerHTML=perks.map(function(p){return '<li>'+esc(p)+'</li>';}).join('');
       el('memberCard').classList.remove('hide');
     }
+    // milestone (grind N visits to unlock a big reward)
+    var mile=d.milestone;
+    if(mile && mile.on){
+      var cuts=Math.max(1,+mile.cuts||8), lt=(m.lifetime||m.points||0), claimed=(m.milestone_claims||0);
+      var earnedTiers=Math.floor(lt/cuts), ready=earnedTiers>claimed;
+      var into = ready ? cuts : (lt - claimed*cuts), pct=Math.max(0,Math.min(100, into/cuts*100));
+      el('mileIcon').textContent = ready ? '🎉' : '🔒';
+      el('mileLabel').textContent = esc(mile.label||'Milestone reward');
+      el('mileGoal').textContent = 'Every '+cuts+' visits';
+      el('mileFill').style.width = (ready?100:pct)+'%';
+      el('mileSub').innerHTML = ready ? '<b style="color:var(--gold)">Unlocked!</b> Tap to claim your reward.' : (Math.max(0,cuts - into)+' more visit'+((cuts-into)===1?'':'s')+' to unlock ('+into+'/'+cuts+')');
+      el('mileClaim').classList.toggle('hide',!ready);
+      el('mileCard').classList.toggle('ready',ready);
+      el('mileCard').classList.remove('hide');
+    } else { el('mileCard').classList.add('hide'); }
+    // lottery (long-odds jackpot)
+    var loto=d.lottery;
+    if(loto && loto.on){
+      el('lotoJack').textContent=esc(loto.jackpot||'Grand Jackpot');
+      el('lotoOdds').innerHTML='1 in '+(+loto.odds||100)+' · <b style="color:var(--gold)">'+(+loto.cost||10)+' 🪙</b> per ticket';
+      el('lotoDraw').disabled = (m.coins||0) < (+loto.cost||10);
+      el('lotoDraw').textContent = (m.coins||0) < (+loto.cost||10) ? ('Need '+((+loto.cost||10)-(m.coins||0))+' more 🪙') : '🎟️ Draw a ticket';
+      el('lotoCard').classList.remove('hide');
+    } else { el('lotoCard').classList.add('hide'); }
   }).catch(function(){});
+}
+function claimMilestone(){
+  if(!member) return; var b=el('mileClaim'); b.disabled=true;
+  rpc('claim_milestone',{p_code:member.code}).then(function(r){
+    b.disabled=false;
+    if(!r||r.error){ toast((r&&r.error)||'Not yet.'); return; }
+    member=r; renderCoins(r); renderPrizes(r); loadArcadeStatus(r); confetti();
+    toast('🎉 Reward unlocked! Show it at the counter.');
+  }).catch(function(){ b.disabled=false; });
+}
+function drawLottery(){
+  if(!member) return; var b=el('lotoDraw'); b.disabled=true; el('lotoReveal').textContent='🎰 Drawing…'; el('lotoReveal').className='loto-reveal';
+  rpc('lottery_draw',{p_code:member.code}).then(function(r){
+    if(!r||r.error){ el('lotoReveal').textContent=''; toast((r&&r.error)||'Could not draw.'); b.disabled=false; return; }
+    member=r; renderCoins(r);
+    var rev=el('lotoReveal');
+    if(r.lottery_result==='win'){ rev.textContent='🎉 JACKPOT! '+(r.jackpot||'You won!'); rev.className='loto-reveal win'; renderPrizes(r); confetti(); toast('🎰 You hit the jackpot!'); }
+    else { rev.textContent='😬 So close — not this time.'; rev.className='loto-reveal lose'; }
+    loadArcadeStatus(r);
+  }).catch(function(){ el('lotoReveal').textContent=''; b.disabled=false; });
 }
 function redeemStore(btn){
   if(!member||!btn) return;

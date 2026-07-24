@@ -226,6 +226,34 @@
         <label>Note under the perks</label>
         <input id="setMemNote" placeholder="Tap join and your barber will get you set up next visit.">
 
+        <div style="border-top:1px solid var(--line);margin:20px 0 6px;padding-top:16px">
+          <h2 style="margin:0 0 4px">🔒 <b>Milestone unlock</b></h2>
+          <p class="muted" style="margin:0 0 10px;font-size:13px">A big reward that unlocks every N visits — a locked goal customers grind toward.</p>
+        </div>
+        <label style="display:flex;align-items:center;gap:9px;text-transform:none;letter-spacing:0;font-size:14.5px;cursor:pointer">
+          <input type="checkbox" id="setMileOn" style="width:20px;height:20px;margin:0;accent-color:#ffcf5a"> Show a milestone reward
+        </label>
+        <div class="grid2" style="margin-top:10px">
+          <div><label>Unlocks every … visits</label><input id="setMileCuts" type="number" min="1" inputmode="numeric" placeholder="8"></div>
+          <div><label>Icon</label><input id="setMileIcon" maxlength="2" placeholder="💈"></div>
+        </div>
+        <label>Reward label</label>
+        <input id="setMileLabel" placeholder="Free haircut — 8-visit reward">
+
+        <div style="border-top:1px solid var(--line);margin:20px 0 6px;padding-top:16px">
+          <h2 style="margin:0 0 4px">🎰 <b>Jackpot lottery</b></h2>
+          <p class="muted" style="margin:0 0 10px;font-size:13px">A long-odds shot at a grand prize. Customers spend coins for a ticket — pure excitement.</p>
+        </div>
+        <label style="display:flex;align-items:center;gap:9px;text-transform:none;letter-spacing:0;font-size:14.5px;cursor:pointer">
+          <input type="checkbox" id="setLotoOn" style="width:20px;height:20px;margin:0;accent-color:#b98bff"> Run a jackpot lottery
+        </label>
+        <div class="grid2" style="margin-top:10px">
+          <div><label>Ticket cost 🪙</label><input id="setLotoCost" type="number" min="1" inputmode="numeric" placeholder="10"></div>
+          <div><label>Odds (1 in …)</label><input id="setLotoOdds" type="number" min="2" inputmode="numeric" placeholder="100"></div>
+        </div>
+        <label>Jackpot prize</label>
+        <input id="setLotoJack" placeholder="Free haircut for a month">
+
         <button class="btn wide" id="saveSetBtn" onclick="saveSettings()">💾 Save settings</button>
         <div class="err hide" id="setErr"></div>
         <div class="muted hide" id="setOk" style="text-align:center;color:var(--good);margin-top:8px;font-weight:800">Saved ✓ — your card updates instantly.</div>
@@ -502,6 +530,10 @@ function loadSettings(){
     el('setMemPrice').value=mem.price||'';
     el('setMemPerks').value=(mem.perks||[]).join('\n');
     el('setMemNote').value=mem.note||'';
+    var mile=d.milestone||{};
+    el('setMileOn').checked=!!mile.on; el('setMileCuts').value=mile.cuts||8; el('setMileIcon').value=mile.icon||'💈'; el('setMileLabel').value=mile.label||'';
+    var loto=d.lottery||{};
+    el('setLotoOn').checked=!!loto.on; el('setLotoCost').value=loto.cost||10; el('setLotoOdds').value=loto.odds||100; el('setLotoJack').value=loto.jackpot||'';
     el('setReview').value=d.google_review_url||'';
     el('setGameDiff').value=d.game_difficulty||'normal';
     PRIZES=(d.spin_prizes||[]).map(function(p){return {label:p.label||'Prize',type:p.type||'points',weight:(p.weight==null?10:p.weight)};});
@@ -637,7 +669,9 @@ function saveSettings(){
     p_casino_on:el('setCasino').checked,
     p_coin_store:readStore(),
     p_tournament_prize:(el('setTourPrize').value||'').trim(),
-    p_membership:readMembership()
+    p_membership:readMembership(),
+    p_milestone:{on:el('setMileOn').checked, cuts:Math.max(1,parseInt(el('setMileCuts').value,10)||8), icon:(el('setMileIcon').value||'💈').trim()||'💈', label:(el('setMileLabel').value||'').trim()||'Milestone reward'},
+    p_lottery:{on:el('setLotoOn').checked, cost:Math.max(1,parseInt(el('setLotoCost').value,10)||10), odds:Math.max(2,parseInt(el('setLotoOdds').value,10)||100), jackpot:(el('setLotoJack').value||'').trim()||'Grand prize', icon:'🎰'}
   }).then(function(d){
     btn.disabled=false; btn.textContent='💾 Save settings';
     if(!d||!d.ok){ setSetErr((d&&d.error)||'Could not save.'); return; }
