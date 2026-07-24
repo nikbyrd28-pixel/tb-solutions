@@ -319,7 +319,7 @@
   function gameOver(){
     running=false; MUS.stop();
     var m=Math.floor(dist);
-    if(m>best){ best=m; try{ localStorage.setItem('bd_best_'+client, best); }catch(e){} }
+    var _nb=m>best; if(_nb){ best=m; try{ localStorage.setItem('bd_best_'+client, best); }catch(e){} } if(_nb && m>0 && window.LoopFX){ LoopFX.confetti(); LoopFX.sfx('win'); }
     el('ovScore').textContent=m; el('ovCoins').textContent=coinCount; el('ovBest').textContent=best;
     el('overScreen').classList.remove('hide');
     el('coinsWon').classList.add('hide'); el('lbBox').classList.add('hide');
@@ -353,5 +353,6 @@
   el('backBtn').addEventListener('click',function(e){ e.stopPropagation(); });
 })();
 </script>
+<script src="/loop-fx.js"></script>
 </body>
 </html>

@@ -163,7 +163,7 @@
         // reveal replaced cards
         holds={}; for(var j=0;j<5;j++) holds[j]=false; renderHand();
         highlightPay(st.payout>0?st.rank:null);
-        if(st.payout>0){ banner('🎉 '+(RANKNAME[st.rank]||'Win')+' · +'+st.payout+' 🪙','win'); sWin(); }
+        if(st.payout>0){ banner('🎉 '+(RANKNAME[st.rank]||'Win')+' · +'+st.payout+' 🪙','win'); sWin(); if(window.LoopFX){ LoopFX.confetti(st.rank==='royal'||st.rank==='sf'?40:22); } }
         else { banner('No win — deal again','lose'); sLose(); }
         el('actBtn').textContent='🃏 Deal'; el('betRow').style.opacity='1';
       }).catch(function(){ busy=false; el('actBtn').disabled=false; });
@@ -174,5 +174,6 @@
   renderHand();
 })();
 </script>
+<script src="/loop-fx.js"></script>
 </body>
 </html>

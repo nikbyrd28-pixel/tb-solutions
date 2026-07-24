@@ -169,8 +169,8 @@
     showPlay(false);
     renderHands(st,false);
     setBal(st.coins);
-    if(st.result==='win'){ banner('You win +'+st.payout+' 🪙','win'); sWin(); }
-    else if(st.result==='blackjack'){ banner('BLACKJACK! +'+st.payout+' 🪙','win'); sWin(); }
+    if(st.result==='win'){ banner('You win +'+st.payout+' 🪙','win'); sWin(); if(window.LoopFX)LoopFX.confetti(); }
+    else if(st.result==='blackjack'){ banner('BLACKJACK! +'+st.payout+' 🪙','win'); sWin(); if(window.LoopFX){ LoopFX.confetti(36); LoopFX.flash('rgba(255,207,90,.45)'); } }
     else if(st.result==='push'){ banner('Push — bet returned','push'); sPush(); }
     else { banner('Dealer wins','lose'); sLose(); }
   }
@@ -210,5 +210,6 @@
   rpc('get_member',{p_code:code}).then(function(m){ if(m&&m.coins!=null) setBal(m.coins); }).catch(function(){});
 })();
 </script>
+<script src="/loop-fx.js"></script>
 </body>
 </html>

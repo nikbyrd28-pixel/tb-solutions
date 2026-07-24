@@ -240,7 +240,7 @@
   function gameOver(){
     MUS.stop();
     running=false;
-    if(score>best){ best=score; try{ localStorage.setItem('fc_best_'+client, best); }catch(e){} }
+    var _nb=score>best; if(_nb){ best=score; try{ localStorage.setItem('fc_best_'+client, best); }catch(e){} } if(_nb && score>0 && window.LoopFX){ LoopFX.confetti(); LoopFX.sfx('win'); }
     el('ovScore').textContent=score; el('ovBestCombo').textContent=bestCombo; el('ovBest').textContent=best;
     el('overScreen').classList.remove('hide'); el('coinsWon').classList.add('hide'); el('lbBox').classList.add('hide');
     if(code){ rpc('game_reward',{p_code:code,p_game:'slicer',p_score:score}).then(function(r){
@@ -270,5 +270,6 @@
   el('backBtn').addEventListener('click',function(e){ e.stopPropagation(); });
 })();
 </script>
+<script src="/loop-fx.js"></script>
 </body>
 </html>
