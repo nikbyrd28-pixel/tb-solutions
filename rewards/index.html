@@ -297,6 +297,7 @@
         <a class="gtile" id="gSlice" href="/arcade/slice/"><span class="newb">NEW</span><div class="ge">✂️</div><b>Fresh Cuts</b><span class="muted" id="hiSlice">Best 0</span></a>
         <a class="gtile" id="gStack" href="/arcade/stack/"><span class="newb">NEW</span><div class="ge">🧱</div><b>Perfect Fade</b><span class="muted" id="hiStack">Best 0</span></a>
         <a class="gtile" id="gBlackjack" href="/arcade/blackjack/"><span class="newb" style="background:var(--gold,#ffcf5a)">BET</span><div class="ge">🃏</div><b>Blackjack</b><span class="muted">Bet &amp; win 🪙</span></a>
+        <a class="gtile" id="gPoker" href="/arcade/poker/"><span class="newb" style="background:var(--gold,#ffcf5a)">BET</span><div class="ge">♠️</div><b>Video Poker</b><span class="muted">Jacks or better</span></a>
       </div>
       <div class="qh" style="margin-top:16px;flex-wrap:wrap;gap:6px"><b>🏆 Shop leaderboard</b>
         <span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
@@ -513,7 +514,7 @@ function renderCoins(m){
   var hh=el('hiHopper'); if(hh) hh.textContent='Best '+(g.hopper||0);
   // standalone games: point tiles at their pages carrying c + member code, show server high scores
   var qs='?c='+encodeURIComponent(slug)+(m.code?('&m='+encodeURIComponent(m.code)):'');
-  var links=[['gRunner','/arcade/run/','hiRunner','runner'],['gSlice','/arcade/slice/','hiSlice','slicer'],['gStack','/arcade/stack/','hiStack','stacker'],['gBlackjack','/arcade/blackjack/',null,null]];
+  var links=[['gRunner','/arcade/run/','hiRunner','runner'],['gSlice','/arcade/slice/','hiSlice','slicer'],['gStack','/arcade/stack/','hiStack','stacker'],['gBlackjack','/arcade/blackjack/',null,null],['gPoker','/arcade/poker/',null,null]];
   links.forEach(function(x){ var a=el(x[0]); if(a) a.href=x[1]+qs; if(x[2]){ var b=el(x[2]); if(b) b.textContent='Best '+(g[x[3]]||0); } });
 }
 /* ---- engagement engine: daily 2x challenge, weekly tournament, coin store, membership ---- */

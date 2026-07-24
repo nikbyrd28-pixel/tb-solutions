@@ -134,6 +134,14 @@
       <div class="best">Blackjack pays 3:2</div>
       <span class="play">▶ Play</span>
     </a>
+    <a class="gcard" id="cardPoker" href="/arcade/poker/">
+      <div class="tag" style="background:var(--gold)">Casino</div>
+      <div class="em">♠️</div>
+      <h3>Video Poker</h3>
+      <p>Jacks or better. Hold &amp; draw.</p>
+      <div class="best">Royal pays 250×</div>
+      <span class="play">▶ Play</span>
+    </a>
   </div>
 
   <div class="promo">
@@ -198,6 +206,7 @@ refreshBests();
     var b=el(g[2]); if(b) b.textContent='Best '+v;
   });
   var bj=el('cardBlackjack'); if(bj) bj.href='/arcade/blackjack/'+qs;
+  var pk=el('cardPoker'); if(pk) pk.href='/arcade/poker/'+qs;
 })();
 /* ---- sound (WebAudio blips) ---- */
 var SND=true, actx=null;
