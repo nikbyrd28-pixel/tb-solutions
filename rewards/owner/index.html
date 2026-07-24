@@ -66,6 +66,13 @@
   @media(max-width:520px){.prow{grid-template-columns:1fr 1fr;grid-auto-rows:auto}}
   .prow input,.prow select{padding:10px 10px;font-size:14px}
   .prow .rm{background:rgba(255,138,157,.12);border:1px solid rgba(255,138,157,.4);color:#ff8a9d;border-radius:10px;padding:9px 0;font-weight:800;cursor:pointer}
+  .srow{display:grid;grid-template-columns:1fr 92px 34px;gap:8px;align-items:center;margin-top:8px}
+  .srow input{padding:10px;font-size:14px}
+  .srow .rm{background:rgba(255,138,157,.12);border:1px solid rgba(255,138,157,.4);color:#ff8a9d;border-radius:10px;padding:9px 0;font-weight:800;cursor:pointer}
+  .leadrow{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-top:8px;background:rgba(122,162,255,.05)}
+  .leadrow a{color:var(--acc2);text-decoration:none;font-weight:800;font-size:13px;white-space:nowrap}
+  .leadrow .ln b{font-size:14px}
+  .leadrow .ln span{display:block;font-size:12px;color:var(--muted)}
   .diffbtn{cursor:pointer}
   .diffbtn.on{background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d;border:0;box-shadow:0 8px 22px rgba(122,162,255,.32)}
   .odds{border:1px dashed var(--line);border-radius:12px;padding:10px 12px;margin-top:10px;background:rgba(122,162,255,.05);font-size:13px}
@@ -184,10 +191,41 @@
         <label>Google review link (optional)</label>
         <input id="setReview" placeholder="https://g.page/your-shop/review">
 
+        <div style="border-top:1px solid var(--line);margin:20px 0 6px;padding-top:16px">
+          <h2 style="margin:0 0 4px">🪙 <b>Coin store &amp; tournament</b></h2>
+          <p class="muted" style="margin:0 0 10px;font-size:13px">Customers spend the coins they earn on these rewards, and the week's top player wins the tournament prize.</p>
+        </div>
+        <label>Weekly tournament prize</label>
+        <input id="setTourPrize" placeholder="Free haircut for this week's #1 player">
+        <label style="margin-top:14px">Coin store — reward &amp; coin cost</label>
+        <div id="storeEditor"></div>
+        <button class="btn ghost" onclick="addStoreItem()" style="margin-top:10px">+ Add a reward</button>
+
+        <div style="border-top:1px solid var(--line);margin:20px 0 6px;padding-top:16px">
+          <h2 style="margin:0 0 4px">💈 <b>Membership</b> (The Chair Club)</h2>
+        </div>
+        <label style="display:flex;align-items:center;gap:9px;text-transform:none;letter-spacing:0;font-size:14.5px;cursor:pointer">
+          <input type="checkbox" id="setMemOn" style="width:20px;height:20px;margin:0;accent-color:#ffcf5a"> Offer a membership on the card
+        </label>
+        <div class="grid2" style="margin-top:10px">
+          <div><label>Name</label><input id="setMemName" placeholder="The Chair Club"></div>
+          <div><label>Price</label><input id="setMemPrice" placeholder="$45/mo"></div>
+        </div>
+        <label>Perks (one per line)</label>
+        <textarea id="setMemPerks" rows="3" placeholder="2 fresh cuts every month&#10;10% off all products&#10;Skip-the-line priority booking" style="width:100%;padding:10px;font:inherit;font-size:14px;border-radius:10px"></textarea>
+        <label>Note under the perks</label>
+        <input id="setMemNote" placeholder="Tap join and your barber will get you set up next visit.">
+
         <button class="btn wide" id="saveSetBtn" onclick="saveSettings()">💾 Save settings</button>
         <div class="err hide" id="setErr"></div>
         <div class="muted hide" id="setOk" style="text-align:center;color:var(--good);margin-top:8px;font-weight:800">Saved ✓ — your card updates instantly.</div>
       </div>
+    </div>
+
+    <div class="card" id="leadsCard">
+      <h2>💈 <b>Membership requests</b></h2>
+      <p class="muted" style="margin:2px 0 6px;font-size:13px">Customers who tapped “Join” on your membership. Call or text to sign them up.</p>
+      <div id="leadsBox"><div class="muted">Loading…</div></div>
     </div>
 
     <div class="card" id="bookingSetupCard">
@@ -317,6 +355,7 @@ function render(d){
   el('lkPoster').onclick=function(){ window.open(base+'/rewards/poster/?c='+d.client,'_blank'); };
   el('lkStaff').href=base+'/rewards/staff/';
   loadSettings();
+  loadLeads();
   loadAgenda();
   loadBooking();
 }
@@ -434,12 +473,62 @@ function loadSettings(){
     el('setSurvey').value=(d.survey_points==null?1:d.survey_points);
     el('setBooking').checked=d.booking_on!==false;
     el('setCasino').checked=d.casino_on!==false;
+    el('setTourPrize').value=d.tournament_prize||'';
+    STORE=(d.coin_store||[]).map(function(it){return {label:it.label||'',cost:parseInt(it.cost,10)||0};});
+    if(!STORE.length) STORE=[{label:'$5 off any cut',cost:80},{label:'Free haircut',cost:300}];
+    renderStoreEditor();
+    var mem=d.membership||{};
+    el('setMemOn').checked=!!mem.on;
+    el('setMemName').value=mem.name||'';
+    el('setMemPrice').value=mem.price||'';
+    el('setMemPerks').value=(mem.perks||[]).join('\n');
+    el('setMemNote').value=mem.note||'';
     el('setReview').value=d.google_review_url||'';
     el('setGameDiff').value=d.game_difficulty||'normal';
     PRIZES=(d.spin_prizes||[]).map(function(p){return {label:p.label||'Prize',type:p.type||'points',weight:(p.weight==null?10:p.weight)};});
     if(!PRIZES.length) PRIZES=[{label:'Free '+(d.reward_text||'reward'),type:'grand',weight:2},{label:'20% off',type:'discount',weight:10},{label:'+2 points',type:'points',weight:18},{label:'So close — try again',type:'nothing',weight:45}];
     curDiff=null; renderPrizeEditor(); highlightDiff();
   }).catch(function(){ el('setLoad').textContent='Network error loading settings.'; });
+}
+var STORE=[];
+function renderStoreEditor(){
+  el('storeEditor').innerHTML=STORE.map(function(it,i){
+    return '<div class="srow">'
+     +'<input class="sl" value="'+esc(it.label)+'" placeholder="Reward (e.g. Free haircut)" oninput="readStore()">'
+     +'<input class="sc" type="number" min="1" inputmode="numeric" value="'+(it.cost||0)+'" placeholder="🪙" oninput="readStore()">'
+     +'<button class="rm" onclick="removeStoreItem('+i+')" title="remove">✕</button>'
+     +'</div>';
+  }).join('');
+}
+function readStore(){
+  var arr=[];
+  [].forEach.call(document.querySelectorAll('#storeEditor .srow'),function(r){
+    var label=(r.querySelector('.sl').value||'').trim();
+    var cost=Math.max(1,parseInt(r.querySelector('.sc').value,10)||0);
+    if(label) arr.push({label:label,cost:cost});
+  });
+  STORE=arr; return arr;
+}
+function addStoreItem(){ readStore(); STORE.push({label:'',cost:100}); renderStoreEditor(); }
+function removeStoreItem(i){ readStore(); STORE.splice(i,1); renderStoreEditor(); }
+function readMembership(){
+  var perks=(el('setMemPerks').value||'').split('\n').map(function(s){return s.trim();}).filter(Boolean);
+  return { on:el('setMemOn').checked, name:(el('setMemName').value||'').trim()||'The Chair Club',
+    price:(el('setMemPrice').value||'').trim(), perks:perks, note:(el('setMemNote').value||'').trim() };
+}
+function loadLeads(){
+  rpc('membership_leads_get',{p_client:CODE,p_pin:PIN}).then(function(d){
+    var box=el('leadsBox'); if(!box) return;
+    if(!d||!d.ok){ box.innerHTML='<div class="muted">'+((d&&d.error)||'Could not load.')+'</div>'; return; }
+    var leads=d.leads||[];
+    if(!leads.length){ box.innerHTML='<div class="muted">No requests yet. When customers tap “Join” on your membership, they’ll show up here.</div>'; return; }
+    box.innerHTML=leads.map(function(l){
+      var when=l.at? new Date(l.at).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : '';
+      var ph=(l.phone||'').replace(/[^0-9+]/g,'');
+      return '<div class="leadrow"><div class="ln"><b>'+esc(l.name)+'</b><span>'+(l.phone?esc(l.phone):'no number')+' · '+when+'</span></div>'
+        +(ph?('<a href="sms:'+ph+'">💬 Text</a><a href="tel:'+ph+'">📞 Call</a>'):'')+'</div>';
+    }).join('');
+  }).catch(function(){ var box=el('leadsBox'); if(box) box.innerHTML='<div class="muted">Network error.</div>'; });
 }
 function renderPrizeEditor(){
   el('prizeEditor').innerHTML=PRIZES.map(function(p,i){
@@ -495,7 +584,10 @@ function saveSettings(){
     p_biz_name:(el('setBiz').value||'').trim(),
     p_google_review_url:(el('setReview').value||'').trim(),
     p_game_difficulty:el('setGameDiff').value,
-    p_casino_on:el('setCasino').checked
+    p_casino_on:el('setCasino').checked,
+    p_coin_store:readStore(),
+    p_tournament_prize:(el('setTourPrize').value||'').trim(),
+    p_membership:readMembership()
   }).then(function(d){
     btn.disabled=false; btn.textContent='💾 Save settings';
     if(!d||!d.ok){ setSetErr((d&&d.error)||'Could not save.'); return; }
