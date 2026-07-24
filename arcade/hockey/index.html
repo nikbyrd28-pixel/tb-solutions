@@ -133,8 +133,8 @@
     am.x+=Math.min(aiSpeed,d)*dx/d; am.y+=Math.min(aiSpeed,d)*dy/d;
     am.x=Math.max(am.r,Math.min(W-am.r,am.x)); am.y=Math.max(am.r,Math.min(H*0.46-am.r,am.y));
     // puck physics
-    puck.x+=puck.vx*dt; puck.y+=puck.vy*dt; puck.vx*=0.999; puck.vy*=0.999;
-    var mx=W*1.6; puck.vx=Math.max(-mx,Math.min(mx,puck.vx)); puck.vy=Math.max(-mx,Math.min(mx,puck.vy));
+    puck.x+=puck.vx*dt; puck.y+=puck.vy*dt; puck.vx*=0.9992; puck.vy*=0.9992;
+    var mx=W*2.7; puck.vx=Math.max(-mx,Math.min(mx,puck.vx)); puck.vy=Math.max(-mx,Math.min(mx,puck.vy));
     // walls
     if(puck.x<puck.r){ puck.x=puck.r; puck.vx=Math.abs(puck.vx)*0.9; sWall(); }
     if(puck.x>W-puck.r){ puck.x=W-puck.r; puck.vx=-Math.abs(puck.vx)*0.9; sWall(); }
@@ -160,13 +160,16 @@
     var dx=puck.x-m.x, dy=puck.y-m.y, d=Math.hypot(dx,dy), min=puck.r+m.r;
     if(d<min && d>0){ var nx=dx/d, ny=dy/d; puck.x=m.x+nx*min; puck.y=m.y+ny*min;
       var vn=puck.vx*nx+puck.vy*ny; puck.vx-=2*vn*nx; puck.vy-=2*vn*ny;
-      puck.vx=puck.vx*0.6+ (mvx||0)*0.5 + nx*W*0.4; puck.vy=puck.vy*0.6+ (mvy||0)*0.5 + ny*W*0.4;
+      // harder hits: keep more of the puck's pace + transfer more of the mallet's swing + a bigger base slap
+      puck.vx=puck.vx*0.7 + (mvx||0)*0.9 + nx*W*0.6; puck.vy=puck.vy*0.7 + (mvy||0)*0.9 + ny*W*0.6;
       // guarantee the puck leaves with real speed so it can't get pinned against a wall
-      var sp=Math.hypot(puck.vx,puck.vy), minsp=W*0.55;
+      var sp=Math.hypot(puck.vx,puck.vy), minsp=W*0.65;
       if(sp<minsp){ puck.vx=nx*minsp; puck.vy=ny*minsp; }
       collCount++;
-      // debounce juice so a grazing/pinned contact can't spray hundreds of particles
-      if(hitCool<=0){ sHit(); shake=Math.max(shake,4); burst(puck.x,puck.y,'#dff2ff',5); hitCool=0.07; }
+      // juice scales with how hard it was hit; debounced so a pinned contact can't spray hundreds
+      if(hitCool<=0){ var pw=Math.min(1, sp/(W*2.0));
+        beep(150+pw*260,0.05+pw*0.05,'square',0.05+pw*0.06,90+pw*120);
+        shake=Math.max(shake, 5+pw*11); burst(puck.x,puck.y,'#dff2ff',5+Math.floor(pw*9)); hitCool=0.06; }
     }
   }
   function goal(who){
