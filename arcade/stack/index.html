@@ -207,9 +207,12 @@
     if(flash>0){ X.fillStyle='rgba(255,59,82,'+flash*0.5+')'; X.fillRect(0,0,W,H); }
     drawHUD();
   }
+  var STARS=[]; function initStars(){ STARS=[]; for(var i=0;i<52;i++){ STARS.push({x:Math.random(),y:Math.random(),r:Math.random()*1.4+0.3,ph:Math.random()*6.28,sp:0.3+Math.random()*0.8,c:i%6===0}); } }
+  function drawStars(){ var tt=performance.now()*0.001; for(var i=0;i<STARS.length;i++){ var s=STARS[i]; X.globalAlpha=0.22+0.5*Math.abs(Math.sin(tt*s.sp+s.ph)); X.fillStyle=s.c?'#9fd0ff':'#ffffff'; X.beginPath(); X.arc(s.x*W,s.y*H,s.r,0,6.28); X.fill(); } X.globalAlpha=1; }
   function drawBg(){
     var g=X.createLinearGradient(0,0,0,H); g.addColorStop(0,'#0b1024'); g.addColorStop(.6,'#0a0b18'); g.addColorStop(1,'#070810');
     X.fillStyle=g; X.fillRect(0,0,W,H);
+    drawStars();
     X.globalAlpha=.05; for(var y=0;y<H;y+=90){ for(var x=((y/90)%2)*90;x<W;x+=180){ X.fillStyle='#7aa2ff'; X.fillRect(x,y,90,90); } } X.globalAlpha=1;
   }
   function drawBlock(x,y,w,col,active){ drawBlockRaw(x,y,w,col,active); }
@@ -238,7 +241,7 @@
   var tipEl=null;
   function showTip(){ if(tipEl)return; tipEl=document.createElement('div'); tipEl.className='tiptap'; tipEl.textContent='TAP anywhere to drop the layer'; document.body.appendChild(tipEl); setTimeout(rmTip,2400); }
   function rmTip(){ if(tipEl){ tipEl.remove(); tipEl=null; } }
-  function startGame(){ if(running) return; actx(); MUS.start(actx()); resize(); reset(); running=true; dead=false; el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); last=performance.now(); requestAnimationFrame(frame); }
+  function startGame(){ if(running) return; actx(); MUS.start(actx()); resize(); initStars(); reset(); running=true; dead=false; el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); last=performance.now(); requestAnimationFrame(frame); }
   function gameOver(){
     MUS.stop();
     running=false;

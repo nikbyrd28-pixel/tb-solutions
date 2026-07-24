@@ -151,8 +151,11 @@
   function frame(now){ if(!running) return; var dt=now-last; last=now; if(!dead){ dropT+=dt; if(dropT>=dropInt){ dropT=0; if(!collide(cur.m,px,py+1)) py++; else lockPiece(); } render(); } requestAnimationFrame(frame); }
 
   function cell(x,y,col){ X.fillStyle=col; X.fillRect(x*CELL+1,y*CELL+1,CELL-2,CELL-2); X.fillStyle='rgba(255,255,255,.22)'; X.fillRect(x*CELL+1,y*CELL+1,CELL-2,3); X.fillStyle='rgba(0,0,0,.18)'; X.fillRect(x*CELL+1,y*CELL+CELL-4,CELL-2,3); }
+  var STARS=[]; function initStars(){ STARS=[]; for(var i=0;i<40;i++){ STARS.push({x:Math.random(),y:Math.random(),r:Math.random()*1.2+0.3,ph:Math.random()*6.28,sp:0.3+Math.random()*0.8,c:i%6===0}); } }
+  function drawStars(){ var tt=performance.now()*0.001; for(var i=0;i<STARS.length;i++){ var s=STARS[i]; X.globalAlpha=0.18+0.4*Math.abs(Math.sin(tt*s.sp+s.ph)); X.fillStyle=s.c?'#9fd0ff':'#ffffff'; X.beginPath(); X.arc(s.x*C.width,s.y*C.height,s.r,0,6.28); X.fill(); } X.globalAlpha=1; }
   function render(){
     X.fillStyle='#080a14'; X.fillRect(0,0,C.width,C.height);
+    drawStars();
     X.strokeStyle='rgba(122,162,255,.05)'; X.lineWidth=1;
     for(var i=1;i<COLS;i++){ X.beginPath(); X.moveTo(i*CELL,0); X.lineTo(i*CELL,C.height); X.stroke(); }
     for(var j=1;j<ROWS;j++){ X.beginPath(); X.moveTo(0,j*CELL); X.lineTo(C.width,j*CELL); X.stroke(); }
@@ -166,7 +169,7 @@
   function drawNext(){ NX.clearRect(0,0,64,64); if(!nxt)return; var m=nxt.m, cs=12, ox=(64-m[0].length*cs)/2, oy=(64-m.length*cs)/2;
     for(var r=0;r<m.length;r++){ for(var c=0;c<m[r].length;c++){ if(m[r][c]){ NX.fillStyle=COLORS[nxt.k]; NX.fillRect(ox+c*cs+1,oy+r*cs+1,cs-2,cs-2); } } } }
 
-  function start(){ if(running) return; actx(); MUS.start(actx()); resize(); board=newBoard(); score=0; lines=0; level=1; dropInt=800; dropT=0; dead=false; nxt=randPiece(); spawn();
+  function start(){ if(running) return; actx(); MUS.start(actx()); resize(); initStars(); board=newBoard(); score=0; lines=0; level=1; dropInt=800; dropT=0; dead=false; nxt=randPiece(); spawn();
     el('hScore').textContent='0'; el('hLines').textContent='0'; el('hLevel').textContent='1'; el('hBest').textContent=best;
     el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); running=true; last=performance.now(); requestAnimationFrame(frame); }
   function over(){
