@@ -326,7 +326,6 @@
         <a class="gtile" id="gSlice" href="/arcade/slice/"><span class="newb">NEW</span><div class="ge">✂️</div><b>Fresh Cuts</b><span class="muted" id="hiSlice">Best 0</span></a>
         <a class="gtile" id="gStack" href="/arcade/stack/"><span class="newb">NEW</span><div class="ge">🧱</div><b>Perfect Fade</b><span class="muted" id="hiStack">Best 0</span></a>
         <a class="gtile" id="gTetris" href="/arcade/tetris/"><span class="newb">NEW</span><div class="ge">🧩</div><b>Barber Blocks</b><span class="muted" id="hiTetris">Best 0</span></a>
-        <a class="gtile" id="gHockey" href="/arcade/hockey/"><span class="newb">NEW</span><div class="ge">🏒</div><b>Puck Frenzy</b><span class="muted" id="hiHockey">Best 0</span></a>
         <a class="gtile" id="gBlackjack" href="/arcade/blackjack/"><span class="newb" style="background:var(--gold,#ffcf5a)">BET</span><div class="ge">🃏</div><b>Blackjack</b><span class="muted">Bet &amp; win 🪙</span></a>
         <a class="gtile" id="gPoker" href="/arcade/poker/"><span class="newb" style="background:var(--gold,#ffcf5a)">BET</span><div class="ge">♠️</div><b>Video Poker</b><span class="muted">Jacks or better</span></a>
       </div>
@@ -338,7 +337,6 @@
           <button class="lbtab" id="lbSlicer" onclick="loadBoard('slicer')">✂️ Cuts</button>
           <button class="lbtab" id="lbStacker" onclick="loadBoard('stacker')">🧱 Fade</button>
           <button class="lbtab" id="lbTetris" onclick="loadBoard('tetris')">🧩 Blocks</button>
-          <button class="lbtab" id="lbHockey" onclick="loadBoard('hockey')">🏒 Puck</button>
           <button class="lbtab" id="lbWeek" onclick="loadBoard('week')">🏆 Week</button>
         </span>
       </div>
@@ -574,8 +572,7 @@ var GAMEINFO={
   runner:{name:'Barber Dash',emoji:'💈',tile:'gRunner',path:'/arcade/run/'},
   slicer:{name:'Fresh Cuts',emoji:'✂️',tile:'gSlice',path:'/arcade/slice/'},
   stacker:{name:'Perfect Fade',emoji:'🧱',tile:'gStack',path:'/arcade/stack/'},
-  tetris:{name:'Barber Blocks',emoji:'🧩',tile:'gTetris',path:'/arcade/tetris/'},
-  hockey:{name:'Puck Frenzy',emoji:'🏒',tile:'gHockey',path:'/arcade/hockey/'}
+  tetris:{name:'Barber Blocks',emoji:'🧩',tile:'gTetris',path:'/arcade/tetris/'}
 };
 var ARC=null;
 function loadArcadeStatus(m){
@@ -947,7 +944,7 @@ var GMUS=(function(){ var on=false,tmr=0,step=0; var seq=[0,7,12,7,3,10,7,3,5,12
   function tick(){ if(!on)return; var n=seq[step%seq.length]; tone(fr(n-12),0.22,'triangle',0.04); if(step%2===0) tone(fr(n+12),0.14,'square',0.02); step++; tmr=setTimeout(tick,230); }
   return { start:function(){ if(on||!GSND)return; try{ gactx=gactx||new (window.AudioContext||window.webkitAudioContext)(); }catch(e){return;} on=true; step=0; tick(); }, stop:function(){ on=false; clearTimeout(tmr); } };
 })();
-var LB_TABS={flyer:'lbFlyer',hopper:'lbHopper',runner:'lbRunner',slicer:'lbSlicer',stacker:'lbStacker',tetris:'lbTetris',hockey:'lbHockey',week:'lbWeek'};
+var LB_TABS={flyer:'lbFlyer',hopper:'lbHopper',runner:'lbRunner',slicer:'lbSlicer',stacker:'lbStacker',tetris:'lbTetris',week:'lbWeek'};
 function loadBoard(game){
   curBoard=game;
   for(var gk in LB_TABS){ var t=el(LB_TABS[gk]); if(t) t.classList.toggle('on',gk===game); }

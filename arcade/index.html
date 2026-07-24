@@ -134,14 +134,6 @@
       <div class="best" id="bestTetris">Best 0</div>
       <span class="play">▶ Play</span>
     </a>
-    <a class="gcard" id="cardHockey" href="/arcade/hockey/">
-      <div class="tag">New</div>
-      <div class="em">🏒</div>
-      <h3>Puck Frenzy</h3>
-      <p>Air hockey — beat the CPU.</p>
-      <div class="best" id="bestHockey">Best 0</div>
-      <span class="play">▶ Play</span>
-    </a>
     <a class="gcard" id="cardBlackjack" href="/arcade/blackjack/">
       <div class="tag" style="background:var(--gold)">Casino</div>
       <div class="em">🃏</div>
@@ -216,7 +208,7 @@ refreshBests();
   var q=new URLSearchParams(location.search);
   var client=(q.get('c')||'demo').toLowerCase().replace(/[^a-z0-9]/g,'')||'demo';
   var qs=''; if(q.get('c')) qs='?c='+encodeURIComponent(client)+(q.get('m')?('&m='+encodeURIComponent(q.get('m').slice(0,40))):'');
-  var games=[['cardRunner','/arcade/run/','bestRunner','bd_best_'],['cardSlice','/arcade/slice/','bestSlice','fc_best_'],['cardStack','/arcade/stack/','bestStack','pf_best_'],['cardTetris','/arcade/tetris/','bestTetris','bb_best_'],['cardHockey','/arcade/hockey/','bestHockey','ph_best_']];
+  var games=[['cardRunner','/arcade/run/','bestRunner','bd_best_'],['cardSlice','/arcade/slice/','bestSlice','fc_best_'],['cardStack','/arcade/stack/','bestStack','pf_best_'],['cardTetris','/arcade/tetris/','bestTetris','bb_best_']];
   games.forEach(function(g){
     var a=el(g[0]); if(a) a.href=g[1]+qs;
     var v=0; try{ v=+localStorage.getItem(g[3]+client)||0; }catch(e){}
