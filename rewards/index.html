@@ -169,11 +169,22 @@
   /* coin store */
   .store{margin-top:14px}
   .store-h{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--acc2);margin:0 0 6px}
+  .store .cat{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:12px 0 2px}
   .sitem{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:8px;background:rgba(122,162,255,.05)}
-  .sitem .sl{flex:1;font-size:14px;font-weight:700}
-  .sitem .sc{font-size:12px;font-weight:900;color:var(--gold);white-space:nowrap}
+  .sitem.feat{border-color:rgba(255,207,90,.5);background:linear-gradient(120deg,rgba(255,207,90,.1),rgba(122,162,255,.05))}
+  .sitem .sic{font-size:24px;line-height:1;width:30px;text-align:center;flex:0 0 auto}
+  .sitem .sinfo{flex:1;min-width:0}
+  .sitem .sl{font-size:14px;font-weight:700;display:block}
+  .sitem .smeta{font-size:11px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;margin-top:1px;align-items:center}
+  .sitem .smeta .tagf{color:#04050a;background:var(--gold);border-radius:999px;padding:0 6px;font-weight:800}
+  .sitem .smeta .tagb{color:var(--acc2);border:1px solid rgba(122,162,255,.4);border-radius:999px;padding:0 6px;font-weight:700}
+  .sitem .smeta .low{color:#ff9db0;font-weight:800}
+  .sitem .sc{font-size:12px;font-weight:900;color:var(--gold);white-space:nowrap;text-align:right}
+  .sitem .sc s{color:var(--muted);font-weight:600;font-size:11px}
   .sitem button{border:0;border-radius:999px;padding:8px 14px;font:inherit;font-weight:800;font-size:12px;cursor:pointer;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;white-space:nowrap}
   .sitem button:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(1)}
+  .barberpick{display:flex;align-items:center;gap:8px;margin:2px 0 4px;font-size:13px;color:var(--muted)}
+  .barberpick select{flex:1;padding:8px 10px;border-radius:10px;background:rgba(122,162,255,.06);color:var(--text);border:1px solid var(--line);font:inherit;font-size:13px}
   /* membership */
   #memberCard .mm-h{display:flex;align-items:center;gap:10px}
   #memberCard .mm-badge{font-size:26px}
@@ -321,6 +332,9 @@
 
       <div class="store hide" id="coinStore">
         <div class="store-h">🪙 Coin store — cash in your coins</div>
+        <div class="barberpick hide" id="barberPick">💈 Your chair:
+          <select id="barberSel" onchange="pickBarber(this.value)"></select>
+        </div>
         <div id="storeItems"></div>
       </div>
     </div>
@@ -553,15 +567,47 @@ function loadArcadeStatus(m){
       else { el('tourRank').textContent='Play this week to enter the tournament!'; }
       el('tourneyBox').classList.remove('hide');
     }
+    // barber picker (per-barber stores)
+    var barbers=d.barbers||[];
+    if(barbers.length){
+      var sel=el('barberSel'); var cur=d.my_barber||'';
+      sel.innerHTML='<option value="">Any / not set</option>'+barbers.map(function(bn){ return '<option value="'+esc(bn)+'"'+(bn===cur?' selected':'')+'>'+esc(bn)+'</option>'; }).join('');
+      el('barberPick').classList.remove('hide');
+    } else { el('barberPick').classList.add('hide'); }
+    // rich store, grouped by category
     var store=d.coin_store||[];
     if(store.length){
-      el('storeItems').innerHTML=store.map(function(it){
-        var cost=+it.cost||0, afford=(m.coins||0)>=cost, lab=esc(it.label);
-        return '<div class="sitem"><span class="sl">'+lab+'</span><span class="sc">🪙 '+cost+'</span>'
-          +'<button '+(afford?'':'disabled')+' data-c="'+cost+'" data-l="'+lab+'" onclick="redeemStore(this)">'+(afford?'Redeem':('Need '+(cost-(m.coins||0))))+'</button></div>';
-      }).join('');
+      var coins=(m.coins||0), byCat={}, order=[];
+      store.forEach(function(it){ var c=(it.category||'').trim()||'Rewards'; if(!byCat[c]){ byCat[c]=[]; order.push(c); } byCat[c].push(it); });
+      // featured first within each category
+      var html='';
+      order.forEach(function(cat){
+        html+='<div class="cat">'+esc(cat)+'</div>';
+        byCat[cat].sort(function(a,b){ return (b.featured?1:0)-(a.featured?1:0); }).forEach(function(it){
+          var cost=+it.cost||0, sale=(it.sale!=null&&it.sale!==''?+it.sale:null), price=(sale!=null?sale:cost);
+          var afford=coins>=price, left=it.stock_left, sold=(left!=null&&left<=0);
+          var claimed=(it.per_customer!=null&&it.mine!=null&&it.mine>=+it.per_customer);
+          var meta=[];
+          if(it.featured) meta.push('<span class="tagf">★ Featured</span>');
+          if(it.barber) meta.push('<span class="tagb">💈 '+esc(it.barber)+'</span>');
+          if(left!=null&&left>0&&left<=5) meta.push('<span class="low">Only '+left+' left!</span>');
+          var priceHtml = sale!=null ? ('<s>🪙'+cost+'</s> 🪙'+sale) : ('🪙 '+cost);
+          var btn, dis=true, cls='';
+          if(sold){ btn='Sold out'; }
+          else if(claimed){ btn='Claimed ✓'; }
+          else if(!afford){ btn='Need '+(price-coins); }
+          else { btn='Redeem'; dis=false; }
+          html+='<div class="sitem'+(it.featured?' feat':'')+'">'
+            +'<span class="sic">'+esc(it.icon||'🎁')+'</span>'
+            +'<div class="sinfo"><span class="sl">'+esc(it.label)+'</span>'
+            +(meta.length?('<span class="smeta">'+meta.join('')+'</span>'):'')+'</div>'
+            +'<span class="sc">'+priceHtml+'</span>'
+            +'<button '+(dis?'disabled':'')+' data-id="'+esc(it.id||'')+'" onclick="redeemStore(this)">'+btn+'</button></div>';
+        });
+      });
+      el('storeItems').innerHTML=html;
       el('coinStore').classList.remove('hide');
-    }
+    } else { el('coinStore').classList.add('hide'); }
     var mem=d.membership;
     if(mem && mem.on){
       el('mmName').textContent=mem.name||'Membership';
@@ -574,14 +620,21 @@ function loadArcadeStatus(m){
 }
 function redeemStore(btn){
   if(!member||!btn) return;
-  var cost=+btn.getAttribute('data-c'), label=btn.getAttribute('data-l');
-  if(!window.confirm('Redeem "'+label+'" for '+cost+' 🪙?')) return;
+  var id=btn.getAttribute('data-id'); if(!id) return;
+  var label=btn.parentNode.querySelector('.sl').textContent;
+  if(!window.confirm('Redeem "'+label+'"?')) return;
   btn.disabled=true;
-  rpc('coin_redeem',{p_code:member.code,p_cost:cost,p_label:label}).then(function(r){
+  rpc('coin_redeem',{p_code:member.code,p_item_id:id}).then(function(r){
     if(!r||r.error){ toast((r&&r.error)||'Could not redeem.'); btn.disabled=false; return; }
     member=r; renderCoins(r); renderPrizes(r); loadArcadeStatus(r); confetti();
     toast('🎁 Redeemed! Show it at the counter.');
   }).catch(function(){ btn.disabled=false; });
+}
+function pickBarber(name){
+  if(!member) return;
+  rpc('set_member_barber',{p_code:member.code,p_barber:name}).then(function(r){
+    if(r&&r.ok){ member.barber=r.barber||''; loadArcadeStatus(member); toast(name?('💈 Chair set to '+name):'Chair cleared'); }
+  }).catch(function(){});
 }
 function joinMembership(){
   if(!member) return;

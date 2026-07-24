@@ -69,6 +69,16 @@
   .srow{display:grid;grid-template-columns:1fr 92px 34px;gap:8px;align-items:center;margin-top:8px}
   .srow input{padding:10px;font-size:14px}
   .srow .rm{background:rgba(255,138,157,.12);border:1px solid rgba(255,138,157,.4);color:#ff8a9d;border-radius:10px;padding:9px 0;font-weight:800;cursor:pointer}
+  .sedit{border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:10px;background:rgba(122,162,255,.04)}
+  .sedit .stop{display:grid;grid-template-columns:52px 1fr 34px;gap:8px;align-items:center}
+  .sedit .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
+  .sedit input,.sedit select{padding:9px;font-size:13.5px;border-radius:9px;background:rgba(0,0,0,.15);color:var(--text);border:1px solid var(--line);width:100%}
+  .sedit .e-icon{text-align:center;font-size:18px}
+  .sedit .sbot{display:flex;align-items:center;gap:12px;margin-top:8px;flex-wrap:wrap}
+  .sedit .sbot select{flex:1;min-width:130px}
+  .sedit .sbot label{display:flex;align-items:center;gap:7px;text-transform:none;letter-spacing:0;font-size:13.5px;cursor:pointer;color:var(--text)}
+  .sedit .rm{background:rgba(255,138,157,.12);border:1px solid rgba(255,138,157,.4);color:#ff8a9d;border-radius:10px;padding:9px 0;font-weight:800;cursor:pointer}
+  .sedit .fl{font-size:10.5px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin:0 0 2px}
   .leadrow{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-top:8px;background:rgba(122,162,255,.05)}
   .leadrow a{color:var(--acc2);text-decoration:none;font-weight:800;font-size:13px;white-space:nowrap}
   .leadrow .ln b{font-size:14px}
@@ -374,6 +384,7 @@ function loadBooking(){
     el('bkEvery').value=d.slot_every||15; el('bkLead').value=d.lead_mins||90; el('bkHorizon').value=d.horizon_days||30;
     el('bkTz').value=d.book_tz||'America/New_York'; el('bkNote').value=d.deposit_note||'';
     renderSvc(); renderBarb(); renderHours();
+    if(STORE&&STORE.length) renderStoreEditor(); // barbers now known — refresh store barber dropdowns
   }).catch(function(){ el('bkLoad').textContent='Network error loading booking setup.'; });
 }
 function readSvc(){ var a=[]; [].forEach.call(document.querySelectorAll('#svcEditor .svcrow'),function(r){ var n=(r.querySelector('.s-name').value||'').trim(); if(!n) return; a.push({id:r.getAttribute('data-id')||slugify(n),name:n,mins:Math.max(5,parseInt(r.querySelector('.s-mins').value,10)||30),price:(r.querySelector('.s-price').value||'').trim()}); }); SVCS=a; return a; }
@@ -474,8 +485,16 @@ function loadSettings(){
     el('setBooking').checked=d.booking_on!==false;
     el('setCasino').checked=d.casino_on!==false;
     el('setTourPrize').value=d.tournament_prize||'';
-    STORE=(d.coin_store||[]).map(function(it){return {label:it.label||'',cost:parseInt(it.cost,10)||0};});
-    if(!STORE.length) STORE=[{label:'$5 off any cut',cost:80},{label:'Free haircut',cost:300}];
+    STORE=(d.coin_store||[]).map(function(it){return {
+      id: it.id || ('s'+Math.random().toString(36).slice(2,8)),
+      label: it.label||'', cost: parseInt(it.cost,10)||0,
+      sale: (it.sale!=null&&it.sale!=='')?parseInt(it.sale,10):'',
+      type: it.type||'discount', icon: it.icon||'🎁', category: it.category||'',
+      stock: (it.stock!=null&&it.stock!=='')?parseInt(it.stock,10):'',
+      per_customer: (it.per_customer!=null&&it.per_customer!=='')?parseInt(it.per_customer,10):'',
+      featured: !!it.featured, barber: it.barber||''
+    };});
+    if(!STORE.length) STORE=[{id:'s'+Math.random().toString(36).slice(2,8),label:'$5 off any cut',cost:80,type:'discount',icon:'💵',category:'Discounts',sale:'',stock:'',per_customer:'',featured:false,barber:''}];
     renderStoreEditor();
     var mem=d.membership||{};
     el('setMemOn').checked=!!mem.on;
@@ -491,25 +510,56 @@ function loadSettings(){
   }).catch(function(){ el('setLoad').textContent='Network error loading settings.'; });
 }
 var STORE=[];
+var STORE_TYPES=[['discount','💵 Discount'],['product','🧴 Product'],['service','💇 Service'],['grand','🏆 Grand prize']];
+function barberOpts(sel){
+  var opts='<option value="">🏪 Whole shop</option>';
+  (typeof BARBS!=='undefined'?BARBS:[]).forEach(function(b){ opts+='<option value="'+esc(b.name)+'"'+(b.name===sel?' selected':'')+'>💈 '+esc(b.name)+'</option>'; });
+  return opts;
+}
 function renderStoreEditor(){
   el('storeEditor').innerHTML=STORE.map(function(it,i){
-    return '<div class="srow">'
-     +'<input class="sl" value="'+esc(it.label)+'" placeholder="Reward (e.g. Free haircut)" oninput="readStore()">'
-     +'<input class="sc" type="number" min="1" inputmode="numeric" value="'+(it.cost||0)+'" placeholder="🪙" oninput="readStore()">'
-     +'<button class="rm" onclick="removeStoreItem('+i+')" title="remove">✕</button>'
+    return '<div class="sedit">'
+     +'<div class="stop">'
+       +'<input class="e-icon" maxlength="2" value="'+esc(it.icon||'🎁')+'" oninput="readStore()" title="emoji">'
+       +'<input class="e-label" value="'+esc(it.label)+'" placeholder="Reward name (e.g. Free haircut)" oninput="readStore()">'
+       +'<button class="rm" onclick="removeStoreItem('+i+')" title="remove">✕</button>'
+     +'</div>'
+     +'<div class="grid3">'
+       +'<div><div class="fl">Cost 🪙</div><input class="e-cost" type="number" min="1" inputmode="numeric" value="'+(it.cost||0)+'" oninput="readStore()"></div>'
+       +'<div><div class="fl">Sale 🪙 (opt)</div><input class="e-sale" type="number" min="0" inputmode="numeric" value="'+(it.sale===''||it.sale==null?'':it.sale)+'" placeholder="—" oninput="readStore()"></div>'
+       +'<div><div class="fl">Type</div><select class="e-type" onchange="readStore()">'+STORE_TYPES.map(function(t){return '<option value="'+t[0]+'"'+(t[0]===it.type?' selected':'')+'>'+t[1]+'</option>';}).join('')+'</select></div>'
+     +'</div>'
+     +'<div class="grid3">'
+       +'<div><div class="fl">Category</div><input class="e-cat" value="'+esc(it.category||'')+'" placeholder="e.g. Cuts" oninput="readStore()"></div>'
+       +'<div><div class="fl">Stock (opt)</div><input class="e-stock" type="number" min="0" inputmode="numeric" value="'+(it.stock===''||it.stock==null?'':it.stock)+'" placeholder="∞" oninput="readStore()"></div>'
+       +'<div><div class="fl">Limit/customer</div><input class="e-pc" type="number" min="0" inputmode="numeric" value="'+(it.per_customer===''||it.per_customer==null?'':it.per_customer)+'" placeholder="∞" oninput="readStore()"></div>'
+     +'</div>'
+     +'<div class="sbot">'
+       +'<select class="e-barber" onchange="readStore()">'+barberOpts(it.barber||'')+'</select>'
+       +'<label><input type="checkbox" class="e-feat"'+(it.featured?' checked':'')+' onchange="readStore()" style="width:18px;height:18px;accent-color:#ffcf5a"> ⭐ Featured</label>'
+     +'</div>'
      +'</div>';
   }).join('');
 }
 function readStore(){
   var arr=[];
-  [].forEach.call(document.querySelectorAll('#storeEditor .srow'),function(r){
-    var label=(r.querySelector('.sl').value||'').trim();
-    var cost=Math.max(1,parseInt(r.querySelector('.sc').value,10)||0);
-    if(label) arr.push({label:label,cost:cost});
+  [].forEach.call(document.querySelectorAll('#storeEditor .sedit'),function(r,idx){
+    var label=(r.querySelector('.e-label').value||'').trim();
+    if(!label) return;
+    function num(sel){ var v=r.querySelector(sel).value; return v===''?'':(parseInt(v,10)||0); }
+    arr.push({
+      id: (STORE[idx]&&STORE[idx].id) || ('s'+Math.random().toString(36).slice(2,8)),
+      label:label, icon:(r.querySelector('.e-icon').value||'🎁').trim()||'🎁',
+      cost:Math.max(1,parseInt(r.querySelector('.e-cost').value,10)||1),
+      sale:num('.e-sale'), type:r.querySelector('.e-type').value,
+      category:(r.querySelector('.e-cat').value||'').trim(),
+      stock:num('.e-stock'), per_customer:num('.e-pc'),
+      barber:r.querySelector('.e-barber').value, featured:r.querySelector('.e-feat').checked
+    });
   });
   STORE=arr; return arr;
 }
-function addStoreItem(){ readStore(); STORE.push({label:'',cost:100}); renderStoreEditor(); }
+function addStoreItem(){ readStore(); STORE.push({id:'s'+Math.random().toString(36).slice(2,8),label:'',icon:'🎁',cost:100,sale:'',type:'discount',category:'',stock:'',per_customer:'',featured:false,barber:''}); renderStoreEditor(); }
 function removeStoreItem(i){ readStore(); STORE.splice(i,1); renderStoreEditor(); }
 function readMembership(){
   var perks=(el('setMemPerks').value||'').split('\n').map(function(s){return s.trim();}).filter(Boolean);
