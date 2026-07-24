@@ -999,6 +999,7 @@ function wireGame(){
   });
   document.addEventListener('keydown',function(e){
     if(el('gameOverlay').classList.contains('hide')) return;
+    if(e.repeat) return;
     if(G.mode==='flyer'){ if(e.code==='Space'||e.code==='ArrowUp'){ e.preventDefault(); if(G.run)flap(); else startGame(); } }
     else { if(e.code==='ArrowUp'){e.preventDefault();hopUp();} else if(e.code==='ArrowLeft'){hopLeft();} else if(e.code==='ArrowRight'){hopRight();} }
   });
@@ -1114,14 +1115,19 @@ function gameOver(){
   rpc('game_reward',{p_code:member.code,p_game:mode,p_score:sc}).then(function(m){
     if(m&&!m.error){
       member=m;
-      el('gvEarned').textContent = (m.coins_earned>0) ? ('+'+m.coins_earned+' 🪙 coins!') : 'No coins this round';
-      if(m.capped){ el('gvCap').textContent='Daily coin cap reached — play tomorrow for more.'; el('gvCap').classList.remove('hide'); }
-      el('gvCoins').textContent=m.coins||0;
-      el('gvBest').textContent=(m.games&&m.games[mode])||sc;
-      countUp(m.points); renderPlayer(m); renderStats(m); renderQuests(m); renderAchievements(m); renderCoins(m); if(m.wheel) renderSlot(m); loadBoard(mode);
-      if(m.coins_earned>0) confetti();
-    } else { el('gvEarned').textContent='Score '+sc+' saved!'; }
-  }).catch(function(){ el('gvEarned').textContent='Score '+sc+' saved!'; });
+      // always update the member/card data, but only touch the game-over overlay if it's still open
+      renderCoins(m);
+      var gvOpen=!el('gameOverlay').classList.contains('hide');
+      if(gvOpen){
+        el('gvEarned').textContent = (m.coins_earned>0) ? ('+'+m.coins_earned+' 🪙 coins!') : 'No coins this round';
+        if(m.capped){ el('gvCap').textContent='Daily coin cap reached — play tomorrow for more.'; el('gvCap').classList.remove('hide'); }
+        el('gvCoins').textContent=m.coins||0;
+        el('gvBest').textContent=(m.games&&m.games[mode])||sc;
+        countUp(m.points); renderPlayer(m); renderStats(m); renderQuests(m); renderAchievements(m); if(m.wheel) renderSlot(m); loadBoard(mode);
+        if(m.coins_earned>0) confetti();
+      }
+    } else if(!el('gameOverlay').classList.contains('hide')){ el('gvEarned').textContent='Score '+sc+' saved!'; }
+  }).catch(function(){ if(!el('gameOverlay').classList.contains('hide')) el('gvEarned').textContent='Score '+sc+' saved!'; });
 }
 function closeGame(){
   G.run=false; cancelAnimationFrame(G.raf);

@@ -284,6 +284,7 @@ function wireGame(){
   });
   document.addEventListener('keydown',function(e){
     if(el('gameOverlay').classList.contains('hide')) return;
+    if(e.repeat) return;
     if(G.mode==='flyer'){ if(e.code==='Space'||e.code==='ArrowUp'){ e.preventDefault(); if(G.run)flap(); else startGame(); } }
     else { if(e.code==='ArrowUp'){e.preventDefault();hopUp();} else if(e.code==='ArrowLeft'){hopLeft();} else if(e.code==='ArrowRight'){hopRight();} }
   });
