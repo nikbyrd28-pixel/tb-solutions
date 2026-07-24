@@ -92,6 +92,12 @@
   var sCoin=function(){beep(880,0.07,'triangle',0.06,1320); setTimeout(function(){beep(1320,0.08,'triangle',0.05);},60);};
   var sDeath=function(){beep(300,0.5,'sawtooth',0.09,60);};
   var sMile=function(){beep(660,0.1,'triangle',0.06,990);};
+  var MUS=(function(){ var ac=null,on=false,tmr=0,step=0; var seq=[0,7,12,7,3,10,7,3,5,12,7,5,3,7,10,7];
+    function tone(f,d,ty,v){ if(!ac)return; var o=ac.createOscillator(),g=ac.createGain(); o.type=ty; o.frequency.value=f; g.gain.value=v; g.gain.exponentialRampToValueAtTime(0.0001,ac.currentTime+d); o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+d); }
+    function fr(n){ return 130.81*Math.pow(2,n/12); }
+    function tick(){ if(!on)return; var n=seq[step%seq.length]; tone(fr(n-12),0.22,'triangle',0.045); if(step%2===0) tone(fr(n+12),0.14,'square',0.022); step++; tmr=setTimeout(tick,225); }
+    return { start:function(a){ if(on)return; ac=a; if(!ac)return; on=true; step=0; tick(); }, stop:function(){ on=false; clearTimeout(tmr); } };
+  })();
 
   /* ---------- state ---------- */
   var GROUND, player, obstacles, coins, parts, running=false, dead=false, t=0, dist=0, coinCount=0, combo=0, speed=0, spawnT=0, coinT=0, shake=0, best=0, poleAng=0, groundOff=0;
@@ -302,12 +308,12 @@
   function roundRect(x,y,w,h,r){ X.beginPath(); X.moveTo(x+r,y); X.arcTo(x+w,y,x+w,y+h,r); X.arcTo(x+w,y+h,x,y+h,r); X.arcTo(x,y+h,x,y,r); X.arcTo(x,y,x+w,y,r); X.closePath(); }
 
   /* ---------- flow ---------- */
-  function startGame(){ actx(); resize(); tuneJump(); reset(); running=true; dead=false; el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); rmTip(); last=performance.now(); requestAnimationFrame(frame); }
+  function startGame(){ actx(); MUS.start(actx()); resize(); tuneJump(); reset(); running=true; dead=false; el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); rmTip(); last=performance.now(); requestAnimationFrame(frame); }
   var tipEl=null;
   function showTip(){ if(tipEl)return; tipEl=document.createElement('div'); tipEl.className='tiptap'; tipEl.textContent='TAP to jump ·  again in the air to double-jump'; document.body.appendChild(tipEl); setTimeout(rmTip,2600); }
   function rmTip(){ if(tipEl){ tipEl.remove(); tipEl=null; } }
   function gameOver(){
-    running=false;
+    running=false; MUS.stop();
     var m=Math.floor(dist);
     if(m>best){ best=m; try{ localStorage.setItem('bd_best_'+client, best); }catch(e){} }
     el('ovScore').textContent=m; el('ovCoins').textContent=coinCount; el('ovBest').textContent=best;

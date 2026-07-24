@@ -98,6 +98,12 @@
   function beep(f,dur,type,vol,slideTo){ var a=actx(); if(!a)return; var o=a.createOscillator(),g=a.createGain(); o.type=type||'square'; o.frequency.value=f; if(slideTo)o.frequency.exponentialRampToValueAtTime(slideTo,a.currentTime+dur); g.gain.value=vol||0.05; g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+dur); o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+dur); }
   var sMove=function(){beep(300,0.03,'square',0.03);}, sRot=function(){beep(480,0.04,'square',0.04);}, sLock=function(){beep(200,0.06,'sine',0.05);};
   var sLine=function(n){beep(500+n*120,0.12,'triangle',0.07,900+n*160);}, sTetris=function(){beep(660,0.1,'triangle',0.08,1320);setTimeout(function(){beep(990,0.14,'triangle',0.06);},90);}, sOver=function(){beep(300,0.5,'sawtooth',0.08,60);};
+  var MUS=(function(){ var ac=null,on=false,tmr=0,step=0; var seq=[0,7,12,7,3,10,7,3,5,12,7,5,3,7,10,7];
+    function tone(f,d,ty,v){ if(!ac)return; var o=ac.createOscillator(),g=ac.createGain(); o.type=ty; o.frequency.value=f; g.gain.value=v; g.gain.exponentialRampToValueAtTime(0.0001,ac.currentTime+d); o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+d); }
+    function fr(n){ return 130.81*Math.pow(2,n/12); }
+    function tick(){ if(!on)return; var n=seq[step%seq.length]; tone(fr(n-12),0.22,'triangle',0.045); if(step%2===0) tone(fr(n+12),0.14,'square',0.022); step++; tmr=setTimeout(tick,225); }
+    return { start:function(a){ if(on)return; ac=a; if(!ac)return; on=true; step=0; tick(); }, stop:function(){ on=false; clearTimeout(tmr); } };
+  })();
 
   var COLS=10, ROWS=20;
   var C=el('c'), X=C.getContext('2d'), NX=el('next').getContext('2d'), CELL=24;
@@ -160,11 +166,11 @@
   function drawNext(){ NX.clearRect(0,0,64,64); if(!nxt)return; var m=nxt.m, cs=12, ox=(64-m[0].length*cs)/2, oy=(64-m.length*cs)/2;
     for(var r=0;r<m.length;r++){ for(var c=0;c<m[r].length;c++){ if(m[r][c]){ NX.fillStyle=COLORS[nxt.k]; NX.fillRect(ox+c*cs+1,oy+r*cs+1,cs-2,cs-2); } } } }
 
-  function start(){ actx(); resize(); board=newBoard(); score=0; lines=0; level=1; dropInt=800; dropT=0; dead=false; nxt=randPiece(); spawn();
+  function start(){ actx(); MUS.start(actx()); resize(); board=newBoard(); score=0; lines=0; level=1; dropInt=800; dropT=0; dead=false; nxt=randPiece(); spawn();
     el('hScore').textContent='0'; el('hLines').textContent='0'; el('hLevel').textContent='1'; el('hBest').textContent=best;
     el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); running=true; last=performance.now(); requestAnimationFrame(frame); }
   function over(){
-    if(dead)return; dead=true; running=false; sOver();
+    if(dead)return; dead=true; running=false; MUS.stop(); sOver();
     if(score>best){ best=score; try{ localStorage.setItem('bb_best_'+client,best); }catch(e){} }
     el('ovScore').textContent=score; el('ovLines').textContent=lines; el('ovBest').textContent=best; el('hBest').textContent=best;
     el('overScreen').classList.remove('hide'); el('coinsWon').classList.add('hide'); el('lbBox').classList.add('hide');

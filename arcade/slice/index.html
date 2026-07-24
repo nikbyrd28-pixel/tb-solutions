@@ -86,6 +86,12 @@
   var sMiss=function(){ beep(240,0.18,'sine',0.05,150); };
   var sBomb=function(){ beep(320,0.55,'sawtooth',0.10,50); };
   var sCombo=function(){ beep(660,0.1,'triangle',0.07,1200); setTimeout(function(){beep(990,0.1,'triangle',0.05);},70); };
+  var MUS=(function(){ var ac=null,on=false,tmr=0,step=0; var seq=[0,7,12,7,3,10,7,3,5,12,7,5,3,7,10,7];
+    function tone(f,d,ty,v){ if(!ac)return; var o=ac.createOscillator(),g=ac.createGain(); o.type=ty; o.frequency.value=f; g.gain.value=v; g.gain.exponentialRampToValueAtTime(0.0001,ac.currentTime+d); o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+d); }
+    function fr(n){ return 130.81*Math.pow(2,n/12); }
+    function tick(){ if(!on)return; var n=seq[step%seq.length]; tone(fr(n-12),0.22,'triangle',0.045); if(step%2===0) tone(fr(n+12),0.14,'square',0.022); step++; tmr=setTimeout(tick,225); }
+    return { start:function(a){ if(on)return; ac=a; if(!ac)return; on=true; step=0; tick(); }, stop:function(){ on=false; clearTimeout(tmr); } };
+  })();
 
   /* ---------- state ---------- */
   var objs, parts, blade, running=false, dead=false, t=0, score=0, lives=3, spawnT=0, shake=0, best=0, bestCombo=0;
@@ -226,8 +232,9 @@
   }
 
   /* ---------- flow ---------- */
-  function startGame(){ actx(); resize(); reset(); running=true; dead=false; el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); last=performance.now(); requestAnimationFrame(frame); }
+  function startGame(){ actx(); MUS.start(actx()); resize(); reset(); running=true; dead=false; el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); last=performance.now(); requestAnimationFrame(frame); }
   function gameOver(){
+    MUS.stop();
     running=false;
     if(score>best){ best=score; try{ localStorage.setItem('fc_best_'+client, best); }catch(e){} }
     el('ovScore').textContent=score; el('ovBestCombo').textContent=bestCombo; el('ovBest').textContent=best;

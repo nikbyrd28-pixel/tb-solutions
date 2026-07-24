@@ -83,6 +83,12 @@
   function beep(f,dur,type,vol,slideTo){ var a=actx(); if(!a)return; var o=a.createOscillator(),g=a.createGain(); o.type=type||'square'; o.frequency.value=f; if(slideTo)o.frequency.exponentialRampToValueAtTime(slideTo,a.currentTime+dur); g.gain.value=vol||0.05; g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+dur); o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+dur); }
   var sHit=function(){beep(260,0.05,'square',0.06,160);}, sWall=function(){beep(180,0.04,'sine',0.04);};
   var sGoalYou=function(){beep(660,0.1,'triangle',0.08,1200);setTimeout(function(){beep(990,0.14,'triangle',0.06);},90);}, sGoalCpu=function(){beep(300,0.3,'sawtooth',0.07,120);}, sBuzz=function(){beep(200,0.6,'square',0.08,120);};
+  var MUS=(function(){ var ac=null,on=false,tmr=0,step=0; var seq=[0,7,12,7,3,10,7,3,5,12,7,5,3,7,10,7];
+    function tone(f,d,ty,v){ if(!ac)return; var o=ac.createOscillator(),g=ac.createGain(); o.type=ty; o.frequency.value=f; g.gain.value=v; g.gain.exponentialRampToValueAtTime(0.0001,ac.currentTime+d); o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+d); }
+    function fr(n){ return 130.81*Math.pow(2,n/12); }
+    function tick(){ if(!on)return; var n=seq[step%seq.length]; tone(fr(n-12),0.2,'triangle',0.045); if(step%2===0) tone(fr(n+12),0.13,'square',0.022); step++; tmr=setTimeout(tick,200); }
+    return { start:function(a){ if(on)return; ac=a; if(!ac)return; on=true; step=0; tick(); }, stop:function(){ on=false; clearTimeout(tmr); } };
+  })();
 
   var C=el('c'), X=C.getContext('2d'), W=0,H=0,DPR=Math.min(2,window.devicePixelRatio||1);
   function resize(){
@@ -194,11 +200,11 @@
   function up(){ dragging=false; }
   C.addEventListener('pointerdown',down); C.addEventListener('pointermove',move,{passive:false}); window.addEventListener('pointerup',up);
 
-  function start(){ actx(); resize(); reset(); running=true; last=performance.now(); el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); rmTip(); requestAnimationFrame(frame); }
+  function start(){ actx(); MUS.start(actx()); resize(); reset(); running=true; last=performance.now(); el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); rmTip(); requestAnimationFrame(frame); }
   var tipEl=null; function showTip(){ if(tipEl)return; tipEl=document.createElement('div'); tipEl.className='tiptap'; tipEl.textContent='Drag your mallet to hit the puck ↑'; document.body.appendChild(tipEl); setTimeout(rmTip,2600); }
   function rmTip(){ if(tipEl){ tipEl.remove(); tipEl=null; } }
   function end(){
-    running=false; sBuzz();
+    running=false; MUS.stop(); sBuzz();
     if(pScore>best){ best=pScore; try{ localStorage.setItem('ph_best_'+client,best); }catch(e){} }
     el('ovTitle').textContent = pScore>aScore?'YOU WIN! 🏆':(pScore<aScore?'CPU WINS':'DEAD HEAT');
     el('ovYou').textContent=pScore; el('ovCpu').textContent=aScore; el('ovBest').textContent=best;
