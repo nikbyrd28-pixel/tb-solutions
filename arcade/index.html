@@ -4,10 +4,10 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Loop Arcade — play free · TB Solutions</title>
-<meta name="description" content="Play Loop Flyer and Chair Hopper free — no download. The same games your customers play inside a Loop loyalty card to earn coins, spins and prizes at your shop." />
+<meta name="description" content="Play Barber Dash, Fresh Cuts, Perfect Fade and more free — no download. The same arcade your customers play inside a Loop loyalty card to earn coins, spins and prizes at your shop." />
 <meta name="theme-color" content="#05060d" />
 <meta property="og:title" content="Loop Arcade — play free" />
-<meta property="og:description" content="Two quick arcade games, no download. The same ones your customers play to earn rewards inside Loop." />
+<meta property="og:description" content="A whole arcade, no download. The same games your customers play to earn rewards inside Loop." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://tbsol.net/arcade/" />
 <link rel="canonical" href="https://tbsol.net/arcade/" />
@@ -38,6 +38,8 @@
   @media(max-width:460px){.games{grid-template-columns:1fr}}
   .gcard{border:1px solid var(--line);background:linear-gradient(150deg,rgba(255,255,255,.06),rgba(255,255,255,.015));border-radius:22px;padding:22px 18px;text-align:center;cursor:pointer;transition:transform .12s,box-shadow .15s}
   .gcard:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(122,162,255,.25)}
+  a.gcard{display:block;text-decoration:none;color:inherit}
+  .gcard .tag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#04050a;background:var(--good);border-radius:999px;padding:2px 8px;margin-bottom:2px}
   .gcard .em{font-size:52px;line-height:1;animation:floaty 5s ease-in-out infinite}
   .gcard h3{margin:12px 0 4px;font-size:20px}
   .gcard p{margin:0 0 12px;color:var(--muted);font-size:13px}
@@ -83,7 +85,7 @@
     <button class="sound" id="soundBtn" onclick="toggleSound()">🔊 Sound on</button>
   </div>
   <h1>Play free. <span>No download.</span></h1>
-  <p class="lead">Two quick games to kill a wait. These are the same games your customers play <b style="color:var(--text)">inside a Loop loyalty card</b> — where every run earns 🪙 coins toward spins and prizes at your shop.</p>
+  <p class="lead">A whole arcade to kill a wait. These are the same games your customers play <b style="color:var(--text)">inside a Loop loyalty card</b> — where every run earns 🪙 coins toward spins and prizes at your shop.</p>
 
   <div class="games">
     <div class="gcard" onclick="openGame('flyer')">
@@ -100,6 +102,30 @@
       <div class="best" id="bestHopper">Best 0</div>
       <button class="play">▶ Play</button>
     </div>
+    <a class="gcard" id="cardRunner" href="/arcade/run/">
+      <div class="tag">New</div>
+      <div class="em">💈</div>
+      <h3>Barber Dash</h3>
+      <p>Run &amp; jump. Dodge the razors.</p>
+      <div class="best" id="bestRunner">Best 0</div>
+      <span class="play">▶ Play</span>
+    </a>
+    <a class="gcard" id="cardSlice" href="/arcade/slice/">
+      <div class="tag">New</div>
+      <div class="em">✂️</div>
+      <h3>Fresh Cuts</h3>
+      <p>Swipe to slice. Miss the razors.</p>
+      <div class="best" id="bestSlice">Best 0</div>
+      <span class="play">▶ Play</span>
+    </a>
+    <a class="gcard" id="cardStack" href="/arcade/stack/">
+      <div class="tag">New</div>
+      <div class="em">🧱</div>
+      <h3>Perfect Fade</h3>
+      <p>Tap to stack the cleanest fade.</p>
+      <div class="best" id="bestStack">Best 0</div>
+      <span class="play">▶ Play</span>
+    </a>
   </div>
 
   <div class="promo">
@@ -152,6 +178,18 @@ function bestOf(g){ try{ return +localStorage.getItem('loop_arcade_'+g)||0; }cat
 function setBest(g,v){ try{ localStorage.setItem('loop_arcade_'+g,v); }catch(e){} }
 function refreshBests(){ el('bestFlyer').textContent='Best '+bestOf('flyer'); el('bestHopper').textContent='Best '+bestOf('hopper'); }
 refreshBests();
+/* ---- standalone games: carry c/m params through + show their local bests ---- */
+(function(){
+  var q=new URLSearchParams(location.search);
+  var client=(q.get('c')||'demo').toLowerCase().replace(/[^a-z0-9]/g,'')||'demo';
+  var qs=''; if(q.get('c')) qs='?c='+encodeURIComponent(client)+(q.get('m')?('&m='+encodeURIComponent(q.get('m').slice(0,40))):'');
+  var games=[['cardRunner','/arcade/run/','bestRunner','bd_best_'],['cardSlice','/arcade/slice/','bestSlice','fc_best_'],['cardStack','/arcade/stack/','bestStack','pf_best_']];
+  games.forEach(function(g){
+    var a=el(g[0]); if(a) a.href=g[1]+qs;
+    var v=0; try{ v=+localStorage.getItem(g[3]+client)||0; }catch(e){}
+    var b=el(g[2]); if(b) b.textContent='Best '+v;
+  });
+})();
 /* ---- sound (WebAudio blips) ---- */
 var SND=true, actx=null;
 try{ SND = localStorage.getItem('loop_arcade_snd')!=='0'; }catch(e){}
