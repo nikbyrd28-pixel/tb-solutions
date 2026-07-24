@@ -141,6 +141,11 @@
       '.la-combo{font-size:13px;font-weight:900;color:#5ad0f0;opacity:0;transition:opacity .2s}' +
       '.la-combo.show{opacity:1}' +
       '#la-level{font-size:13px;font-weight:900;color:#b98bff}' +
+      '.la-skins{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin:12px 0 6px}' +
+      '.la-skin{position:relative;width:44px;height:44px;border-radius:12px;border:1px solid rgba(122,162,255,.3);background:rgba(122,162,255,.08);display:grid;place-items:center;font-size:20px;cursor:pointer;transition:transform .1s}' +
+      '.la-skin.sel{border-color:#5ad0f0;box-shadow:0 0 14px rgba(90,208,240,.5)}' +
+      '.la-skin.lock{opacity:.5;cursor:default}' +
+      '.la-skin .lk{position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:800;white-space:nowrap;color:#9aa3c2;background:#05060d;padding:1px 5px;border-radius:6px;border:1px solid rgba(122,162,255,.25)}' +
       '.la-stage{position:relative;border-radius:18px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 44px rgba(122,162,255,.18)}' +
       '.la-cv{display:block;touch-action:none;background:#05060d}' +
       '.la-ctrls{display:flex;gap:12px;justify-content:center;margin-top:14px}' +
@@ -178,6 +183,7 @@
       '<div class="la-ov" id="la-start"><div class="la-card">' +
       '<div class="la-em" id="la-icon">🐦</div><h2 id="la-name">Loop Flyer</h2>' +
       '<p id="la-how"></p><p>Best: <b id="la-best">0</b></p>' +
+      '<div class="la-skins" id="la-skins"></div>' +
       '<button class="la-go" id="la-play">▶ Play</button></div></div>' +
       '<div class="la-ov hide" id="la-pausescr"><div class="la-card"><div class="la-em">❚❚</div><h2>Paused</h2>' +
       '<button class="la-go" id="la-resume">▶ Resume</button><button class="la-go ghost" id="la-quit">Quit</button></div></div>' +
@@ -194,7 +200,7 @@
       root: root, title: g('la-title'), sound: g('la-sound'), pause: g('la-pause'), close: g('la-close'),
       score: g('la-score'), best2: g('la-best2'), combo: g('la-combo'), level: g('la-level'),
       stage: root.querySelector('.la-stage'), cv: g('la-cv'),
-      start: g('la-start'), icon: g('la-icon'), name: g('la-name'), how: g('la-how'), best: g('la-best'), play: g('la-play'),
+      start: g('la-start'), icon: g('la-icon'), name: g('la-name'), how: g('la-how'), best: g('la-best'), play: g('la-play'), skins: g('la-skins'),
       pausescr: g('la-pausescr'), resume: g('la-resume'), quit: g('la-quit'),
       over: g('la-over'), final: g('la-final'), l1: g('la-l1'), l2: g('la-l2'), again: g('la-again'), back: g('la-back'),
       ctrls: g('la-ctrls')
@@ -263,7 +269,7 @@
     score: 0, shownScore: 0, best: 0, game: null,
     shake: 0, hitstop: 0, flash: 0, alpha: 0,
     parts: [], floats: [], accent: '#7aa2ff', accent2: '#5ad0f0',
-    clock: 0, combo: 0, comboAt: 0, lastSc: 0, skyGrad: null, skyH: 0, moonGrad: null, level: 1
+    clock: 0, combo: 0, comboAt: 0, lastSc: 0, skyGrad: null, skyH: 0, moonGrad: null, level: 1, skin: null
   };
 
   // ---- particle pool -----------------------------------------------------
@@ -472,7 +478,7 @@
       // wing (behind body), angle driven by recent flap
       var wa = -0.5 + wing * 1.6;
       c.save(); c.rotate(wa); c.fillStyle = 'rgba(255,255,255,.55)'; c.beginPath(); c.ellipse(-r * 0.15, r * 0.1, r * 0.7, r * 0.4, 0, 0, 6.283); c.fill(); c.restore();
-      c.shadowColor = E.accent2; c.shadowBlur = 16; c.fillStyle = E.accent2;
+      var _skc = skinColor(); c.shadowColor = _skc; c.shadowBlur = 16; c.fillStyle = _skc;
       c.beginPath(); c.arc(0, 0, r, 0, 6.283); c.fill(); c.shadowBlur = 0;
       c.fillStyle = '#ffcf5a'; c.beginPath(); c.moveTo(r * 0.85, 0); c.lineTo(r * 1.5, -r * 0.22); c.lineTo(r * 1.5, r * 0.22); c.closePath(); c.fill();
       c.fillStyle = '#05060d'; c.beginPath(); c.arc(r * 0.35, -r * 0.25, r * 0.22, 0, 6.283); c.fill();
@@ -640,10 +646,10 @@
       var py = rowScreenY(prow) - (sett ? 0 : 0) - lift;
       var sq = sett ? 1 : (1 + Math.sin(Math.PI * t) * 0.12);
       c.save(); c.translate(px, py); c.scale(1 / sq, sq);
-      c.shadowColor = E.accent2; c.shadowBlur = 16; c.fillStyle = '#ffcf5a';
+      var _skc = skinColor(); c.shadowColor = _skc; c.shadowBlur = 16; c.fillStyle = _skc;
       roundRect(c, -cw * 0.34, -cw * 0.34, cw * 0.68, cw * 0.68, 11); c.fill(); c.shadowBlur = 0;
       c.font = '900 ' + Math.floor(cw * 0.5) + 'px system-ui,Arial'; c.textAlign = 'center'; c.textBaseline = 'middle';
-      c.fillText('💈', 0, 1); c.restore();
+      c.fillText((E.skin && E.skin.emoji) || '💈', 0, 1); c.restore();
       // shadow on ground
       c.globalAlpha = 0.25; c.fillStyle = '#000'; c.beginPath(); c.ellipse(px, rowScreenY(prow) + rh * 0.28, cw * 0.28, cw * 0.12, 0, 0, 6.283); c.fill(); c.globalAlpha = 1;
       standingCheck();
@@ -687,6 +693,44 @@
     if (E.flash > 0.01 && !RM) { c.globalAlpha = E.flash * 0.5; c.fillStyle = '#fff'; c.fillRect(0, 0, E.W, E.H); c.globalAlpha = 1; E.flash *= 0.85; }
   }
 
+  // ---- unlockable skins --------------------------------------------------
+  var SKINS = [
+    { id: 'classic', name: 'Classic', emoji: '💈', color: '#5ad0f0', req: null },
+    { id: 'gold', name: 'Gold', emoji: '⭐', color: '#ffcf5a', req: { lvl: 3 } },
+    { id: 'violet', name: 'Amethyst', emoji: '🔮', color: '#c9a3ff', req: { lvl: 5 } },
+    { id: 'mint', name: 'Mint', emoji: '🌿', color: '#43f0b0', req: { lvl: 8 } },
+    { id: 'ember', name: 'Ember', emoji: '🔥', color: '#ff6a7a', req: { best: 25 } },
+    { id: 'rainbow', name: 'Rainbow', emoji: '🌈', color: 'rainbow', req: { best: 45 } }
+  ];
+  function prog() { try { return JSON.parse(localStorage.getItem('loop_prog') || '{}'); } catch (e) { return {}; } }
+  function saveProg(p) { try { localStorage.setItem('loop_prog', JSON.stringify(p)); } catch (e) {} }
+  function skinUnlocked(sk) { if (!sk.req) return true; var p = prog(); if (sk.req.lvl) return (p.maxLevel || 1) >= sk.req.lvl; if (sk.req.best) return (p.bestEver || 0) >= sk.req.best; return true; }
+  function skinReqLabel(sk) { if (!sk.req) return ''; if (sk.req.lvl) return 'Lv ' + sk.req.lvl; if (sk.req.best) return '★' + sk.req.best; return ''; }
+  function currentSkin() { var id = null; try { id = localStorage.getItem('loop_skin'); } catch (e) {} var s = null; for (var i = 0; i < SKINS.length; i++) if (SKINS[i].id === id) s = SKINS[i]; return (s && skinUnlocked(s)) ? s : SKINS[0]; }
+  function selectSkin(id) { try { localStorage.setItem('loop_skin', id); } catch (e) {} E.skin = currentSkin(); renderSkins(); }
+  function skinColor() { var s = E.skin || SKINS[0]; if (s.color === 'rainbow') return 'hsl(' + ((E.clock / 12) % 360) + ',85%,66%)'; return s.color; }
+  function renderSkins() {
+    if (!dom.skins) return;
+    dom.skins.innerHTML = SKINS.map(function (s) {
+      var un = skinUnlocked(s), sel = (E.skin && E.skin.id === s.id);
+      return '<div class="la-skin' + (sel ? ' sel' : '') + (un ? '' : ' lock') + '" data-id="' + s.id + '" title="' + s.name + '">' +
+        (un ? s.emoji : '🔒') + (un ? '' : '<span class="lk">' + skinReqLabel(s) + '</span>') + '</div>';
+    }).join('');
+    Array.prototype.forEach.call(dom.skins.querySelectorAll('.la-skin'), function (el) {
+      el.onclick = function () { var id = el.getAttribute('data-id'), s = null; for (var i = 0; i < SKINS.length; i++) if (SKINS[i].id === id) s = SKINS[i]; if (s && skinUnlocked(s)) { Audio.ui(); selectSkin(id); } };
+    });
+  }
+  function recordProgress(sc) {
+    var p = prog(), before = { maxLevel: p.maxLevel || 1, bestEver: p.bestEver || 0 };
+    p.maxLevel = Math.max(before.maxLevel, E.level); p.bestEver = Math.max(before.bestEver, sc); saveProg(p);
+    for (var i = 0; i < SKINS.length; i++) {
+      var sk = SKINS[i]; if (!sk.req) continue;
+      var wasLocked = sk.req.lvl ? before.maxLevel < sk.req.lvl : before.bestEver < sk.req.best;
+      if (wasLocked && skinUnlocked(sk)) return sk;
+    }
+    return null;
+  }
+
   // ---- lifecycle ---------------------------------------------------------
   function play(cfg) {
     buildDOM();
@@ -706,6 +750,7 @@
     dom.start.classList.remove('hide'); dom.over.classList.add('hide'); dom.pausescr.classList.add('hide');
     dom.root.classList.add('on'); dom.root.setAttribute('aria-hidden', 'false');
     E.running = false; E.paused = false; E.over = false;
+    E.skin = currentSkin(); renderSkins();
     resize();
   }
   function start() {
@@ -732,7 +777,7 @@
     if (E.over) return; E.over = true; E.running = false; cancelAnimationFrame(E.raf); Audio.music.stop();
     var sc = E.score, mode = E.mode;
     dom.final.textContent = sc; dom.l1.textContent = ''; dom.l2.textContent = '';
-    var localBest = Math.max(E.best, sc), newBest = sc > E.best;
+    var localBest = Math.max(E.best, sc), newBest = sc > E.best; var newSkin = recordProgress(sc);
     var medal = sc >= 40 ? '🥇' : sc >= 20 ? '🥈' : sc >= 8 ? '🥉' : '🏁';
     var em = dom.over.querySelector('.la-em'); if (em) em.textContent = medal;
     dom.combo.classList.remove('show');
@@ -744,7 +789,8 @@
       E.best = localBest; dom.best2.textContent = '★ ' + localBest;
       dom.l1.textContent = r.line1 || (newBest ? '🏆 New best!' : ('Best: ' + localBest));
       dom.l2.textContent = r.line2 || (newBest ? '' : (r.line1 ? ('Best: ' + localBest) : ''));
-      if ((r.newBest || newBest) && sc > 0) celebrate();
+      if (newSkin) { dom.l2.textContent = '🎉 New skin: ' + newSkin.name + '!'; }
+      if (((r.newBest || newBest) && sc > 0) || newSkin) celebrate();
     }).catch(function () { dom.l1.textContent = newBest ? '🏆 New best!' : ('Best: ' + localBest); });
   }
   function celebrate() {
