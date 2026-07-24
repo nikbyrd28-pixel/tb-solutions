@@ -364,6 +364,12 @@
       <button class="mm-join" id="mmJoin" onclick="joinMembership()">Join →</button>
     </div>
 
+    <div class="card hide" id="payCard" style="text-align:center">
+      <b>💳 Pay your barber</b>
+      <p class="muted" style="margin:6px 0 12px;font-size:13px">Pay or leave a tip — goes straight to the shop's account.</p>
+      <a id="payBtn" href="#" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none;border:0;border-radius:12px;padding:14px 26px;font-weight:900;font-size:16px;color:#04050a;background:linear-gradient(135deg,var(--good,#43f0b0),var(--acc2,#6f9dff))">💳 Pay / Tip</a>
+    </div>
+
     <div class="card hide" id="mileCard">
       <div class="mile-h"><span class="mile-ic" id="mileIcon">🔒</span><div><b id="mileLabel">Milestone reward</b><div class="mile-goal" id="mileGoal"></div></div></div>
       <div class="mile-bar"><div class="mile-fill" id="mileFill"></div></div>
@@ -649,6 +655,9 @@ function loadArcadeStatus(m){
       var perks=mem.perks||[]; el('mmPerks').innerHTML=perks.map(function(p){return '<li>'+esc(p)+'</li>';}).join('');
       el('memberCard').classList.remove('hide');
     }
+    // pay / tip (barber's own Square/Stripe/Cash App link)
+    if(d.pay_link){ var pb=el('payBtn'); if(pb){ pb.setAttribute('href',d.pay_link); pb.textContent='💳 '+(d.pay_label||'Pay / Tip'); } el('payCard').classList.remove('hide'); }
+    else el('payCard').classList.add('hide');
     // milestone (grind N visits to unlock a big reward)
     var mile=d.milestone;
     if(mile && mile.on){

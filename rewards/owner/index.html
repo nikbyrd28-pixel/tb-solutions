@@ -254,6 +254,15 @@
         <label>Jackpot prize</label>
         <input id="setLotoJack" placeholder="Free haircut for a month">
 
+        <div style="border-top:1px solid var(--line);margin:20px 0 6px;padding-top:16px">
+          <h2 style="margin:0 0 4px">💳 <b>Payments</b> (Square, Stripe, Cash App…)</h2>
+          <p class="muted" style="margin:0 0 10px;font-size:13px">Paste your payment link and a <b style="color:var(--text)">Pay / Tip</b> button shows on every customer's card — they pay you directly through your own account. Get a link from Square (square.link), Stripe (payment link), Cash App ($cashtag), Venmo or PayPal.me.</p>
+        </div>
+        <label>Your payment link</label>
+        <input id="setPayLink" autocapitalize="none" placeholder="https://square.link/u/yourshop  or  https://cash.app/$YourShop">
+        <label>Button label</label>
+        <input id="setPayLabel" placeholder="Pay / Tip">
+
         <button class="btn wide" id="saveSetBtn" onclick="saveSettings()">💾 Save settings</button>
         <div class="err hide" id="setErr"></div>
         <div class="muted hide" id="setOk" style="text-align:center;color:var(--good);margin-top:8px;font-weight:800">Saved ✓ — your card updates instantly.</div>
@@ -534,6 +543,7 @@ function loadSettings(){
     el('setMileOn').checked=!!mile.on; el('setMileCuts').value=mile.cuts||8; el('setMileIcon').value=mile.icon||'💈'; el('setMileLabel').value=mile.label||'';
     var loto=d.lottery||{};
     el('setLotoOn').checked=!!loto.on; el('setLotoCost').value=loto.cost||10; el('setLotoOdds').value=loto.odds||100; el('setLotoJack').value=loto.jackpot||'';
+    el('setPayLink').value=d.pay_link||''; el('setPayLabel').value=d.pay_label||'';
     el('setReview').value=d.google_review_url||'';
     el('setGameDiff').value=d.game_difficulty||'normal';
     PRIZES=(d.spin_prizes||[]).map(function(p){return {label:p.label||'Prize',type:p.type||'points',weight:(p.weight==null?10:p.weight)};});
@@ -671,7 +681,9 @@ function saveSettings(){
     p_tournament_prize:(el('setTourPrize').value||'').trim(),
     p_membership:readMembership(),
     p_milestone:{on:el('setMileOn').checked, cuts:Math.max(1,parseInt(el('setMileCuts').value,10)||8), icon:(el('setMileIcon').value||'💈').trim()||'💈', label:(el('setMileLabel').value||'').trim()||'Milestone reward'},
-    p_lottery:{on:el('setLotoOn').checked, cost:Math.max(1,parseInt(el('setLotoCost').value,10)||10), odds:Math.max(2,parseInt(el('setLotoOdds').value,10)||100), jackpot:(el('setLotoJack').value||'').trim()||'Grand prize', icon:'🎰'}
+    p_lottery:{on:el('setLotoOn').checked, cost:Math.max(1,parseInt(el('setLotoCost').value,10)||10), odds:Math.max(2,parseInt(el('setLotoOdds').value,10)||100), jackpot:(el('setLotoJack').value||'').trim()||'Grand prize', icon:'🎰'},
+    p_pay_link:(el('setPayLink').value||'').trim(),
+    p_pay_label:(el('setPayLabel').value||'').trim()
   }).then(function(d){
     btn.disabled=false; btn.textContent='💾 Save settings';
     if(!d||!d.ok){ setSetErr((d&&d.error)||'Could not save.'); return; }
