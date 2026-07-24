@@ -972,6 +972,37 @@ function cssVar(n,f){ try{ return (getComputedStyle(document.documentElement).ge
 function roundRect(ctx,x,y,w,h,r){ r=Math.min(r,w/2,h/2); ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
 function openGame(mode){
   if(!member){ return; }
+  // Flyer & Hopper run on the shared AAA engine (/loop-arcade.js); coin economy via onOver.
+  if(window.LoopArcade){
+    var cs=getComputedStyle(document.documentElement);
+    LoopArcade.play({
+      mode: mode,
+      best: (member.games && member.games[mode]) || 0,
+      accent: (cs.getPropertyValue('--acc')||'').trim()||'#7aa2ff',
+      accent2: (cs.getPropertyValue('--acc2')||'').trim()||'#5ad0f0',
+      onOver: function(m, score){
+        if(!member || !member.code) return { best: score };
+        return rpc('game_reward',{p_code:member.code,p_game:m,p_score:score}).then(function(res){
+          if(res && !res.error){
+            member=res; renderCoins(res); countUp(res.points); renderPlayer(res); renderStats(res); renderQuests(res); renderAchievements(res);
+            if(res.wheel) renderSlot(res); if(typeof loadBoard==='function') loadBoard(m); if(typeof loadArcadeStatus==='function') loadArcadeStatus(res);
+            if(res.coins_earned>0) confetti();
+            var best=(res.games&&res.games[m])||score;
+            return { best: best, newBest: score>=best,
+              line1: res.coins_earned>0?('+'+res.coins_earned+' 🪙 coins!'):'No coins this round',
+              line2: res.capped?'Daily coin cap reached — play tomorrow for more.':('Best: '+best) };
+          }
+          return { best: score, line1:'Score '+score+' saved!' };
+        }).catch(function(){ return { best: score, line1:'Score '+score+' saved!' }; });
+      },
+      onClose: function(){ if(member){ renderCoins(member); renderSlot(member); } }
+    });
+    return;
+  }
+  legacyOpenGame(mode);
+}
+function legacyOpenGame(mode){
+  if(!member){ return; }
   G.mode=mode;
   var ov=el('gameOverlay'); ov.classList.remove('hide'); ov.setAttribute('aria-hidden','false');
   el('gvControls').classList.toggle('hide', mode!=='hopper');
@@ -1402,5 +1433,6 @@ window.addEventListener('error',function(e){try{
     body:JSON.stringify({page:location.pathname,msg:String((e&&e.message)||'').slice(0,300),src:String((e&&e.filename)||'').slice(0,120),line:(e&&e.lineno)||0})}).catch(function(){});
 }catch(_){}});
 </script>
+<script src="/loop-arcade.js"></script>
 </body>
 </html>

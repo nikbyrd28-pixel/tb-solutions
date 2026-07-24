@@ -246,6 +246,24 @@ var G={mode:null,run:false,raf:0,cvs:null,ctx:null,W:0,H:0,dpr:1,score:0,last:0,
 function cssVar(n,f){ try{ return (getComputedStyle(document.documentElement).getPropertyValue(n)||'').trim()||f; }catch(e){ return f; } }
 function roundRect(ctx,x,y,w,h,r){ r=Math.min(r,w/2,h/2); ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
 function openGame(mode){
+  // Flyer & Hopper now run on the shared AAA engine (/loop-arcade.js).
+  if(window.LoopArcade){
+    LoopArcade.play({
+      mode: mode,
+      best: bestOf(mode),
+      onOver: function(m, score){
+        var prev=bestOf(m), nb=score>prev; if(nb) setBest(m, score); refreshBests();
+        return { best: Math.max(prev,score), newBest: nb,
+          line1: nb?'🏆 New best!':('Best: '+Math.max(prev,score)),
+          line2:'Loop puts these in your customers’ card to earn real rewards.' };
+      },
+      onClose: refreshBests
+    });
+    return;
+  }
+  legacyOpenGame(mode); // fallback if the engine failed to load
+}
+function legacyOpenGame(mode){
   G.mode=mode;
   var ov=el('gameOverlay'); ov.classList.remove('hide'); ov.setAttribute('aria-hidden','false');
   el('gvControls').classList.toggle('hide', mode!=='hopper');
@@ -388,5 +406,6 @@ function gameOver(){
 }
 function closeGame(){ G.run=false; cancelAnimationFrame(G.raf); MUS.stop(); var ov=el('gameOverlay'); ov.classList.add('hide'); ov.setAttribute('aria-hidden','true'); refreshBests(); }
 </script>
+<script src="/loop-arcade.js"></script>
 </body>
 </html>
