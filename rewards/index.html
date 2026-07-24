@@ -147,6 +147,9 @@
   .gtile{border:1px solid var(--line);background:rgba(122,162,255,.06);color:var(--text);border-radius:16px;padding:16px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;font:inherit;transition:transform .1s,box-shadow .12s}
   .gtile:active{transform:scale(.96)}
   .gtile:hover{box-shadow:0 0 18px color-mix(in srgb,var(--acc) 30%,transparent)}
+  a.gtile{text-decoration:none}
+  .gtile .newb{position:absolute;top:6px;right:8px;font-size:8.5px;font-weight:900;letter-spacing:.06em;color:#04050a;background:var(--good,#43f0b0);border-radius:999px;padding:1px 6px}
+  .gtile{position:relative}
   .gtile .ge{font-size:34px;line-height:1}
   .gtile b{font-size:14px}
   .gtile span{font-size:11px}
@@ -253,11 +256,17 @@
       <div class="arcade-grid">
         <button class="gtile" onclick="openGame('flyer')"><div class="ge">🐦</div><b>Loop Flyer</b><span class="muted" id="hiFlyer">Best 0</span></button>
         <button class="gtile" onclick="openGame('hopper')"><div class="ge">🚦</div><b>Chair Hopper</b><span class="muted" id="hiHopper">Best 0</span></button>
+        <a class="gtile" id="gRunner" href="/arcade/run/"><span class="newb">NEW</span><div class="ge">💈</div><b>Barber Dash</b><span class="muted" id="hiRunner">Best 0</span></a>
+        <a class="gtile" id="gSlice" href="/arcade/slice/"><span class="newb">NEW</span><div class="ge">✂️</div><b>Fresh Cuts</b><span class="muted" id="hiSlice">Best 0</span></a>
+        <a class="gtile" id="gStack" href="/arcade/stack/"><span class="newb">NEW</span><div class="ge">🧱</div><b>Perfect Fade</b><span class="muted" id="hiStack">Best 0</span></a>
       </div>
-      <div class="qh" style="margin-top:16px"><b>🏆 Shop leaderboard</b>
-        <span style="display:flex;gap:6px">
+      <div class="qh" style="margin-top:16px;flex-wrap:wrap;gap:6px"><b>🏆 Shop leaderboard</b>
+        <span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
           <button class="lbtab on" id="lbFlyer" onclick="loadBoard('flyer')">🐦 Flyer</button>
           <button class="lbtab" id="lbHopper" onclick="loadBoard('hopper')">🚦 Hopper</button>
+          <button class="lbtab" id="lbRunner" onclick="loadBoard('runner')">💈 Dash</button>
+          <button class="lbtab" id="lbSlicer" onclick="loadBoard('slicer')">✂️ Cuts</button>
+          <button class="lbtab" id="lbStacker" onclick="loadBoard('stacker')">🧱 Fade</button>
         </span>
       </div>
       <div id="arcadeBoard"><p class="muted" style="margin:8px 0 0">Loading…</p></div>
@@ -441,8 +450,13 @@ function showCard(m){
 function renderCoins(m){
   var c=m.coins||0;
   var cb=el('coinBal'); if(cb) cb.textContent='🪙 '+c;
-  var hf=el('hiFlyer'); if(hf) hf.textContent='Best '+((m.games&&m.games.flyer)||0);
-  var hh=el('hiHopper'); if(hh) hh.textContent='Best '+((m.games&&m.games.hopper)||0);
+  var g=m.games||{};
+  var hf=el('hiFlyer'); if(hf) hf.textContent='Best '+(g.flyer||0);
+  var hh=el('hiHopper'); if(hh) hh.textContent='Best '+(g.hopper||0);
+  // standalone games: point tiles at their pages carrying c + member code, show server high scores
+  var qs='?c='+encodeURIComponent(slug)+(m.code?('&m='+encodeURIComponent(m.code)):'');
+  var links=[['gRunner','/arcade/run/','hiRunner','runner'],['gSlice','/arcade/slice/','hiSlice','slicer'],['gStack','/arcade/stack/','hiStack','stacker']];
+  links.forEach(function(x){ var a=el(x[0]); if(a) a.href=x[1]+qs; var b=el(x[2]); if(b) b.textContent='Best '+(g[x[3]]||0); });
 }
 var RANKS=[{n:'Bronze',min:0,e:'🥉'},{n:'Silver',min:25,e:'🥈'},{n:'Gold',min:75,e:'🥇'},{n:'VIP',min:200,e:'💎'}];
 var XP_PER_LEVEL=10, _lastLevel=null;
@@ -479,7 +493,7 @@ function renderQuests(m){
   var qs=[
     {i:'📅',b:'Book your next visit',s:'Lock in your spot',done:!!lsGet('rw_booked_'),act:"scrollToId('bookCard')"},
     {i:'📝',b:'Take the 30-sec survey',s:'Earn a free point',done:!!recentSurvey,act:"scrollToId('surveyCard')"},
-    {i:'🎮',b:'Play the arcade',s:'Earn 🪙 coins',done:!!(m.games&&(m.games.flyer||m.games.hopper)),act:"scrollToArcade()"},
+    {i:'🎮',b:'Play the arcade',s:'Earn 🪙 coins',done:!!(m.games&&(m.games.flyer||m.games.hopper||m.games.runner||m.games.slicer||m.games.stacker)),act:"scrollToArcade()"},
     {i:'🎰',b:'Spin the slots',s:'Spend coins for a prize',done:(m.spins||0)>0,act:"scrollToId('slot')"},
     {i:'💸',b:'Refer a friend',s:'Earn 🪙 when they join',done:!!lsGet('rw_shared_'),act:"shareRef()"},
     {i:'🔥',b:'Keep your streak alive',s:'Visit again soon',done:(m.streak||0)>=2,act:""}
@@ -661,9 +675,10 @@ var GSND=true, gactx=null, curBoard='flyer';
 try{ GSND = localStorage.getItem('loop_snd')!=='0'; }catch(e){}
 function toggleGSound(){ GSND=!GSND; try{ localStorage.setItem('loop_snd',GSND?'1':'0'); }catch(e){} var b=el('gvSound'); if(b) b.textContent=GSND?'🔊':'🔇'; if(GSND) gbeep(660,.06); }
 function gbeep(freq,dur,type){ if(!GSND) return; try{ gactx=gactx||new (window.AudioContext||window.webkitAudioContext)(); var o=gactx.createOscillator(),g=gactx.createGain(); o.type=type||'square'; o.frequency.value=freq; o.connect(g); g.connect(gactx.destination); g.gain.setValueAtTime(.06,gactx.currentTime); g.gain.exponentialRampToValueAtTime(.0001,gactx.currentTime+(dur||.08)); o.start(); o.stop(gactx.currentTime+(dur||.08)); }catch(e){} }
+var LB_TABS={flyer:'lbFlyer',hopper:'lbHopper',runner:'lbRunner',slicer:'lbSlicer',stacker:'lbStacker'};
 function loadBoard(game){
   curBoard=game;
-  var lf=el('lbFlyer'),lh=el('lbHopper'); if(lf)lf.classList.toggle('on',game==='flyer'); if(lh)lh.classList.toggle('on',game==='hopper');
+  for(var gk in LB_TABS){ var t=el(LB_TABS[gk]); if(t) t.classList.toggle('on',gk===game); }
   var box=el('arcadeBoard'); if(!box) return; box.innerHTML='<p class="muted" style="margin:8px 0 0">Loading…</p>';
   rpc('arcade_leaderboard',{p_client:slug,p_game:game}).then(function(d){
     var rows=(d&&d.rows)||[];
