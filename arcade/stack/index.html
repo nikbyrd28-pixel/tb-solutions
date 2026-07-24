@@ -238,7 +238,7 @@
   var tipEl=null;
   function showTip(){ if(tipEl)return; tipEl=document.createElement('div'); tipEl.className='tiptap'; tipEl.textContent='TAP anywhere to drop the layer'; document.body.appendChild(tipEl); setTimeout(rmTip,2400); }
   function rmTip(){ if(tipEl){ tipEl.remove(); tipEl=null; } }
-  function startGame(){ actx(); MUS.start(actx()); resize(); reset(); running=true; dead=false; el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); last=performance.now(); requestAnimationFrame(frame); }
+  function startGame(){ if(running) return; actx(); MUS.start(actx()); resize(); reset(); running=true; dead=false; el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); last=performance.now(); requestAnimationFrame(frame); }
   function gameOver(){
     MUS.stop();
     running=false;
@@ -257,9 +257,9 @@
   }).catch(function(){}); }
 
   /* ---------- input ---------- */
-  function tap(e){ if(e&&e.cancelable) e.preventDefault(); if(!running) return; drop(); }
+  function tap(e){ if(!running) return; if(e&&e.cancelable) e.preventDefault(); drop(); }
   window.addEventListener('pointerdown',tap,{passive:false});
-  window.addEventListener('keydown',function(e){ if(e.code==='Space'||e.code==='ArrowUp'){ e.preventDefault(); if(running) drop(); else if(!el('startScreen').classList.contains('hide')) startGame(); } });
+  window.addEventListener('keydown',function(e){ if(e.repeat) return; if(e.code==='Space'||e.code==='ArrowUp'){ e.preventDefault(); if(running) drop(); else if(!el('startScreen').classList.contains('hide')) startGame(); } });
   el('startBtn').addEventListener('click',function(e){ e.stopPropagation(); startGame(); showTip(); });
   el('retryBtn').addEventListener('click',function(e){ e.stopPropagation(); startGame(); });
   el('backBtn').addEventListener('click',function(e){ e.stopPropagation(); });

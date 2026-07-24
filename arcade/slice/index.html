@@ -104,7 +104,7 @@
     {g:'💇',pts:1,col:'#8b6f4e'},{g:'✂️',pts:1,col:'#9fb4ff'},{g:'🧴',pts:1,col:'#5df2e0'},
     {g:'🪮',pts:1,col:'#b98bff'},{g:'💈',pts:2,col:'#ff6a7a'}
   ];
-  function reset(){ objs=[]; parts=[]; blade=[]; popups=[]; score=0; lives=3; t=0; spawnT=0.4; shake=0; dead=false; comboCount=0; comboTimer=0; bestCombo=0; sliceThisSwipe=0; }
+  function reset(){ objs=[]; parts=[]; blade=[]; popups=[]; score=0; lives=3; t=0; spawnT=0.4; shake=0; flash=0; dead=false; down=false; comboCount=0; comboTimer=0; bestCombo=0; sliceThisSwipe=0; }
 
   /* ---------- spawning ---------- */
   function spawn(){
@@ -232,7 +232,7 @@
   }
 
   /* ---------- flow ---------- */
-  function startGame(){ actx(); MUS.start(actx()); resize(); reset(); running=true; dead=false; el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); last=performance.now(); requestAnimationFrame(frame); }
+  function startGame(){ if(running) return; actx(); MUS.start(actx()); resize(); reset(); running=true; dead=false; el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); last=performance.now(); requestAnimationFrame(frame); }
   function gameOver(){
     MUS.stop();
     running=false;
@@ -254,7 +254,10 @@
   function pos(e){ var r=C.getBoundingClientRect(); var p=(e.touches&&e.touches[0])||e; return {x:p.clientX-r.left, y:p.clientY-r.top}; }
   window.addEventListener('pointerdown',function(e){ if(!running)return; down=true; sliceThisSwipe=0; var p=pos(e); lastX=p.x; lastY=p.y; blade=[{x:p.x,y:p.y,life:0.32}]; },{passive:false});
   window.addEventListener('pointermove',function(e){ if(!running||!down)return; e.preventDefault(); var p=pos(e); slash(p.x,p.y); },{passive:false});
-  window.addEventListener('pointerup',function(){ down=false; sliceThisSwipe=0; });
+  function endSwipe(){ down=false; sliceThisSwipe=0; }
+  window.addEventListener('pointerup',endSwipe);
+  window.addEventListener('pointercancel',endSwipe);
+  window.addEventListener('pointerleave',endSwipe);
   el('startBtn').addEventListener('click',function(e){ e.stopPropagation(); startGame(); });
   el('retryBtn').addEventListener('click',function(e){ e.stopPropagation(); startGame(); });
   el('backBtn').addEventListener('click',function(e){ e.stopPropagation(); });

@@ -166,7 +166,7 @@
   function drawNext(){ NX.clearRect(0,0,64,64); if(!nxt)return; var m=nxt.m, cs=12, ox=(64-m[0].length*cs)/2, oy=(64-m.length*cs)/2;
     for(var r=0;r<m.length;r++){ for(var c=0;c<m[r].length;c++){ if(m[r][c]){ NX.fillStyle=COLORS[nxt.k]; NX.fillRect(ox+c*cs+1,oy+r*cs+1,cs-2,cs-2); } } } }
 
-  function start(){ actx(); MUS.start(actx()); resize(); board=newBoard(); score=0; lines=0; level=1; dropInt=800; dropT=0; dead=false; nxt=randPiece(); spawn();
+  function start(){ if(running) return; actx(); MUS.start(actx()); resize(); board=newBoard(); score=0; lines=0; level=1; dropInt=800; dropT=0; dead=false; nxt=randPiece(); spawn();
     el('hScore').textContent='0'; el('hLines').textContent='0'; el('hLevel').textContent='1'; el('hBest').textContent=best;
     el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); running=true; last=performance.now(); requestAnimationFrame(frame); }
   function over(){
@@ -186,15 +186,17 @@
   function hold(btn,fn,repeat){ var t,iv; function go(e){ e.preventDefault(); if(!running||dead)return; fn(); if(repeat){ t=setTimeout(function(){ iv=setInterval(function(){ if(running&&!dead)fn(); },90); },220); } }
     function stop(){ clearTimeout(t); clearInterval(iv); }
     btn.addEventListener('pointerdown',go); btn.addEventListener('pointerup',stop); btn.addEventListener('pointerleave',stop); btn.addEventListener('pointercancel',stop); }
-  hold(el('bLeft'),function(){move(-1);},true); hold(el('bRight'),function(){move(1);},true); hold(el('bDrop'),function(){softDrop();},true);
+  hold(el('bLeft'),function(){move(-1);},true); hold(el('bRight'),function(){move(1);},true);
   el('bRot').addEventListener('pointerdown',function(e){ e.preventDefault(); if(running&&!dead)rot(); });
-  el('bDrop').addEventListener('dblclick',function(e){ e.preventDefault(); });
-  // long-press drop = hard drop via separate button? keep soft on tap, hard on keyboard. Add hard drop on double-tap of drop:
-  var lastDrop=0; el('bDrop').addEventListener('pointerup',function(){ var t=performance.now(); if(t-lastDrop<260 && running&&!dead) hardDrop(); lastDrop=t; });
-  window.addEventListener('keydown',function(e){ if(!running||dead){ if((e.code==='Space'||e.code==='Enter')&&!el('startScreen').classList.contains('hide')){ start(); } return; }
-    if(e.code==='ArrowLeft'){e.preventDefault();move(-1);} else if(e.code==='ArrowRight'){e.preventDefault();move(1);}
-    else if(e.code==='ArrowDown'){e.preventDefault();softDrop();} else if(e.code==='ArrowUp'||e.code==='KeyX'){e.preventDefault();rot();}
-    else if(e.code==='Space'){e.preventDefault();hardDrop();} });
+  // single tap on ⤓ = hard drop (clean, unambiguous)
+  el('bDrop').addEventListener('pointerdown',function(e){ e.preventDefault(); if(running&&!dead) hardDrop(); });
+  window.addEventListener('keydown',function(e){
+    if(!running||dead){ if(!e.repeat && (e.code==='Space'||e.code==='Enter') && !el('startScreen').classList.contains('hide')) start(); return; }
+    if(e.code==='ArrowLeft'){e.preventDefault();move(-1);}
+    else if(e.code==='ArrowRight'){e.preventDefault();move(1);}
+    else if(e.code==='ArrowDown'){e.preventDefault();softDrop();}
+    else if(e.code==='ArrowUp'||e.code==='KeyX'){ if(!e.repeat){e.preventDefault();rot();} }
+    else if(e.code==='Space'){ if(!e.repeat){e.preventDefault();hardDrop();} } });
   el('startBtn').addEventListener('click',function(e){ e.stopPropagation(); start(); });
   el('retryBtn').addEventListener('click',function(e){ e.stopPropagation(); start(); });
 })();

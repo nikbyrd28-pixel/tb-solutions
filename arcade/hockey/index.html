@@ -119,8 +119,8 @@
   var lastT=0;
   function frame(now){ if(!running) return; var dt=Math.min(0.033,(now-last)/1000||0); last=now; update(dt); render(); requestAnimationFrame(frame); }
   function update(dt){
-    tLeft-=dt; if(tLeft<=0){ tLeft=0; return end(); }
-    var mm=Math.ceil(tLeft/60-1e-9)>0?0:0; el('timer').textContent='0:'+(tLeft<10?('0'+Math.ceil(tLeft)):Math.ceil(tLeft));
+    tLeft-=dt; if(tLeft<=0){ tLeft=0; el('timer').textContent='0:00'; return end(); }
+    var secs=Math.ceil(tLeft), mm=Math.floor(secs/60), ss=secs%60; el('timer').textContent=mm+':'+(ss<10?('0'+ss):ss);
     // player mallet velocity
     var mvx=(pm.x-pm.px)/Math.max(dt,0.001), mvy=(pm.y-pm.py)/Math.max(dt,0.001); pm.px=pm.x; pm.py=pm.y;
     // AI mallet: chase puck when in its half, else return home
@@ -200,7 +200,7 @@
   function up(){ dragging=false; }
   C.addEventListener('pointerdown',down); C.addEventListener('pointermove',move,{passive:false}); window.addEventListener('pointerup',up);
 
-  function start(){ actx(); MUS.start(actx()); resize(); reset(); running=true; last=performance.now(); el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); rmTip(); requestAnimationFrame(frame); }
+  function start(){ if(running) return; actx(); MUS.start(actx()); resize(); reset(); running=true; last=performance.now(); el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); rmTip(); requestAnimationFrame(frame); }
   var tipEl=null; function showTip(){ if(tipEl)return; tipEl=document.createElement('div'); tipEl.className='tiptap'; tipEl.textContent='Drag your mallet to hit the puck ↑'; document.body.appendChild(tipEl); setTimeout(rmTip,2600); }
   function rmTip(){ if(tipEl){ tipEl.remove(); tipEl=null; } }
   function end(){
