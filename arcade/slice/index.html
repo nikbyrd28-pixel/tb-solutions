@@ -44,6 +44,7 @@
   <p class="sub">Swipe to slice the hair, combs &amp; coins. <b style="color:#ff9db0">Never hit the red razors.</b> Miss three and you're done. 💈</p>
   <button class="btn" id="startBtn">▶ Start slicing</button>
   <p class="hint" id="bestHint"></p>
+  <button id="muteBtn" style="margin-top:12px;background:transparent;border:1px solid rgba(150,190,255,.4);color:#eef1ff;border-radius:999px;padding:9px 18px;font:inherit;font-size:13px;font-weight:700;cursor:pointer">🔊 Music on</button>
 </div>
 
 <div class="overlay hide" id="overScreen">
@@ -75,9 +76,9 @@
   window.addEventListener('resize',resize); resize();
 
   /* ---------- audio ---------- */
-  var AC=null;
+  var AC=null, muted=false; try{ muted=localStorage.getItem('arcade_muted')==='1'; }catch(e){}
   function actx(){ if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(AC&&AC.state==='suspended')AC.resume(); return AC; }
-  function beep(f,dur,type,vol,slideTo){ var a=actx(); if(!a)return; var o=a.createOscillator(),g=a.createGain(); o.type=type||'square'; o.frequency.value=f;
+  function beep(f,dur,type,vol,slideTo){ if(muted) return; var a=actx(); if(!a)return; var o=a.createOscillator(),g=a.createGain(); o.type=type||'square'; o.frequency.value=f;
     if(slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, a.currentTime+dur);
     g.gain.value=vol||0.06; g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime+dur);
     o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime+dur); }
@@ -235,7 +236,7 @@
   }
 
   /* ---------- flow ---------- */
-  function startGame(){ if(running) return; actx(); MUS.start(actx()); resize(); initStars(); reset(); running=true; dead=false; el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); last=performance.now(); requestAnimationFrame(frame); }
+  function startGame(){ if(running) return; actx(); if(!muted) MUS.start(actx()); resize(); initStars(); reset(); running=true; dead=false; el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); last=performance.now(); requestAnimationFrame(frame); }
   function gameOver(){
     MUS.stop();
     running=false;
@@ -261,6 +262,9 @@
   window.addEventListener('pointerup',endSwipe);
   window.addEventListener('pointercancel',endSwipe);
   window.addEventListener('pointerleave',endSwipe);
+  function setMuteLabel(){ var b=el('muteBtn'); if(b) b.textContent=muted?'🔇 Music off':'🔊 Music on'; }
+  setMuteLabel();
+  if(el('muteBtn')) el('muteBtn').addEventListener('click',function(e){ e.stopPropagation(); muted=!muted; try{localStorage.setItem('arcade_muted',muted?'1':'0');}catch(_){} setMuteLabel(); if(muted){ MUS.stop(); } else if(running){ MUS.start(actx()); } });
   el('startBtn').addEventListener('click',function(e){ e.stopPropagation(); startGame(); });
   el('retryBtn').addEventListener('click',function(e){ e.stopPropagation(); startGame(); });
   el('backBtn').addEventListener('click',function(e){ e.stopPropagation(); });

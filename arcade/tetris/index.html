@@ -66,6 +66,7 @@
   <p class="sub">Stack the blocks, clear full lines. Tap ⟳ to rotate, ◀ ▶ to move, ⤓ to drop. It speeds up! 💈</p>
   <button class="btn" id="startBtn">▶ Play</button>
   <p class="hint" id="bestHint"></p>
+  <button id="muteBtn" style="margin-top:12px;background:transparent;border:1px solid rgba(150,190,255,.4);color:#eef1ff;border-radius:999px;padding:9px 18px;font:inherit;font-size:13px;font-weight:700;cursor:pointer">🔊 Music on</button>
 </div>
 
 <div class="overlay hide" id="overScreen">
@@ -94,8 +95,9 @@
   el('backBtn').href = code? ('/rewards/?c='+client):'/loyalty/'; el('backBtn2').href=el('backBtn').href;
 
   /* audio */
-  var AC=null; function actx(){ if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(AC&&AC.state==='suspended')AC.resume(); return AC; }
-  function beep(f,dur,type,vol,slideTo){ var a=actx(); if(!a)return; var o=a.createOscillator(),g=a.createGain(); o.type=type||'square'; o.frequency.value=f; if(slideTo)o.frequency.exponentialRampToValueAtTime(slideTo,a.currentTime+dur); g.gain.value=vol||0.05; g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+dur); o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+dur); }
+  var AC=null, muted=false; try{ muted=localStorage.getItem('arcade_muted')==='1'; }catch(e){}
+  function actx(){ if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(AC&&AC.state==='suspended')AC.resume(); return AC; }
+  function beep(f,dur,type,vol,slideTo){ if(muted) return; var a=actx(); if(!a)return; var o=a.createOscillator(),g=a.createGain(); o.type=type||'square'; o.frequency.value=f; if(slideTo)o.frequency.exponentialRampToValueAtTime(slideTo,a.currentTime+dur); g.gain.value=vol||0.05; g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+dur); o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+dur); }
   var sMove=function(){beep(300,0.03,'square',0.03);}, sRot=function(){beep(480,0.04,'square',0.04);}, sLock=function(){beep(200,0.06,'sine',0.05);};
   var sLine=function(n){beep(500+n*120,0.12,'triangle',0.07,900+n*160);}, sTetris=function(){beep(660,0.1,'triangle',0.08,1320);setTimeout(function(){beep(990,0.14,'triangle',0.06);},90);}, sOver=function(){beep(300,0.5,'sawtooth',0.08,60);};
   var MUS=(function(){ var ac=null,on=false,tmr=0,step=0; var seq=[0,7,12,7,3,10,7,3,5,12,7,5,3,7,10,7];
@@ -169,7 +171,7 @@
   function drawNext(){ NX.clearRect(0,0,64,64); if(!nxt)return; var m=nxt.m, cs=12, ox=(64-m[0].length*cs)/2, oy=(64-m.length*cs)/2;
     for(var r=0;r<m.length;r++){ for(var c=0;c<m[r].length;c++){ if(m[r][c]){ NX.fillStyle=COLORS[nxt.k]; NX.fillRect(ox+c*cs+1,oy+r*cs+1,cs-2,cs-2); } } } }
 
-  function start(){ if(running) return; actx(); MUS.start(actx()); resize(); initStars(); board=newBoard(); score=0; lines=0; level=1; dropInt=800; dropT=0; dead=false; nxt=randPiece(); spawn();
+  function start(){ if(running) return; actx(); if(!muted) MUS.start(actx()); resize(); initStars(); board=newBoard(); score=0; lines=0; level=1; dropInt=800; dropT=0; dead=false; nxt=randPiece(); spawn();
     el('hScore').textContent='0'; el('hLines').textContent='0'; el('hLevel').textContent='1'; el('hBest').textContent=best;
     el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); running=true; last=performance.now(); requestAnimationFrame(frame); }
   function over(){
@@ -200,6 +202,9 @@
     else if(e.code==='ArrowDown'){e.preventDefault();softDrop();}
     else if(e.code==='ArrowUp'||e.code==='KeyX'){ if(!e.repeat){e.preventDefault();rot();} }
     else if(e.code==='Space'){ if(!e.repeat){e.preventDefault();hardDrop();} } });
+  function setMuteLabel(){ var b=el('muteBtn'); if(b) b.textContent=muted?'🔇 Music off':'🔊 Music on'; }
+  setMuteLabel();
+  if(el('muteBtn')) el('muteBtn').addEventListener('click',function(e){ e.stopPropagation(); muted=!muted; try{localStorage.setItem('arcade_muted',muted?'1':'0');}catch(_){} setMuteLabel(); if(muted){ MUS.stop(); } else if(running){ MUS.start(actx()); } });
   el('startBtn').addEventListener('click',function(e){ e.stopPropagation(); start(); });
   el('retryBtn').addEventListener('click',function(e){ e.stopPropagation(); start(); });
 })();

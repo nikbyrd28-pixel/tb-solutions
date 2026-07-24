@@ -51,6 +51,7 @@
   <p class="sub">Drag your mallet to smack the puck into the top goal. Most goals in 60 seconds wins. Go! 🥅</p>
   <button class="btn" id="startBtn">▶ Face off</button>
   <p class="hint" id="bestHint"></p>
+  <button id="muteBtn" style="margin-top:12px;background:transparent;border:1px solid rgba(150,190,255,.4);color:#eef1ff;border-radius:999px;padding:9px 18px;font:inherit;font-size:13px;font-weight:700;cursor:pointer">🔊 Music on</button>
 </div>
 
 <div class="overlay hide" id="overScreen">
@@ -79,8 +80,9 @@
   el('backBtn').href = code?('/rewards/?c='+client):'/loyalty/'; el('backBtn2').href=el('backBtn').href;
 
   /* audio */
-  var AC=null; function actx(){ if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(AC&&AC.state==='suspended')AC.resume(); return AC; }
-  function beep(f,dur,type,vol,slideTo){ var a=actx(); if(!a)return; var o=a.createOscillator(),g=a.createGain(); o.type=type||'square'; o.frequency.value=f; if(slideTo)o.frequency.exponentialRampToValueAtTime(slideTo,a.currentTime+dur); g.gain.value=vol||0.05; g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+dur); o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+dur); }
+  var AC=null, muted=false; try{ muted=localStorage.getItem('arcade_muted')==='1'; }catch(e){}
+  function actx(){ if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(AC&&AC.state==='suspended')AC.resume(); return AC; }
+  function beep(f,dur,type,vol,slideTo){ if(muted) return; var a=actx(); if(!a)return; var o=a.createOscillator(),g=a.createGain(); o.type=type||'square'; o.frequency.value=f; if(slideTo)o.frequency.exponentialRampToValueAtTime(slideTo,a.currentTime+dur); g.gain.value=vol||0.05; g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+dur); o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+dur); }
   var sHit=function(){beep(260,0.05,'square',0.06,160);}, sWall=function(){beep(180,0.04,'sine',0.04);};
   var sGoalYou=function(){beep(660,0.1,'triangle',0.08,1200);setTimeout(function(){beep(990,0.14,'triangle',0.06);},90);}, sGoalCpu=function(){beep(300,0.3,'sawtooth',0.07,120);}, sBuzz=function(){beep(200,0.6,'square',0.08,120);};
   var MUS=(function(){ var ac=null,on=false,tmr=0,step=0; var seq=[0,7,12,7,3,10,7,3,5,12,7,5,3,7,10,7];
@@ -203,7 +205,7 @@
   function up(){ dragging=false; }
   C.addEventListener('pointerdown',down); C.addEventListener('pointermove',move,{passive:false}); window.addEventListener('pointerup',up);
 
-  function start(){ if(running) return; actx(); MUS.start(actx()); resize(); initStars(); reset(); running=true; last=performance.now(); el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); rmTip(); requestAnimationFrame(frame); }
+  function start(){ if(running) return; actx(); if(!muted) MUS.start(actx()); resize(); initStars(); reset(); running=true; last=performance.now(); el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); rmTip(); requestAnimationFrame(frame); }
   var tipEl=null; function showTip(){ if(tipEl)return; tipEl=document.createElement('div'); tipEl.className='tiptap'; tipEl.textContent='Drag your mallet to hit the puck ↑'; document.body.appendChild(tipEl); setTimeout(rmTip,2600); }
   function rmTip(){ if(tipEl){ tipEl.remove(); tipEl=null; } }
   function end(){
@@ -219,6 +221,9 @@
       el('lbRows').innerHTML=rows.slice(0,5).map(function(x,i){ return '<div class="r"><span>'+(['🥇','🥈','🥉'][i]||('#'+(i+1)))+' '+String(x.name).replace(/[<>&]/g,'')+'</span><b>'+x.score+'</b></div>'; }).join('');
       el('lbBox').classList.remove('hide'); }).catch(function(){});
   }
+  function setMuteLabel(){ var b=el('muteBtn'); if(b) b.textContent=muted?'🔇 Music off':'🔊 Music on'; }
+  setMuteLabel();
+  if(el('muteBtn')) el('muteBtn').addEventListener('click',function(e){ e.stopPropagation(); muted=!muted; try{localStorage.setItem('arcade_muted',muted?'1':'0');}catch(_){} setMuteLabel(); if(muted){ MUS.stop(); } else if(running){ MUS.start(actx()); } });
   el('startBtn').addEventListener('click',function(e){ e.stopPropagation(); start(); showTip(); });
   el('retryBtn').addEventListener('click',function(e){ e.stopPropagation(); start(); });
 })();
