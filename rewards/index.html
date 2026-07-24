@@ -353,7 +353,7 @@
       <div class="store hide" id="coinStore">
         <div class="store-h">🪙 Coin store — cash in your coins</div>
         <div class="barberpick hide" id="barberPick">💈 Your chair:
-          <select id="barberSel" onchange="pickBarber(this.value)"></select>
+          <select id="barberSel" onchange="pickChair(this.value)"></select>
         </div>
         <div id="storeItems"></div>
       </div>
@@ -628,7 +628,8 @@ function loadArcadeStatus(m){
           if(left!=null&&left>0&&left<=5) meta.push('<span class="low">Only '+left+' left!</span>');
           var priceHtml = sale!=null ? ('<s>🪙'+cost+'</s> 🪙'+sale) : ('🪙 '+cost);
           var btn, dis=true, cls='';
-          if(sold){ btn='Sold out'; }
+          if(!it.id){ btn='—'; }
+          else if(sold){ btn='Sold out'; }
           else if(claimed){ btn='Claimed ✓'; }
           else if(!afford){ btn='Need '+(price-coins); }
           else { btn='Redeem'; dis=false; }
@@ -656,7 +657,7 @@ function loadArcadeStatus(m){
     if(mile && mile.on){
       var cuts=Math.max(1,+mile.cuts||8), lt=(m.lifetime||m.points||0), claimed=(m.milestone_claims||0);
       var earnedTiers=Math.floor(lt/cuts), ready=earnedTiers>claimed;
-      var into = ready ? cuts : (lt - claimed*cuts), pct=Math.max(0,Math.min(100, into/cuts*100));
+      var into = ready ? cuts : Math.max(0, Math.min(cuts, lt - claimed*cuts)), pct=Math.max(0,Math.min(100, into/cuts*100));
       el('mileIcon').textContent = ready ? '🎉' : '🔒';
       el('mileLabel').textContent = esc(mile.label||'Milestone reward');
       el('mileGoal').textContent = 'Every '+cuts+' visits';
@@ -709,7 +710,7 @@ function redeemStore(btn){
     toast('🎁 Redeemed! Show it at the counter.');
   }).catch(function(){ btn.disabled=false; });
 }
-function pickBarber(name){
+function pickChair(name){
   if(!member) return;
   rpc('set_member_barber',{p_code:member.code,p_barber:name}).then(function(r){
     if(r&&r.ok){ member.barber=r.barber||''; loadArcadeStatus(member); toast(name?('💈 Chair set to '+name):'Chair cleared'); }
@@ -948,7 +949,7 @@ function loadBoard(game){
   rpc('arcade_leaderboard',{p_client:slug,p_game:game}).then(function(d){
     var rows=(d&&d.rows)||[];
     if(!rows.length){ box.innerHTML='<p class="muted" style="margin:8px 0 0">No scores yet — play to claim #1!</p>'; return; }
-    var medals=['🥇','🥈','🥉'], myName=(member&&member.name)||'', myScore=(member&&member.games&&member.games[game]);
+    var medals=['🥇','🥈','🥉'], myName=(member&&member.name)||'', myScore=(game==='week'?(member&&member.week_coins):(member&&member.games&&member.games[game]));
     box.innerHTML=rows.map(function(r,i){
       var me=(r.name===myName && r.score===myScore);
       return '<div class="lbrow'+(me?' me':'')+'"><span class="rk">'+(medals[i]||('#'+(i+1)))+'</span><span class="nm">'+esc(r.name)+(me?' (you)':'')+'</span><span class="sc">'+r.score+'</span></div>';

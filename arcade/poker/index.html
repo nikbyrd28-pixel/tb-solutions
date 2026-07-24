@@ -121,7 +121,7 @@
   var hand=[null,null,null,null,null], holds={}, phase='bet', busy=false, bet=5;
   function renderHand(){ el('hand').innerHTML=hand.map(function(c,i){return cardHtml(c,i,!!holds[i]);}).join('');
     if(phase==='draw'){ Array.prototype.forEach.call(document.querySelectorAll('#hand .card:not(.empty)'),function(cd){
-      cd.addEventListener('click',function(){ var i=+cd.getAttribute('data-i'); holds[i]=!holds[i]; sHold(); renderHand(); }); }); } }
+      cd.addEventListener('click',function(){ if(busy)return; var i=+cd.getAttribute('data-i'); holds[i]=!holds[i]; sHold(); renderHand(); }); }); } }
   function setBal(c){ if(c!=null) el('bal').textContent='🪙 '+c; }
   function highlightPay(rk){ Array.prototype.forEach.call(document.querySelectorAll('.pr'),function(p){p.classList.remove('on');}); if(rk&&el('pay_'+rk)) el('pay_'+rk).classList.add('on'); }
   function banner(t,cls){ var b=el('banner'); b.textContent=t; b.className='banner'+(cls?(' '+cls):''); }
@@ -140,7 +140,7 @@
         if(!st||st.error){ banner(st&&st.error||'Error','lose'); return; }
         hand=st.hand.slice(); holds={}; phase='draw'; setBal(st.coins); sDeal(); renderHand();
         banner('Tap cards to HOLD'); el('actBtn').textContent='🔄 Draw'; el('betRow').style.opacity='.4';
-      }).catch(function(){ busy=false; el('actBtn').disabled=false; });
+      }).catch(function(){ busy=false; el('actBtn').disabled=false; banner('Network error — try again','lose'); });
     } else if(phase==='draw'){
       busy=true; el('actBtn').disabled=true;
       var keep=[]; for(var i=0;i<5;i++) if(holds[i]) keep.push(i);

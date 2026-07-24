@@ -148,7 +148,7 @@
 
   var bet=5, busy=false;
   Array.prototype.forEach.call(document.querySelectorAll('.chip'),function(ch){
-    ch.addEventListener('click',function(){ if(busy)return; bet=+ch.getAttribute('data-b');
+    ch.addEventListener('click',function(){ if(busy||el('dealRow').classList.contains('hide'))return; bet=+ch.getAttribute('data-b');
       Array.prototype.forEach.call(document.querySelectorAll('.chip'),function(c){c.classList.toggle('sel',c===ch);}); });
   });
 
