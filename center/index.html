@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Loop Command Center</title>
+<meta name="description" content="Your barbershop command center — calendar, customers, messaging and rewards in one place." />
+<meta name="theme-color" content="#05060d" />
+<meta name="robots" content="noindex" />
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%F0%9F%8E%9B%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--text:#f2f4ff;--muted:#8f97b8;--line:rgba(122,162,255,.28);--acc:#5df2e0;--acc2:#6f9dff;--vio:#b98bff;--gold:#ffcf5a;--good:#43f0b0;--bad:#ff8a9d;--bg:#05060d;--card:rgba(255,255,255,.04)}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0}
+  body{font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.5;min-height:100dvh;
+    background:radial-gradient(circle at 12% -6%,rgba(122,162,255,.16),transparent 42%),radial-gradient(circle at 92% 108%,rgba(93,242,224,.1),transparent 44%),linear-gradient(180deg,#070811,var(--bg))}
+  a{color:var(--acc2)}
+  .wrap{max-width:920px;margin:0 auto;padding:0 14px}
+  #signin{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+  .logo{font-size:15px;font-weight:900;letter-spacing:.02em;margin-bottom:6px}
+  .logo span{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  #signin h1{font-size:clamp(28px,7vw,40px);margin:8px 0 4px;letter-spacing:-.02em}
+  #signin p.sub{color:var(--muted);margin:0 0 22px;max-width:340px}
+  .sbox{width:min(360px,92vw);background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;text-align:left}
+  label{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
+  input,select,textarea{width:100%;padding:13px 14px;border-radius:12px;background:rgba(0,0,0,.22);border:1px solid var(--line);color:var(--text);font:inherit;font-size:15px}
+  .btn{border:0;border-radius:12px;padding:14px 18px;font:inherit;font-weight:900;font-size:15px;cursor:pointer;color:#05060d;background:linear-gradient(135deg,var(--acc),var(--acc2));box-shadow:0 8px 22px rgba(93,242,224,.28)}
+  .btn.wide{width:100%;margin-top:16px}
+  .btn.ghost{background:rgba(122,162,255,.08);border:1px solid var(--line);color:var(--text);box-shadow:none;font-weight:700}
+  .btn.sm{padding:9px 13px;font-size:13px;border-radius:10px}
+  .err{color:var(--bad);font-size:13px;margin-top:10px;font-weight:700;min-height:16px}
+  .hint{color:var(--muted);font-size:12.5px;margin-top:14px}
+  #app{display:none;padding-bottom:60px}
+  .top{position:sticky;top:0;z-index:20;background:rgba(7,8,17,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .top .row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0}
+  .biz{font-weight:900;font-size:17px}.biz small{display:block;color:var(--muted);font-weight:600;font-size:12px}
+  .tabs{display:flex;gap:4px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}
+  .tab{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:999px;padding:9px 15px;font:inherit;font-weight:800;font-size:13.5px;cursor:pointer;white-space:nowrap}
+  .tab.on{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#05060d;border-color:transparent}
+  .panel{display:none;padding-top:16px;animation:fade .2s ease}
+  .panel.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  h2{font-size:16px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  @media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 14px}
+  .stat .n{font-size:26px;font-weight:900;color:var(--acc)}
+  .stat.alt .n{color:var(--acc2)}.stat.warm .n{color:var(--gold)}
+  .stat .l{font-size:12px;color:var(--muted)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:14px}
+  .tierbar{display:flex;height:14px;border-radius:999px;overflow:hidden;margin:6px 0 8px}.tierbar div{min-width:2px}
+  .tierleg{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}.tierleg .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}
+  .muted{color:var(--muted)}
+  .segs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .seg{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:999px;padding:7px 12px;font:inherit;font-weight:800;font-size:12.5px;cursor:pointer}
+  .seg.on{background:color-mix(in srgb,var(--acc) 22%,transparent);color:#fff;border-color:var(--acc)}
+  .searchrow{display:flex;gap:8px;margin-bottom:10px}
+  .cust{display:flex;align-items:center;gap:11px;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:11px 12px;margin-top:8px}
+  .av{width:40px;height:40px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;font-weight:900;color:#05060d;background:linear-gradient(135deg,var(--acc),var(--acc2))}
+  .cust .info{flex:1;min-width:0}
+  .cust .info b{font-size:14.5px}
+  .cust .info .meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+  .pill{font-size:10.5px;font-weight:800;border-radius:999px;padding:1px 7px}
+  .pill.VIP{background:rgba(185,139,255,.18);color:var(--vio)}.pill.Gold{background:rgba(255,207,90,.16);color:var(--gold)}
+  .pill.Silver{background:rgba(201,210,230,.16);color:#c9d2e6}.pill.Bronze{background:rgba(197,139,90,.16);color:#e0a878}
+  .cust .acts{display:flex;gap:6px}
+  .iconb{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:rgba(122,162,255,.08);color:var(--text);font-size:15px;cursor:pointer;text-decoration:none;display:grid;place-items:center}
+  .day{margin-top:16px}.day h3{font-size:13px;color:var(--acc2);margin:0 0 6px;text-transform:uppercase;letter-spacing:.06em}
+  .appt{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:11px 12px;margin-top:8px}
+  .appt .tm{font-weight:900;font-size:15px;min-width:66px}
+  .appt .who{flex:1;min-width:0}.appt .who b{font-size:14px}.appt .who .s{font-size:12px;color:var(--muted)}
+  .stbadge{font-size:11px;font-weight:800;border-radius:999px;padding:3px 9px;border:1px solid var(--line)}
+  .stbadge.New{color:var(--gold);border-color:rgba(255,207,90,.4)}.stbadge.Confirmed{color:var(--good);border-color:rgba(67,240,176,.4)}
+  .stbadge.Cancelled,.stbadge.Done{color:var(--muted)}
+  textarea{min-height:96px;resize:vertical}
+  .tmpls{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+  .tmpl{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:999px;padding:6px 11px;font:inherit;font-size:12px;cursor:pointer}
+  .recips{margin-top:10px}
+  .sharecard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:14px;text-align:center}
+  .sharecard h3{margin:0 0 4px;font-size:15px}.sharecard p{color:var(--muted);font-size:13px;margin:0 0 12px}
+  .qr{width:150px;height:150px;border-radius:12px;background:#fff;padding:8px;margin:0 auto 12px;display:block}
+  .linkbox{display:flex;gap:8px;margin-top:8px}.linkbox input{font-size:13px}
+  .foot{text-align:center;color:#5e6584;font-size:12px;margin:26px 0}
+  .hide{display:none!important}
+  .load{color:var(--muted);padding:16px;text-align:center}
+</style>
+</head>
+<body>
+
+<div id="signin">
+  <div class="logo">🔁 <span>Loop</span> · Command Center</div>
+  <h1>Your shop, one screen.</h1>
+  <p class="sub">Calendar, customers, messaging and rewards — sign in with your business code and staff PIN.</p>
+  <div class="sbox">
+    <label>Business code</label>
+    <input id="inCode" autocapitalize="none" autocomplete="off" placeholder="yourshop" />
+    <label>Staff PIN</label>
+    <input id="inPin" type="tel" inputmode="numeric" autocomplete="off" placeholder="••••" />
+    <button class="btn wide" id="signBtn" onclick="signIn()">Open my command center →</button>
+    <div class="err" id="signErr"></div>
+    <p class="hint">New to Loop? <a href="/loyalty/#start">Start free →</a></p>
+  </div>
+</div>
+
+<div id="app">
+  <div class="top"><div class="wrap">
+    <div class="row">
+      <div class="biz"><span id="bizName">Shop</span><small id="bizSub"></small></div>
+      <button class="btn ghost sm" onclick="signOut()">Sign out</button>
+    </div>
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-t="overview" onclick="showTab('overview')">📊 Overview</button>
+      <button class="tab" data-t="calendar" onclick="showTab('calendar')">📅 Calendar</button>
+      <button class="tab" data-t="customers" onclick="showTab('customers')">👥 Customers</button>
+      <button class="tab" data-t="messages" onclick="showTab('messages')">💬 Messages</button>
+      <button class="tab" data-t="share" onclick="showTab('share')">🔗 Share</button>
+      <button class="tab" data-t="tools" onclick="showTab('tools')">🛠️ Tools</button>
+    </div>
+  </div></div>
+
+  <div class="wrap">
+    <div class="panel on" id="p-overview">
+      <div class="grid" id="stats"></div>
+      <div class="card"><h2>💈 Member tiers</h2><div class="tierbar" id="tierbar"></div><div class="tierleg" id="tierleg"></div></div>
+      <div class="card"><h2>🏆 Top members</h2><div id="topMembers"><div class="load">Loading…</div></div></div>
+    </div>
+
+    <div class="panel" id="p-calendar">
+      <div class="segs" id="calSegs">
+        <button class="seg on" data-r="today" onclick="calRange('today')">Today</button>
+        <button class="seg" data-r="week" onclick="calRange('week')">Next 7 days</button>
+        <button class="seg" data-r="past" onclick="calRange('past')">Past 7 days</button>
+      </div>
+      <div id="calBody"><div class="load">Loading…</div></div>
+    </div>
+
+    <div class="panel" id="p-customers">
+      <div class="searchrow"><input id="crmSearch" placeholder="🔍 Search name or phone" oninput="crmDebounce()"><button class="btn ghost sm" onclick="loadCrm()">Refresh</button></div>
+      <div class="segs" id="crmSegs">
+        <button class="seg on" data-s="all" onclick="crmSeg('all')">All</button>
+        <button class="seg" data-s="active" onclick="crmSeg('active')">Active</button>
+        <button class="seg" data-s="lapsed" onclick="crmSeg('lapsed')">Lapsed</button>
+        <button class="seg" data-s="vip" onclick="crmSeg('vip')">VIPs</button>
+        <button class="seg" data-s="new" onclick="crmSeg('new')">New</button>
+      </div>
+      <div id="crmBody"><div class="load">Loading…</div></div>
+    </div>
+
+    <div class="panel" id="p-messages">
+      <div class="card">
+        <h2>💬 Text your customers</h2>
+        <p class="muted" style="margin:0 0 10px;font-size:13px">Pick who to reach, write your message, and send it from your phone. Use <b style="color:var(--text)">{name}</b> to personalize.</p>
+        <label>Who</label>
+        <div class="segs" id="msgSegs">
+          <button class="seg on" data-s="active" onclick="msgSeg('active')">Active</button>
+          <button class="seg" data-s="lapsed" onclick="msgSeg('lapsed')">Lapsed</button>
+          <button class="seg" data-s="vip" onclick="msgSeg('vip')">VIPs</button>
+          <button class="seg" data-s="all" onclick="msgSeg('all')">Everyone</button>
+        </div>
+        <div class="tmpls" id="msgTmpls"></div>
+        <label>Message <span id="msgCount" class="muted" style="text-transform:none;letter-spacing:0"></span></label>
+        <textarea id="msgText" placeholder="Hey {name}! We miss you — 20% off your next cut this week 💈"></textarea>
+        <div id="msgRecips" class="recips"></div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="btn" onclick="sendFirst()">💬 Open first text</button>
+          <button class="btn ghost" onclick="copyBlast()">📋 Copy message</button>
+        </div>
+        <p class="hint">Want automated bulk SMS &amp; email blasts (no tapping per person)? That needs a Twilio/Resend key — tell your Loop rep and I'll switch it on.</p>
+      </div>
+    </div>
+
+    <div class="panel" id="p-share">
+      <div class="sharecard">
+        <h3>📇 Get more customers</h3>
+        <p>Text or post this so customers join your rewards card.</p>
+        <img class="qr" id="qrJoin" alt="Join QR">
+        <div class="linkbox"><input id="linkJoin" readonly><button class="btn sm" onclick="copyLink('linkJoin')">Copy</button></div>
+        <button class="btn ghost sm" style="margin-top:10px" onclick="shareLink('linkJoin','Join my rewards card')">Share</button>
+      </div>
+      <div class="sharecard">
+        <h3>💈 Invite another shop</h3>
+        <p>Know another barber? Send them Loop — you both win.</p>
+        <img class="qr" id="qrInvite" alt="Invite QR">
+        <div class="linkbox"><input id="linkInvite" readonly><button class="btn sm" onclick="copyLink('linkInvite')">Copy</button></div>
+        <button class="btn ghost sm" style="margin-top:10px" onclick="shareLink('linkInvite','Check out Loop for your shop')">Share</button>
+      </div>
+      <div class="sharecard">
+        <h3>🧑‍🔧 Staff sign-in</h3>
+        <p>Your team scans customers and redeems rewards here — they'll need your code &amp; PIN.</p>
+        <div class="linkbox"><input id="linkStaff" readonly><button class="btn sm" onclick="copyLink('linkStaff')">Copy</button></div>
+        <p class="muted" style="font-size:12.5px;margin-top:10px">Code: <b id="staffCode" style="color:var(--text)"></b> · PIN: <b style="color:var(--text)">the one you signed in with</b></p>
+      </div>
+    </div>
+
+    <div class="panel" id="p-tools">
+      <div class="card"><h2>🛠️ Shop tools</h2><div id="toolLinks"></div></div>
+    </div>
+
+    <div class="foot">🔁 <b>Loop</b> Command Center · <a href="https://tbsol.net">TB Solutions</a></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var SUPA='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+  var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+  function rpc(fn,args){ return fetch(SUPA+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify(args)}).then(function(r){return r.json();}); }
+  var el=function(id){return document.getElementById(id);};
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function toast(m){ var t=document.createElement('div'); t.textContent=m; t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0d1226;border:1px solid rgba(122,162,255,.28);color:#fff;padding:11px 18px;border-radius:999px;z-index:99;font-weight:700;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.4)'; document.body.appendChild(t); setTimeout(function(){t.remove();},2200); }
+  function initials(n){ n=(n||'?').trim(); var p=n.split(/\s+/); return ((p[0]||'?')[0]+(p[1]?p[1][0]:'')).toUpperCase(); }
+  function ago(d){ if(!d) return 'never'; var s=(Date.now()-new Date(d).getTime())/1000; if(s<3600)return Math.max(1,Math.floor(s/60))+'m ago'; if(s<86400)return Math.floor(s/3600)+'h ago'; var days=Math.floor(s/86400); if(days<30)return days+'d ago'; return Math.floor(days/30)+'mo ago'; }
+  function tel(p){ return (p||'').replace(/[^0-9+]/g,''); }
+  function cap(s){ return (s||'').charAt(0).toUpperCase()+(s||'').slice(1); }
+
+  var CODE='', PIN='', BIZ='', DASH=null, autoTried=false;
+  var q=new URLSearchParams(location.search); if(q.get('c')) el('inCode').value=q.get('c');
+
+  window.signIn=function(){
+    var code=(el('inCode').value||'').trim().toLowerCase().replace(/[^a-z0-9]/g,''), pin=(el('inPin').value||'').trim();
+    if(!code){ el('signErr').textContent='Enter your business code.'; return; }
+    var b=el('signBtn'); b.disabled=true; b.textContent='Signing in…'; el('signErr').textContent='';
+    rpc('loyalty_owner_dashboard',{p_client:code,p_pin:pin}).then(function(d){
+      b.disabled=false; b.textContent='Open my command center →';
+      if(!d||d.ok===false){ el('signErr').textContent=(d&&d.error)||'Could not sign in — check your code and PIN.'; return; }
+      CODE=code; PIN=pin; DASH=d; BIZ=d.biz_name||cap(code);
+      try{ localStorage.setItem('cc_auth',JSON.stringify({c:code,p:pin})); }catch(e){}
+      enterApp();
+    }).catch(function(){ b.disabled=false; b.textContent='Open my command center →'; el('signErr').textContent='Network error — try again.'; });
+  };
+  window.signOut=function(){ try{ localStorage.removeItem('cc_auth'); }catch(e){} location.reload(); };
+  el('inPin').addEventListener('keydown',function(e){ if(e.key==='Enter') signIn(); });
+
+  function enterApp(){
+    el('signin').style.display='none'; el('app').style.display='block';
+    el('bizName').textContent=BIZ; el('bizSub').textContent='Reward: '+(DASH.reward_text||'a reward')+' at '+(DASH.reward_at||5)+' pts';
+    renderOverview(); buildShare(); buildTools();
+  }
+  if(!autoTried){ autoTried=true; try{ var a=JSON.parse(localStorage.getItem('cc_auth')||'null'); if(a&&a.c&&a.p){ el('inCode').value=a.c; el('inPin').value=a.p; signIn(); } }catch(e){} }
+
+  var loaded={};
+  window.showTab=function(t){
+    [].forEach.call(document.querySelectorAll('.tab'),function(b){ b.classList.toggle('on',b.getAttribute('data-t')===t); });
+    [].forEach.call(document.querySelectorAll('.panel'),function(p){ p.classList.toggle('on',p.id==='p-'+t); });
+    if(t==='calendar'&&!loaded.cal){ loaded.cal=1; calRange('today'); }
+    if(t==='customers'&&!loaded.crm){ loaded.crm=1; loadCrm(); }
+    if(t==='messages'&&!loaded.msg){ loaded.msg=1; initMsg(); }
+    window.scrollTo(0,0);
+  };
+
+  function renderOverview(){
+    var d=DASH, tiles=[['Members',d.members,''],['Active 30d',d.active30,'alt'],['New this week',d.new7,'alt'],['Bookings',d.bookings,'warm'],
+      ['Points held',d.points_out,''],['Rewards redeemed',d.redeemed,'alt'],['Total spins',d.spins,''],['Prizes won',d.prizes,'warm']];
+    el('stats').innerHTML=tiles.map(function(t){ return '<div class="stat '+t[2]+'"><div class="n">'+(t[1]||0)+'</div><div class="l">'+t[0]+'</div></div>'; }).join('');
+    var tr=d.tiers||{}, seg=[['Bronze',tr.bronze,'#e0a878'],['Silver',tr.silver,'#c9d2e6'],['Gold',tr.gold,'#ffcf5a'],['VIP',tr.vip,'#b98bff']];
+    var tot=seg.reduce(function(a,b){return a+(b[1]||0);},0)||1;
+    el('tierbar').innerHTML=seg.map(function(s){ var w=(s[1]||0)/tot*100; return w>0?'<div style="width:'+w+'%;background:'+s[2]+'"></div>':''; }).join('')||'<div style="width:100%;background:rgba(255,255,255,.05)"></div>';
+    el('tierleg').innerHTML=seg.map(function(s){ return '<span><span class="dot" style="background:'+s[2]+'"></span>'+s[0]+' <b>'+(s[1]||0)+'</b></span>'; }).join('');
+    var top=d.top||[];
+    el('topMembers').innerHTML= top.length? top.map(function(m,i){
+      return '<div class="cust"><div class="av">'+(['🥇','🥈','🥉'][i]||initials(m.name))+'</div><div class="info"><b>'+esc(m.name||'A member')+'</b><div class="meta">'+(m.lifetime||0)+' lifetime pts · Lv '+(m.level||1)+(m.streak>=2?(' · 🔥 '+m.streak):'')+'</div></div></div>';
+    }).join('') : '<p class="muted">No members yet — share your join link to get started.</p>';
+  }
+
+  window.calRange=function(r){
+    [].forEach.call(document.querySelectorAll('#calSegs .seg'),function(b){ b.classList.toggle('on',b.getAttribute('data-r')===r); });
+    el('calBody').innerHTML='<div class="load">Loading…</div>';
+    var now=new Date(), from, to;
+    function iso(d){ return d.toISOString().slice(0,10); }
+    if(r==='today'){ from=iso(now); to=iso(now); }
+    else if(r==='week'){ from=iso(now); var t=new Date(now); t.setDate(t.getDate()+7); to=iso(t); }
+    else { var f=new Date(now); f.setDate(f.getDate()-7); from=iso(f); to=iso(now); }
+    rpc('booking_admin',{p_client:CODE,p_pin:PIN,p_from:from,p_to:to}).then(function(d){
+      if(!d||d.ok===false){ el('calBody').innerHTML='<p class="muted">'+((d&&d.error)||'Could not load bookings.')+'</p>'; return; }
+      renderCal(d.bookings||d.appointments||d.rows||[]);
+    }).catch(function(){ el('calBody').innerHTML='<p class="muted">Network error.</p>'; });
+  };
+  function renderCal(list){
+    if(!list.length){ el('calBody').innerHTML='<p class="muted" style="padding:20px 0">No appointments in this range. When customers book from their card, they appear here.</p>'; return; }
+    var byDay={}, order=[];
+    list.forEach(function(a){
+      var dt=a.at||a.date||a.created_at||a.when; var day = dt? new Date(dt).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'}) : 'Scheduled';
+      if(!byDay[day]){ byDay[day]=[]; order.push(day); }
+      byDay[day].push(a);
+    });
+    el('calBody').innerHTML=order.map(function(day){
+      return '<div class="day"><h3>'+esc(day)+'</h3>'+byDay[day].map(function(a){
+        var tm=a.time||(a.at?new Date(a.at).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}):'—');
+        var st=a.status||'New', who=a.name||a.who||'Guest', svc=(a.service&&(a.service.name||a.service))||a.service_name||'';
+        var ph=tel(a.phone);
+        return '<div class="appt"><div class="tm">'+esc(tm)+'</div><div class="who"><b>'+esc(who)+'</b><div class="s">'+esc(svc)+(a.staff_name?(' · '+esc(a.staff_name)):'')+'</div></div>'
+          +'<span class="stbadge '+esc(st)+'">'+esc(st)+'</span>'
+          +'<div class="acts" style="margin-left:6px">'+(ph?'<a class="iconb" href="tel:'+ph+'">📞</a>':'')
+          +(a.id?'<button class="iconb" title="Confirm" onclick="setAppt('+a.id+',\'Confirmed\')">✓</button><button class="iconb" title="Cancel" onclick="setAppt('+a.id+',\'Cancelled\')">✕</button>':'')+'</div></div>';
+      }).join('')+'</div>';
+    }).join('');
+  }
+  window.setAppt=function(id,status){
+    rpc('booking_set_status',{p_client:CODE,p_pin:PIN,p_id:id,p_status:status}).then(function(d){
+      if(d&&d.ok!==false){ toast(status==='Confirmed'?'Confirmed ✓':'Cancelled'); var on=document.querySelector('#calSegs .seg.on'); calRange(on?on.getAttribute('data-r'):'today'); }
+      else toast((d&&d.error)||'Could not update.');
+    }).catch(function(){ toast('Network error.'); });
+  };
+
+  var crmSegVal='all', crmTimer=0, CRM=[];
+  window.crmSeg=function(s){ crmSegVal=s; [].forEach.call(document.querySelectorAll('#crmSegs .seg'),function(b){ b.classList.toggle('on',b.getAttribute('data-s')===s); }); loadCrm(); };
+  window.crmDebounce=function(){ clearTimeout(crmTimer); crmTimer=setTimeout(loadCrm,300); };
+  window.loadCrm=function(){
+    el('crmBody').innerHTML='<div class="load">Loading…</div>';
+    rpc('crm_members',{p_client:CODE,p_pin:PIN,p_search:(el('crmSearch').value||''),p_segment:crmSegVal}).then(function(d){
+      if(!d||d.ok===false){ el('crmBody').innerHTML='<p class="muted">'+((d&&d.error)||'Could not load.')+'</p>'; return; }
+      CRM=d.members||[]; var c=d.counts||{};
+      [['all',c.all],['active',c.active],['lapsed',c.lapsed],['vip',c.vip],['new',c.new]].forEach(function(x){
+        var b=document.querySelector('#crmSegs .seg[data-s="'+x[0]+'"]'); if(b) b.textContent=cap(x[0])+(x[1]!=null?(' ('+x[1]+')'):'');
+      });
+      renderCrm(CRM);
+    }).catch(function(){ el('crmBody').innerHTML='<p class="muted">Network error.</p>'; });
+  };
+  function renderCrm(list){
+    if(!list.length){ el('crmBody').innerHTML='<p class="muted" style="padding:20px 0">No customers here yet.</p>'; return; }
+    el('crmBody').innerHTML=list.map(function(m){
+      var ph=tel(m.phone);
+      return '<div class="cust"><div class="av">'+esc(initials(m.name))+'</div>'
+        +'<div class="info"><b>'+esc(m.name)+'</b> <span class="pill '+esc(m.tier)+'">'+esc(m.tier)+'</span>'
+        +'<div class="meta"><span>🪙 '+(m.coins||0)+'</span><span>⭐ '+(m.lifetime||0)+' lifetime</span><span>last: '+ago(m.last_visit)+'</span>'+(m.streak>=2?('<span>🔥 '+m.streak+'</span>'):'')+(m.barber?('<span>💈 '+esc(m.barber)+'</span>'):'')+'</div></div>'
+        +'<div class="acts">'+(ph?('<a class="iconb" href="sms:'+ph+'" title="Text">💬</a><a class="iconb" href="tel:'+ph+'" title="Call">📞</a>'):'')+'</div></div>';
+    }).join('');
+  }
+
+  var msgSegVal='active', MSG=[];
+  var TMPLS=[['👋 We miss you','Hey {name}! It\'s been a while — 20% off your next cut this week. Book anytime 💈'],
+    ['⭐ VIP thanks','{name}, you\'re one of our top regulars 🙌 Free beard trim on your next visit. See you soon!'],
+    ['📅 Slots open','Hey {name}, we\'ve got openings this week — grab your spot before they fill up ✂️'],
+    ['🎉 New reward','{name}! New rewards just dropped on your Loop card — play, earn coins & cash them in 🪙']];
+  function initMsg(){ el('msgTmpls').innerHTML=TMPLS.map(function(t,i){ return '<button class="tmpl" onclick="useTmpl('+i+')">'+esc(t[0])+'</button>'; }).join('');
+    el('msgText').addEventListener('input',updateCount); msgSeg('active'); }
+  window.useTmpl=function(i){ el('msgText').value=TMPLS[i][1]; updateCount(); };
+  function updateCount(){ var n=(el('msgText').value||'').length; el('msgCount').textContent='· '+n+' chars'+(n>160?(' ('+Math.ceil(n/160)+' texts each)'):''); }
+  window.msgSeg=function(s){ msgSegVal=s; [].forEach.call(document.querySelectorAll('#msgSegs .seg'),function(b){ b.classList.toggle('on',b.getAttribute('data-s')===s); });
+    rpc('crm_members',{p_client:CODE,p_pin:PIN,p_search:'',p_segment:s}).then(function(d){ MSG=((d&&d.members)||[]).filter(function(m){return tel(m.phone);}); renderRecips(); }).catch(function(){}); };
+  function renderRecips(){ el('msgRecips').innerHTML='<p class="muted" style="font-size:12.5px;margin:2px 0">Will text <b style="color:var(--text)">'+MSG.length+'</b> customer'+(MSG.length===1?'':'s')+' with a phone number. Tap "Open first text" to send from your Messages app.</p>'; }
+  function personalize(tpl,m){ return (tpl||'').replace(/\{name\}/g, (m.name||'there').split(/\s+/)[0]); }
+  window.sendFirst=function(){ if(!MSG.length){ toast('No one to text in this group.'); return; } var m=MSG[0], body=personalize(el('msgText').value,m); location.href='sms:'+tel(m.phone)+'?&body='+encodeURIComponent(body); };
+  window.copyBlast=function(){ var txt=el('msgText').value||''; if(navigator.clipboard) navigator.clipboard.writeText(txt).then(function(){toast('Message copied 📋');},function(){toast('Copy failed');}); else toast('Copy not supported'); };
+
+  function qr(url){ return 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=0&data='+encodeURIComponent(url); }
+  function buildShare(){
+    var base=location.origin;
+    var join=base+'/rewards/?c='+CODE, invite=base+'/loyalty/?ref='+CODE, staff=base+'/rewards/staff/';
+    el('linkJoin').value=join; el('qrJoin').src=qr(join);
+    el('linkInvite').value=invite; el('qrInvite').src=qr(invite);
+    el('linkStaff').value=staff; el('staffCode').textContent=CODE;
+  }
+  window.copyLink=function(id){ var i=el(id); i.select(); if(navigator.clipboard) navigator.clipboard.writeText(i.value).then(function(){toast('Link copied 📋');},function(){toast('Copy failed');}); else toast('Copied'); };
+  window.shareLink=function(id,title){ var url=el(id).value; if(navigator.share){ navigator.share({title:title,url:url}).catch(function(){}); } else copyLink(id); };
+
+  function buildTools(){
+    var base=location.origin;
+    var links=[['⚙️ Rewards & settings',base+'/rewards/owner/?c='+CODE],['📣 Loop Blast (bulk SMS)',base+'/rewards/blast/?c='+CODE],
+      ['💔 Win back lapsed',base+'/rewards/winback/?c='+CODE],['⭐ Reviews wall',base+'/rewards/wall/?c='+CODE],
+      ['🖨️ Counter poster',base+'/rewards/poster/?c='+CODE],['🎮 Arcade',base+'/arcade/?c='+CODE]];
+    el('toolLinks').innerHTML=links.map(function(l){ return '<a class="cust" style="text-decoration:none" href="'+l[1]+'" target="_blank" rel="noopener"><div class="info"><b>'+esc(l[0])+'</b></div><span class="iconb">↗</span></a>'; }).join('');
+  }
+})();
+</script>
+</body>
+</html>
