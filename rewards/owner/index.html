@@ -177,6 +177,10 @@
         <label style="display:flex;align-items:center;gap:9px;margin-top:16px;text-transform:none;letter-spacing:0;font-size:14.5px;cursor:pointer">
           <input type="checkbox" id="setBooking" style="width:20px;height:20px;margin:0;accent-color:#7aa2ff"> Online booking is ON
         </label>
+        <label style="display:flex;align-items:center;gap:9px;margin-top:12px;text-transform:none;letter-spacing:0;font-size:14.5px;cursor:pointer">
+          <input type="checkbox" id="setCasino" style="width:20px;height:20px;margin:0;accent-color:#ffcf5a"> Casino games (Blackjack &amp; Video Poker)
+        </label>
+        <div class="muted" style="margin:-2px 0 4px;font-size:12.5px">Customers bet the coins they earn — no real money. Turn off if you'd rather not offer card games.</div>
         <label>Google review link (optional)</label>
         <input id="setReview" placeholder="https://g.page/your-shop/review">
 
@@ -429,6 +433,7 @@ function loadSettings(){
     el('setSpinCost').value=d.spin_cost||2;
     el('setSurvey').value=(d.survey_points==null?1:d.survey_points);
     el('setBooking').checked=d.booking_on!==false;
+    el('setCasino').checked=d.casino_on!==false;
     el('setReview').value=d.google_review_url||'';
     el('setGameDiff').value=d.game_difficulty||'normal';
     PRIZES=(d.spin_prizes||[]).map(function(p){return {label:p.label||'Prize',type:p.type||'points',weight:(p.weight==null?10:p.weight)};});
@@ -489,7 +494,8 @@ function saveSettings(){
     p_booking_on:el('setBooking').checked,
     p_biz_name:(el('setBiz').value||'').trim(),
     p_google_review_url:(el('setReview').value||'').trim(),
-    p_game_difficulty:el('setGameDiff').value
+    p_game_difficulty:el('setGameDiff').value,
+    p_casino_on:el('setCasino').checked
   }).then(function(d){
     btn.disabled=false; btn.textContent='💾 Save settings';
     if(!d||!d.ok){ setSetErr((d&&d.error)||'Could not save.'); return; }

@@ -529,6 +529,9 @@ var ARC=null;
 function loadArcadeStatus(m){
   rpc('get_arcade_status',{p_client:slug,p_code:m.code}).then(function(d){
     if(!d||d.error) return; ARC=d;
+    // casino games on/off per shop
+    var casino = d.casino_on!==false;
+    ['gBlackjack','gPoker'].forEach(function(id){ var t=el(id); if(t) t.classList.toggle('hide',!casino); });
     var f=d.featured, gi=GAMEINFO[f];
     if(gi){
       el('dchEmoji').textContent=gi.emoji;

@@ -196,6 +196,7 @@ function refreshBests(){ el('bestFlyer').textContent='Best '+bestOf('flyer'); el
 refreshBests();
 /* ---- standalone games: carry c/m params through + show their local bests ---- */
 (function(){
+  var AKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
   var q=new URLSearchParams(location.search);
   var client=(q.get('c')||'demo').toLowerCase().replace(/[^a-z0-9]/g,'')||'demo';
   var qs=''; if(q.get('c')) qs='?c='+encodeURIComponent(client)+(q.get('m')?('&m='+encodeURIComponent(q.get('m').slice(0,40))):'');
@@ -207,6 +208,14 @@ refreshBests();
   });
   var bj=el('cardBlackjack'); if(bj) bj.href='/arcade/blackjack/'+qs;
   var pk=el('cardPoker'); if(pk) pk.href='/arcade/poker/'+qs;
+  // hide casino cards if this shop turned them off
+  try{
+    fetch('https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/rpc/get_arcade_status',{method:'POST',
+      headers:{apikey:AKEY,Authorization:'Bearer '+AKEY,'Content-Type':'application/json'},body:JSON.stringify({p_client:client})})
+      .then(function(r){return r.json();}).then(function(d){
+        if(d && d.casino_on===false){ [bj,pk].forEach(function(c){ if(c) c.style.display='none'; }); }
+      }).catch(function(){});
+  }catch(e){}
 })();
 /* ---- sound (WebAudio blips) ---- */
 var SND=true, actx=null;
