@@ -980,6 +980,7 @@ function openGame(mode){
       best: (member.games && member.games[mode]) || 0,
       accent: (cs.getPropertyValue('--acc')||'').trim()||'#7aa2ff',
       accent2: (cs.getPropertyValue('--acc2')||'').trim()||'#5ad0f0',
+      shareText: function(m,score){ var nm=m==='flyer'?'Loop Flyer':'Chair Hopper'; return 'I scored '+score+' on '+nm+' at '+display+" \ud83c\udfae I'm earning a free cut just by playing \u2014 join me: "+location.origin+'/rewards/?c='+slug+(member?('&ref='+member.code):''); },
       onOver: function(m, score){
         if(!member || !member.code) return { best: score };
         return rpc('game_reward',{p_code:member.code,p_game:m,p_score:score}).then(function(res){
@@ -990,7 +991,7 @@ function openGame(mode){
             var best=(res.games&&res.games[m])||score;
             return { best: best, newBest: score>=best,
               line1: res.coins_earned>0?('+'+res.coins_earned+' 🪙 coins!'):'No coins this round',
-              line2: res.capped?'Daily coin cap reached — play tomorrow for more.':('Best: '+best) };
+              line2: res.capped?'Daily coin cap reached — play tomorrow for more.':('\ud83c\udfb0 '+(res.coins||0)+' coins saved \u2014 spin the slot to win '+(res.reward_text||'a FREE cut')+'!') };
           }
           return { best: score, line1:'Score '+score+' saved!' };
         }).catch(function(){ return { best: score, line1:'Score '+score+' saved!' }; });

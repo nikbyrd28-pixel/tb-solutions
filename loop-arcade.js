@@ -190,6 +190,7 @@
       '<div class="la-ov hide" id="la-over"><div class="la-card"><div class="la-em">🏁</div>' +
       '<h2>Score <span id="la-final">0</span></h2><p class="la-big" id="la-l1"></p><p id="la-l2"></p>' +
       '<button class="la-go" id="la-again">▶ Play again</button>' +
+      '<button class="la-go ghost" id="la-share">📣 Share my score</button>' +
       '<button class="la-go ghost" id="la-back">Back</button></div></div>' +
       '<div class="la-ctrls hide" id="la-ctrls"><button data-dir="left" aria-label="Left">◀</button>' +
       '<button data-dir="up" aria-label="Forward">▲</button><button data-dir="right" aria-label="Right">▶</button></div></div>';
@@ -202,7 +203,7 @@
       stage: root.querySelector('.la-stage'), cv: g('la-cv'),
       start: g('la-start'), icon: g('la-icon'), name: g('la-name'), how: g('la-how'), best: g('la-best'), play: g('la-play'), skins: g('la-skins'),
       pausescr: g('la-pausescr'), resume: g('la-resume'), quit: g('la-quit'),
-      over: g('la-over'), final: g('la-final'), l1: g('la-l1'), l2: g('la-l2'), again: g('la-again'), back: g('la-back'),
+      over: g('la-over'), final: g('la-final'), l1: g('la-l1'), l2: g('la-l2'), again: g('la-again'), back: g('la-back'), share: g('la-share'),
       ctrls: g('la-ctrls')
     };
     function g(id) { return root.querySelector('#' + id); }
@@ -222,6 +223,7 @@
     dom.resume.onclick = resume;
     dom.play.onclick = start;
     dom.again.onclick = start;
+    dom.share.onclick = doShare;
 
     // canvas taps
     dom.cv.addEventListener('pointerdown', function (e) {
@@ -772,6 +774,14 @@
   function resume() {
     if (!E.paused) return; E.paused = false; dom.pausescr.classList.add('hide'); dom.pause.textContent = '❚❚';
     E.last = performance.now(); Audio.resume(); Audio.ui(); Audio.music.start();
+  }
+  function doShare() {
+    var name = E.mode === 'flyer' ? 'Loop Flyer' : 'Chair Hopper';
+    var txt = (E.cfg && E.cfg.shareText) ? E.cfg.shareText(E.mode, E.score)
+      : ('I scored ' + E.score + ' on ' + name + ' \ud83c\udfae Can you beat me? ' + location.href);
+    if (navigator.share) { navigator.share({ text: txt }).catch(function () {}); }
+    else { try { navigator.clipboard.writeText(txt); dom.share.textContent = 'Copied \u2713'; setTimeout(function () { dom.share.textContent = '\ud83d\udce3 Share my score'; }, 1800); } catch (e) {} }
+    Audio.ui();
   }
   function gameOver() {
     if (E.over) return; E.over = true; E.running = false; cancelAnimationFrame(E.raf); Audio.music.stop();

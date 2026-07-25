@@ -84,8 +84,8 @@
     <div class="brand"><a href="/loyalty/">🔁 <span>Loop</span> Arcade</a></div>
     <button class="sound" id="soundBtn" onclick="toggleSound()">🔊 Sound on</button>
   </div>
-  <h1>Play free. <span>No download.</span></h1>
-  <p class="lead">A whole arcade to kill a wait. These are the same games your customers play <b style="color:var(--text)">inside a Loop loyalty card</b> — where every run earns 🪙 coins toward spins and prizes at your shop.</p>
+  <h1>Play free. <span>Grind a free haircut.</span></h1>
+  <p class="lead">A whole arcade, no download. Inside a <b style="color:var(--text)">Loop loyalty card</b> every run earns 🪙 coins — spend them on the prize slot and <b style="color:var(--text)">grind your way to a FREE haircut</b>. Play here, then get it at your shop.</p>
 
   <div class="games">
     <div class="gcard" onclick="openGame('flyer')">
@@ -251,6 +251,7 @@ function openGame(mode){
     LoopArcade.play({
       mode: mode,
       best: bestOf(mode),
+      shareText: function(m,score){ var nm=m==='flyer'?'Loop Flyer':'Chair Hopper'; return 'I scored '+score+' on '+nm+' \ud83c\udfae Play free \u2014 no download: https://tbsol.net/arcade/'; },
       onOver: function(m, score){
         var prev=bestOf(m), nb=score>prev; if(nb) setBest(m, score); refreshBests();
         return { best: Math.max(prev,score), newBest: nb,

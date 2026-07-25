@@ -78,6 +78,7 @@
   </div>
   <div class="coinsWon hide" id="coinsWon"></div>
   <button class="btn" id="retryBtn">↻ Play again</button>
+  <button class="btn ghost" style="margin-top:10px" onclick="(function(){var sc=(document.getElementById('ovScore')||{}).textContent||'0';var t='I scored '+sc+' on Barber Blocks \ud83c\udfae Play free: https://tbsol.net/arcade/';if(navigator.share){navigator.share({text:t}).catch(function(){});}else{try{navigator.clipboard.writeText(t);alert('Copied \u2713');}catch(e){}}})()">📣 Share my score</button>
   <div class="lb hide" id="lbBox"><h3>🏆 Top stackers</h3><div id="lbRows"></div></div>
   <a class="btn ghost" id="backBtn2" href="#" style="text-decoration:none;margin-top:12px">← Back to my card</a>
 </div>
