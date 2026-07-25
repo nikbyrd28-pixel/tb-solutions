@@ -104,6 +104,7 @@
       <div class="chips" id="statusChips"></div>
       <div style="display:flex;gap:8px;margin:8px 0">
         <input id="q" placeholder="🔎 Search name, phone, email…" oninput="setSearch(this.value)" style="flex:1;min-width:0">
+        <select class="status-sel" onchange="setSort(this.value)" title="Sort leads" style="flex:0 0 auto"><option value="new">Newest</option><option value="overdue">Follow-ups first</option><option value="old">Oldest</option><option value="name">Name A–Z</option></select>
         <button class="btn ghost small" onclick="exportCSV()" title="Download the leads you're viewing as a CSV">⬇ CSV</button>
       </div>
       <div id="list"><p class="muted">Loading…</p></div>
@@ -200,6 +201,16 @@ function computeVis(){
   });
 }
 function setSearch(v){ filterText=(v||'').trim().toLowerCase(); render(); }
+var sortMode='new';
+function setSort(v){ sortMode=v; render(); }
+function sortVis(vis){
+  var t=function(x){return new Date(x.created_at).getTime();};
+  if(sortMode==='old') return vis.sort(function(a,b){return t(a)-t(b);});
+  if(sortMode==='name') return vis.sort(function(a,b){return String(a.name||a.company||'').localeCompare(String(b.name||b.company||''));});
+  if(sortMode==='overdue'){ var od=function(x){return (x.status==='New' && (Date.now()-t(x))>86400000)?1:0;};
+    return vis.sort(function(a,b){ return (od(b)-od(a)) || (t(b)-t(a)); }); }
+  return vis.sort(function(a,b){return t(b)-t(a);}); // newest
+}
 function timeAgo(ts){ var s=Math.floor((Date.now()-new Date(ts).getTime())/1000); if(s<60)return 'just now'; var m=Math.floor(s/60); if(m<60)return m+'m ago'; var h=Math.floor(m/60); if(h<24)return h+'h ago'; var d=Math.floor(h/24); if(d<7)return d+'d ago'; return new Date(ts).toLocaleDateString(); }
 document.addEventListener('keydown',function(e){ if(e.key==='/' && document.activeElement && ['INPUT','SELECT','TEXTAREA'].indexOf(document.activeElement.tagName)<0){ var q=el('q'); if(q){ e.preventDefault(); q.focus(); } } });
 function smsHref(x){
@@ -223,7 +234,7 @@ function exportCSV(){
   setTimeout(function(){URL.revokeObjectURL(a.href);},2000);
 }
 function render(){
-  var vis=computeVis();
+  var vis=sortVis(computeVis());
   renderGame();
   var counts={};
   STATUSES.forEach(function(s){counts[s]=0});
