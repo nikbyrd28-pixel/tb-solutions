@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Chair — shop setup · TB Solutions</title>
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%F0%9F%92%88%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{--text:#f2f4ff;--muted:#8f97b8;--dim:#69719a;--line:rgba(122,162,255,.24);--line2:rgba(122,162,255,.4);
+    --acc:#7aa2ff;--acc2:#5df2e0;--vio:#b98bff;--good:#43f0b0;--gold:#ffd45a;--bad:#ff8a9d}
+  *{box-sizing:border-box}
+  @keyframes popin{0%{transform:translateY(10px);opacity:0}100%{transform:translateY(0);opacity:1}}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.5;min-height:100vh;
+    background:radial-gradient(circle at 14% -6%,rgba(122,162,255,.18),transparent 42%),radial-gradient(circle at 88% 106%,rgba(93,242,224,.12),transparent 45%),linear-gradient(180deg,#070811,#04050a)}
+  .wrap{max-width:600px;margin:0 auto;padding:22px 15px 70px}
+  .brand{font-weight:900;font-size:15px}.brand span{background:linear-gradient(90deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tag{color:var(--muted);font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin:2px 0 16px}
+  .card{background:linear-gradient(150deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px;animation:popin .3s ease}
+  h1,h2,h3{font-family:Poppins,Inter,sans-serif;margin:0}h1{font-size:20px}h2{font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+  label{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
+  input,select{width:100%;background:rgba(2,4,12,.6);border:1px solid var(--line);border-radius:12px;padding:12px 13px;color:var(--text);font:inherit;font-size:16px}
+  input:focus,select:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(122,162,255,.2)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .row3{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;align-items:end;margin-bottom:8px}
+  .row2{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end;margin-bottom:8px}
+  .hint{font-size:12px;color:var(--dim);margin:4px 0 0}
+  .btn{width:100%;margin-top:14px;border:0;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;border-radius:999px;padding:13px;font:inherit;font-weight:900;font-size:15px;cursor:pointer;box-shadow:0 10px 28px rgba(122,162,255,.3)}
+  .btn:disabled{opacity:.55}
+  .btn.ghost{background:rgba(122,162,255,.07);border:1px solid var(--line);color:var(--text);box-shadow:none;font-weight:700}
+  .btn.sm{width:auto;margin:0;padding:11px 14px;font-size:13px}
+  .x{border:1px solid var(--line);background:rgba(255,138,157,.08);color:var(--bad);border-radius:10px;padding:11px 12px;font:inherit;font-weight:800;cursor:pointer}
+  .days{display:flex;gap:6px;flex-wrap:wrap}
+  .dchip{border:1px solid var(--line);background:rgba(2,4,12,.5);border-radius:10px;padding:9px 12px;font-size:13px;font-weight:700;cursor:pointer;color:var(--muted)}
+  .dchip.on{border-color:var(--acc2);color:var(--text);background:rgba(94,242,224,.08)}
+  .err{color:var(--bad);font-size:13px;margin-top:10px;text-align:center}.ok{color:var(--good);font-size:13px;margin-top:10px;text-align:center;font-weight:700}
+  .hide{display:none!important}.muted{color:var(--muted);font-size:12.5px}
+  .linkbox{display:flex;gap:8px;align-items:center;background:rgba(2,4,12,.6);border:1px solid var(--line);border-radius:12px;padding:11px 12px;font-size:12.5px;margin-top:8px}
+  .linkbox code{color:var(--acc2);font-family:ui-monospace,Menlo,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+  .linkbox button{border:1px solid var(--line);background:rgba(122,162,255,.06);color:var(--text);border-radius:9px;padding:7px 11px;font:inherit;font-weight:700;font-size:12px;cursor:pointer}
+  .appt{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px}
+  .appt:last-child{border-bottom:0}.appt .when{font-weight:800;min-width:96px}.appt .who{flex:1;min-width:0}.appt .who b{font-weight:700}.appt .who span{color:var(--muted);font-size:12.5px}
+  .appt a{color:var(--acc2);font-size:12px;font-weight:700;white-space:nowrap}
+  .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:40;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d;font-weight:800;font-size:13px;border-radius:999px;padding:9px 18px;box-shadow:0 10px 30px rgba(122,162,255,.4);animation:popin .25s ease}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">💈 Chair · <span>Shop setup</span></div>
+  <div class="tag">Your booking page control panel</div>
+
+  <div class="card" id="login">
+    <h1>Sign in</h1>
+    <p class="muted" style="margin:6px 0 0">Use the same login as your CRM / dashboard.</p>
+    <label>Email</label><input id="lEmail" type="email" autocomplete="username" placeholder="you@email.com">
+    <label>Password</label><input id="lPass" type="password" autocomplete="current-password" placeholder="••••••••">
+    <button class="btn" id="loginBtn" onclick="doLogin()">Sign in →</button>
+    <div class="err hide" id="loginErr"></div>
+  </div>
+
+  <div id="app" class="hide">
+    <!-- SHOP -->
+    <div class="card">
+      <h1>Your <span style="background:linear-gradient(90deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent">shop</span></h1>
+      <p class="muted" id="who" style="margin:6px 0 0"></p>
+      <label>Booking code <span style="text-transform:none;color:var(--dim)">(the ?c= in your link)</span></label>
+      <input id="pSlug" placeholder="e.g. maple-barbers" autocomplete="off">
+      <p class="hint">Lowercase, no spaces. Pick once — it's your booking link forever.</p>
+      <label>Shop name</label><input id="pBiz" placeholder="Maple Street Barbers">
+      <div class="row">
+        <div><label>Address <span style="text-transform:none;color:var(--dim)">(optional)</span></label><input id="pAddr" placeholder="West Chester, PA"></div>
+        <div><label>Phone <span style="text-transform:none;color:var(--dim)">(optional)</span></label><input id="pPhone" placeholder="(555) 555-5555"></div>
+      </div>
+      <div class="row">
+        <div><label>Opens</label><select id="pOpen"></select></div>
+        <div><label>Closes</label><select id="pClose"></select></div>
+      </div>
+      <label>Open days</label>
+      <div class="days" id="daysPick"></div>
+      <label style="margin-top:14px">Slot length</label>
+      <select id="pSlot"><option value="15">Every 15 min</option><option value="20">Every 20 min</option><option value="30" selected>Every 30 min</option><option value="60">Every hour</option></select>
+      <button class="btn" id="saveShopBtn" onclick="saveShop()">Save shop →</button>
+      <div class="err hide" id="shopErr"></div><div class="ok hide" id="shopOk"></div>
+    </div>
+
+    <!-- LINK -->
+    <div class="card hide" id="linkCard">
+      <h2>🔗 Your booking link</h2>
+      <p class="muted" style="margin:0 0 4px">Put this in your Instagram bio, on a QR at the counter, in every text:</p>
+      <div class="linkbox"><code id="bookUrl">—</code><button onclick="cp()">Copy</button></div>
+    </div>
+
+    <!-- DEPOSITS -->
+    <div class="card hide" id="depCard">
+      <h2>💳 Deposits (Stripe or Square)</h2>
+      <p class="muted" style="margin:0 0 4px">Paste your <b style="color:var(--text)">Stripe Payment Link</b> or <b style="color:var(--text)">Square checkout link</b>. Clients see a "Pay deposit" button after booking. We never see your card processor login — you keep 100% control.</p>
+      <label>Payment link</label><input id="pDepLink" placeholder="https://buy.stripe.com/... or https://square.link/...">
+      <label>Button label</label><input id="pDepNote" placeholder="Pay your $10 deposit">
+      <button class="btn ghost" id="saveDepBtn" onclick="saveShop(true)">Save deposit settings</button>
+      <p class="hint">No link? Leave blank — bookings still work, just without a deposit.</p>
+    </div>
+
+    <!-- SERVICES -->
+    <div class="card hide" id="svcCard">
+      <h2>✂️ Services</h2>
+      <div id="svcRows"></div>
+      <button class="btn ghost sm" onclick="addSvc()">+ Add service</button>
+      <button class="btn" id="saveSvcBtn" onclick="saveSvcs()">Save services</button>
+      <div class="ok hide" id="svcOk"></div>
+    </div>
+
+    <!-- STAFF -->
+    <div class="card hide" id="staffCard">
+      <h2>🧑‍🔧 Barbers / staff</h2>
+      <div id="staffRows"></div>
+      <button class="btn ghost sm" onclick="addStaff()">+ Add barber</button>
+      <button class="btn" id="saveStaffBtn" onclick="saveStaff()">Save barbers</button>
+      <div class="ok hide" id="staffOk"></div>
+    </div>
+
+    <!-- APPOINTMENTS -->
+    <div class="card hide" id="apptCard">
+      <h2>📅 Upcoming appointments</h2>
+      <div id="appts"><p class="muted">—</p></div>
+      <button class="btn ghost sm" onclick="loadAppts()" style="margin-top:10px">↻ Refresh</button>
+    </div>
+
+    <button class="btn ghost" onclick="signOut()">Sign out</button>
+  </div>
+  <p class="muted" style="text-align:center;margin-top:16px">Powered by <a href="/booking/" style="color:var(--dim)">Chair</a> · TB Solutions</p>
+</div>
+
+<script>
+var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+function el(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+if(!window.supabase){ el('loginErr').textContent='Could not load the sign-in library — reload.'; el('loginErr').classList.remove('hide'); throw new Error('supabase-js missing'); }
+var supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+function toast(t){var x=document.createElement('div');x.className='toast';x.textContent=t;document.body.appendChild(x);setTimeout(function(){x.remove();},1300);}
+function flash(id,m){var e=el(id);e.textContent=m;e.classList.remove('hide');}
+var SLUG='', DOWN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], daysSel={};
+
+// build hour selects + day chips
+(function(){
+  var o='',c='';
+  for(var h=6;h<=22;h++){ var lab=fmtHour(h); o+='<option value="'+h+'">'+lab+'</option>'; c+='<option value="'+h+'">'+lab+'</option>'; }
+  el('pOpen').innerHTML=o; el('pClose').innerHTML=c; el('pOpen').value=9; el('pClose').value=18;
+  el('daysPick').innerHTML=DOWN.map(function(d,i){ return '<div class="dchip'+([1,2,3,4,5,6].indexOf(i)>=0?' on':'')+'" data-d="'+i+'" onclick="toggleDay('+i+')">'+d+'</div>'; }).join('');
+  [1,2,3,4,5,6].forEach(function(i){daysSel[i]=true;});
+})();
+function fmtHour(h){ var ap=h>=12?'pm':'am',hh=h%12; if(hh===0)hh=12; return hh+' '+ap; }
+function toggleDay(i){ daysSel[i]=!daysSel[i]; var c=document.querySelector('.dchip[data-d="'+i+'"]'); c.classList.toggle('on',!!daysSel[i]); }
+
+async function doLogin(){
+  el('loginErr').classList.add('hide');
+  var email=(el('lEmail').value||'').trim(), pass=el('lPass').value||'';
+  if(!email||!pass) return flash('loginErr','Enter your email and password.');
+  var b=el('loginBtn'); b.disabled=true; b.textContent='Signing in…';
+  var r=await supa.auth.signInWithPassword({email:email,password:pass});
+  if(r.error){ b.disabled=false; b.textContent='Sign in →'; return flash('loginErr',r.error.message||'Could not sign in.'); }
+  onSignedIn();
+}
+async function onSignedIn(){
+  var u=(await supa.auth.getUser()).data.user;
+  el('login').classList.add('hide'); el('app').classList.remove('hide');
+  el('who').textContent='Signed in as '+((u&&u.email)||'');
+  var r=await supa.from('booking_shops').select('*').order('created_at',{ascending:true}).limit(1);
+  if(r.data && r.data.length){ fillShop(r.data[0]); afterShop(r.data[0].slug); await loadSvcStaff(); loadAppts(); }
+  else { addSvc(); addStaff(); }
+}
+function fillShop(s){
+  el('pSlug').value=s.slug||''; el('pBiz').value=s.business||''; el('pAddr').value=s.address||''; el('pPhone').value=s.phone||'';
+  el('pOpen').value=s.open_hour||9; el('pClose').value=s.close_hour||18; el('pSlot').value=s.slot_minutes||30;
+  el('pDepLink').value=s.deposit_link||''; el('pDepNote').value=s.deposit_note||'';
+  daysSel={}; (s.days||'1,2,3,4,5,6').split(',').forEach(function(d){daysSel[+d]=true;});
+  DOWN.forEach(function(_,i){ var c=document.querySelector('.dchip[data-d="'+i+'"]'); if(c)c.classList.toggle('on',!!daysSel[i]); });
+}
+function daysCsv(){ return Object.keys(daysSel).filter(function(k){return daysSel[k];}).sort().join(','); }
+async function saveShop(depOnly){
+  el('shopErr').classList.add('hide'); el('shopOk').classList.add('hide');
+  var slug=(el('pSlug').value||'').trim().toLowerCase().replace(/[^a-z0-9-]/g,''); el('pSlug').value=slug;
+  var biz=(el('pBiz').value||'').trim();
+  if(!slug) return flash('shopErr','Enter a booking code.');
+  if(!biz) return flash('shopErr','Enter your shop name.');
+  if(+el('pClose').value<=+el('pOpen').value) return flash('shopErr','Closing time must be after opening.');
+  var days=daysCsv(); if(!days) return flash('shopErr','Pick at least one open day.');
+  var b=el(depOnly?'saveDepBtn':'saveShopBtn'); b.disabled=true; var old=b.textContent; b.textContent='Saving…';
+  var r=await supa.rpc('book_shop_upsert',{p_slug:slug,p_business:biz,p_open:+el('pOpen').value,p_close:+el('pClose').value,
+    p_days:days,p_slot:+el('pSlot').value,p_deposit_link:(el('pDepLink').value||'').trim(),p_deposit_note:(el('pDepNote').value||'').trim(),
+    p_phone:(el('pPhone').value||'').trim(),p_address:(el('pAddr').value||'').trim()});
+  b.disabled=false; b.textContent=old;
+  if(r.error||!r.data||r.data.ok===false){ return flash('shopErr',(r.data&&r.data.error)||(r.error&&r.error.message)||'Could not save.'); }
+  el('shopOk').textContent='Saved ✓'; el('shopOk').classList.remove('hide'); toast('Shop saved ✓'); afterShop(slug);
+  if(!SLUG_LOADED){ await loadSvcStaff(); loadAppts(); }
+}
+var SLUG_LOADED=false;
+function afterShop(slug){ SLUG=slug; el('bookUrl').textContent=(location.origin+'/booking/book/?c='+slug).replace(/^https?:\/\//,''); window._bookUrl=location.origin+'/booking/book/?c='+slug;
+  ['linkCard','depCard','svcCard','staffCard','apptCard'].forEach(function(id){el(id).classList.remove('hide');}); }
+function cp(){ try{navigator.clipboard.writeText(window._bookUrl);}catch(e){} toast('Copied ✓'); }
+
+/* services */
+function svcRow(s){ s=s||{}; var d=document.createElement('div'); d.className='row3';
+  d.innerHTML='<div><input placeholder="Service name" value="'+esc(s.name||'')+'" class="svcN"></div>'
+    +'<div><input type="number" min="5" step="5" placeholder="min" value="'+(s.minutes||30)+'" class="svcM"></div>'
+    +'<div><input type="number" min="0" placeholder="$" value="'+(s.price||0)+'" class="svcP"></div>'
+    +'<button class="x" onclick="this.parentNode.remove()">✕</button>';
+  el('svcRows').appendChild(d);
+}
+function addSvc(){ svcRow(); }
+async function loadSvcStaff(){
+  SLUG_LOADED=true;
+  var sv=await supa.from('booking_services').select('*').eq('shop_slug',SLUG).order('sort');
+  el('svcRows').innerHTML=''; (sv.data&&sv.data.length?sv.data:[{}]).forEach(svcRow);
+  var st=await supa.from('booking_staff').select('*').eq('shop_slug',SLUG).order('sort');
+  el('staffRows').innerHTML=''; (st.data&&st.data.length?st.data:[{}]).forEach(staffRow);
+}
+async function saveSvcs(){
+  var items=[].map.call(el('svcRows').querySelectorAll('.row3'),function(r){ return {name:r.querySelector('.svcN').value.trim(),minutes:+r.querySelector('.svcM').value||30,price:+r.querySelector('.svcP').value||0}; }).filter(function(x){return x.name;});
+  var b=el('saveSvcBtn'); b.disabled=true; b.textContent='Saving…';
+  var r=await supa.rpc('book_services_set',{p_slug:SLUG,p_items:items}); b.disabled=false; b.textContent='Save services';
+  if(r.error||!r.data||r.data.ok===false){ toast('Could not save'); return; }
+  el('svcOk').textContent='Saved '+r.data.count+' services ✓'; el('svcOk').classList.remove('hide'); toast('Services saved ✓');
+}
+/* staff */
+function staffRow(s){ s=s||{}; var d=document.createElement('div'); d.className='row2';
+  d.innerHTML='<div><input placeholder="Barber name" value="'+esc(s.name||'')+'" class="stN"></div>'
+    +'<div><input placeholder="Specialty (optional)" value="'+esc(s.blurb||'')+'" class="stB"></div>'
+    +'<button class="x" onclick="this.parentNode.remove()">✕</button>';
+  el('staffRows').appendChild(d);
+}
+function addStaff(){ staffRow(); }
+async function saveStaff(){
+  var items=[].map.call(el('staffRows').querySelectorAll('.row2'),function(r){ return {name:r.querySelector('.stN').value.trim(),blurb:r.querySelector('.stB').value.trim()}; }).filter(function(x){return x.name;});
+  if(!items.length){ toast('Add at least one barber'); return; }
+  var b=el('saveStaffBtn'); b.disabled=true; b.textContent='Saving…';
+  var r=await supa.rpc('book_staff_set',{p_slug:SLUG,p_items:items}); b.disabled=false; b.textContent='Save barbers';
+  if(r.error||!r.data||r.data.ok===false){ toast('Could not save'); return; }
+  el('staffOk').textContent='Saved '+r.data.count+' barbers ✓'; el('staffOk').classList.remove('hide'); toast('Barbers saved ✓');
+}
+/* appointments */
+async function loadAppts(){
+  var r=await supa.rpc('book_list',{p_slug:SLUG,p_from:null,p_to:null});
+  var rows=(r.data&&r.data.rows)||[];
+  if(!rows.length){ el('appts').innerHTML='<p class="muted">No upcoming appointments yet. Share your link!</p>'; return; }
+  el('appts').innerHTML=rows.map(function(a){
+    var d=new Date(a.starts_at); var when=d.toLocaleDateString([], {weekday:'short',month:'short',day:'numeric'})+' · '+d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+    var cal=gcal(a);
+    return '<div class="appt"><span class="when">'+esc(when)+'</span><span class="who"><b>'+esc(a.name||'—')+'</b> <span>· '+esc(a.service||'')+' · '+esc(a.staff||'')+(a.phone?' · '+esc(a.phone):'')+'</span></span><a href="'+cal+'" target="_blank" rel="noopener">+ cal</a></div>';
+  }).join('');
+}
+function gcal(a){ var d=new Date(a.starts_at), e=new Date(d.getTime()+((a.minutes||30)*60000));
+  function pad(n){return String(n).padStart(2,'0');} function z(x){return x.getUTCFullYear()+pad(x.getUTCMonth()+1)+pad(x.getUTCDate())+'T'+pad(x.getUTCHours())+pad(x.getUTCMinutes())+'00Z';}
+  return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent((a.service||'Appt')+' — '+(a.name||''))+'&dates='+z(d)+'/'+z(e)+'&details='+encodeURIComponent('Barber: '+(a.staff||'')+(a.phone?' · '+a.phone:'')); }
+
+async function signOut(){ await supa.auth.signOut(); location.reload(); }
+el('lPass').addEventListener('keydown',function(e){ if(e.key==='Enter') doLogin(); });
+supa.auth.getSession().then(function(r){ if(r.data && r.data.session){ onSignedIn(); } });
+</script>
+</body>
+</html>

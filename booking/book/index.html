@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Book an appointment · Chair</title>
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%F0%9F%92%88%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{--text:#f2f4ff;--muted:#8f97b8;--dim:#69719a;--line:rgba(122,162,255,.24);--line2:rgba(122,162,255,.4);
+    --acc:#7aa2ff;--acc2:#5df2e0;--vio:#b98bff;--good:#43f0b0;--gold:#ffd45a;--bad:#ff8a9d}
+  *{box-sizing:border-box}
+  @keyframes popin{0%{transform:translateY(10px);opacity:0}100%{transform:translateY(0);opacity:1}}
+  @keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.5;min-height:100vh;
+    background:radial-gradient(circle at 14% -6%,rgba(122,162,255,.18),transparent 42%),radial-gradient(circle at 88% 106%,rgba(93,242,224,.12),transparent 45%),linear-gradient(180deg,#070811,#04050a)}
+  .wrap{max-width:540px;margin:0 auto;padding:18px 15px 60px}
+  .shop{display:flex;align-items:center;gap:11px;margin-bottom:4px}
+  .shop .logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(94,242,224,.22),rgba(185,139,255,.22));font-size:20px}
+  .shop b{font-family:Poppins,sans-serif;font-size:17px}.shop .sub{font-size:12px;color:var(--muted)}
+  .live{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--good);border:1px solid rgba(67,240,176,.3);border-radius:999px;padding:4px 9px}
+  .live i{width:7px;height:7px;border-radius:50%;background:var(--good);animation:pulse 1.6s ease-in-out infinite}
+  .steps{display:flex;gap:6px;margin:14px 0 6px}
+  .steps .s{flex:1;height:5px;border-radius:99px;background:rgba(122,162,255,.16)}
+  .steps .s.on{background:linear-gradient(90deg,var(--acc2),var(--acc))}
+  .stitle{font-family:Poppins,sans-serif;font-size:18px;margin:12px 0 2px}
+  .shint{color:var(--muted);font-size:13px;margin:0 0 12px}
+  .opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid var(--line);background:rgba(2,4,12,.45);border-radius:14px;padding:13px 14px;margin-bottom:9px;cursor:pointer;color:var(--text);font:inherit;transition:border-color .12s,transform .12s}
+  .opt:hover{border-color:var(--line2);transform:translateX(2px)}
+  .opt .ic{width:38px;height:38px;border-radius:10px;flex:0 0 auto;display:grid;place-items:center;font-weight:800;font-size:15px;background:linear-gradient(135deg,rgba(122,162,255,.25),rgba(185,139,255,.25));color:#fff}
+  .opt .g{flex:1;min-width:0}.opt .t{font-weight:700;font-size:14.5px}.opt .d{font-size:12px;color:var(--muted)}
+  .opt .pr{font-weight:800;font-size:14px;color:var(--acc2);white-space:nowrap}
+  .days{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+  .day{flex:0 0 auto;min-width:58px;text-align:center;border:1px solid var(--line);background:rgba(2,4,12,.45);border-radius:14px;padding:10px 8px;cursor:pointer}
+  .day.sel{border-color:var(--acc2);background:rgba(94,242,224,.08)}
+  .day .dow{font-size:11px;color:var(--muted);text-transform:uppercase}.day .dn{font-family:Poppins,sans-serif;font-size:19px;font-weight:800;margin-top:2px}.day .mo{font-size:10px;color:var(--dim)}
+  .slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px;min-height:44px}
+  .slot{border:1px solid var(--line);background:rgba(2,4,12,.45);border-radius:11px;padding:11px 6px;cursor:pointer;font:inherit;font-weight:700;font-size:13.5px;color:var(--text);text-align:center}
+  .slot:hover{border-color:var(--acc2)}
+  .slot.sel{border-color:var(--acc2);background:linear-gradient(135deg,rgba(94,242,224,.16),rgba(122,162,255,.12))}
+  label{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
+  input{width:100%;background:rgba(2,4,12,.6);border:1px solid var(--line);border-radius:12px;padding:13px 14px;color:var(--text);font:inherit;font-size:16px}
+  input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(122,162,255,.2)}
+  .summary{display:flex;flex-direction:column;gap:8px;background:rgba(2,4,12,.4);border:1px solid var(--line);border-radius:14px;padding:13px;margin:2px 0 6px}
+  .srow{display:flex;justify-content:space-between;font-size:13.5px}.srow .k{color:var(--muted)}.srow .v{font-weight:700}
+  .bar{display:flex;gap:10px;margin-top:14px}
+  .btn{flex:1;border:0;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;border-radius:999px;padding:14px;font:inherit;font-weight:900;font-size:15px;cursor:pointer;box-shadow:0 10px 28px rgba(122,162,255,.3)}
+  .btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+  .btn.ghost{flex:0 0 auto;background:rgba(122,162,255,.07);border:1px solid var(--line);color:var(--text);box-shadow:none;font-weight:700;padding:14px 18px}
+  .btn.dep{background:linear-gradient(135deg,#ffd45a,#ffb03a);margin-top:10px;box-shadow:0 10px 28px rgba(255,180,60,.3)}
+  .done{text-align:center;padding:20px 8px}.done .big{font-size:52px;animation:popin .4s ease}
+  .done h2{font-family:Poppins,sans-serif;font-size:23px;margin:8px 0 4px}.done p{color:var(--muted);font-size:14px;margin:0 auto;max-width:34ch}
+  .ticket{background:linear-gradient(150deg,rgba(94,242,224,.1),rgba(185,139,255,.08));border:1px solid var(--line2);border-radius:16px;padding:16px;margin:16px 0;text-align:left}
+  .foot{margin-top:16px;text-align:center;color:var(--dim);font-size:12px}
+  .hide{display:none!important}
+  .err{color:var(--bad);font-size:13px;text-align:center;margin-top:10px}
+  .spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.25);border-top-color:var(--acc2);border-radius:50%;animation:sp .7s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .loading{text-align:center;color:var(--muted);padding:24px 0}
+  #toasts{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:8px;align-items:center}
+  .toast{background:rgba(10,14,26,.95);border:1px solid var(--line2);border-radius:12px;padding:10px 15px;font-size:13px;font-weight:600;box-shadow:0 14px 40px rgba(0,0,0,.5);animation:popin .3s ease}
+  canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:55}
+  @media(prefers-reduced-motion:reduce){.done .big,.toast{animation:none!important}.live i,.spin{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="shop">
+    <span class="logo">💈</span>
+    <div><b id="shopName">Loading…</b><div class="sub" id="shopSub"></div></div>
+    <span class="live"><i></i> Live</span>
+  </div>
+
+  <div id="loadingBox" class="loading"><span class="spin"></span><div style="margin-top:8px">Loading booking…</div></div>
+  <div id="missing" class="hide loading">This booking link isn't set up yet.</div>
+
+  <div id="flow" class="hide">
+    <div class="steps" id="stepper"><div class="s on"></div><div class="s"></div><div class="s"></div><div class="s"></div></div>
+
+    <div id="st1"><div class="stitle">Choose a service</div><p class="shint">Pick what you're coming in for.</p><div id="svcList"></div></div>
+
+    <div id="st2" class="hide"><div class="stitle">Choose your barber</div><p class="shint">Or let us pick whoever's free.</p><div id="barbList"></div>
+      <div class="bar"><button class="btn ghost" onclick="go(1)">← Back</button></div></div>
+
+    <div id="st3" class="hide"><div class="stitle">Pick a time</div><p class="shint" id="st3hint">Choose a day, then an open slot.</p>
+      <div class="days" id="days"></div><div class="slots" id="slots" style="margin-top:12px"></div>
+      <div class="bar"><button class="btn ghost" onclick="go(2)">← Back</button></div></div>
+
+    <div id="st4" class="hide"><div class="stitle">Confirm your booking</div><p class="shint">We'll text you a reminder.</p>
+      <div class="summary" id="summary"></div>
+      <label>Your name</label><input id="cName" placeholder="First & last name" autocomplete="name">
+      <label>Mobile number</label><input id="cPhone" type="tel" placeholder="(555) 555-5555" autocomplete="tel">
+      <div class="err hide" id="cErr"></div>
+      <div class="bar"><button class="btn ghost" onclick="go(3)">← Back</button><button class="btn" id="confirmBtn" onclick="confirmBooking()">Confirm booking</button></div></div>
+  </div>
+
+  <div id="stDone" class="hide"><div class="done">
+    <div class="big">✅</div><h2>You're booked!</h2><p id="doneMsg">See you soon. 💈</p>
+    <div class="ticket" id="ticket"></div>
+    <a id="depBtn" class="btn dep hide" target="_blank" rel="noopener" style="text-decoration:none;display:block">💳 Pay deposit</a>
+    <div class="bar"><button class="btn ghost" onclick="addCal()">📅 Add to calendar</button><button class="btn" onclick="restart()">Book another</button></div>
+  </div></div>
+
+  <div class="foot" id="foot"></div>
+</div>
+<div id="toasts"></div>
+<canvas id="fx"></canvas>
+
+<script>
+var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+function el(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function rpc(fn,body){ return fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(body||{})}).then(function(r){return r.json();}); }
+
+var q=new URLSearchParams(location.search);
+var SLUG=(q.get('c')||q.get('slug')||'').trim();
+var SHOP=null, SVCS=[], STAFF=[];
+var sel={svc:null,barber:null,dateISO:null,time:null,slotStaff:null};
+var SICONS=['✂️','💈','🧔','⭐','🧒','💇','💅'];
+
+async function boot(){
+  if(!SLUG){ el('loadingBox').classList.add('hide'); el('missing').classList.remove('hide'); return; }
+  var d=await rpc('book_shop',{p_slug:SLUG}).catch(function(){return {ok:false};});
+  if(!d||!d.ok){ el('loadingBox').classList.add('hide'); el('missing').classList.remove('hide'); return; }
+  SHOP=d.shop; SVCS=d.services||[]; STAFF=d.staff||[];
+  el('shopName').textContent=SHOP.business;
+  el('shopSub').textContent=[SHOP.address].filter(Boolean).join(' · ');
+  el('foot').innerHTML='Booking by <a href="/booking/" style="color:var(--dim)">Chair</a> · TB Solutions';
+  document.title='Book · '+SHOP.business;
+  el('loadingBox').classList.add('hide'); el('flow').classList.remove('hide');
+  renderServices();
+}
+function renderServices(){
+  if(!SVCS.length){ el('svcList').innerHTML='<p class="shint">No services yet — check back soon.</p>'; return; }
+  el('svcList').innerHTML=SVCS.map(function(s,i){
+    return '<button class="opt" onclick="pickSvc('+i+')"><span class="ic">'+SICONS[i%SICONS.length]+'</span>'
+      +'<span class="g"><span class="t">'+esc(s.name)+'</span><span class="d">'+(s.minutes||30)+' min</span></span>'
+      +'<span class="pr">'+(s.price>0?'$'+s.price:'—')+'</span></button>';
+  }).join('');
+}
+function renderBarbers(){
+  var list=[{id:null,name:'Any barber',blurb:'First available',ic:'✨'}].concat(STAFF.map(function(s){return {id:s.id,name:s.name,blurb:s.blurb,ic:(s.name||'?').charAt(0)};}));
+  el('barbList').innerHTML=list.map(function(b,i){
+    return '<button class="opt" onclick="pickBarber('+i+')"><span class="ic">'+esc(b.ic)+'</span>'
+      +'<span class="g"><span class="t">'+esc(b.name)+'</span><span class="d">'+esc(b.blurb||'')+'</span></span></button>';
+  }).join('');
+  window._barbs=list;
+}
+var DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function iso(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function openDays(){ return (SHOP.days||'1,2,3,4,5,6').split(',').map(function(x){return +x;}); }
+function renderDays(){
+  var days=[], d=new Date(); d.setHours(0,0,0,0); var od=openDays();
+  for(var i=0;i<14 && days.length<7;i++){ var x=new Date(d.getTime()+i*86400000); if(od.indexOf(x.getDay())>=0) days.push(x); }
+  if(!sel.dateISO && days.length){ sel.dateISO=iso(days[0]); }
+  el('days').innerHTML=days.map(function(x,i){ var is=iso(x);
+    return '<div class="day'+(sel.dateISO===is?' sel':'')+'" onclick="pickDay(\''+is+'\')"><div class="dow">'+(i===0&&is===iso(new Date())?'Today':DOW[x.getDay()])+'</div><div class="dn">'+x.getDate()+'</div><div class="mo">'+MON[x.getMonth()]+'</div></div>';
+  }).join('');
+  loadSlots();
+}
+async function loadSlots(){
+  el('slots').innerHTML='<div class="loading" style="grid-column:1/-1;padding:8px"><span class="spin"></span></div>';
+  var staffId=sel.barber&&sel.barber.id?sel.barber.id:null;
+  var mins=(sel.svc&&sel.svc.minutes)||30;
+  var d=await rpc('book_slots',{p_slug:SLUG,p_staff:staffId,p_date:sel.dateISO,p_minutes:mins}).catch(function(){return {ok:false};});
+  var slots=(d&&d.ok&&d.slots)||[];
+  if(!slots.length){ el('slots').innerHTML='<p class="shint" style="grid-column:1/-1">No open times this day — try another.</p>'; return; }
+  el('slots').innerHTML=slots.map(function(s){
+    return '<button class="slot'+(sel.time===s.time?' sel':'')+'" onclick="pickTime(\''+s.time+'\',\''+(s.staff_id||'')+'\',\''+esc(s.staff_name||'')+'\')">'+fmtTime(s.time)+'</button>';
+  }).join('');
+}
+function fmtTime(tm){ var p=tm.split(':'),h=+p[0],m=p[1]; var ap=h>=12?'pm':'am'; var hh=h%12; if(hh===0)hh=12; return hh+':'+m+ap; }
+function prettyDate(is){ var p=is.split('-'); var d=new Date(+p[0],+p[1]-1,+p[2]); return DOW[d.getDay()]+', '+MON[d.getMonth()]+' '+d.getDate(); }
+
+function pickSvc(i){ sel.svc=SVCS[i]; renderBarbers(); go(2); }
+function pickBarber(i){ sel.barber=window._barbs[i]; sel.time=null; go(3); }
+function pickDay(is){ sel.dateISO=is; sel.time=null; renderDays(); }
+function pickTime(tm,staffId,staffName){ sel.time=tm; sel.slotStaff={id:staffId||null,name:staffName||''}; go(4); }
+
+function go(n){
+  ['st1','st2','st3','st4'].forEach(function(x,i){ el(x).classList.toggle('hide',i+1!==n); });
+  el('stDone').classList.add('hide'); el('flow').classList.remove('hide'); el('stepper').classList.remove('hide');
+  var segs=el('stepper').children; for(var i=0;i<segs.length;i++){ segs[i].classList.toggle('on',i<n); }
+  if(n===3){ el('st3hint').textContent='With '+((sel.barber&&sel.barber.name)||'any barber')+' · choose a day, then an open slot.'; renderDays(); }
+  if(n===4) renderSummary();
+  window.scrollTo(0,0);
+}
+function row(k,v){ return '<div class="srow"><span class="k">'+esc(k)+'</span><span class="v">'+esc(v)+'</span></div>'; }
+function renderSummary(){
+  var who=(sel.barber&&sel.barber.name)||'Any'; if((!sel.barber||!sel.barber.id)&&sel.slotStaff&&sel.slotStaff.name) who='Any ('+sel.slotStaff.name+')';
+  el('summary').innerHTML=row('Service',sel.svc.name+(sel.svc.price>0?' · $'+sel.svc.price:''))+row('Barber',who)+row('When',prettyDate(sel.dateISO)+' at '+fmtTime(sel.time));
+}
+async function confirmBooking(){
+  el('cErr').classList.add('hide');
+  var name=(el('cName').value||'').trim(), phone=(el('cPhone').value||'').trim();
+  if(name.length<2){ el('cName').focus(); return flash('Add your name'); }
+  if(phone.replace(/\D/g,'').length<7){ el('cPhone').focus(); return flash('Add a valid number'); }
+  var b=el('confirmBtn'); b.disabled=true; b.textContent='Booking…';
+  var staffId=sel.barber&&sel.barber.id?sel.barber.id:(sel.slotStaff&&sel.slotStaff.id?sel.slotStaff.id:null);
+  var start=sel.dateISO+' '+sel.time; // naive shop-local; server applies shop timezone
+  var d=await rpc('book_create',{p_slug:SLUG,p_staff:staffId,p_service:sel.svc.name,p_minutes:sel.svc.minutes||30,p_price:sel.svc.price||0,p_start:start,p_name:name,p_phone:phone}).catch(function(){return {ok:false,error:'Network error — try again.'};});
+  b.disabled=false; b.textContent='Confirm booking';
+  if(!d||!d.ok){ flash((d&&d.error)||'Could not book — try another time.'); if(d&&/booked|filled|passed/.test(d.error||'')){ go(3); } return; }
+  window._done={svc:sel.svc,staff:d.staff_name,dateISO:sel.dateISO,time:sel.time,name:name,dep:d.deposit_link,depNote:d.deposit_note};
+  showDone();
+}
+function flash(m){ var e=el('cErr'); e.textContent=m; e.classList.remove('hide'); }
+function showDone(){
+  var w=window._done;
+  el('flow').classList.add('hide'); el('stepper').classList.add('hide');
+  el('ticket').innerHTML='<div style="font-family:Poppins,sans-serif;font-weight:800;font-size:15px;margin-bottom:8px">💈 '+esc(SHOP.business)+'</div>'
+    +row('Service',w.svc.name)+row('Barber',w.staff)+row('When',prettyDate(w.dateISO)+' · '+fmtTime(w.time))+row('Name',esc(w.name));
+  if(w.dep){ var db=el('depBtn'); db.href=w.dep; db.classList.remove('hide'); db.textContent='💳 '+(w.depNote||'Pay your deposit'); }
+  else { el('depBtn').classList.add('hide'); }
+  el('doneMsg').textContent='A confirmation and reminder would be texted to you. See you soon. 💈';
+  el('stDone').classList.remove('hide'); confetti(); window.scrollTo(0,0);
+}
+function restart(){ sel={svc:null,barber:null,dateISO:null,time:null,slotStaff:null}; el('cName').value='';el('cPhone').value=''; renderServices(); go(1); }
+function addCal(){
+  var w=window._done; var p=w.dateISO.split('-'), t=w.time.split(':');
+  var start=new Date(+p[0],+p[1]-1,+p[2],+t[0],+t[1]); var end=new Date(start.getTime()+((w.svc.minutes||30)*60000));
+  function pad(n){return String(n).padStart(2,'0');} function z(d){return d.getUTCFullYear()+pad(d.getUTCMonth()+1)+pad(d.getUTCDate())+'T'+pad(d.getUTCHours())+pad(d.getUTCMinutes())+'00Z';}
+  var url='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(w.svc.name+' — '+SHOP.business)+'&dates='+z(start)+'/'+z(end)+'&details='+encodeURIComponent('Appointment with '+w.staff+' at '+SHOP.business+'.');
+  window.open(url,'_blank');
+}
+function toast(msg){ var t=document.createElement('div'); t.className='toast'; t.textContent=msg; el('toasts').appendChild(t); setTimeout(function(){t.style.transition='opacity .4s';t.style.opacity='0';setTimeout(function(){t.remove();},400);},1900); }
+var cx=el('fx'),cxx=cx.getContext('2d'),parts=[],raf=null; function sz(){cx.width=innerWidth;cx.height=innerHeight;} sz(); addEventListener('resize',sz);
+function confetti(){ if(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches)return; var cols=['#5df2e0','#7aa2ff','#b98bff','#ffd45a','#43f0b0'];
+  for(var i=0;i<80;i++){ parts.push({x:innerWidth/2,y:innerHeight*0.32,vx:(Math.random()-0.5)*11,vy:-Math.random()*12-4,g:0.32,c:cols[Math.floor(Math.random()*cols.length)],s:4+Math.random()*5,life:70+Math.floor(Math.random()*40),rot:Math.random()*6}); } if(!raf)raf=requestAnimationFrame(tick); }
+function tick(){ cxx.clearRect(0,0,cx.width,cx.height); parts=parts.filter(function(p){return p.life>0&&p.y<cx.height+30;}); parts.forEach(function(p){p.vy+=p.g;p.x+=p.vx;p.y+=p.vy;p.life--;p.rot+=0.2;cxx.save();cxx.translate(p.x,p.y);cxx.rotate(p.rot);cxx.fillStyle=p.c;cxx.globalAlpha=Math.max(0,Math.min(1,p.life/40));cxx.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.6);cxx.restore();}); if(parts.length)raf=requestAnimationFrame(tick); else{cxx.clearRect(0,0,cx.width,cx.height);raf=null;} }
+
+boot();
+window.addEventListener('error',function(e){try{ fetch(SUPA_URL+'/rest/v1/client_errors',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify({page:location.pathname,msg:String((e&&e.message)||'').slice(0,300),src:String((e&&e.filename)||'').slice(0,120),line:(e&&e.lineno)||0})}).catch(function(){}); }catch(_){}});
+</script>
+</body>
+</html>
