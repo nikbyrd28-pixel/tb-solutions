@@ -125,7 +125,7 @@
   };
   var KEYS=Object.keys(SHAPES);
 
-  var board, cur, nxt, px, py, dropT, dropInt, running=false, dead=false, score=0, lines=0, level=1, best=0;
+  var board, cur, nxt, px, py, dropT, dropInt, running=false, dead=false, score=0, lines=0, level=1, best=0, b2b=0;
   try{ best=+localStorage.getItem('bb_best_'+client)||0; }catch(e){}
   el('bestHint').textContent = best?('Best: '+best):''; el('hBest').textContent=best;
 
@@ -141,7 +141,9 @@
   function clearLines(){
     var cleared=0;
     for(var r=ROWS-1;r>=0;r--){ var full=true; for(var c=0;c<COLS;c++){ if(!board[r][c]){ full=false; break; } } if(full){ board.splice(r,1); board.unshift(new Array(COLS).fill(null)); cleared++; r++; } }
-    if(cleared){ var pts=[0,100,300,500,800][cleared]*level; score+=pts; lines+=cleared; var _pl=level; level=1+Math.floor(lines/10); if(level>_pl && window.LoopFX) LoopFX.levelUp(level); dropInt=Math.max(90, 800 - (level-1)*70);
+    if(!cleared){ b2b=0; }
+    if(cleared){ b2b++; if(b2b>=2){ var cb=b2b*40*level; score+=cb; if(window.LoopFX){ var _c2=document.querySelector('canvas'); var _p2=LoopFX.atEl(_c2); LoopFX.float(_p2.x,_p2.y-40,'COMBO x'+b2b+' +'+cb,'#ffcf5a',22); LoopFX.sfx('coin'); } }
+      var pts=[0,100,300,500,800][cleared]*level; score+=pts; lines+=cleared; var _pl=level; level=1+Math.floor(lines/10); if(level>_pl && window.LoopFX) LoopFX.levelUp(level); dropInt=Math.max(90, 800 - (level-1)*70);
       if(cleared===4){ sTetris(); if(window.LoopFX){ LoopFX.confetti(18); LoopFX.flash('rgba(122,162,255,.45)'); } } else sLine(cleared);
       el('hScore').textContent=score; el('hLines').textContent=lines; el('hLevel').textContent=level; }
   }

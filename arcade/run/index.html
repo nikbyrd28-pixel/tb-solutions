@@ -170,7 +170,9 @@
         // player bottom is at player.y (feet). If feet below top of obstacle → hit
         if(player.y - pr*0.2 > oyTop){ die(); }
       }
-      if(!o.passed && o.x+o.w<px){ o.passed=true; }
+      if(!o.passed && o.x+o.w<px){ o.passed=true;
+        if(!player.onGround && player.y - pr*0.2 > GROUND-o.h-46){ dist+=3; if(window.LoopFX){ var _c=document.querySelector('canvas'); var _p=LoopFX.atEl(_c); LoopFX.float(_p.x, _p.y-60, 'CLOSE! +3m', '#5ad0f0', 20); LoopFX.sfx('score'); } }
+      }
       if(o.x+o.w< -20) obstacles.splice(i,1);
     }
     // coins

@@ -163,16 +163,17 @@
   });
 
   function showPlay(on){ el('dealRow').classList.toggle('hide',on); el('playRow').classList.toggle('hide',!on); el('betRow').style.opacity=on?'.4':'1'; }
+  var wstreak=0;
   function banner(txt,cls){ var b=el('banner'); b.textContent=txt||''; b.className='banner'+(cls?(' '+cls):''); }
 
   function settleUI(st){
     showPlay(false);
     renderHands(st,false);
     setBal(st.coins);
-    if(st.result==='win'){ banner('You win +'+st.payout+' 🪙','win'); sWin(); if(window.LoopFX)LoopFX.confetti(); }
-    else if(st.result==='blackjack'){ banner('BLACKJACK! +'+st.payout+' 🪙','win'); sWin(); if(window.LoopFX){ LoopFX.confetti(36); LoopFX.flash('rgba(255,207,90,.45)'); } }
+    if(st.result==='win'){ wstreak++; banner('You win +'+st.payout+' 🪙'+(wstreak>=2?(' · 🔥x'+wstreak):''),'win'); sWin(); if(window.LoopFX)LoopFX.confetti(wstreak>=3?36:24); }
+    else if(st.result==='blackjack'){ wstreak++; banner('BLACKJACK! +'+st.payout+' 🪙'+(wstreak>=2?(' · 🔥x'+wstreak):''),'win'); sWin(); if(window.LoopFX){ LoopFX.confetti(36); LoopFX.flash('rgba(255,207,90,.45)'); } }
     else if(st.result==='push'){ banner('Push — bet returned','push'); sPush(); }
-    else { banner('Dealer wins','lose'); sLose(); }
+    else { wstreak=0; banner('Dealer wins','lose'); sLose(); }
   }
 
   function setMuteLabel(){ var b=el('muteBtn'); if(b) b.textContent=muted?'🔇':'🔊'; }
