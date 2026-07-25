@@ -362,10 +362,10 @@
   //  GAME: Loop Flyer  (flappy, juiced)
   // =======================================================================
   function Flyer() {
-    var by, pby, bvy, rot, squash, pipes, groundX, stars, dead, pn, clouds, wing;
+    var by, pby, bvy, rot, squash, pipes, groundX, stars, dead, pn, clouds, wing, shield, inv;
     var GRV = 0.42, FLAP = -7.4, TERM = 11;
     function reset() {
-      by = pby = E.H * 0.44; bvy = 0; rot = 0; squash = 0; pipes = []; groundX = 0; dead = false; pn = 0; wing = 0; E._fly = {};
+      by = pby = E.H * 0.44; bvy = 0; rot = 0; squash = 0; pipes = []; groundX = 0; dead = false; pn = 0; wing = 0; shield = false; inv = 0; E._fly = {};
       stars = []; for (var i = 0; i < 26; i++) stars.push({ x: rnd(0, E.W), y: rnd(0, E.H * 0.7), r: rnd(0.5, 1.6), s: rnd(0.1, 0.4) });
       clouds = []; for (var j = 0; j < 4; j++) clouds.push({ x: rnd(0, E.W), y: rnd(E.H * 0.08, E.H * 0.42), s: rnd(0.15, 0.4), sc: rnd(0.7, 1.5) });
       spawnPipe(E.W + 90); spawnPipe(E.W + 90 + gapX());
@@ -378,7 +378,8 @@
       if (pn < 2) center = E.H * 0.45 + rnd(-E.H * 0.05, E.H * 0.05);        // ease the first pipes toward the bird's height
       else center = rnd(g / 2 + 50, E.H - g / 2 - 60);
       var top = clamp(center - g / 2, 40, E.H - g - 70);
-      pipes.push({ x: x, top: top, gap: g, passed: false, coin: pn >= 1 && Math.random() < 0.5, coinGot: false });
+      var hasCoin = pn >= 1 && Math.random() < 0.5;
+      pipes.push({ x: x, top: top, gap: g, passed: false, coin: hasCoin, coinGot: false, pow: !hasCoin && pn >= 2 && Math.random() < 0.22, powGot: false });
       pn++;
     }
     function tap() {
@@ -392,7 +393,7 @@
       rot = lerp(rot, clamp(bvy * 0.05, -0.5, 1.1), 0.2);
       squash = lerp(squash, 0, 0.15);
       groundX = (groundX - speed()) % 28;
-      wing = Math.max(0, wing - 0.12);
+      wing = Math.max(0, wing - 0.12); if (inv > 0) inv--;
       for (var i = 0; i < stars.length; i++) { stars[i].x -= stars[i].s; if (stars[i].x < -2) { stars[i].x = E.W + 2; stars[i].y = rnd(0, E.H * 0.7); } }
       for (var ci = 0; ci < clouds.length; ci++) { clouds[ci].x -= clouds[ci].s * 0.6; if (clouds[ci].x < -70) { clouds[ci].x = E.W + 60; clouds[ci].y = rnd(E.H * 0.08, E.H * 0.42); } }
       var sp = speed();
@@ -412,6 +413,14 @@
             floatText(cxp, cyp, '+1', '#ffcf5a'); bumpScore();
           }
         }
+        if (p.pow && !p.powGot) {
+          var sxp = p.x + 21, syp = p.top + p.gap / 2;
+          if (Math.abs(bx - sxp) < r + 13 && Math.abs(by - syp) < r + 13) {
+            p.powGot = true; shield = true; Audio.near(); haptic(12);
+            floatText(sxp, syp, 'SHIELD!', '#5ad0f0');
+            burst(sxp, syp, 12, '#5ad0f0', { kind: 'ring', min: 1, max: 3 });
+          }
+        }
         if (!p.passed && p.x + 42 < bx) {
           p.passed = true; E.score++; Audio.score(); bumpScore();
           // near-miss bonus
@@ -419,7 +428,10 @@
           if (margin < r * 2.4) { floatText(bx, by - r * 3, 'NICE!', E.accent2); Audio.near(); addShake(0.12); }
         }
         // collision (inset hitbox)
-        if (bx + hb > p.x && bx - hb < p.x + 42 && (by - hb < p.top || by + hb > p.top + p.gap)) return die(bx, by);
+        if (inv <= 0 && bx + hb > p.x && bx - hb < p.x + 42 && (by - hb < p.top || by + hb > p.top + p.gap)) {
+          if (shield) { shield = false; inv = 45; addShake(0.5); E.flash = 0.5; Audio.crash(); haptic([15, 30]); burst(bx, by, 14, '#5ad0f0', { min: 2, max: 6 }); floatText(bx, by - r * 3, 'SAVED!', '#5ad0f0'); }
+          else return die(bx, by);
+        }
       }
       if (by + r > E.H - 10 || by - r < 0) return die(bx, clamp(by, 12, E.H - 12));
     }
@@ -469,6 +481,14 @@
           c.fillStyle = '#ffcf5a'; c.shadowColor = '#ffcf5a'; c.shadowBlur = 14; c.beginPath(); c.arc(0, 0, 9, 0, 6.283); c.fill();
           c.shadowBlur = 0; c.fillStyle = '#7a5b10'; c.font = '900 11px Inter,Arial'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('★', 0, 1); c.restore();
         }
+        if (p.pow && !p.powGot) {
+          var px2 = p.x + pw / 2, py2 = p.top + p.gap / 2, puls = 1 + 0.12 * Math.sin(t / 160);
+          c.save(); c.translate(px2, py2); c.scale(puls, puls);
+          c.strokeStyle = '#5ad0f0'; c.lineWidth = 2.5; c.shadowColor = '#5ad0f0'; c.shadowBlur = 14;
+          c.beginPath(); c.arc(0, 0, 11, 0, 6.283); c.stroke(); c.shadowBlur = 0;
+          c.font = '900 12px Inter,Arial'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = '#5ad0f0'; c.fillText('\u26e8', 0, 1);
+          c.restore();
+        }
       }
       // ground strip
       c.fillStyle = '#0e1330'; c.fillRect(0, H - 10, W, 10);
@@ -476,7 +496,10 @@
       for (var gx = groundX; gx < W; gx += 28) c.fillRect(gx, H - 10, 14, 10);
       // bird with flapping wing
       var bx = W * 0.30, r = clamp(H * 0.026, 9, 15), sx = 1 + squash * 0.35, sy = 1 - squash * 0.3;
+      if (inv > 0 && ((inv / 4) | 0) % 2 === 0) { /* blink while invincible */ }
       c.save(); c.translate(bx, iy); c.rotate(rot); c.scale(sx, sy);
+      if (inv > 0) c.globalAlpha = 0.45 + 0.4 * Math.sin(t / 40);
+      if (shield) { c.strokeStyle = 'rgba(90,208,240,.8)'; c.lineWidth = 2.5; c.shadowColor = '#5ad0f0'; c.shadowBlur = 12; c.beginPath(); c.arc(0, 0, r * 1.7 + Math.sin(t / 150) * 1.5, 0, 6.283); c.stroke(); c.shadowBlur = 0; }
       // wing (behind body), angle driven by recent flap
       var wa = -0.5 + wing * 1.6;
       c.save(); c.rotate(wa); c.fillStyle = 'rgba(255,255,255,.55)'; c.beginPath(); c.ellipse(-r * 0.15, r * 0.1, r * 0.7, r * 0.4, 0, 0, 6.283); c.fill(); c.restore();

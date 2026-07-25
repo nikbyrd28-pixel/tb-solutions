@@ -990,7 +990,7 @@ function openGame(mode){
             if(res.coins_earned>0) confetti();
             var best=(res.games&&res.games[m])||score;
             return { best: best, newBest: score>=best,
-              line1: res.coins_earned>0?('+'+res.coins_earned+' 🪙 coins!'):'No coins this round',
+              line1: res.coins_earned>0?('+'+res.coins_earned+' 🪙 coins!'+(res.daily_bonus>0?' (🎁 daily bonus +'+res.daily_bonus+')':'')):'No coins this round',
               line2: res.capped?'Daily coin cap reached — play tomorrow for more.':('\ud83c\udfb0 '+(res.coins||0)+' coins saved \u2014 spin the slot to win '+(res.reward_text||'a FREE cut')+'!') };
           }
           return { best: score, line1:'Score '+score+' saved!' };

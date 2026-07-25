@@ -104,3 +104,8 @@ grant execute on function public.coin_spin(text)                  to anon, authe
 --   play  -> game_reward (per-play + daily cap by difficulty)
 --   book  -> book_appointment (+12 / +8 / +5)
 --   refer -> join_rewards    (+15 / +10 / +6 to the referrer)
+
+-- v2 (applied via migration loop_daily_bonus): game_reward now accepts any game
+-- key (fixes runner/slicer/stacker scores clobbering flyer's), and grants a
+-- first-play-of-the-day bonus (+8/+5/+3 by difficulty) outside the daily cap,
+-- returned as 'daily_bonus' and included in 'coins_earned'.
