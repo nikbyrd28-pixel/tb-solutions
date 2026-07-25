@@ -42,6 +42,10 @@
   .muted{color:var(--muted);font-size:13px}
   .err{color:var(--bad);font-size:13px;margin-top:8px}
   a.call{color:var(--acc);text-decoration:none;font-weight:700;font-size:13px}
+  .note{width:100%;margin-top:8px;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px}
+  .note:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(139,123,255,.15)}
+  #toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#131728;border:1px solid var(--line);color:var(--text);padding:8px 15px;border-radius:999px;font-size:13px;font-weight:700;z-index:99;box-shadow:0 10px 30px rgba(0,0,0,.5);opacity:0;transition:opacity .25s;pointer-events:none}
+  #toast.on{opacity:1}
   .hide{display:none!important}
   @keyframes popin{0%{transform:translateY(8px);opacity:0}100%{transform:translateY(0);opacity:1}}
   @keyframes confetti-fall{0%{transform:translateY(-10px) rotate(0);opacity:1}100%{transform:translateY(105vh) rotate(720deg);opacity:0}}
@@ -122,6 +126,8 @@ var me=null, rows=[], filterStatus='All', filterClient='All', filterText='', isA
 
 function el(id){return document.getElementById(id)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+var _toastT=null;
+function toast(t){ var x=el('toast'); if(!x){ x=document.createElement('div'); x.id='toast'; document.body.appendChild(x); } x.textContent=t; x.classList.add('on'); clearTimeout(_toastT); _toastT=setTimeout(function(){x.classList.remove('on');},1500); }
 
 async function boot(){
   var s=await supa.auth.getSession();
@@ -242,10 +248,18 @@ function render(){
       +(x.phone?'<a class="call" href="tel:'+esc(x.phone)+'">📞 Call</a>':'')
       +(x.phone?'<a class="call" href="'+smsHref(x)+'">💬 Text</a>':'')
       +(x.email?'<a class="call" href="mailto:'+esc(x.email)+'?subject='+encodeURIComponent('Following up')+'">✉️ Email</a>':'')
-      +'</div></div>';
+      +'</div>'
+      +'<input class="note" placeholder="＋ Add a private note (saves automatically)…" value="'+esc(x.notes||'')+'" onchange="saveNote('+x.id+',this.value)">'
+      +'</div>';
   }).join('');
 }
 
+async function saveNote(id,v){
+  var val=(v||'').trim();
+  var r=await supa.from('client_leads').update({notes:val}).eq('id',id);
+  var row=rows.find(function(x){return x.id===id}); if(row) row.notes=val;
+  if(!r.error) toast('Note saved');
+}
 async function setStatus(id,v){
   var r=await supa.from('client_leads').update({status:v}).eq('id',id);
   if(r.error){alert('Could not update: '+r.error.message);return}
