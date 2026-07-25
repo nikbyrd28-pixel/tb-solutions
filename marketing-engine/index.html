@@ -117,6 +117,16 @@
     <div class="card">
       <label style="margin-top:0">What should I make?</label>
       <div class="grid" id="assetGrid"></div>
+      <label>Tone</label>
+      <select id="fTone">
+        <option value="">Default (on-brand)</option>
+        <option value="Friendly and conversational">Friendly &amp; conversational</option>
+        <option value="Bold and punchy">Bold &amp; punchy</option>
+        <option value="Professional and polished">Professional &amp; polished</option>
+        <option value="Playful and fun">Playful &amp; fun</option>
+        <option value="Luxury and premium">Luxury &amp; premium</option>
+        <option value="Urgent and high-converting">Urgent &amp; high-converting</option>
+      </select>
       <div class="bar">
         <button class="btn" id="genBtn" onclick="generate()">⚡ Generate</button>
         <button class="btn ghost" id="kitBtn" onclick="genKit()">🧰 Full campaign kit</button>
@@ -238,7 +248,8 @@ async function generate(){
   b.append('niche',el('fNiche').value); b.append('city',el('fCity').value);
   b.append('goal',el('fGoal').value); b.append('budget',el('fBudget').value);
   var _prof=el('fProfile').value.trim();
-  b.append('extra',(_prof?'BRAND PROFILE (follow strictly):\n'+_prof+'\n\n':'')+el('fExtra').value);
+  var _tone=el('fTone')?el('fTone').value:'';
+  b.append('extra',(_tone?'TONE: write it '+_tone+'.\n':'')+(_prof?'BRAND PROFILE (follow strictly):\n'+_prof+'\n\n':'')+el('fExtra').value);
   try{
     var res=await fetch(ENGINE_URL,{method:'POST',body:b});
     var j=await res.json();
@@ -260,7 +271,7 @@ async function generate(){
   return !!lastOut;
 }
 
-var BRIEF_FIELDS=['fBiz','fNiche','fCity','fGoal','fBudget','fExtra'];
+var BRIEF_FIELDS=['fBiz','fNiche','fCity','fGoal','fBudget','fExtra','fTone'];
 function saveBrief(){ try{ var o={}; BRIEF_FIELDS.forEach(function(id){ var e=el(id); if(e) o[id]=e.value; }); localStorage.setItem('tb_me_brief',JSON.stringify(o)); }catch(e){} }
 function restoreBrief(){ try{ var o=JSON.parse(localStorage.getItem('tb_me_brief')||'null'); if(!o)return; BRIEF_FIELDS.forEach(function(id){ var e=el(id); if(e && !e.value && o[id]) e.value=o[id]; }); }catch(e){} }
 function syncOut(){ if(!lastOut) return; lastOut.content=el('outText').innerText;

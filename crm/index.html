@@ -42,6 +42,7 @@
   .muted{color:var(--muted);font-size:13px}
   .err{color:var(--bad);font-size:13px;margin-top:8px}
   a.call{color:var(--acc);text-decoration:none;font-weight:700;font-size:13px}
+  .lead.overdue{border-left:3px solid #ff9d6b}
   .note{width:100%;margin-top:8px;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px}
   .note:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(139,123,255,.15)}
   #toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#131728;border:1px solid var(--line);color:var(--text);padding:8px 15px;border-radius:999px;font-size:13px;font-weight:700;z-index:99;box-shadow:0 10px 30px rgba(0,0,0,.5);opacity:0;transition:opacity .25s;pointer-events:none}
@@ -237,8 +238,9 @@ function render(){
   var countLine='<div class="muted" style="font-size:12px;margin:0 0 8px">Showing '+vis.length+' of '+rows.length+' lead'+(rows.length===1?'':'s')+'</div>';
   el('list').innerHTML=countLine+vis.map(function(x){
     var det=[x.service,x.pickup&&('from '+x.pickup),x.dropoff&&('to '+x.dropoff),x.ride_date,x.passengers&&(x.passengers+' pax')].filter(Boolean).join(' · ');
-    return '<div class="lead">'
-      +'<div class="who">'+esc(x.name||x.company||'—')+(isAdmin?' <span class="pill">'+esc(x.client||'')+'</span>':'')+'</div>'
+    var overdue=x.status==='New' && (Date.now()-new Date(x.created_at).getTime())>86400000;
+    return '<div class="lead'+(overdue?' overdue':'')+'">'
+      +'<div class="who">'+esc(x.name||x.company||'—')+(isAdmin?' <span class="pill">'+esc(x.client||'')+'</span>':'')+(overdue?' <span class="pill" style="color:#ff9d6b;border-color:rgba(255,157,107,.5)">⏰ follow up</span>':'')+'</div>'
       +'<div class="meta">'+esc(det)+(det?' · ':'')+timeAgo(x.created_at)+'</div>'
       +(x.message?'<div class="msg">'+esc(x.message)+'</div>':'')
       +'<div class="row2">'
