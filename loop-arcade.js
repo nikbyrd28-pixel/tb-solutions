@@ -530,10 +530,10 @@
   //  GAME: Chair Hopper  (crossy-lite, smooth hops + camera)
   // =======================================================================
   function Hopper() {
-    var COLS = 9, rows, pcol, prow, camY, camTarget, hopT, hopFrom, hopTo, sett, idle, rh;
+    var COLS = 9, rows, pcol, prow, camY, camTarget, hopT, hopFrom, hopTo, sett, idle, rh, magT;
     function reset() {
       rows = {}; pcol = (COLS / 2) | 0; prow = 0; camY = 0; camTarget = 0;
-      hopT = 1; hopFrom = { c: pcol, r: 0 }; hopTo = { c: pcol, r: 0 }; sett = true; idle = 0;
+      hopT = 1; hopFrom = { c: pcol, r: 0 }; hopTo = { c: pcol, r: 0 }; sett = true; idle = 0; magT = 0;
       rh = clamp(Math.floor(E.H / 9), 40, 60);
       for (var i = -2; i < 14; i++) rowAt(i);
     }
@@ -545,7 +545,7 @@
       if (roll < 0.36) {
         var coinCol = ri(0, COLS - 1), deco = [], nd = ri(0, 3);
         for (var q = 0; q < nd; q++) { var dc = ri(0, COLS - 1); if (dc !== coinCol) deco.push({ c: dc, t: Math.random() < 0.6 ? 'tree' : 'bush' }); }
-        return { type: 'safe', cars: [], coin: Math.random() < 0.45, coinCol: coinCol, coinGot: false, deco: deco };
+        return { type: 'safe', cars: [], coin: Math.random() < 0.45, coinCol: coinCol, coinGot: false, deco: deco, mag: Math.random() < 0.12, magCol: ri(0, COLS - 1), magGot: false };
       }
       var dir = Math.random() < 0.5 ? 1 : -1;
       var speed = (0.0045 + Math.random() * 0.006 + idx * 0.00012) * dir;
@@ -584,6 +584,7 @@
           var cc = rw.cars[i]; cc.x += rw.speed; if (cc.x > 1.28) cc.x -= 1.56; if (cc.x < -0.34) cc.x += 1.56;
         }
       }
+      if (magT > 0) magT--;
       // hop tween
       if (!sett) {
         hopT = Math.min(1, hopT + 0.16);
@@ -598,8 +599,24 @@
       burst(px, py + rh * 0.3, 8, 'rgba(180,200,160,.9)', { min: 0.5, max: 2.2, up: 0.5, grav: 0.15, sz0: 2, sz1: 4 });
     }
     function playerScreenY() { return E.H * 0.66 + (camY - prow * rh); }
+    function magnetSweep() {
+      if (magT <= 0) return;
+      for (var rI = prow; rI <= prow + 1; rI++) {
+        var rw2 = rowAt(rI);
+        if (rw2.type === 'safe' && rw2.coin && !rw2.coinGot && Math.abs(rw2.coinCol - pcol) <= 2) {
+          rw2.coinGot = true; E.score++; Audio.coin(); haptic(8);
+          var cw2 = E.W / COLS; burst((rw2.coinCol + 0.5) * cw2, playerScreenY() - (rI - prow) * rh, 8, '#ffcf5a', { kind: 'coin', min: 1, max: 3, up: 1 });
+          floatText((rw2.coinCol + 0.5) * cw2, playerScreenY() - (rI - prow) * rh, '+1', '#ffcf5a');
+        }
+      }
+    }
     function checkRow() {
       var rw = rowAt(prow);
+      if (rw.type === 'safe' && rw.mag && !rw.magGot && rw.magCol === pcol) {
+        rw.magGot = true; magT = 600; Audio.near(); haptic(12);
+        floatText((pcol + 0.5) * (E.W / COLS), playerScreenY(), 'MAGNET!', '#ff8ad4');
+      }
+      magnetSweep();
       if (rw.type === 'safe' && rw.coin && !rw.coinGot && rw.coinCol === pcol) {
         rw.coinGot = true; E.score++; Audio.coin(); haptic(10);
         var W = E.W, cw = W / COLS; burst((pcol + 0.5) * cw, playerScreenY(), 10, '#ffcf5a', { kind: 'coin', min: 1, max: 4, up: 1 });
@@ -645,6 +662,12 @@
             c.fillStyle = '#ffcf5a'; c.shadowColor = '#ffcf5a'; c.shadowBlur = 12; c.beginPath(); c.arc(0, 0, 10, 0, 6.283); c.fill(); c.shadowBlur = 0;
             c.fillStyle = '#7a5b10'; c.font = '900 12px Inter,Arial'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('★', 0, 1); c.restore();
           }
+          if (rw.mag && !rw.magGot) {
+            var mgx = (rw.magCol + 0.5) * cw, mp = 1 + 0.14 * Math.sin(E.clock / 150);
+            c.save(); c.translate(mgx, y); c.scale(mp, mp);
+            c.shadowColor = '#ff8ad4'; c.shadowBlur = 12; c.font = '900 16px Inter,Arial'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('\ud83e\uddf2', 0, 1);
+            c.shadowBlur = 0; c.restore();
+          }
         } else {
           c.fillStyle = '#14161f'; c.fillRect(0, y - rh / 2, W, rh);
           c.strokeStyle = 'rgba(255,255,255,.22)'; c.setLineDash([12, 12]); c.lineWidth = 2;
@@ -671,6 +694,7 @@
       var py = rowScreenY(prow) - (sett ? 0 : 0) - lift;
       var sq = sett ? 1 : (1 + Math.sin(Math.PI * t) * 0.12);
       c.save(); c.translate(px, py); c.scale(1 / sq, sq);
+      if (magT > 0) { c.strokeStyle = 'rgba(255,138,212,.8)'; c.lineWidth = 2.5; c.shadowColor = '#ff8ad4'; c.shadowBlur = 12; c.beginPath(); c.arc(0, 0, cw * 0.5 + Math.sin(E.clock / 130) * 2, 0, 6.283); c.stroke(); c.shadowBlur = 0; }
       var _skc = skinColor(); c.shadowColor = _skc; c.shadowBlur = 16; c.fillStyle = _skc;
       roundRect(c, -cw * 0.34, -cw * 0.34, cw * 0.68, cw * 0.68, 11); c.fill(); c.shadowBlur = 0;
       c.font = '900 ' + Math.floor(cw * 0.5) + 'px system-ui,Arial'; c.textAlign = 'center'; c.textBaseline = 'middle';
