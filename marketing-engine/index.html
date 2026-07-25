@@ -127,7 +127,8 @@
 
     <div class="card hide" id="outCard">
       <div class="top"><b id="outTitle"></b><span class="muted" id="outCount" style="margin-left:auto;font-size:12px"></span></div>
-      <pre id="outText"></pre>
+      <pre id="outText" contenteditable="true" spellcheck="false" oninput="syncOut()" style="outline:none"></pre>
+      <p class="muted" style="font-size:11.5px;margin:-4px 0 0">✏️ Tap the text to edit before you copy, download or save.</p>
       <div class="bar">
         <button class="btn small" onclick="saveAsset()">💾 Save to library</button>
         <button class="btn ghost small" id="copyBtn" onclick="copyOut()">📋 Copy</button>
@@ -193,6 +194,7 @@ async function showEngine(){
   el('modes').classList.remove('hide');
   setMode(location.hash==='#video'?'video':'copy');
   document.addEventListener('keydown',function(e){ if((e.metaKey||e.ctrlKey)&&e.key==='Enter' && !el('engine').classList.contains('hide')){ e.preventDefault(); generate(); } });
+  restoreBrief();
 }
 var videoLoaded=false;
 function setMode(m){
@@ -228,6 +230,7 @@ async function generate(){
   el('gErr').classList.add('hide');
   var biz=el('fBiz').value.trim();
   if(!biz){el('gErr').textContent='Give me at least the business name.';el('gErr').classList.remove('hide');return}
+  saveBrief();
   var btn=el('genBtn');btn.disabled=true;
   el('genState').innerHTML='<span class="spin"></span>Claude is working — 20–40s…';
   var b=new URLSearchParams();
@@ -257,6 +260,11 @@ async function generate(){
   return !!lastOut;
 }
 
+var BRIEF_FIELDS=['fBiz','fNiche','fCity','fGoal','fBudget','fExtra'];
+function saveBrief(){ try{ var o={}; BRIEF_FIELDS.forEach(function(id){ var e=el(id); if(e) o[id]=e.value; }); localStorage.setItem('tb_me_brief',JSON.stringify(o)); }catch(e){} }
+function restoreBrief(){ try{ var o=JSON.parse(localStorage.getItem('tb_me_brief')||'null'); if(!o)return; BRIEF_FIELDS.forEach(function(id){ var e=el(id); if(e && !e.value && o[id]) e.value=o[id]; }); }catch(e){} }
+function syncOut(){ if(!lastOut) return; lastOut.content=el('outText').innerText;
+  var t=lastOut.content, words=(t.trim().match(/\S+/g)||[]).length; el('outCount').textContent=words+' words · '+t.length+' chars'; }
 function copyOut(){ if(!lastOut) return; try{ navigator.clipboard.writeText(lastOut.content); }catch(e){}
   var b=el('copyBtn'); if(b){ var t=b.textContent; b.textContent='Copied ✓'; setTimeout(function(){b.textContent=t;},1400); } }
 function downloadOut(){ if(!lastOut) return;

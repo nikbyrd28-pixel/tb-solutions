@@ -193,6 +193,8 @@ function computeVis(){
   });
 }
 function setSearch(v){ filterText=(v||'').trim().toLowerCase(); render(); }
+function timeAgo(ts){ var s=Math.floor((Date.now()-new Date(ts).getTime())/1000); if(s<60)return 'just now'; var m=Math.floor(s/60); if(m<60)return m+'m ago'; var h=Math.floor(m/60); if(h<24)return h+'h ago'; var d=Math.floor(h/24); if(d<7)return d+'d ago'; return new Date(ts).toLocaleDateString(); }
+document.addEventListener('keydown',function(e){ if(e.key==='/' && document.activeElement && ['INPUT','SELECT','TEXTAREA'].indexOf(document.activeElement.tagName)<0){ var q=el('q'); if(q){ e.preventDefault(); q.focus(); } } });
 function smsHref(x){
   var num=String(x.phone||'').replace(/[^0-9+]/g,''); if(!num) return '#';
   var first=String(x.name||'').trim().split(' ')[0]||'there';
@@ -225,12 +227,13 @@ function render(){
     +'<div class="stat"><div class="n">'+counts['New']+'</div><div class="l">New — call these</div></div>'
     +'<div class="stat"><div class="n">'+won+'</div><div class="l">Booked + Won</div></div>'
     +'<div class="stat"><div class="n">'+(rows.length?Math.round(won/rows.length*100):0)+'%</div><div class="l">Conversion</div></div>';
-  if(!vis.length){el('list').innerHTML='<p class="muted">No leads here yet. New submissions from your pages land automatically.</p>';return}
-  el('list').innerHTML=vis.map(function(x){
+  if(!vis.length){el('list').innerHTML='<p class="muted">'+(filterText||filterStatus!=='All'?'No leads match this view — try clearing the search or filter.':'No leads here yet. New submissions from your pages land automatically.')+'</p>';return}
+  var countLine='<div class="muted" style="font-size:12px;margin:0 0 8px">Showing '+vis.length+' of '+rows.length+' lead'+(rows.length===1?'':'s')+'</div>';
+  el('list').innerHTML=countLine+vis.map(function(x){
     var det=[x.service,x.pickup&&('from '+x.pickup),x.dropoff&&('to '+x.dropoff),x.ride_date,x.passengers&&(x.passengers+' pax')].filter(Boolean).join(' · ');
     return '<div class="lead">'
       +'<div class="who">'+esc(x.name||x.company||'—')+(isAdmin?' <span class="pill">'+esc(x.client||'')+'</span>':'')+'</div>'
-      +'<div class="meta">'+esc(det)+(det?' · ':'')+new Date(x.created_at).toLocaleString()+'</div>'
+      +'<div class="meta">'+esc(det)+(det?' · ':'')+timeAgo(x.created_at)+'</div>'
       +(x.message?'<div class="msg">'+esc(x.message)+'</div>':'')
       +'<div class="row2">'
       +'<select class="status-sel s-'+esc(x.status)+'" onchange="setStatus('+x.id+',this.value)">'
