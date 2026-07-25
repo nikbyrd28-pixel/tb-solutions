@@ -178,10 +178,12 @@ function renderClientChips(){
   }).join('');
 }
 
+var _pollStarted=false;
 async function loadLeads(){
   var r=await supa.from('client_leads').select('*').order('created_at',{ascending:false}).limit(500);
   if(r.error){el('list').innerHTML='<p class="err">Could not load: '+esc(r.error.message)+'</p>';return}
   rows=r.data||[];
+  if(!_pollStarted){ _pollStarted=true; setInterval(pollLeads,60000); }
   renderClientChips();
   var want=new URLSearchParams(location.search).get('client');
   if(isAdmin && want){
@@ -192,6 +194,15 @@ async function loadLeads(){
   render();
 }
 
+async function pollLeads(){
+  if(document.hidden) return;
+  var r=await supa.from('client_leads').select('*').order('created_at',{ascending:false}).limit(500);
+  if(r.error||!r.data) return;
+  var have={}; rows.forEach(function(x){have[x.id]=1;});
+  var fresh=r.data.filter(function(x){return !have[x.id];}).length;
+  rows=r.data; render();
+  if(fresh>0){ toast('🔔 '+fresh+' new lead'+(fresh>1?'s':'')+'!'); try{ if(navigator.vibrate)navigator.vibrate(60);}catch(e){} }
+}
 function computeVis(){
   return rows.filter(function(x){
     if(filterStatus!=='All' && x.status!==filterStatus) return false;
