@@ -97,11 +97,15 @@
     <div class="card">
       <div class="top"><b>📥 Leads</b><button class="btn ghost small" onclick="loadLeads()">Refresh</button></div>
       <div class="chips" id="statusChips"></div>
+      <div style="display:flex;gap:8px;margin:8px 0">
+        <input id="q" placeholder="🔎 Search name, phone, email…" oninput="setSearch(this.value)" style="flex:1;min-width:0">
+        <button class="btn ghost small" onclick="exportCSV()" title="Download the leads you're viewing as a CSV">⬇ CSV</button>
+      </div>
       <div id="list"><p class="muted">Loading…</p></div>
     </div>
     <div class="card" style="border-style:dashed">
-      <b>💬 Email &amp; SMS <span class="pill" style="color:var(--acc2);border-color:rgba(139,123,255,.4)">coming soon</span></b>
-      <p class="muted" style="margin:6px 0 0">Text and email your leads right from this screen — instant replies, blasts, and automatic follow-ups. Rolling out soon.</p>
+      <b>💬 One-tap follow-up <span class="pill" style="color:var(--good);border-color:rgba(124,252,198,.4)">live</span></b>
+      <p class="muted" style="margin:6px 0 0">Call, text, or email any lead straight from its card — <b>Text</b> opens your phone with a friendly follow-up ready to send. Search to find anyone fast, and <b>⬇ CSV</b> exports your list. Tip: always work your <b>New</b> leads first.</p>
     </div>
     <p class="muted" style="text-align:center">Powered by <a class="call" href="https://tbsol.net">TB Solutions</a> · <a class="call" href="https://tbsol.net/support/">Get support 🛟</a> · <a class="call" href="/crm/guide/">📖 How to use this</a> · <a class="call" href="https://tbsol.net/privacy/" style="font-weight:400">Privacy</a></p>
   </div>
@@ -114,7 +118,7 @@ var ADMIN='nikbyrd28@gmail.com';
 var STATUSES=['New','Contacted','Booked','Won','Lost'];
 
 var supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
-var me=null, rows=[], filterStatus='All', filterClient='All', isAdmin=false;
+var me=null, rows=[], filterStatus='All', filterClient='All', filterText='', isAdmin=false;
 
 function el(id){return document.getElementById(id)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
@@ -180,12 +184,37 @@ async function loadLeads(){
   render();
 }
 
-function render(){
-  var vis=rows.filter(function(x){
+function computeVis(){
+  return rows.filter(function(x){
     if(filterStatus!=='All' && x.status!==filterStatus) return false;
     if(isAdmin && filterClient!=='All' && (x.client||'?')!==filterClient) return false;
+    if(filterText){ var hay=[x.name,x.company,x.phone,x.email,x.service,x.message,x.client].filter(Boolean).join(' ').toLowerCase(); if(hay.indexOf(filterText)<0) return false; }
     return true;
   });
+}
+function setSearch(v){ filterText=(v||'').trim().toLowerCase(); render(); }
+function smsHref(x){
+  var num=String(x.phone||'').replace(/[^0-9+]/g,''); if(!num) return '#';
+  var first=String(x.name||'').trim().split(' ')[0]||'there';
+  var biz=isAdmin?(x.client||'us'):'us';
+  var body='Hi '+first+', thanks for reaching out'+(biz&&biz!=='us'?' to '+biz:'')+"! When's a good time for a quick call?";
+  return 'sms:'+num+'?&body='+encodeURIComponent(body);
+}
+function exportCSV(){
+  var vis=computeVis();
+  if(!vis.length){ alert('No leads to export in this view.'); return; }
+  var cols=['Name','Company','Phone','Email','Service','Status','Client','Created','Message'];
+  function cell(v){ v=String(v==null?'':v).replace(/"/g,'""'); return '"'+v+'"'; }
+  var lines=[cols.join(',')].concat(vis.map(function(x){
+    return [x.name,x.company,x.phone,x.email,x.service,x.status,x.client,new Date(x.created_at).toISOString(),x.message].map(cell).join(',');
+  }));
+  var blob=new Blob([lines.join('\r\n')],{type:'text/csv'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='leads-'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);},2000);
+}
+function render(){
+  var vis=computeVis();
   renderGame();
   var counts={};
   STATUSES.forEach(function(s){counts[s]=0});
@@ -207,8 +236,9 @@ function render(){
       +'<select class="status-sel s-'+esc(x.status)+'" onchange="setStatus('+x.id+',this.value)">'
       +STATUSES.map(function(s){return '<option'+(x.status===s?' selected':'')+'>'+s+'</option>'}).join('')
       +'</select>'
-      +(x.phone?'<a class="call" href="tel:'+esc(x.phone)+'">📞 '+esc(x.phone)+'</a>':'')
-      +(x.email?'<a class="call" href="mailto:'+esc(x.email)+'">✉️ '+esc(x.email)+'</a>':'')
+      +(x.phone?'<a class="call" href="tel:'+esc(x.phone)+'">📞 Call</a>':'')
+      +(x.phone?'<a class="call" href="'+smsHref(x)+'">💬 Text</a>':'')
+      +(x.email?'<a class="call" href="mailto:'+esc(x.email)+'?subject='+encodeURIComponent('Following up')+'">✉️ Email</a>':'')
       +'</div></div>';
   }).join('');
 }
