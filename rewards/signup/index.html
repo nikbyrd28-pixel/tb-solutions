@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Start your Loop — free, live in 30 seconds</title>
+<meta name="description" content="Create your free Loop loyalty + booking program in 30 seconds. Get your QR code, owner dashboard and staff scanner instantly — no app, no hardware, no card." />
+<meta name="theme-color" content="#05060d" />
+<meta property="og:title" content="Start your Loop — free" />
+<meta property="og:description" content="Loyalty, booking & games for your shop. Live in 30 seconds with your own QR code." />
+<meta property="og:url" content="https://tbsol.net/rewards/signup/" />
+<link rel="canonical" href="https://tbsol.net/rewards/signup/" />
+<meta name="robots" content="index,follow" />
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<link rel="preconnect" href="https://api.qrserver.com">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-size='34'%3E%F0%9F%94%81%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--text:#f2f4ff;--muted:#8f97b8;--line:rgba(122,162,255,.32);--acc:#7aa2ff;--acc2:#5ad0f0;--vio:#b98bff;--good:#43f0b0;--gold:#ffcf5a;--bg:#05060d}
+  *{box-sizing:border-box}
+  @keyframes drift{0%{background-position:0 0}100%{background-position:60px 60px}}
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  @keyframes confetti-fall{0%{transform:translateY(-10px) rotate(0);opacity:1}100%{transform:translateY(105vh) rotate(720deg);opacity:0}}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.55;min-height:100dvh;
+    background:radial-gradient(circle at 15% -5%,rgba(122,162,255,.2),transparent 44%),radial-gradient(circle at 90% 108%,rgba(90,208,240,.14),transparent 46%),linear-gradient(180deg,#070811,#04050a);
+    display:flex;flex-direction:column;align-items:center;position:relative;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.5;z-index:0;
+    background-image:linear-gradient(rgba(122,162,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(122,162,255,.05) 1px,transparent 1px);
+    background-size:60px 60px;animation:drift 14s linear infinite}
+  .wrap{width:min(500px,100%);padding:26px 18px 48px;position:relative;z-index:1}
+  .brand{font-family:Poppins,Inter,sans-serif;font-weight:900;font-size:20px;text-align:center}
+  .brand a{color:var(--text);text-decoration:none}
+  .brand span{background:linear-gradient(90deg,var(--acc2),var(--acc),var(--vio));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tag{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.22em;text-transform:uppercase;margin:2px 0 22px}
+  .card{background:linear-gradient(150deg,rgba(255,255,255,.06),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:22px;padding:26px 22px;box-shadow:0 18px 44px rgba(0,0,0,.45);animation:rise .5s ease}
+  h1{font-size:clamp(24px,5.4vw,30px);margin:0 0 6px;letter-spacing:-.01em;text-align:center}
+  h1 span{background:linear-gradient(90deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lead{color:var(--muted);text-align:center;margin:0 0 18px;font-size:14.5px}
+  .perk{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:0 0 20px}
+  .perk span{border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:12px;color:var(--muted);background:rgba(255,255,255,.02)}
+  label{display:block;margin:12px 0 5px;font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+  input{width:100%;background:rgba(2,4,12,.6);border:1px solid var(--line);border-radius:13px;padding:14px;color:var(--text);font:inherit;font-size:16px}
+  input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(122,162,255,.2)}
+  .btn{width:100%;margin-top:18px;border:0;border-radius:999px;padding:15px;font:inherit;font-weight:900;font-size:15px;cursor:pointer;letter-spacing:.02em;
+    background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;box-shadow:0 10px 26px rgba(122,162,255,.4)}
+  .btn:active{transform:scale(.98)}
+  .btn:disabled{opacity:.6}
+  .btn.ghost{background:rgba(122,162,255,.08);border:1px solid var(--line);color:var(--text);box-shadow:none;font-weight:700;margin-top:0}
+  .err{color:#ff8a9d;font-size:13.5px;margin-top:12px;text-align:center;min-height:18px}
+  .fine{color:var(--muted);font-size:12px;text-align:center;margin-top:12px}
+  .hide{display:none!important}
+  /* success */
+  .qrbox{background:#fff;border-radius:18px;padding:12px;width:232px;height:232px;margin:6px auto 4px;box-shadow:0 0 0 1px var(--line),0 0 34px rgba(122,162,255,.3)}
+  .qrbox img{width:100%;height:100%;display:block}
+  .slugpill{display:inline-block;background:rgba(122,162,255,.12);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:800;font-size:14px;margin:4px 0}
+  .links{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+  .lk{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;text-decoration:none;color:var(--text);border:1px solid var(--line);border-radius:14px;padding:14px 8px;background:rgba(122,162,255,.05);font-weight:700;font-size:13px}
+  .lk .e{font-size:24px}
+  .lk small{color:var(--muted);font-weight:600;font-size:11px}
+  .lk.wide{grid-column:1/-1}
+  .lk.play{background:linear-gradient(135deg,rgba(93,242,224,.14),rgba(185,139,255,.12));border-color:var(--acc)}
+  .pinnote{background:rgba(255,207,90,.08);border:1px solid rgba(255,207,90,.35);border-radius:12px;padding:11px 13px;margin-top:16px;font-size:13px;text-align:center}
+  .pinnote b{color:var(--gold)}
+  .steps{margin:16px 0 0;padding:0;list-style:none;text-align:left}
+  .steps li{display:flex;gap:10px;align-items:flex-start;margin:9px 0;font-size:13.5px;color:var(--muted)}
+  .steps li b{color:var(--text)}
+  .steps .n{flex:0 0 24px;height:24px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:12px;color:#05060d;background:linear-gradient(135deg,var(--acc2),var(--acc))}
+  .cf{position:fixed;top:-16px;font-size:20px;z-index:99;pointer-events:none;animation:confetti-fall linear forwards}
+  footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px}
+  footer a{color:var(--acc);text-decoration:none}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><a href="/loyalty/">🔁 <span>Loop</span></a></div>
+  <div class="tag">Free signup</div>
+
+  <!-- SIGNUP -->
+  <div class="card" id="signupCard">
+    <h1>Your shop, <span>live in 30 seconds</span></h1>
+    <p class="lead">Create your loyalty + booking program and get your own QR code instantly. No app, no hardware, no card.</p>
+    <div class="perk"><span>✨ No app</span><span>📷 No hardware</span><span>🎮 Games included</span><span>💳 No card</span></div>
+
+    <label>Business name</label>
+    <input id="biz" placeholder="Joe's Barbershop" autocomplete="organization">
+    <label>Staff PIN <span style="text-transform:none;letter-spacing:0;color:var(--muted)">— 4–8 digits, you'll use it to scan &amp; log in</span></label>
+    <input id="pin" type="tel" inputmode="numeric" maxlength="8" placeholder="e.g. 1234">
+    <label>Email <span style="text-transform:none;letter-spacing:0;color:var(--muted)">(optional — so we can help)</span></label>
+    <input id="email" type="email" placeholder="you@shop.com" autocomplete="email">
+    <button class="btn" id="goBtn" onclick="createShop()">Create my Loop — free →</button>
+    <div class="err hide" id="err"></div>
+    <p class="fine">Free to start · no card, no contract · cancel anytime · <a href="/privacy/" style="color:var(--muted)">Privacy</a></p>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="card hide" id="doneCard">
+    <h1>🎉 <span id="doneName">Your shop</span> is live!</h1>
+    <p class="lead">This is your counter QR — customers scan it to join, earn points, play games &amp; book.</p>
+    <div class="qrbox"><img id="qr" alt="Your shop QR code" loading="lazy"></div>
+    <p style="text-align:center;margin:2px 0 0">Your code: <span class="slugpill" id="slugPill">shop</span></p>
+
+    <div class="links">
+      <a class="lk play wide" id="lkCard" target="_blank" rel="noopener"><span class="e">🎮</span>Test it now — open a card<small>join, play the games, book, spin</small></a>
+      <a class="lk" id="lkOwner" target="_blank" rel="noopener"><span class="e">📊</span>Owner dashboard<small>rewards, schedule, setup</small></a>
+      <a class="lk" id="lkStaff" target="_blank" rel="noopener"><span class="e">📷</span>Staff scanner<small>scan &amp; punch</small></a>
+      <a class="lk" id="lkPoster" target="_blank" rel="noopener"><span class="e">🖨️</span>Print poster<small>QR for your counter</small></a>
+      <a class="lk" href="/arcade/" target="_blank" rel="noopener"><span class="e">🕹️</span>Play the games<small>Flyer &amp; Hopper</small></a>
+    </div>
+
+    <div class="pinnote">🔐 Your staff PIN is <b id="pinShow">••••</b> — save it. You'll use it to log into the dashboard and scan cards.</div>
+
+    <ol class="steps">
+      <li><span class="n">1</span><div><b>Print your poster</b> and set it on the counter.</div></li>
+      <li><span class="n">2</span><div><b>Open the dashboard</b> to set your services, hours, reward &amp; prize odds.</div></li>
+      <li><span class="n">3</span><div><b>Scan the QR yourself</b> to see the customer card — play a game, book a slot, spin for a prize.</div></li>
+    </ol>
+    <button class="btn ghost" onclick="location.reload()" style="margin-top:16px">Create another shop</button>
+  </div>
+
+  <footer>🔁 <b>Loop</b> by <a href="https://tbsol.net">TB Solutions</a> · loyalty, booking &amp; games that keep customers coming back</footer>
+</div>
+
+<script>
+var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+function el(id){return document.getElementById(id)}
+function rpc(fn,args){ return fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(args)}).then(function(r){return r.json();}); }
+function qrUrl(data){ return 'https://api.qrserver.com/v1/create-qr-code/?size=232x232&margin=0&data='+encodeURIComponent(data); }
+function flash(m){ var e=el('err'); e.textContent=m; e.classList.remove('hide'); }
+el('pin').addEventListener('keydown',function(e){ if(e.key==='Enter') createShop(); });
+function createShop(){
+  var biz=(el('biz').value||'').trim(), pin=(el('pin').value||'').trim(), email=(el('email').value||'').trim();
+  el('err').classList.add('hide');
+  if(biz.length<2){ el('biz').focus(); return flash('Add your business name.'); }
+  if(!/^[0-9]{4,8}$/.test(pin)){ el('pin').focus(); return flash('Pick a 4–8 digit PIN (numbers only).'); }
+  var btn=el('goBtn'); btn.disabled=true; btn.textContent='Creating…';
+  rpc('create_loop_shop',{p_name:biz,p_pin:pin,p_email:email||null}).then(function(d){
+    if(!d||!d.ok){ btn.disabled=false; btn.textContent='Create my Loop — free →'; return flash((d&&d.error)||'Could not create — try again.'); }
+    showDone(d, email);
+  }).catch(function(){ btn.disabled=false; btn.textContent='Create my Loop — free →'; flash('Network hiccup — try again.'); });
+}
+function showDone(d, email){
+  var base=location.origin, slug=d.slug;
+  el('signupCard').classList.add('hide'); el('doneCard').classList.remove('hide');
+  el('doneName').textContent=d.biz_name||'Your shop';
+  el('slugPill').textContent=slug;
+  el('pinShow').textContent=d.pin||'••••';
+  el('qr').src=qrUrl(base+'/rewards/?c='+slug);
+  el('lkCard').href=base+'/rewards/?c='+slug;
+  el('lkOwner').href=base+'/rewards/owner/?c='+slug;
+  el('lkStaff').href=base+'/rewards/staff/';
+  el('lkPoster').href=base+'/rewards/poster/?c='+slug;
+  confetti();
+  // send a lead into TB Command so the team can follow up (best-effort)
+  try{
+    fetch(SUPA_URL+'/rest/v1/intakes',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+      body:JSON.stringify({business:d.biz_name||slug,name:'',email:email||'',about:'🔁 Loop self-serve signup',interest:'Loyalty + booking (Loop)',goal:'test Loop',timeline:'now',notes:'Self-serve shop created: '+slug})}).catch(function(){});
+  }catch(e){}
+}
+function confetti(){
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  var bits=['🎉','✨','🔁','🪙','🎊'];
+  for(var i=0;i<26;i++){ var s=document.createElement('span'); s.className='cf'; s.textContent=bits[i%bits.length];
+    s.style.left=(Math.random()*100)+'vw'; s.style.animationDuration=(1.6+Math.random()*1.6)+'s'; s.style.animationDelay=(Math.random()*.5)+'s';
+    document.body.appendChild(s); setTimeout(function(e){return function(){e.remove()}}(s),3800); }
+}
+window.addEventListener('error',function(e){try{
+  fetch(SUPA_URL+'/rest/v1/client_errors',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({page:location.pathname,msg:String((e&&e.message)||'').slice(0,300),src:String((e&&e.filename)||'').slice(0,120),line:(e&&e.lineno)||0})}).catch(function(){});
+}catch(_){}});
+</script>
+</body>
+</html>

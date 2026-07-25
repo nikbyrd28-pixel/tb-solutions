@@ -59,6 +59,50 @@
   .muted{color:var(--muted);font-size:12.5px}
   .links{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
   .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:40;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d;font-weight:800;font-size:13px;border-radius:999px;padding:9px 18px;box-shadow:0 10px 30px rgba(122,162,255,.4);animation:popin .25s ease}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:520px){.grid2{grid-template-columns:1fr}}
+  select{width:100%;background:rgba(2,4,12,.6);border:1px solid var(--line);border-radius:12px;padding:12px 12px;color:var(--text);font:inherit;font-size:15px}
+  .prow{display:grid;grid-template-columns:1fr 108px 78px 34px;gap:8px;align-items:center;margin-top:8px}
+  @media(max-width:520px){.prow{grid-template-columns:1fr 1fr;grid-auto-rows:auto}}
+  .prow input,.prow select{padding:10px 10px;font-size:14px}
+  .prow .rm{background:rgba(255,138,157,.12);border:1px solid rgba(255,138,157,.4);color:#ff8a9d;border-radius:10px;padding:9px 0;font-weight:800;cursor:pointer}
+  .srow{display:grid;grid-template-columns:1fr 92px 34px;gap:8px;align-items:center;margin-top:8px}
+  .srow input{padding:10px;font-size:14px}
+  .srow .rm{background:rgba(255,138,157,.12);border:1px solid rgba(255,138,157,.4);color:#ff8a9d;border-radius:10px;padding:9px 0;font-weight:800;cursor:pointer}
+  .sedit{border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:10px;background:rgba(122,162,255,.04)}
+  .sedit .stop{display:grid;grid-template-columns:52px 1fr 34px;gap:8px;align-items:center}
+  .sedit .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
+  .sedit input,.sedit select{padding:9px;font-size:13.5px;border-radius:9px;background:rgba(0,0,0,.15);color:var(--text);border:1px solid var(--line);width:100%}
+  .sedit .e-icon{text-align:center;font-size:18px}
+  .sedit .sbot{display:flex;align-items:center;gap:12px;margin-top:8px;flex-wrap:wrap}
+  .sedit .sbot select{flex:1;min-width:130px}
+  .sedit .sbot label{display:flex;align-items:center;gap:7px;text-transform:none;letter-spacing:0;font-size:13.5px;cursor:pointer;color:var(--text)}
+  .sedit .rm{background:rgba(255,138,157,.12);border:1px solid rgba(255,138,157,.4);color:#ff8a9d;border-radius:10px;padding:9px 0;font-weight:800;cursor:pointer}
+  .sedit .fl{font-size:10.5px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin:0 0 2px}
+  .leadrow{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-top:8px;background:rgba(122,162,255,.05)}
+  .leadrow a{color:var(--acc2);text-decoration:none;font-weight:800;font-size:13px;white-space:nowrap}
+  .leadrow .ln b{font-size:14px}
+  .leadrow .ln span{display:block;font-size:12px;color:var(--muted)}
+  .diffbtn{cursor:pointer}
+  .diffbtn.on{background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d;border:0;box-shadow:0 8px 22px rgba(122,162,255,.32)}
+  .odds{border:1px dashed var(--line);border-radius:12px;padding:10px 12px;margin-top:10px;background:rgba(122,162,255,.05);font-size:13px}
+  .agday{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--acc2);margin:14px 0 6px}
+  .appt{display:grid;grid-template-columns:64px 1fr auto;gap:10px;align-items:center;padding:9px 4px;border-bottom:1px solid rgba(255,255,255,.06)}
+  .appt:last-child{border-bottom:0}
+  .appt-t{font-weight:800;font-size:13px;color:var(--text)}
+  .appt-b b{font-size:14px}
+  .appt-a{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .mini{border:1px solid var(--line);background:rgba(122,162,255,.08);color:var(--text);border-radius:9px;padding:6px 9px;font-size:11px;font-weight:800;cursor:pointer}
+  .mini.good{border-color:rgba(67,240,176,.5);color:var(--good)}
+  .mini.bad{border-color:rgba(255,138,157,.5);color:#ff8a9d}
+  @media(max-width:520px){.appt{grid-template-columns:52px 1fr;grid-auto-rows:auto}.appt-a{grid-column:1/-1;justify-content:flex-start}}
+  .svcrow{display:grid;grid-template-columns:1fr 68px 68px 34px;gap:8px;align-items:center;margin-top:8px}
+  .barbrow{display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin-top:8px}
+  .hrow{display:grid;grid-template-columns:52px 78px 1fr 1fr;gap:8px;align-items:center;margin-top:8px}
+  .hrow .hd{font-weight:800;font-size:13px}
+  .hrow .cl{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);cursor:pointer}
+  .svcrow input,.barbrow input,.hrow input{padding:10px 10px;font-size:14px}
+  .svcrow .rm,.barbrow .rm{background:rgba(255,138,157,.12);border:1px solid rgba(255,138,157,.4);color:#ff8a9d;border-radius:10px;padding:9px 0;font-weight:800;cursor:pointer}
 </style>
 </head>
 <body>
@@ -93,6 +137,11 @@
     </div>
 
     <div class="card">
+      <h2>📅 <b>Appointments</b> — your live schedule</h2>
+      <div id="agenda"><p class="muted">Loading…</p></div>
+    </div>
+
+    <div class="card">
       <h2>👑 <b>Member tiers</b></h2>
       <div class="tierbar" id="tierbar"></div>
       <div class="tierleg" id="tierleg"></div>
@@ -106,6 +155,156 @@
     <div class="card">
       <h2>📅 <b>Recent bookings</b></h2>
       <div id="bookings"></div>
+    </div>
+
+    <div class="card" id="settingsCard">
+      <h2>⚙️ <b>Rewards &amp; game difficulty</b> — you're in control</h2>
+      <div id="setLoad" class="muted">Loading your settings…</div>
+      <div id="setForm" class="hide">
+        <label>Business name</label>
+        <input id="setBiz" placeholder="Joe's Barbershop">
+
+        <div class="grid2">
+          <div><label>Reward customers earn</label><input id="setRewardText" placeholder="a free cut"></div>
+          <div><label>Points needed to earn it</label><input id="setRewardAt" type="number" min="1" inputmode="numeric"></div>
+        </div>
+        <div class="grid2">
+          <div><label>Points per visit</label><input id="setPPV" type="number" min="1" inputmode="numeric"></div>
+          <div><label>Spin cost (points)</label><input id="setSpinCost" type="number" min="1" inputmode="numeric"></div>
+        </div>
+
+        <label>Prize-game difficulty</label>
+        <div class="links" id="diffBtns">
+          <button class="btn ghost diffbtn" data-d="easy"   onclick="applyDiff('easy')">😀 Easy · more wins</button>
+          <button class="btn ghost diffbtn" data-d="normal" onclick="applyDiff('normal')">😐 Normal</button>
+          <button class="btn ghost diffbtn" data-d="hard"   onclick="applyDiff('hard')">😈 Hard · rare wins</button>
+        </div>
+
+        <label>Prizes &amp; odds — set the label and its relative chance</label>
+        <div id="prizeEditor"></div>
+        <button class="btn ghost" onclick="addPrize()" style="margin-top:10px">+ Add a prize</button>
+        <div class="odds" id="oddsNote"></div>
+
+        <div class="grid2" style="margin-top:14px">
+          <div><label>Survey reward (points)</label><input id="setSurvey" type="number" min="0" inputmode="numeric"></div>
+          <div><label>Arcade difficulty <span style="text-transform:none;letter-spacing:0;color:var(--muted)">(coins per game — live when the arcade launches)</span></label>
+            <select id="setGameDiff"><option value="easy">Generous</option><option value="normal">Balanced</option><option value="hard">Stingy</option></select></div>
+        </div>
+
+        <label style="display:flex;align-items:center;gap:9px;margin-top:16px;text-transform:none;letter-spacing:0;font-size:14.5px;cursor:pointer">
+          <input type="checkbox" id="setBooking" style="width:20px;height:20px;margin:0;accent-color:#7aa2ff"> Online booking is ON
+        </label>
+        <label style="display:flex;align-items:center;gap:9px;margin-top:12px;text-transform:none;letter-spacing:0;font-size:14.5px;cursor:pointer">
+          <input type="checkbox" id="setCasino" style="width:20px;height:20px;margin:0;accent-color:#ffcf5a"> Casino games (Blackjack &amp; Video Poker)
+        </label>
+        <div class="muted" style="margin:-2px 0 4px;font-size:12.5px">Customers bet the coins they earn — no real money. Turn off if you'd rather not offer card games.</div>
+        <label>Google review link (optional)</label>
+        <input id="setReview" placeholder="https://g.page/your-shop/review">
+
+        <div style="border-top:1px solid var(--line);margin:20px 0 6px;padding-top:16px">
+          <h2 style="margin:0 0 4px">🪙 <b>Coin store &amp; tournament</b></h2>
+          <p class="muted" style="margin:0 0 10px;font-size:13px">Customers spend the coins they earn on these rewards, and the week's top player wins the tournament prize.</p>
+        </div>
+        <label>Weekly tournament prize</label>
+        <input id="setTourPrize" placeholder="Free haircut for this week's #1 player">
+        <label style="margin-top:14px">Coin store — reward &amp; coin cost</label>
+        <div id="storeEditor"></div>
+        <button class="btn ghost" onclick="addStoreItem()" style="margin-top:10px">+ Add a reward</button>
+
+        <div style="border-top:1px solid var(--line);margin:20px 0 6px;padding-top:16px">
+          <h2 style="margin:0 0 4px">💈 <b>Membership</b> (The Chair Club)</h2>
+        </div>
+        <label style="display:flex;align-items:center;gap:9px;text-transform:none;letter-spacing:0;font-size:14.5px;cursor:pointer">
+          <input type="checkbox" id="setMemOn" style="width:20px;height:20px;margin:0;accent-color:#ffcf5a"> Offer a membership on the card
+        </label>
+        <div class="grid2" style="margin-top:10px">
+          <div><label>Name</label><input id="setMemName" placeholder="The Chair Club"></div>
+          <div><label>Price</label><input id="setMemPrice" placeholder="$45/mo"></div>
+        </div>
+        <label>Perks (one per line)</label>
+        <textarea id="setMemPerks" rows="3" placeholder="2 fresh cuts every month&#10;10% off all products&#10;Skip-the-line priority booking" style="width:100%;padding:10px;font:inherit;font-size:14px;border-radius:10px"></textarea>
+        <label>Note under the perks</label>
+        <input id="setMemNote" placeholder="Tap join and your barber will get you set up next visit.">
+
+        <div style="border-top:1px solid var(--line);margin:20px 0 6px;padding-top:16px">
+          <h2 style="margin:0 0 4px">🔒 <b>Milestone unlock</b></h2>
+          <p class="muted" style="margin:0 0 10px;font-size:13px">A big reward that unlocks every N visits — a locked goal customers grind toward.</p>
+        </div>
+        <label style="display:flex;align-items:center;gap:9px;text-transform:none;letter-spacing:0;font-size:14.5px;cursor:pointer">
+          <input type="checkbox" id="setMileOn" style="width:20px;height:20px;margin:0;accent-color:#ffcf5a"> Show a milestone reward
+        </label>
+        <div class="grid2" style="margin-top:10px">
+          <div><label>Unlocks every … visits</label><input id="setMileCuts" type="number" min="1" inputmode="numeric" placeholder="8"></div>
+          <div><label>Icon</label><input id="setMileIcon" maxlength="2" placeholder="💈"></div>
+        </div>
+        <label>Reward label</label>
+        <input id="setMileLabel" placeholder="Free haircut — 8-visit reward">
+
+        <div style="border-top:1px solid var(--line);margin:20px 0 6px;padding-top:16px">
+          <h2 style="margin:0 0 4px">🎰 <b>Jackpot lottery</b></h2>
+          <p class="muted" style="margin:0 0 10px;font-size:13px">A long-odds shot at a grand prize. Customers spend coins for a ticket — pure excitement.</p>
+        </div>
+        <label style="display:flex;align-items:center;gap:9px;text-transform:none;letter-spacing:0;font-size:14.5px;cursor:pointer">
+          <input type="checkbox" id="setLotoOn" style="width:20px;height:20px;margin:0;accent-color:#b98bff"> Run a jackpot lottery
+        </label>
+        <div class="grid2" style="margin-top:10px">
+          <div><label>Ticket cost 🪙</label><input id="setLotoCost" type="number" min="1" inputmode="numeric" placeholder="10"></div>
+          <div><label>Odds (1 in …)</label><input id="setLotoOdds" type="number" min="2" inputmode="numeric" placeholder="100"></div>
+        </div>
+        <label>Jackpot prize</label>
+        <input id="setLotoJack" placeholder="Free haircut for a month">
+
+        <div style="border-top:1px solid var(--line);margin:20px 0 6px;padding-top:16px">
+          <h2 style="margin:0 0 4px">💳 <b>Payments</b> (Square, Stripe, Cash App…)</h2>
+          <p class="muted" style="margin:0 0 10px;font-size:13px">Paste your payment link and a <b style="color:var(--text)">Pay / Tip</b> button shows on every customer's card — they pay you directly through your own account. Get a link from Square (square.link), Stripe (payment link), Cash App ($cashtag), Venmo or PayPal.me.</p>
+        </div>
+        <label>Your payment link</label>
+        <input id="setPayLink" autocapitalize="none" placeholder="https://square.link/u/yourshop  or  https://cash.app/$YourShop">
+        <label>Button label</label>
+        <input id="setPayLabel" placeholder="Pay / Tip">
+
+        <button class="btn wide" id="saveSetBtn" onclick="saveSettings()">💾 Save settings</button>
+        <div class="err hide" id="setErr"></div>
+        <div class="muted hide" id="setOk" style="text-align:center;color:var(--good);margin-top:8px;font-weight:800">Saved ✓ — your card updates instantly.</div>
+      </div>
+    </div>
+
+    <div class="card" id="leadsCard">
+      <h2>💈 <b>Membership requests</b></h2>
+      <p class="muted" style="margin:2px 0 6px;font-size:13px">Customers who tapped “Join” on your membership. Call or text to sign them up.</p>
+      <div id="leadsBox"><div class="muted">Loading…</div></div>
+    </div>
+
+    <div class="card" id="bookingSetupCard">
+      <h2>📅 <b>Booking setup</b> — services, barbers &amp; hours</h2>
+      <div id="bkLoad" class="muted">Loading…</div>
+      <div id="bkForm" class="hide">
+        <label>Services <span style="text-transform:none;letter-spacing:0;color:var(--muted)">(name · minutes · price)</span></label>
+        <div id="svcEditor"></div>
+        <button class="btn ghost" onclick="addSvc()" style="margin-top:8px">+ Add service</button>
+
+        <label style="margin-top:18px">Barbers / chairs <span style="text-transform:none;letter-spacing:0;color:var(--muted)">(leave empty for a single chair)</span></label>
+        <div id="barbEditor"></div>
+        <button class="btn ghost" onclick="addBarb()" style="margin-top:8px">+ Add barber</button>
+
+        <label style="margin-top:18px">Open hours</label>
+        <div id="hoursEditor"></div>
+
+        <div class="grid2" style="margin-top:16px">
+          <div><label>Slot every (min)</label><input id="bkEvery" type="number" min="5" inputmode="numeric"></div>
+          <div><label>Min notice (min)</label><input id="bkLead" type="number" min="0" inputmode="numeric"></div>
+        </div>
+        <div class="grid2">
+          <div><label>Book up to (days ahead)</label><input id="bkHorizon" type="number" min="1" inputmode="numeric"></div>
+          <div><label>Timezone</label><input id="bkTz" placeholder="America/New_York"></div>
+        </div>
+        <label>Booking policy note (optional)</label>
+        <input id="bkNote" placeholder="Free to book. 24h notice to cancel.">
+
+        <button class="btn wide" id="saveBkBtn" onclick="saveBooking()">💾 Save booking setup</button>
+        <div class="err hide" id="bkSetErr"></div>
+        <div class="muted hide" id="bkSetOk" style="text-align:center;color:var(--good);margin-top:8px;font-weight:800">Saved ✓ — your booking page updates instantly.</div>
+      </div>
     </div>
 
     <div class="card">
@@ -202,7 +401,297 @@ function render(d){
   el('lkJoin').onclick=function(){ cp(base+'/rewards/?c='+d.client); };
   el('lkPoster').onclick=function(){ window.open(base+'/rewards/poster/?c='+d.client,'_blank'); };
   el('lkStaff').href=base+'/rewards/staff/';
+  loadSettings();
+  loadLeads();
+  loadAgenda();
+  loadBooking();
 }
+/* ============ Booking setup (services / barbers / hours) ============ */
+var SVCS=[], BARBS=[], HOURS={};
+var DOW=[['1','Mon'],['2','Tue'],['3','Wed'],['4','Thu'],['5','Fri'],['6','Sat'],['7','Sun']];
+function slugify(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,16)||('s'+Math.random().toString(36).slice(2,6)); }
+function loadBooking(){
+  rpc('booking_config',{p_client:CODE}).then(function(d){
+    if(!d||!d.ok){ el('bkLoad').textContent='Could not load booking setup.'; return; }
+    el('bkLoad').classList.add('hide'); el('bkForm').classList.remove('hide');
+    SVCS=(d.services||[]).map(function(s){return {id:s.id||slugify(s.name),name:s.name||'Service',mins:s.mins||30,price:s.price||''};});
+    if(!SVCS.length) SVCS=[{id:'cut',name:'Haircut',mins:30,price:'$30'}];
+    BARBS=(d.staff||[]).map(function(s){return {id:s.id||slugify(s.name),name:s.name||'Barber'};});
+    HOURS=d.hours||{};
+    el('bkEvery').value=d.slot_every||15; el('bkLead').value=d.lead_mins||90; el('bkHorizon').value=d.horizon_days||30;
+    el('bkTz').value=d.book_tz||'America/New_York'; el('bkNote').value=d.deposit_note||'';
+    renderSvc(); renderBarb(); renderHours();
+    if(STORE&&STORE.length) renderStoreEditor(); // barbers now known — refresh store barber dropdowns
+  }).catch(function(){ el('bkLoad').textContent='Network error loading booking setup.'; });
+}
+function readSvc(){ var a=[]; [].forEach.call(document.querySelectorAll('#svcEditor .svcrow'),function(r){ var n=(r.querySelector('.s-name').value||'').trim(); if(!n) return; a.push({id:r.getAttribute('data-id')||slugify(n),name:n,mins:Math.max(5,parseInt(r.querySelector('.s-mins').value,10)||30),price:(r.querySelector('.s-price').value||'').trim()}); }); SVCS=a; return a; }
+function renderSvc(){
+  el('svcEditor').innerHTML=SVCS.map(function(s,i){
+    return '<div class="svcrow" data-id="'+esc(s.id)+'"><input class="s-name" value="'+esc(s.name)+'" placeholder="Service"><input class="s-mins" type="number" min="5" value="'+(s.mins||30)+'" title="minutes"><input class="s-price" value="'+esc(s.price||'')+'" placeholder="$"><button class="rm" onclick="rmSvc('+i+')">✕</button></div>';
+  }).join('');
+}
+function addSvc(){ readSvc(); SVCS.push({id:slugify('svc'+(SVCS.length+1)),name:'',mins:30,price:''}); renderSvc(); }
+function rmSvc(i){ readSvc(); SVCS.splice(i,1); if(!SVCS.length) SVCS=[{id:'cut',name:'Haircut',mins:30,price:''}]; renderSvc(); }
+function readBarb(){ var a=[]; [].forEach.call(document.querySelectorAll('#barbEditor .barbrow'),function(r){ var n=(r.querySelector('.b-name').value||'').trim(); if(!n) return; a.push({id:r.getAttribute('data-id')||slugify(n),name:n}); }); BARBS=a; return a; }
+function renderBarb(){
+  el('barbEditor').innerHTML=BARBS.length?BARBS.map(function(b,i){
+    return '<div class="barbrow" data-id="'+esc(b.id)+'"><input class="b-name" value="'+esc(b.name)+'" placeholder="Barber name"><button class="rm" onclick="rmBarb('+i+')">✕</button></div>';
+  }).join(''):'<p class="muted" style="margin:6px 0 0">Single chair — bookings won\'t ask for a barber.</p>';
+}
+function addBarb(){ readBarb(); BARBS.push({id:slugify('b'+(BARBS.length+1)),name:''}); renderBarb(); }
+function rmBarb(i){ readBarb(); BARBS.splice(i,1); renderBarb(); }
+function renderHours(){
+  el('hoursEditor').innerHTML=DOW.map(function(d){
+    var w=HOURS[d[0]], open=w&&w[0]||'09:00', close=w&&w[1]||'18:00', closed=!(w&&w.length>=2);
+    return '<div class="hrow" data-dow="'+d[0]+'"><div class="hd">'+d[1]+'</div>'
+      +'<label class="cl"><input type="checkbox" class="h-closed" '+(closed?'checked':'')+' onchange="renderHoursState(this)" style="width:16px;height:16px;accent-color:#7aa2ff"> off</label>'
+      +'<input type="time" class="h-open" value="'+open+'" '+(closed?'disabled':'')+'>'
+      +'<input type="time" class="h-close" value="'+close+'" '+(closed?'disabled':'')+'></div>';
+  }).join('');
+}
+function renderHoursState(cb){ var row=cb.closest('.hrow'); var off=cb.checked; row.querySelector('.h-open').disabled=off; row.querySelector('.h-close').disabled=off; }
+function readHours(){ var h={}; [].forEach.call(document.querySelectorAll('#hoursEditor .hrow'),function(r){ if(r.querySelector('.h-closed').checked) return; var o=r.querySelector('.h-open').value, c=r.querySelector('.h-close').value; if(o&&c&&o<c) h[r.getAttribute('data-dow')]=[o,c]; }); HOURS=h; return h; }
+function saveBooking(){
+  readSvc(); readBarb(); readHours();
+  var validSvc=SVCS.filter(function(s){return s.name;});
+  if(!validSvc.length){ el('bkSetErr').textContent='Add at least one service.'; el('bkSetErr').classList.remove('hide'); return; }
+  var btn=el('saveBkBtn'); btn.disabled=true; btn.textContent='Saving…';
+  el('bkSetErr').classList.add('hide'); el('bkSetOk').classList.add('hide');
+  rpc('save_booking_config',{
+    p_client:CODE, p_pin:PIN,
+    p_services:validSvc, p_staff:BARBS, p_hours:HOURS,
+    p_slot_every:parseInt(el('bkEvery').value,10)||15,
+    p_lead_mins:parseInt(el('bkLead').value,10)||0,
+    p_horizon_days:parseInt(el('bkHorizon').value,10)||30,
+    p_book_tz:(el('bkTz').value||'').trim(),
+    p_deposit_note:(el('bkNote').value||'').trim(),
+    p_booking_on:null
+  }).then(function(d){
+    btn.disabled=false; btn.textContent='💾 Save booking setup';
+    if(!d||!d.ok){ el('bkSetErr').textContent=(d&&d.error)||'Could not save.'; el('bkSetErr').classList.remove('hide'); return; }
+    el('bkSetOk').classList.remove('hide'); toast('Booking setup saved ✓');
+    setTimeout(function(){ el('bkSetOk').classList.add('hide'); },3200);
+  }).catch(function(){ btn.disabled=false; btn.textContent='💾 Save booking setup'; el('bkSetErr').textContent='Network error — try again.'; el('bkSetErr').classList.remove('hide'); });
+}
+/* ============ Live appointment agenda ============ */
+function loadAgenda(){
+  rpc('booking_admin',{p_client:CODE,p_pin:PIN,p_from:'',p_to:''}).then(function(d){
+    var box=el('agenda'); if(!box) return;
+    if(!d||!d.ok){ box.innerHTML='<p class="muted">'+esc((d&&d.error)||'Could not load schedule.')+'</p>'; return; }
+    var appts=(d.appts||[]).filter(function(a){return a.status!=='cancelled';});
+    if(!appts.length){ box.innerHTML='<p class="muted">No upcoming appointments yet. When members book from their card, they land here automatically.</p>'; return; }
+    var byday={}, order=[], value=0;
+    appts.forEach(function(a){ if(!byday[a.date]){byday[a.date]=[];order.push(a.date);} byday[a.date].push(a); var p=parseFloat(String(a.price||'').replace(/[^0-9.]/g,'')); if(!isNaN(p)) value+=p; });
+    var summary='<div class="muted" style="margin:0 0 6px;font-weight:700">📊 '+appts.length+' upcoming'+(value>0?(' · ~$'+Math.round(value)+' booked'):'')+'</div>';
+    box.innerHTML=summary+order.map(function(dt){
+      return '<div class="agday">'+esc(byday[dt][0].day)+'</div>'+byday[dt].map(apptRow).join('');
+    }).join('');
+  }).catch(function(){ var b=el('agenda'); if(b) b.innerHTML='<p class="muted">Network error loading schedule.</p>'; });
+}
+function apptRow(a){
+  var stColor=a.status==='done'?'var(--good)':a.status==='noshow'?'#ff8a9d':'var(--muted)';
+  function btn(cls,label,status){ return '<button class="mini '+cls+'" onclick="setAppt('+a.id+',\''+status+'\')">'+label+'</button>'; }
+  var ctrls=(a.status==='confirmed')
+    ? btn('good','✓ Done','done')+btn('','No-show','noshow')+btn('bad','Cancel','cancelled')
+    : '<span class="st" style="color:'+stColor+'">'+esc(a.status)+'</span>';
+  return '<div class="appt"><div class="appt-t">'+esc(a.time)+'</div>'
+    +'<div class="appt-b"><b>'+esc(a.name||'Member')+'</b><div class="muted">'+esc(a.service)+(a.staff_name?(' · '+esc(a.staff_name)):'')+(a.price?(' · '+esc(a.price)):'')+'</div></div>'
+    +'<div class="appt-a">'+ctrls+'</div></div>';
+}
+function setAppt(id,status){
+  rpc('booking_set_status',{p_client:CODE,p_pin:PIN,p_id:id,p_status:status}).then(function(d){
+    if(d&&d.ok){ toast('Updated ✓'); loadAgenda(); } else { toast((d&&d.error)||'Could not update'); }
+  }).catch(function(){ toast('Network error'); });
+}
+
+/* ============ Rewards & game difficulty editor ============ */
+function rpc(fn,args){ return fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(args)}).then(function(r){return r.json();}); }
+var PRIZES=[], curDiff=null;
+var PRIZE_TYPES=[['points','⭐ Points'],['discount','🏷️ Discount'],['prize','🎁 Free item'],['grand','🏆 Grand prize'],['nothing','🍋 Try again']];
+var DIFF_W={ easy:{grand:6,prize:10,discount:14,points:20,nothing:25}, normal:{grand:3,prize:6,discount:10,points:18,nothing:45}, hard:{grand:1,prize:3,discount:6,points:14,nothing:75} };
+function loadSettings(){
+  rpc('loyalty_settings_get',{p_client:CODE,p_pin:PIN}).then(function(d){
+    if(!d||!d.ok){ el('setLoad').textContent=(d&&d.error)||'Could not load settings.'; return; }
+    el('setLoad').classList.add('hide'); el('setForm').classList.remove('hide');
+    el('setBiz').value=d.biz_name||'';
+    el('setRewardText').value=d.reward_text||'';
+    el('setRewardAt').value=d.reward_at||5;
+    el('setPPV').value=d.points_per_visit||1;
+    el('setSpinCost').value=d.spin_cost||2;
+    el('setSurvey').value=(d.survey_points==null?1:d.survey_points);
+    el('setBooking').checked=d.booking_on!==false;
+    el('setCasino').checked=d.casino_on!==false;
+    el('setTourPrize').value=d.tournament_prize||'';
+    STORE=(d.coin_store||[]).map(function(it){return {
+      id: it.id || ('s'+Math.random().toString(36).slice(2,8)),
+      label: it.label||'', cost: parseInt(it.cost,10)||0,
+      sale: (it.sale!=null&&it.sale!=='')?parseInt(it.sale,10):'',
+      type: it.type||'discount', icon: it.icon||'🎁', category: it.category||'',
+      stock: (it.stock!=null&&it.stock!=='')?parseInt(it.stock,10):'',
+      per_customer: (it.per_customer!=null&&it.per_customer!=='')?parseInt(it.per_customer,10):'',
+      featured: !!it.featured, barber: it.barber||''
+    };});
+    if(!STORE.length) STORE=[{id:'s'+Math.random().toString(36).slice(2,8),label:'$5 off any cut',cost:80,type:'discount',icon:'💵',category:'Discounts',sale:'',stock:'',per_customer:'',featured:false,barber:''}];
+    renderStoreEditor();
+    var mem=d.membership||{};
+    el('setMemOn').checked=!!mem.on;
+    el('setMemName').value=mem.name||'';
+    el('setMemPrice').value=mem.price||'';
+    el('setMemPerks').value=(mem.perks||[]).join('\n');
+    el('setMemNote').value=mem.note||'';
+    var mile=d.milestone||{};
+    el('setMileOn').checked=!!mile.on; el('setMileCuts').value=mile.cuts||8; el('setMileIcon').value=mile.icon||'💈'; el('setMileLabel').value=mile.label||'';
+    var loto=d.lottery||{};
+    el('setLotoOn').checked=!!loto.on; el('setLotoCost').value=loto.cost||10; el('setLotoOdds').value=loto.odds||100; el('setLotoJack').value=loto.jackpot||'';
+    el('setPayLink').value=d.pay_link||''; el('setPayLabel').value=d.pay_label||'';
+    el('setReview').value=d.google_review_url||'';
+    el('setGameDiff').value=d.game_difficulty||'normal';
+    PRIZES=(d.spin_prizes||[]).map(function(p){return {label:p.label||'Prize',type:p.type||'points',weight:(p.weight==null?10:p.weight)};});
+    if(!PRIZES.length) PRIZES=[{label:'Free '+(d.reward_text||'reward'),type:'grand',weight:2},{label:'20% off',type:'discount',weight:10},{label:'+2 points',type:'points',weight:18},{label:'So close — try again',type:'nothing',weight:45}];
+    curDiff=null; renderPrizeEditor(); highlightDiff();
+  }).catch(function(){ el('setLoad').textContent='Network error loading settings.'; });
+}
+var STORE=[];
+var STORE_TYPES=[['discount','💵 Discount'],['product','🧴 Product'],['service','💇 Service'],['grand','🏆 Grand prize']];
+function barberOpts(sel){
+  var opts='<option value="">🏪 Whole shop</option>';
+  (typeof BARBS!=='undefined'?BARBS:[]).forEach(function(b){ opts+='<option value="'+esc(b.name)+'"'+(b.name===sel?' selected':'')+'>💈 '+esc(b.name)+'</option>'; });
+  return opts;
+}
+function renderStoreEditor(){
+  el('storeEditor').innerHTML=STORE.map(function(it,i){
+    return '<div class="sedit">'
+     +'<div class="stop">'
+       +'<input class="e-icon" maxlength="2" value="'+esc(it.icon||'🎁')+'" oninput="readStore()" title="emoji">'
+       +'<input class="e-label" value="'+esc(it.label)+'" placeholder="Reward name (e.g. Free haircut)" oninput="readStore()">'
+       +'<button class="rm" onclick="removeStoreItem('+i+')" title="remove">✕</button>'
+     +'</div>'
+     +'<div class="grid3">'
+       +'<div><div class="fl">Cost 🪙</div><input class="e-cost" type="number" min="1" inputmode="numeric" value="'+(it.cost||0)+'" oninput="readStore()"></div>'
+       +'<div><div class="fl">Sale 🪙 (opt)</div><input class="e-sale" type="number" min="0" inputmode="numeric" value="'+(it.sale===''||it.sale==null?'':it.sale)+'" placeholder="—" oninput="readStore()"></div>'
+       +'<div><div class="fl">Type</div><select class="e-type" onchange="readStore()">'+STORE_TYPES.map(function(t){return '<option value="'+t[0]+'"'+(t[0]===it.type?' selected':'')+'>'+t[1]+'</option>';}).join('')+'</select></div>'
+     +'</div>'
+     +'<div class="grid3">'
+       +'<div><div class="fl">Category</div><input class="e-cat" value="'+esc(it.category||'')+'" placeholder="e.g. Cuts" oninput="readStore()"></div>'
+       +'<div><div class="fl">Stock (opt)</div><input class="e-stock" type="number" min="0" inputmode="numeric" value="'+(it.stock===''||it.stock==null?'':it.stock)+'" placeholder="∞" oninput="readStore()"></div>'
+       +'<div><div class="fl">Limit/customer</div><input class="e-pc" type="number" min="0" inputmode="numeric" value="'+(it.per_customer===''||it.per_customer==null?'':it.per_customer)+'" placeholder="∞" oninput="readStore()"></div>'
+     +'</div>'
+     +'<div class="sbot">'
+       +'<select class="e-barber" onchange="readStore()">'+barberOpts(it.barber||'')+'</select>'
+       +'<label><input type="checkbox" class="e-feat"'+(it.featured?' checked':'')+' onchange="readStore()" style="width:18px;height:18px;accent-color:#ffcf5a"> ⭐ Featured</label>'
+     +'</div>'
+     +'</div>';
+  }).join('');
+}
+function readStore(){
+  var arr=[];
+  [].forEach.call(document.querySelectorAll('#storeEditor .sedit'),function(r,idx){
+    var label=(r.querySelector('.e-label').value||'').trim();
+    if(!label) return;
+    function num(sel){ var v=r.querySelector(sel).value; return v===''?'':(parseInt(v,10)||0); }
+    arr.push({
+      id: (STORE[idx]&&STORE[idx].id) || ('s'+Math.random().toString(36).slice(2,8)),
+      label:label, icon:(r.querySelector('.e-icon').value||'🎁').trim()||'🎁',
+      cost:Math.max(1,parseInt(r.querySelector('.e-cost').value,10)||1),
+      sale:num('.e-sale'), type:r.querySelector('.e-type').value,
+      category:(r.querySelector('.e-cat').value||'').trim(),
+      stock:num('.e-stock'), per_customer:num('.e-pc'),
+      barber:r.querySelector('.e-barber').value, featured:r.querySelector('.e-feat').checked
+    });
+  });
+  STORE=arr; return arr;
+}
+function addStoreItem(){ readStore(); STORE.push({id:'s'+Math.random().toString(36).slice(2,8),label:'',icon:'🎁',cost:100,sale:'',type:'discount',category:'',stock:'',per_customer:'',featured:false,barber:''}); renderStoreEditor(); }
+function removeStoreItem(i){ readStore(); STORE.splice(i,1); renderStoreEditor(); }
+function readMembership(){
+  var perks=(el('setMemPerks').value||'').split('\n').map(function(s){return s.trim();}).filter(Boolean);
+  return { on:el('setMemOn').checked, name:(el('setMemName').value||'').trim()||'The Chair Club',
+    price:(el('setMemPrice').value||'').trim(), perks:perks, note:(el('setMemNote').value||'').trim() };
+}
+function loadLeads(){
+  rpc('membership_leads_get',{p_client:CODE,p_pin:PIN}).then(function(d){
+    var box=el('leadsBox'); if(!box) return;
+    if(!d||!d.ok){ box.innerHTML='<div class="muted">'+((d&&d.error)||'Could not load.')+'</div>'; return; }
+    var leads=d.leads||[];
+    if(!leads.length){ box.innerHTML='<div class="muted">No requests yet. When customers tap “Join” on your membership, they’ll show up here.</div>'; return; }
+    box.innerHTML=leads.map(function(l){
+      var when=l.at? new Date(l.at).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : '';
+      var ph=(l.phone||'').replace(/[^0-9+]/g,'');
+      return '<div class="leadrow"><div class="ln"><b>'+esc(l.name)+'</b><span>'+(l.phone?esc(l.phone):'no number')+' · '+when+'</span></div>'
+        +(ph?('<a href="sms:'+ph+'">💬 Text</a><a href="tel:'+ph+'">📞 Call</a>'):'')+'</div>';
+    }).join('');
+  }).catch(function(){ var box=el('leadsBox'); if(box) box.innerHTML='<div class="muted">Network error.</div>'; });
+}
+function renderPrizeEditor(){
+  el('prizeEditor').innerHTML=PRIZES.map(function(p,i){
+    return '<div class="prow">'
+     +'<input class="pl" value="'+esc(p.label)+'" placeholder="Prize name" oninput="renderOdds()">'
+     +'<select class="pt" onchange="renderOdds()">'+PRIZE_TYPES.map(function(t){return '<option value="'+t[0]+'"'+(t[0]===p.type?' selected':'')+'>'+t[1]+'</option>';}).join('')+'</select>'
+     +'<input class="pw" type="number" min="0" inputmode="numeric" value="'+(p.weight||0)+'" oninput="renderOdds()" title="relative chance">'
+     +'<button class="rm" onclick="removePrize('+i+')" title="remove">✕</button>'
+     +'</div>';
+  }).join('');
+  renderOdds();
+}
+function readPrizes(){
+  var arr=[];
+  [].forEach.call(document.querySelectorAll('#prizeEditor .prow'),function(r){
+    var label=(r.querySelector('.pl').value||'').trim();
+    var type=r.querySelector('.pt').value;
+    var weight=Math.max(0,parseInt(r.querySelector('.pw').value,10)||0);
+    if(label) arr.push({label:label,type:type,weight:weight});
+  });
+  PRIZES=arr; return arr;
+}
+function addPrize(){ readPrizes(); PRIZES.push({label:'New prize',type:'points',weight:10}); renderPrizeEditor(); }
+function removePrize(i){ readPrizes(); PRIZES.splice(i,1); if(!PRIZES.length) PRIZES.push({label:'So close — try again',type:'nothing',weight:45}); renderPrizeEditor(); }
+function applyDiff(level){ readPrizes(); curDiff=level; PRIZES.forEach(function(p){ var w=DIFF_W[level][p.type]; if(w!=null) p.weight=w; }); renderPrizeEditor(); highlightDiff(); }
+function highlightDiff(){ [].forEach.call(document.querySelectorAll('.diffbtn'),function(b){ b.classList.toggle('on', b.getAttribute('data-d')===curDiff); }); }
+function renderOdds(){
+  readPrizes();
+  var total=PRIZES.reduce(function(a,p){return a+(p.weight||0);},0);
+  var grand=PRIZES.filter(function(p){return p.type==='grand';}).reduce(function(a,p){return a+(p.weight||0);},0);
+  var winW=PRIZES.filter(function(p){return p.type!=='nothing';}).reduce(function(a,p){return a+(p.weight||0);},0);
+  var box=el('oddsNote'); if(!box) return;
+  if(!total){ box.innerHTML='Add at least one prize with a chance above 0.'; return; }
+  var winPct=Math.round(winW/total*100);
+  var grandTxt=grand>0?('🏆 Grand prize hits about <b>1 in '+Math.max(1,Math.round(total/grand))+'</b> spins.'):'No grand prize set.';
+  box.innerHTML='Players win something on about <b>'+winPct+'%</b> of spins. '+grandTxt+' Odds run server-side — customers can’t game them.';
+}
+function saveSettings(){
+  readPrizes();
+  if(!PRIZES.length){ setSetErr('Add at least one prize.'); return; }
+  var sv=(el('setSurvey').value||'').trim();
+  var btn=el('saveSetBtn'); btn.disabled=true; btn.textContent='Saving…';
+  el('setErr').classList.add('hide'); el('setOk').classList.add('hide');
+  rpc('save_reward_settings',{
+    p_client:CODE, p_pin:PIN,
+    p_reward_text:(el('setRewardText').value||'').trim(),
+    p_reward_at:parseInt(el('setRewardAt').value,10)||null,
+    p_points_per_visit:parseInt(el('setPPV').value,10)||null,
+    p_spin_cost:parseInt(el('setSpinCost').value,10)||null,
+    p_survey_points: sv===''?null:(parseInt(sv,10)||0),
+    p_spin_prizes:PRIZES,
+    p_booking_on:el('setBooking').checked,
+    p_biz_name:(el('setBiz').value||'').trim(),
+    p_google_review_url:(el('setReview').value||'').trim(),
+    p_game_difficulty:el('setGameDiff').value,
+    p_casino_on:el('setCasino').checked,
+    p_coin_store:readStore(),
+    p_tournament_prize:(el('setTourPrize').value||'').trim(),
+    p_membership:readMembership(),
+    p_milestone:{on:el('setMileOn').checked, cuts:Math.max(1,parseInt(el('setMileCuts').value,10)||8), icon:(el('setMileIcon').value||'💈').trim()||'💈', label:(el('setMileLabel').value||'').trim()||'Milestone reward'},
+    p_lottery:{on:el('setLotoOn').checked, cost:Math.max(1,parseInt(el('setLotoCost').value,10)||10), odds:Math.max(2,parseInt(el('setLotoOdds').value,10)||100), jackpot:(el('setLotoJack').value||'').trim()||'Grand prize', icon:'🎰'},
+    p_pay_link:(el('setPayLink').value||'').trim(),
+    p_pay_label:(el('setPayLabel').value||'').trim()
+  }).then(function(d){
+    btn.disabled=false; btn.textContent='💾 Save settings';
+    if(!d||!d.ok){ setSetErr((d&&d.error)||'Could not save.'); return; }
+    el('setOk').classList.remove('hide'); toast('Settings saved ✓');
+    setTimeout(function(){ el('setOk').classList.add('hide'); },3200);
+  }).catch(function(){ btn.disabled=false; btn.textContent='💾 Save settings'; setSetErr('Network error — try again.'); });
+}
+function setSetErr(m){ el('setErr').textContent=m; el('setErr').classList.remove('hide'); }
 function cap(s){ return String(s||'').charAt(0).toUpperCase()+String(s||'').slice(1); }
 function animCounts(){
   [].forEach.call(document.querySelectorAll('#stats .n'),function(e){

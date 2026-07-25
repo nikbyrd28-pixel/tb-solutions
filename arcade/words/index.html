@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Fresh Words — Loop Arcade</title>
+<meta name="description" content="Fresh Words — the barbershop word game. Guess the 5-letter word in 6 tries, keep your streak, earn coins toward a free cut." />
+<meta name="theme-color" content="#05060d" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%F0%9F%94%A4%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--text:#f2f4ff;--muted:#8f97b8;--line:rgba(122,162,255,.35);--acc:#7aa2ff;--acc2:#5ad0f0;--good:#43f0b0;--gold:#ffcf5a;--bad:#3a3f52}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;background:radial-gradient(circle at 15% -5%,rgba(122,162,255,.18),transparent 42%),linear-gradient(180deg,#070811,#04050a);color:var(--text);min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:14px 10px 26px;-webkit-tap-highlight-color:transparent}
+  .top{width:min(480px,100%);display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .brand{font-weight:900;font-size:16px}
+  .brand a{color:var(--text);text-decoration:none}
+  .brand span{background:linear-gradient(90deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stats{display:flex;gap:10px;font-size:12px;font-weight:800;color:var(--gold)}
+  h1{font-size:22px;margin:2px 0 2px}
+  .sub{color:var(--muted);font-size:12.5px;margin:0 0 12px;text-align:center}
+  .grid{display:grid;grid-template-rows:repeat(6,1fr);gap:6px;margin-bottom:14px}
+  .row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+  .cell{width:56px;height:56px;border:2px solid var(--line);border-radius:10px;display:grid;place-items:center;font-weight:900;font-size:24px;text-transform:uppercase;background:rgba(255,255,255,.03);transition:transform .08s}
+  @media(max-width:380px){.cell{width:48px;height:48px;font-size:20px}}
+  .cell.pop{transform:scale(1.08)}
+  .cell.g{background:#1d7a4f;border-color:#1d7a4f}
+  .cell.y{background:#b08a2e;border-color:#b08a2e}
+  .cell.b{background:var(--bad);border-color:var(--bad)}
+  .kb{width:min(480px,100%);display:flex;flex-direction:column;gap:6px}
+  .krow{display:flex;gap:5px;justify-content:center}
+  .key{flex:1;max-width:42px;height:52px;border:0;border-radius:8px;background:rgba(122,162,255,.16);color:var(--text);font:inherit;font-weight:800;font-size:14px;cursor:pointer;text-transform:uppercase}
+  .key.wide{max-width:70px;flex:1.6;font-size:11px}
+  .key.g{background:#1d7a4f}.key.y{background:#b08a2e}.key.b{background:var(--bad);color:#9aa3c2}
+  .key:active{transform:scale(.94)}
+  .msg{min-height:22px;font-weight:800;font-size:14px;color:var(--acc2);margin:8px 0;text-align:center}
+  .over{width:min(480px,100%);border:1px solid var(--line);border-radius:18px;padding:18px;text-align:center;background:linear-gradient(150deg,rgba(255,255,255,.06),rgba(255,255,255,.015));margin-top:6px}
+  .over.hide{display:none}
+  .over h2{margin:2px 0 6px}
+  .over .coins{color:var(--good);font-weight:900}
+  .btn{border:0;border-radius:999px;padding:13px 22px;font:inherit;font-weight:900;font-size:14px;cursor:pointer;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;margin-top:10px;width:100%}
+  .btn.ghost{background:rgba(122,162,255,.08);border:1px solid var(--line);color:var(--text);font-weight:700}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="brand"><a href="/arcade/">← 🔤 <span>Fresh Words</span></a></div>
+  <div class="stats"><span id="streak">🔥 0</span><span id="wins">🏆 0</span></div>
+</div>
+<p class="sub">Guess the 5-letter barbershop word in 6 tries. Daily word + endless mode — keep the 🔥 streak alive!</p>
+<div class="grid" id="grid"></div>
+<div class="msg" id="msg"></div>
+<div class="kb" id="kb"></div>
+<div class="over hide" id="over">
+  <h2 id="ovTitle">✂️ Fresh!</h2>
+  <p id="ovWord" style="color:var(--muted);margin:0"></p>
+  <p class="coins hide" id="ovCoins"></p>
+  <button class="btn" onclick="nextWord()">▶ Next word</button>
+  <button class="btn ghost" onclick="shareResult()">📣 Share result</button>
+</div>
+<script src="/loop-fx.js"></script>
+<script>
+var SUPA='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+var q=new URLSearchParams(location.search), client=(q.get('c')||'').toLowerCase().replace(/[^a-z0-9]/g,''), code=q.get('m')||'';
+function el(i){return document.getElementById(i)}
+var WORDS=['razor','blade','trims','combs','braid','curls','style','shave','shine','fresh','clips','taper','waves','gloss','rinse','towel','chair','beard','faded','cream','salon','blend','sharp','clean','groom','brush','spray','crown','slick','suave','strop','edges','liner','bangs','plait','parts','tight','crisp','lathr'.replace('lathr','swirl'),'quiff'];
+var answer='', guesses=[], cur='', done=false, rowI=0, daily=true;
+function pickDaily(){ var d=new Date(), seed=d.getFullYear()*372+(d.getMonth()+1)*31+d.getDate(); return WORDS[seed%WORDS.length]; }
+function pickRandom(){ return WORDS[(Math.random()*WORDS.length)|0]; }
+function stats(){ try{ return JSON.parse(localStorage.getItem('fw_stats')||'{"streak":0,"wins":0}'); }catch(e){ return {streak:0,wins:0}; } }
+function saveStats(x){ try{ localStorage.setItem('fw_stats',JSON.stringify(x)); }catch(e){} }
+function showStats(){ var s=stats(); el('streak').textContent='🔥 '+(s.streak||0); el('wins').textContent='🏆 '+(s.wins||0); }
+function buildGrid(){ var h=''; for(var r=0;r<6;r++){ h+='<div class="row">'; for(var c=0;c<5;c++) h+='<div class="cell" id="c'+r+'_'+c+'"></div>'; h+='</div>'; } el('grid').innerHTML=h; }
+var ROWS1='qwertyuiop', ROWS2='asdfghjkl', ROWS3='zxcvbnm';
+function buildKb(){
+  function keys(str){ return str.split('').map(function(k){ return '<button class="key" id="k'+k+'" onclick="press(\''+k+'\')">'+k+'</button>'; }).join(''); }
+  el('kb').innerHTML='<div class="krow">'+keys(ROWS1)+'</div><div class="krow">'+keys(ROWS2)+'</div>'
+    +'<div class="krow"><button class="key wide" onclick="press(\'enter\')">ENTER</button>'+keys(ROWS3)+'<button class="key wide" onclick="press(\'back\')">⌫</button></div>';
+}
+function press(k){
+  if(done) return;
+  if(k==='enter'){ submit(); return; }
+  if(k==='back'){ cur=cur.slice(0,-1); paint(); return; }
+  if(cur.length<5){ cur+=k; paint(); var cc=el('c'+rowI+'_'+(cur.length-1)); if(cc){cc.classList.add('pop'); setTimeout(function(){cc.classList.remove('pop');},90);} if(window.LoopFX)LoopFX.sfx('click'); }
+}
+function paint(){ for(var c=0;c<5;c++){ el('c'+rowI+'_'+c).textContent=cur[c]||''; } }
+function submit(){
+  if(cur.length<5){ flashMsg('Need 5 letters'); return; }
+  if(!/^[a-z]{5}$/.test(cur)){ flashMsg('Letters only'); return; }
+  var res=score(cur, answer);
+  for(var c=0;c<5;c++){ var cell=el('c'+rowI+'_'+c); cell.classList.add(res[c]); var key=el('k'+cur[c]); if(key && !key.classList.contains('g')) key.classList.add(res[c]); if(key && res[c]==='g'){ key.classList.remove('y','b'); key.classList.add('g'); } }
+  guesses.push({w:cur,r:res});
+  if(cur===answer){ win(); return; }
+  rowI++; cur='';
+  if(rowI>=6){ lose(); }
+  else if(window.LoopFX)LoopFX.sfx('hop');
+}
+function score(g,a){
+  var res=['b','b','b','b','b'], rem={};
+  for(var i=0;i<5;i++){ if(g[i]===a[i]) res[i]='g'; else rem[a[i]]=(rem[a[i]]||0)+1; }
+  for(var j=0;j<5;j++){ if(res[j]!=='g' && rem[g[j]]>0){ res[j]='y'; rem[g[j]]--; } }
+  return res;
+}
+function flashMsg(m){ el('msg').textContent=m; setTimeout(function(){ if(el('msg').textContent===m) el('msg').textContent=''; },1400); }
+function win(){
+  done=true; var tries=rowI+1;
+  var s=stats(); s.streak=(s.streak||0)+1; s.wins=(s.wins||0)+1; saveStats(s); showStats();
+  el('ovTitle').textContent=['🤯 GENIUS!','🔥 FRESH!','✂️ Sharp!','💈 Clean!','👍 Nice!','😅 Close one!'][tries-1]||'✂️ Fresh!';
+  el('ovWord').textContent='The word was '+answer.toUpperCase()+' — solved in '+tries+'/6. Streak: '+s.streak+' 🔥';
+  el('over').classList.remove('hide');
+  if(window.LoopFX){ LoopFX.confetti(); LoopFX.sfx('win'); }
+  if(client&&code){
+    var sc=(7-tries)*6; // 3 tries -> 24
+    fetch(SUPA+'/rest/v1/rpc/game_reward',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify({p_code:code,p_game:'words',p_score:sc})})
+    .then(function(r){return r.json();}).then(function(d){ if(d&&!d.error&&d.coins_earned!=null){ var o=el('ovCoins'); o.textContent='🪙 +'+d.coins_earned+' coins earned'+(d.daily_bonus>0?' (🎁 daily bonus!)':'')+' — spin the slot to win a free cut!'; o.classList.remove('hide'); } }).catch(function(){});
+  }
+}
+function lose(){
+  done=true; var s=stats(); s.streak=0; saveStats(s); showStats();
+  el('ovTitle').textContent='💀 Faded…';
+  el('ovWord').textContent='The word was '+answer.toUpperCase()+'. Streak reset — run it back!';
+  el('over').classList.remove('hide');
+  if(window.LoopFX)LoopFX.sfx('lose');
+}
+function shareResult(){
+  var g=guesses.map(function(x){ return x.r.map(function(c){return c==='g'?'🟩':c==='y'?'🟨':'⬛';}).join(''); }).join('\n');
+  var t='Fresh Words 🔤 '+(done&&guesses.length&&guesses[guesses.length-1].w===answer?guesses.length:'X')+'/6\n'+g+'\nPlay: https://tbsol.net/arcade/words/';
+  if(navigator.share){ navigator.share({text:t}).catch(function(){}); } else { try{ navigator.clipboard.writeText(t); flashMsg('Copied ✓'); }catch(e){} }
+}
+function nextWord(){ daily=false; answer=pickRandom(); guesses=[]; cur=''; rowI=0; done=false; el('over').classList.add('hide'); buildGrid(); buildKb(); }
+document.addEventListener('keydown',function(e){ var k=e.key.toLowerCase(); if(k==='enter')press('enter'); else if(k==='backspace')press('back'); else if(/^[a-z]$/.test(k))press(k); });
+answer=pickDaily(); buildGrid(); buildKb(); showStats();
+</script>
+</body>
+</html>

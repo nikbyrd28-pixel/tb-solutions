@@ -22,18 +22,19 @@
   h1{font-size:clamp(23px,5.5vw,30px);margin:0 0 8px}
   .lead{color:var(--muted);margin:0 0 20px;font-size:15px}
   .card{background:linear-gradient(150deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:20px;padding:26px;text-align:center;animation:pop .4s ease}
-  .stars{display:flex;gap:6px;justify-content:center;margin:8px 0 4px;font-size:44px;cursor:pointer;user-select:none}
-  .stars span{filter:grayscale(1);opacity:.4;transition:all .13s;transform-origin:center}
-  .stars span:hover{transform:scale(1.15)}
+  .stars{display:flex;gap:6px;justify-content:center;margin:10px 0 4px;font-size:44px;user-select:none;outline:none}
+  .stars span{cursor:pointer;filter:grayscale(1);opacity:.4;transition:transform .12s,opacity .12s,filter .12s;transform-origin:center;line-height:1}
   .stars span.on{filter:none;opacity:1;transform:scale(1.1)}
-  .hint{color:var(--muted);font-size:13px;margin-top:4px}
+  .stars span:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:8px}
+  .hint{color:var(--muted);font-size:13px;margin-top:6px}
   label{display:block;margin:14px 0 0;font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.07em;text-transform:uppercase;text-align:left}
   input,textarea{width:100%;background:rgba(0,0,0,.45);border:1px solid var(--line);border-radius:12px;padding:13px 14px;color:var(--text);font:inherit;font-size:15px;margin-top:6px}
   textarea{min-height:96px;resize:vertical}
   input:focus,textarea:focus{outline:none;border-color:var(--acc)}
   .btn{width:100%;margin-top:18px;border:0;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#03040a;border-radius:999px;padding:15px;font:inherit;font-weight:900;font-size:15px;cursor:pointer;text-decoration:none;display:block}
   .btn.g{background:#fff;color:#1a1a1a}
-  .btn:disabled{opacity:.6}
+  .btn.sub{background:rgba(150,190,255,.08);color:var(--text);border:1px solid var(--line);font-weight:700}
+  .btn:disabled{opacity:.6;cursor:default}
   .em{font-size:52px;animation:pop .5s ease}
   .fine{color:var(--muted);font-size:12px;margin-top:12px}
   .hide{display:none!important}
@@ -49,8 +50,12 @@
   <div class="card" id="rateCard">
     <h1 id="rateH">How was your visit? ⭐</h1>
     <p class="lead" id="rateLead">Tap a star to let us know.</p>
-    <div class="stars" id="stars">
-      <span data-v="1">⭐</span><span data-v="2">⭐</span><span data-v="3">⭐</span><span data-v="4">⭐</span><span data-v="5">⭐</span>
+    <div class="stars" id="stars" role="radiogroup" aria-label="Rating out of 5 stars" tabindex="0">
+      <span data-v="1" role="radio" aria-label="1 star" aria-checked="false">⭐</span>
+      <span data-v="2" role="radio" aria-label="2 stars" aria-checked="false">⭐</span>
+      <span data-v="3" role="radio" aria-label="3 stars" aria-checked="false">⭐</span>
+      <span data-v="4" role="radio" aria-label="4 stars" aria-checked="false">⭐</span>
+      <span data-v="5" role="radio" aria-label="5 stars" aria-checked="false">⭐</span>
     </div>
     <p class="hint" id="rateHint">1 = not great · 5 = loved it</p>
   </div>
@@ -61,12 +66,11 @@
     <h1>Awesome — thank you!</h1>
     <p class="lead" id="happyLead">Would you mind sharing that on Google? It takes 20 seconds and helps us more than you know.</p>
     <a class="btn g" id="googleBtn" target="_blank" rel="noopener">⭐ Post my Google review →</a>
-    <button class="btn" id="skipGoogle" style="background:rgba(150,190,255,.08);color:var(--text);border:1px solid var(--line);font-weight:700">Leave it here instead</button>
-    <!-- fallback text review (if no google link, or "leave it here") -->
+    <button class="btn sub" id="skipGoogle" type="button">Leave it here instead</button>
     <div id="textReview" class="hide" style="margin-top:8px">
       <label>Your name</label><input id="hName" autocomplete="name">
       <label>What did you love?</label><textarea id="hText" placeholder="A few words we can share..."></textarea>
-      <button class="btn" onclick="saveText()">Send review</button>
+      <button class="btn" id="hSend" type="button">Send review</button>
     </div>
   </div>
 
@@ -78,7 +82,7 @@
     <label>What happened?</label><textarea id="fText" placeholder="Be honest — it really helps."></textarea>
     <label>Name (optional)</label><input id="fName" autocomplete="name">
     <label>Phone or email so we can follow up (optional)</label><input id="fContact">
-    <button class="btn" onclick="saveFeedback()">Send privately</button>
+    <button class="btn" id="fSend" type="button">Send privately</button>
     <p class="fine">This won't be posted publicly.</p>
   </div>
 
@@ -90,84 +94,117 @@
   </div>
 </div>
 <script>
-var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
-var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
-function el(id){return document.getElementById(id)}
-var q=new URLSearchParams(location.search);
-var slug=(q.get('c')||'').toLowerCase().replace(/[^a-z0-9]/g,'');
-var bizName=q.get('b')||'', googleUrl=q.get('g')||'', rating=0;
+(function(){
+  "use strict";
+  var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+  var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+  var HEADERS={apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'};
 
-/* theme via ?ac=HEX&ac2=HEX */
-(function(){ var hex=/^[0-9a-fA-F]{6}$/, r=document.documentElement.style;
-  if(hex.test(q.get('ac')||'')) r.setProperty('--acc','#'+q.get('ac'));
-  if(hex.test(q.get('ac2')||'')) r.setProperty('--acc2','#'+q.get('ac2'));
+  function el(id){return document.getElementById(id);}
+  function show(id){ el(id).classList.remove('hide'); }
+  function hide(id){ el(id).classList.add('hide'); }
+  function clean(s){ return String(s==null?'':s).replace(/[<>&]/g,''); }
+  function post(path,body){
+    return fetch(SUPA_URL+'/rest/v1/'+path,{method:'POST',headers:HEADERS,body:JSON.stringify(body)});
+  }
+
+  var q=new URLSearchParams(location.search);
+  var slug=(q.get('c')||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  var bizName=clean(q.get('b')||'');
+  var googleUrl=(q.get('g')||'').slice(0,400);
+  var mCode=(q.get('m')||'').slice(0,40);
+  var mName=clean(q.get('name')||'');
+  var rating=0, sent=false;
+
+  /* theme via ?ac=HEX&ac2=HEX */
+  (function(){ var hex=/^[0-9a-fA-F]{6}$/, r=document.documentElement.style;
+    if(hex.test(q.get('ac')||'')) r.setProperty('--acc','#'+q.get('ac'));
+    if(hex.test(q.get('ac2')||'')) r.setProperty('--acc2','#'+q.get('ac2'));
+  })();
+
+  function applyBiz(){
+    if(bizName){
+      el('brand').innerHTML=bizName+' <span>reviews</span>';
+      el('rateH').textContent='How was your visit to '+bizName+'?';
+      document.title='Rate '+bizName;
+    }
+    if(googleUrl) el('googleBtn').href=googleUrl;
+    if(mName){ el('hName').value=mName; el('fName').value=mName; }
+  }
+
+  if(slug){
+    post('rpc/get_program_public',{p_client:slug}).then(function(r){return r.json();}).then(function(p){
+      if(p && !p.error){
+        if(!bizName) bizName=clean(p.biz_name||(slug.charAt(0).toUpperCase()+slug.slice(1)));
+        if(!googleUrl) googleUrl=(p.google_review_url||'').slice(0,400);
+      }
+      applyBiz();
+    }).catch(applyBiz);
+  } else { applyBiz(); }
+
+  /* ---- interactive, accessible stars ---- */
+  var starEls=[].slice.call(el('stars').children);
+  function fill(n){ starEls.forEach(function(s){ var v=Number(s.dataset.v); s.classList.toggle('on', v<=n); s.setAttribute('aria-checked', String(v===rating)); }); }
+  function preview(n){ starEls.forEach(function(s){ s.classList.toggle('on', Number(s.dataset.v)<=n); }); }
+  function choose(n){ if(sent) return; rating=n; fill(n); setTimeout(route,240); }
+  starEls.forEach(function(s){
+    var v=Number(s.dataset.v);
+    s.addEventListener('mouseenter',function(){ if(!rating) preview(v); });
+    s.addEventListener('click',function(){ choose(v); });
+  });
+  el('stars').addEventListener('mouseleave',function(){ fill(rating); });
+  el('stars').addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowUp'){ e.preventDefault(); rating=Math.min(5,(rating||0)+1); fill(rating); }
+    else if(e.key==='ArrowLeft'||e.key==='ArrowDown'){ e.preventDefault(); rating=Math.max(1,(rating||1)-1); fill(rating); }
+    else if(e.key==='Enter'||e.key===' '){ e.preventDefault(); if(rating) choose(rating); }
+  });
+
+  function route(){
+    hide('rateCard');
+    if(rating>=4){
+      show('happyCard');
+      if(googleUrl){ show('googleBtn'); show('skipGoogle'); hide('textReview'); }
+      else { hide('googleBtn'); hide('skipGoogle'); show('textReview'); el('happyLead').textContent='So glad! Mind leaving a few words we can share?'; }
+    } else {
+      show('sadCard');
+    }
+  }
+
+  el('skipGoogle').addEventListener('click',function(){ hide('googleBtn'); hide('skipGoogle'); show('textReview'); el('hName').focus(); });
+  el('googleBtn').addEventListener('click',function(){ setTimeout(function(){ done('🙏','Thank you!','You just made our day — see you again soon!'); confetti(); },400); });
+
+  el('hSend').addEventListener('click',function(){
+    if(sent) return; sent=true; this.disabled=true; this.textContent='Sending…';
+    var name=el('hName').value.trim()||mName, text=el('hText').value.trim();
+    post('reviews',{name:name,business:bizName||slug||'',rating:rating,text:text,source:'smart-review'})
+      .then(function(){ done('🎉','Thank you!','That means a lot — we may feature it. See you soon!'); confetti(); })
+      .catch(function(){ done('🎉','Thank you!','That means a lot!'); });
+  });
+
+  el('fSend').addEventListener('click',function(){
+    var text=el('fText').value.trim();
+    if(!text){ el('fText').focus(); return; }
+    if(sent) return; sent=true; this.disabled=true; this.textContent='Sending…';
+    post('review_feedback',{client:slug||bizName||'',name:el('fName').value.trim()||mName,phone:el('fContact').value.trim(),rating:rating,text:text})
+      .then(function(){ done('🙏','Thank you for telling us.','The owner will personally look into this. We appreciate the honesty.'); })
+      .catch(function(){ done('🙏','Thank you.','We appreciate the feedback.'); });
+  });
+
+  function done(em,h,msg){
+    ['rateCard','happyCard','sadCard'].forEach(hide);
+    el('doneEm').textContent=em; el('doneH').textContent=h; el('doneMsg').textContent=msg;
+    show('doneCard'); window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function confetti(){ var b=['🎉','✨','⭐','🌟','🎊'];
+    for(var i=0;i<24;i++){ var s=document.createElement('span'); s.className='cf'; s.textContent=b[i%b.length];
+      s.style.left=(Math.random()*100)+'vw'; s.style.animationDuration=(1.6+Math.random()*1.6)+'s'; s.style.animationDelay=(Math.random()*0.5)+'s';
+      document.body.appendChild(s); (function(node){ setTimeout(function(){ node.remove(); },3600); })(s); }
+  }
+
+  window.addEventListener('error',function(e){ try{
+    post('client_errors',{page:location.pathname,msg:String((e&&e.message)||'').slice(0,300),src:String((e&&e.filename)||'').slice(0,120),line:(e&&e.lineno)||0}).catch(function(){});
+  }catch(_){} });
 })();
-
-function applyBiz(){
-  if(bizName){
-    el('brand').innerHTML=String(bizName).replace(/[<>&]/g,'')+' <span>reviews</span>';
-    el('rateH').textContent='How was your visit to '+bizName+'?';
-    document.title='Rate '+bizName;
-  }
-  if(googleUrl){ el('googleBtn').href=googleUrl; }
-}
-if(slug){
-  fetch(SUPA_URL+'/rest/v1/rpc/get_program_public',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_client:slug})})
-  .then(function(r){return r.json()}).then(function(p){
-    if(p && !p.error){ if(!bizName) bizName=p.biz_name||(slug.charAt(0).toUpperCase()+slug.slice(1)); if(!googleUrl) googleUrl=p.google_review_url||''; }
-    applyBiz();
-  }).catch(applyBiz);
-} else { applyBiz(); }
-
-function paint(){ [].forEach.call(el('stars').children,function(s){ s.classList.toggle('on', Number(s.dataset.v)<=rating); }); }
-[].forEach.call(el('stars').children,function(s){ s.onclick=function(){ rating=Number(s.dataset.v); paint(); setTimeout(route,220); }; });
-
-function route(){
-  el('rateCard').classList.add('hide');
-  if(rating>=4){
-    el('happyCard').classList.remove('hide');
-    // log the positive rating immediately (approval still required to show on site)
-    postReview('', '');
-    if(googleUrl){ el('googleBtn').classList.remove('hide'); el('skipGoogle').classList.remove('hide'); el('textReview').classList.add('hide'); }
-    else { el('googleBtn').classList.add('hide'); el('skipGoogle').classList.add('hide'); el('textReview').classList.remove('hide'); el('happyLead').textContent='So glad! Mind leaving a few words we can share?'; }
-  } else {
-    el('sadCard').classList.remove('hide');
-  }
-}
-el('skipGoogle').onclick=function(){ el('googleBtn').classList.add('hide'); el('skipGoogle').classList.add('hide'); el('textReview').classList.remove('hide'); };
-el('googleBtn').onclick=function(){ setTimeout(function(){ done('🙏','Thank you!','You just made our day. See you again soon!'); confetti(); },400); };
-
-function postReview(name,text){
-  return fetch(SUPA_URL+'/rest/v1/reviews',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
-    body:JSON.stringify({name:name||'',business:bizName||slug||'',rating:rating,text:text||'',source:'smart-review'})}).catch(function(){});
-}
-function saveText(){
-  var name=el('hName').value.trim(), text=el('hText').value.trim();
-  postReview(name,text).then(function(){ done('🎉','Thank you!','That means a lot — we may feature it. See you soon!'); confetti(); });
-}
-function saveFeedback(){
-  var text=el('fText').value.trim();
-  if(!text){ el('fText').focus(); return; }
-  fetch(SUPA_URL+'/rest/v1/review_feedback',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
-    body:JSON.stringify({client:slug||bizName||'',name:el('fName').value.trim(),phone:el('fContact').value.trim(),rating:rating,text:text})})
-  .then(function(){ done('🙏','Thank you for telling us.','The owner will personally look into this. We appreciate the honesty.'); })
-  .catch(function(){ done('🙏','Thank you.','We appreciate the feedback.'); });
-}
-function done(em,h,msg){
-  ['rateCard','happyCard','sadCard'].forEach(function(id){el(id).classList.add('hide')});
-  el('doneEm').textContent=em; el('doneH').textContent=h; el('doneMsg').textContent=msg;
-  el('doneCard').classList.remove('hide'); window.scrollTo({top:0,behavior:'smooth'});
-}
-function confetti(){ var b=['🎉','✨','⭐','🌟','🎊'];
-  for(var i=0;i<24;i++){ var s=document.createElement('span'); s.className='cf'; s.textContent=b[i%b.length];
-    s.style.left=(Math.random()*100)+'vw'; s.style.animationDuration=(1.6+Math.random()*1.6)+'s'; s.style.animationDelay=(Math.random()*.5)+'s';
-    document.body.appendChild(s); setTimeout(function(el2){return function(){el2.remove()}}(s),3600); }
-}
-
-window.addEventListener('error',function(e){try{
-  fetch(SUPA_URL+'/rest/v1/client_errors',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
-    body:JSON.stringify({page:location.pathname,msg:String((e&&e.message)||'').slice(0,300),src:String((e&&e.filename)||'').slice(0,120),line:(e&&e.lineno)||0})}).catch(function(){});
-}catch(_){}});
 </script>
 </body>
 </html>

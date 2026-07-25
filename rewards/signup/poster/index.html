@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Loop — barber signup QR poster</title>
+<link rel="preconnect" href="https://api.qrserver.com">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-size='34'%3E%F0%9F%94%81%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--acc:#7aa2ff;--acc2:#5ad0f0;--gold:#ffcf5a}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;background:#0a0c16;color:#f2f4ff;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:24px 16px}
+  .sheet{width:min(560px,100%);background:linear-gradient(165deg,#0d1226,#070a14);border:2px solid rgba(122,162,255,.4);border-radius:28px;padding:44px 34px;text-align:center}
+  .logo{font-weight:900;font-size:30px;letter-spacing:-.01em}
+  .logo span{background:linear-gradient(90deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+  h1{font-size:clamp(28px,6vw,40px);line-height:1.12;margin:16px 0 8px;letter-spacing:-.01em}
+  h1 b{color:var(--gold)}
+  .sub{color:#9aa3c2;font-size:16px;margin:0 0 24px}
+  .qr{background:#fff;border-radius:22px;padding:16px;width:300px;height:300px;margin:0 auto;box-shadow:0 0 0 2px rgba(122,162,255,.5),0 0 50px rgba(122,162,255,.35)}
+  .qr img{width:100%;height:100%;display:block}
+  .scan{font-weight:900;font-size:20px;margin:20px 0 4px;color:var(--acc2)}
+  .url{color:#9aa3c2;font-size:14px;font-weight:700}
+  .perks{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:22px 0 0}
+  .perks span{border:1px solid rgba(122,162,255,.35);border-radius:999px;padding:7px 14px;font-size:13px;color:#cdd5ef;background:rgba(255,255,255,.03)}
+  .foot{margin-top:22px;color:#9aa3c2;font-size:12.5px}
+  .print{margin:22px auto 0;border:0;border-radius:999px;padding:14px 28px;font:inherit;font-weight:900;font-size:15px;cursor:pointer;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;box-shadow:0 10px 26px rgba(122,162,255,.4)}
+  @media print{
+    body{background:#fff;color:#111;padding:0}
+    .sheet{border-color:#111;background:#fff;color:#111;border-radius:0;width:100%}
+    .sub,.url,.foot{color:#444} .perks span{color:#333;border-color:#bbb}
+    .print{display:none}
+    .qr{box-shadow:none;border:2px solid #111}
+    .scan{color:#111}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="logo">🔁 <span>Loop</span></div>
+  <h1>Your shop's loyalty, booking<br>&amp; arcade — <b>live in 30 seconds</b></h1>
+  <p class="sub">Customers play games, earn coins, and grind their way to a <b style="color:var(--gold)">free haircut</b> — so they keep coming back to YOUR chair. No app. No hardware. Free to start.</p>
+  <div class="qr"><img src="https://api.qrserver.com/v1/create-qr-code/?size=560x560&margin=0&data=https%3A%2F%2Ftbsol.net%2Frewards%2Fsignup%2F" alt="Scan to create your Loop shop"></div>
+  <div class="scan">📱 Scan to launch your shop — free</div>
+  <div class="url">tbsol.net/rewards/signup/</div>
+  <div class="perks">
+    <span>🎮 8-game arcade</span><span>🪙 Coins &amp; prizes</span><span>📅 Real booking</span><span>💈 You own your clients</span><span>💳 No card needed</span>
+  </div>
+  <div class="foot">Loop by TB Solutions · tbsol.net · questions? nikbyrd28@gmail.com</div>
+</div>
+<button class="print" onclick="window.print()">🖨️ Print this poster</button>
+</body>
+</html>

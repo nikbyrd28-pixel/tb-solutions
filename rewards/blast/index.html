@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Blast — Loop</title>
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%F0%9F%93%A3%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--text:#eef1fb;--muted:#96a0bd;--line:rgba(122,162,255,.26);--acc:#7aa2ff;--acc2:#5df2e0;--vio:#b98bff;--good:#43f0b0;--warn:#ffb15a;--bg:#06070e}
+  *{box-sizing:border-box}
+  @keyframes drift{0%{background-position:0 0}100%{background-position:60px 60px}}
+  @keyframes popin{0%{transform:translateY(10px);opacity:0}100%{transform:translateY(0);opacity:1}}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.5;min-height:100vh;
+    background:radial-gradient(circle at 12% -6%,rgba(122,162,255,.18),transparent 42%),radial-gradient(circle at 90% 108%,rgba(185,139,255,.1),transparent 45%),var(--bg);position:relative}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.5;background-image:linear-gradient(rgba(122,162,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(122,162,255,.045) 1px,transparent 1px);background-size:60px 60px;animation:drift 18s linear infinite}
+  .wrap{max-width:640px;margin:0 auto;padding:22px 16px 80px;position:relative;z-index:1}
+  .brand{font-weight:900;font-size:17px}
+  .brand span{background:linear-gradient(90deg,var(--acc2),var(--acc),var(--vio));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tag{color:var(--muted);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:18px}
+  .card{background:linear-gradient(150deg,rgba(255,255,255,.05),rgba(255,255,255,.014));border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:14px;animation:popin .3s ease}
+  h1{font-size:22px;margin:0 0 4px}
+  h1 span{background:linear-gradient(90deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+  label{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
+  input,textarea{width:100%;background:rgba(2,4,12,.6);border:1px solid var(--line);border-radius:12px;padding:13px 14px;color:var(--text);font:inherit;font-size:16px}
+  textarea{min-height:96px;resize:vertical;font-size:15px}
+  input:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(122,162,255,.18)}
+  .btn{border:0;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d;border-radius:999px;padding:13px 18px;font:inherit;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 8px 22px rgba(122,162,255,.32);text-decoration:none;display:inline-block;text-align:center}
+  .btn.ghost{background:rgba(122,162,255,.07);border:1px solid var(--line);color:var(--text);box-shadow:none;font-weight:700}
+  .btn.wide{width:100%;margin-top:14px}
+  .btn:disabled{opacity:.5}
+  .err{color:#ff8a9d;font-size:13px;margin-top:10px;text-align:center}
+  .hide{display:none!important}
+  .top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .segs{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px}
+  .seg{border:1px solid var(--line);border-radius:999px;padding:8px 13px;font-size:12.5px;font-weight:700;color:var(--muted);cursor:pointer;background:transparent}
+  .seg.on{border-color:var(--acc);color:#05060d;background:linear-gradient(135deg,var(--acc2),var(--acc))}
+  .chips{font-size:12px;color:var(--muted);margin-top:8px}
+  .tmpl{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+  .tmpl button{border:1px solid var(--line);background:rgba(122,162,255,.06);color:var(--text);border-radius:999px;padding:7px 12px;font:inherit;font-size:12.5px;cursor:pointer}
+  .cc{font-size:12px;color:var(--muted);text-align:right;margin-top:4px}
+  .person{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:14px;margin-top:9px;background:rgba(0,0,0,.22)}
+  .person.done{opacity:.5}
+  .person .av{flex:0 0 40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:16px;color:#05060d;background:linear-gradient(135deg,var(--acc2),var(--acc))}
+  .person .info{flex:1;min-width:0}
+  .person .info b{font-size:14.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .person .info span{font-size:12px;color:var(--muted)}
+  .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:18px;text-decoration:none;border:0;background:linear-gradient(135deg,var(--acc2),var(--acc));flex-shrink:0}
+  .muted{color:var(--muted);font-size:12.5px}
+  .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:40;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d;font-weight:800;font-size:13px;border-radius:999px;padding:9px 18px;box-shadow:0 10px 30px rgba(122,162,255,.4);animation:popin .25s ease}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">🔁 <span>Loop</span> · Blast</div>
+  <div class="tag">Text your regulars an offer</div>
+
+  <div class="card" id="login">
+    <h1>Message your <span>customer list</span></h1>
+    <p class="muted">Send an offer to the people who already love you — the cheapest ad there is. Business code + staff PIN.</p>
+    <label>Business code</label>
+    <input id="code" placeholder="e.g. joesbarber" autocomplete="off" style="text-transform:lowercase">
+    <label>Staff PIN</label>
+    <input id="pin" type="tel" inputmode="numeric" placeholder="Your PIN" autocomplete="off">
+    <button class="btn wide" id="loginBtn" onclick="load()">Open my list →</button>
+    <div class="err hide" id="err"></div>
+  </div>
+
+  <div id="dash" class="hide">
+    <div class="top">
+      <div><h1 id="bizName">Blast</h1><div class="muted">Your loyalty members</div></div>
+      <button class="btn ghost" onclick="location.reload()">Log out</button>
+    </div>
+
+    <div class="card">
+      <label style="margin-top:0">Your message <span style="text-transform:none;color:var(--acc2)">— use {name} to personalize</span></label>
+      <textarea id="msg" oninput="cc()"></textarea>
+      <div class="cc" id="cc">0 chars</div>
+      <div class="tmpl" id="tmpl"></div>
+      <label>Who gets it?</label>
+      <div class="segs" id="segs"></div>
+      <div class="chips" id="segInfo"></div>
+    </div>
+
+    <div class="card">
+      <div class="top" style="margin-bottom:6px"><b id="listCount">Recipients</b><span class="muted">tap 📲 to text each</span></div>
+      <div id="list"></div>
+    </div>
+    <p class="muted" style="text-align:center">Texts open in your phone's messaging app, pre-filled — you stay in control, nothing sends automatically. Powered by TB Solutions.</p>
+  </div>
+</div>
+<script>
+(function(){
+  "use strict";
+  var SUPA='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+  var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+  function el(id){return document.getElementById(id);}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function toast(t){var x=document.createElement('div');x.className='toast';x.textContent=t;document.body.appendChild(x);setTimeout(function(){x.remove();},1300);}
+  var q=new URLSearchParams(location.search);
+  if(q.get('c')) el('code').value=q.get('c').toLowerCase();
+  el('pin').addEventListener('keydown',function(e){ if(e.key==='Enter') load(); });
+  window.load=load;
+
+  var CODE='', BIZ='', REWARD='', ALL=[], seg='all';
+  var SEGS=[['all','Everyone'],['vip','VIPs'],['active','Active (0–30d)'],['lapsed','Lapsed (30d+)']];
+
+  function load(){
+    var code=(el('code').value||'').trim().toLowerCase().replace(/[^a-z0-9]/g,''), pin=(el('pin').value||'').trim();
+    if(!code){ showErr('Enter your business code.'); return; }
+    el('err').classList.add('hide');
+    var btn=el('loginBtn'); btn.disabled=true; btn.textContent='Loading…';
+    fetch(SUPA+'/rest/v1/rpc/loyalty_contacts',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify({p_client:code,p_pin:pin})})
+    .then(function(r){return r.json();}).then(function(d){
+      if(!d || d.ok===false){ showErr((d&&d.error)||'Could not sign in.'); btn.disabled=false; btn.textContent='Open my list →'; return; }
+      CODE=code; BIZ=d.biz_name||d.client; REWARD=d.reward_text||'a reward'; ALL=d.members||[];
+      start();
+    }).catch(function(){ showErr('Network error — try again.'); btn.disabled=false; btn.textContent='Open my list →'; });
+  }
+  function showErr(m){ el('err').textContent=m; el('err').classList.remove('hide'); }
+
+  function start(){
+    el('login').classList.add('hide'); el('dash').classList.remove('hide');
+    el('bizName').textContent=BIZ+' — Blast';
+    el('msg').value='Hey {name}! It’s '+BIZ+' 👋 We’ve got a little something for our regulars this week — come see us and grab '+REWARD+'. See you soon!';
+    var tpls=[['🔥 Slow-day offer','Hey {name}! Quiet day at '+BIZ+' — pop in today and we’ll take good care of you. 👊'],
+              ['🎉 New offer','Hey {name}! New this week at '+BIZ+': come by and treat yourself. You’ve earned it!'],
+              ['⏰ Last call','Hey {name}! Last chance this week at '+BIZ+' — don’t miss out. 🙌']];
+    el('tmpl').innerHTML=tpls.map(function(t,i){return '<button onclick="useTpl('+i+')">'+t[0]+'</button>';}).join('');
+    window._tpls=tpls;
+    el('segs').innerHTML=SEGS.map(function(s){return '<span class="seg'+(s[0]===seg?' on':'')+'" onclick="setSeg(\''+s[0]+'\')">'+s[1]+'</span>';}).join('');
+    cc(); renderList();
+  }
+  window.useTpl=function(i){ el('msg').value=window._tpls[i][1]; cc(); };
+  window.cc=function(){ var n=el('msg').value.length; el('cc').textContent=n+' chars'+(n>320?' · long texts may split':''); };
+  window.setSeg=function(s){ seg=s; el('segs').querySelectorAll('.seg').forEach(function(x){x.classList.remove('on');}); event.target.classList.add('on'); renderList(); };
+
+  function filtered(){
+    return ALL.filter(function(m){
+      if(seg==='vip') return (m.lifetime||0)>=75;
+      if(seg==='active') return m.days!=null && m.days<=30;
+      if(seg==='lapsed') return m.days!=null && m.days>30;
+      return true;
+    });
+  }
+  function renderList(){
+    var list=filtered();
+    el('listCount').textContent=list.length+' recipient'+(list.length===1?'':'s');
+    el('segInfo').textContent=ALL.length+' members on file · '+ALL.filter(function(m){return (m.lifetime||0)>=75;}).length+' VIPs · '+ALL.filter(function(m){return m.days!=null&&m.days>30;}).length+' lapsed';
+    if(!list.length){ el('list').innerHTML='<p class="muted">No members in this group yet.</p>'; return; }
+    el('list').innerHTML=list.map(function(m,i){
+      var name=m.name||'A member', init=(name.trim().charAt(0)||'?').toUpperCase();
+      var first=name.split(' ')[0];
+      var text=el('msg').value.replace(/\{name\}/g, first);
+      var reached=lsGet(m.phone);
+      var sms='sms:'+m.phone+'?&body='+encodeURIComponent(text);
+      var meta=[]; if((m.lifetime||0)>=75) meta.push('VIP'); if(m.days!=null) meta.push(m.days+'d ago'); meta.push((m.points||0)+' pts');
+      return '<div class="person'+(reached?' done':'')+'" id="pr'+i+'"><div class="av">'+esc(init)+'</div>'
+        +'<div class="info"><b>'+esc(name)+'</b><span>'+meta.join(' · ')+'</span></div>'
+        +'<a class="ic" href="'+esc(sms)+'" onclick="mark(\''+esc(m.phone)+'\','+i+')" title="Text">📲</a></div>';
+    }).join('');
+  }
+  window.mark=function(phone,i){ lsSet(phone); var e=el('pr'+i); if(e) e.classList.add('done'); toast('Opened text ✓'); };
+  function lsKey(p){ return 'bl_'+CODE+'_'+String(p).replace(/\D/g,''); }
+  function lsGet(p){ try{ return localStorage.getItem(lsKey(p)); }catch(e){ return null; } }
+  function lsSet(p){ try{ localStorage.setItem(lsKey(p),String(Date.now())); }catch(e){} }
+  el('msg') && el('msg').addEventListener('input',function(){ renderList(); });
+
+  if(q.get('c') && q.get('pin')){ el('pin').value=q.get('pin'); load(); }
+  window.addEventListener('error',function(e){ try{
+    fetch(SUPA+'/rest/v1/client_errors',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify({page:location.pathname,msg:String((e&&e.message)||'').slice(0,300),src:String((e&&e.filename)||'').slice(0,120),line:(e&&e.lineno)||0})}).catch(function(){});
+  }catch(_){} });
+})();
+</script>
+</body>
+</html>
