@@ -169,9 +169,20 @@
         </div>
       </div>
 
+      <!-- START HERE: 3 WAYS -->
+      <div class="card" style="border-color:var(--acc)">
+        <h2>🎬 <span>Make a video</span> — pick a way</h2>
+        <p style="color:var(--muted);font-size:13px;margin:0 0 12px">Don't overthink it — three easy ways, no script-writing required:</p>
+        <div class="row3">
+          <button class="btn ghost" onclick="startWay('ai')" style="display:flex;flex-direction:column;height:auto;padding:14px 6px;gap:2px"><span style="font-size:22px">✨</span><b style="font-size:13px">Let AI do it</b><span style="font-size:11px;color:var(--muted)">Type one idea → done</span></button>
+          <button class="btn ghost" onclick="startWay('template')" style="display:flex;flex-direction:column;height:auto;padding:14px 6px;gap:2px"><span style="font-size:22px">📋</span><b style="font-size:13px">Use a template</b><span style="font-size:11px;color:var(--muted)">Fill the blanks</span></button>
+          <button class="btn ghost" onclick="startWay('record')" style="display:flex;flex-direction:column;height:auto;padding:14px 6px;gap:2px"><span style="font-size:22px">🎥</span><b style="font-size:13px">Film yourself</b><span style="font-size:11px;color:var(--muted)">Teleprompter helps</span></button>
+        </div>
+      </div>
+
       <!-- AI SCRIPT -->
       <div class="card">
-        <h2>1 · <span>AI script</span> — start here</h2>
+        <h2>1 · <span>AI script</span> — one idea, full video</h2>
         <label>What's the video about?</label>
         <input id="aiTopic" placeholder="e.g. Why local businesses need a website that shows up on Google">
         <div class="row3">
@@ -394,6 +405,18 @@
   <canvas id="recCanvas" width="720" height="1280"></canvas>
   <video id="camVideo" autoplay muted playsinline></video>
   <div class="recBar"><button onclick="recPrev()" title="Previous line" aria-label="Previous line">◀</button><span id="recLineNo">1/1</span><button onclick="recNext()" title="Next line" aria-label="Next line">▶</button></div>
+  <details style="width:100%;max-width:640px;background:rgba(122,162,255,.08);border:1px solid var(--line);border-radius:12px;overflow:hidden">
+    <summary style="cursor:pointer;padding:11px 14px;font-weight:800;font-size:13px;list-style:none">🎬 How to record a great clip <span style="float:right;color:var(--acc)">tips ▾</span></summary>
+    <ul style="margin:0;padding:0 18px 14px 34px;color:var(--muted);font-size:13px;line-height:1.7">
+      <li><b style="color:var(--text)">Face a window / light</b> — light on your face, not behind you.</li>
+      <li><b style="color:var(--text)">Prop the phone up</b> steady at eye level (a cup works).</li>
+      <li><b style="color:var(--text)">Look at the lens</b>, not at yourself on screen.</li>
+      <li><b style="color:var(--text)">Quiet room</b> — get close so your voice is clear.</li>
+      <li><b style="color:var(--text)">Read the big text above</b> — it scrolls line by line; tap ▶ to advance.</li>
+      <li>Start talking a second <b style="color:var(--text)">before</b> and after — easier to trim.</li>
+      <li>No time to film? Tap <b style="color:var(--text)">🎞️ Upload</b> to drop in a clip you already have.</li>
+    </ul>
+  </details>
   <div class="recCtrls">
     <button class="btn rec" id="recBtn" onclick="toggleRec()">● Record</button>
     <span class="muted" id="recTimer">0.0s / 30s</span>
@@ -1441,6 +1464,11 @@ el('logoFile').addEventListener('change',function(){ var f=this.files[0]; if(!f)
 /* ---------- teleprompter recorder (camera + burned captions + mic audio) ---------- */
 var camStream=null, recCanvas=null, recCtx=null, recVideo=null, recRAF=null, recLines=[], recIdx=0;
 var recRec=null, recChunks2=[], recActive=false, recStart2=0, REC_MAX=30, recFacing='user', recUploadUrl=null;
+function startWay(w){
+  if(w==='ai'){ var e=el('aiTopic'); if(e){ e.scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(function(){try{e.focus();}catch(_){}},400); } }
+  else if(w==='template'){ var t=el('tpls'); if(t) t.scrollIntoView({behavior:'smooth',block:'center'}); }
+  else if(w==='record'){ if(typeof openRecorder==='function') openRecorder(); }
+}
 async function openRecorder(){
   recLines = scenes.map(function(s){ return (s.text||'').replace(/\s+/g,' ').trim(); }).filter(Boolean);
   if(!recLines.length) recLines=['Write a script or pick a template first'];
