@@ -124,7 +124,7 @@
     <div><h1>🎬 TB Video <b>Studio</b> <span class="tag">AI</span></h1></div>
     <a class="back" href="/marketing-engine">← Marketing Engine</a>
   </div>
-  <p class="sub">Type an idea → AI writes the script → get a polished promo <b>video</b>, a scroll-stopping <b>thumbnail</b> and a ready-to-paste <b>post</b>. Right here, free, no editor.</p>
+  <p class="sub">Type an idea → AI writes the script → get a polished promo <b>video</b>, a scroll-stopping <b>thumbnail</b> and a ready-to-paste <b>post</b>. Right here, free, no editor. <button type="button" id="tourBtn" onclick="startTour()" style="background:var(--acc);color:#fff;border:0;border-radius:999px;padding:5px 13px;font-size:12px;font-weight:700;cursor:pointer;vertical-align:middle;margin-left:4px">▶ How it works · 60s</button></p>
 
   <div class="layout">
     <!-- LEFT: controls -->
@@ -181,7 +181,7 @@
       </div>
 
       <!-- START HERE: 3 WAYS -->
-      <div class="card" style="border-color:var(--acc)">
+      <div class="card" id="wayCard" style="border-color:var(--acc)">
         <h2>🎬 <span>Make a video</span> — pick a way</h2>
         <p style="color:var(--muted);font-size:13px;margin:0 0 12px">Don't overthink it — three easy ways, no script-writing required:</p>
         <div class="row3">
@@ -1818,6 +1818,62 @@ window.addEventListener('error',function(e){try{
   fetch(SUPA_URL+'/rest/v1/client_errors',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
     body:JSON.stringify({page:location.pathname,msg:String((e&&e.message)||'').slice(0,300),src:String((e&&e.filename)||'').slice(0,120),line:(e&&e.lineno)||0})}).catch(function(){});
 }catch(_){}});
+
+/* ---------- "Studio in 60 seconds" walkthrough ---------- */
+var TOUR=[
+  {sel:'#wayCard',   t:'1 · Start a video',   b:"Pick a lane: let AI write it from one idea, fill a template, or film yourself with the teleprompter. No editing skills needed."},
+  {sel:'#brandChips',t:'2 · Set your brand',  b:"Choose who it's for. Your colour, logo, sign-off and call-to-action auto-apply to every video — set it once, reuse forever."},
+  {sel:'#sceneList', t:'3 · Tweak the scenes',b:"Each card is a moment. Edit the words, drop in a photo, reorder — the video rebuilds as you go."},
+  {sel:'#c',         t:'4 · Watch it live',   b:"The preview updates instantly. Hit ▶ to play it full-speed before you commit."},
+  {sel:'#renderBtn', t:'5 · Render & post',   b:"Happy? Render, then download — ready for Instagram, TikTok and YouTube Shorts."},
+  {sel:'#projSel',   t:'6 · Save your work',  b:"Save the project locally, or ☁ to the cloud to reopen on any device and share with your team."}
+];
+var tourI=0;
+function tourEls(){
+  if(el('tourWrap')) return;
+  var st=document.createElement('style');
+  st.textContent='#tourWrap{position:fixed;inset:0;z-index:9999;display:none}#tourWrap.on{display:block}'
+    +'#tourDim{position:absolute;inset:0;background:rgba(6,7,20,.72)}'
+    +'#tourRing{position:absolute;border:2px solid var(--acc);border-radius:14px;box-shadow:0 0 0 9999px rgba(6,7,20,.72),0 8px 30px rgba(0,0,0,.5);transition:all .25s ease;pointer-events:none}'
+    +'#tourCard{position:absolute;max-width:300px;background:#12142b;color:#eef;border:1px solid var(--line);border-radius:14px;padding:15px 16px;box-shadow:0 14px 40px rgba(0,0,0,.55);transition:all .25s ease}'
+    +'#tourCard h4{margin:0 0 6px;font-size:15px}#tourCard p{margin:0 0 12px;font-size:13px;line-height:1.5;color:#c7c9e6}'
+    +'#tourCard .tb{display:flex;align-items:center;gap:8px;justify-content:space-between}'
+    +'#tourCard .dots{display:flex;gap:5px}#tourCard .dots i{width:6px;height:6px;border-radius:50%;background:#444a78;display:block}#tourCard .dots i.on{background:var(--acc)}'
+    +'#tourCard button{border:0;border-radius:9px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer}'
+    +'#tourNext{background:var(--acc);color:#fff}#tourSkip{background:transparent;color:#9aa;padding:8px 6px}';
+  document.head.appendChild(st);
+  var w=document.createElement('div'); w.id='tourWrap';
+  w.innerHTML='<div id="tourDim" onclick="endTour()"></div><div id="tourRing"></div>'
+    +'<div id="tourCard"><h4 id="tourT"></h4><p id="tourB"></p>'
+    +'<div class="tb"><div class="dots" id="tourDots"></div><div><button id="tourSkip" onclick="endTour()">Skip</button><button id="tourNext" onclick="tourStep(1)">Next →</button></div></div></div>';
+  document.body.appendChild(w);
+}
+function showTour(){
+  var step=TOUR[tourI], tgt=document.querySelector(step.sel);
+  var ring=el('tourRing'), card=el('tourCard');
+  el('tourT').textContent=step.t; el('tourB').textContent=step.b;
+  el('tourDots').innerHTML=TOUR.map(function(_,i){ return '<i class="'+(i===tourI?'on':'')+'"></i>'; }).join('');
+  el('tourNext').textContent=(tourI>=TOUR.length-1)?'Got it ✓':'Next →';
+  if(!tgt){ tourStep(1); return; }
+  try{ tgt.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){ try{ tgt.scrollIntoView(); }catch(_){} }
+  setTimeout(function(){
+    var r=tgt.getBoundingClientRect(), pad=8;
+    ring.style.left=(r.left-pad)+'px'; ring.style.top=(r.top-pad)+'px';
+    ring.style.width=(r.width+pad*2)+'px'; ring.style.height=(r.height+pad*2)+'px';
+    var cw=Math.min(300,window.innerWidth-24), below=r.bottom+14, above=r.top-14;
+    var useBelow=(below+180<window.innerHeight)||(r.top<180);
+    card.style.width=cw+'px';
+    var left=Math.max(12,Math.min(r.left,window.innerWidth-cw-12));
+    card.style.left=left+'px';
+    if(useBelow){ card.style.top=Math.min(below,window.innerHeight-190)+'px'; }
+    else { card.style.top=Math.max(12,above-card.offsetHeight)+'px'; }
+  },300);
+}
+function startTour(){ tourEls(); tourI=0; el('tourWrap').classList.add('on'); showTour(); try{ trackEvent('tour_start'); }catch(e){} }
+function tourStep(d){ tourI+=d; if(tourI>=TOUR.length){ endTour(true); return; } if(tourI<0) tourI=0; showTour(); }
+function endTour(done){ var w=el('tourWrap'); if(w) w.classList.remove('on'); try{ localStorage.setItem('tb_studio_tour_done','1'); }catch(e){} if(done){ try{ trackEvent('tour_done'); }catch(e){} } }
+window.addEventListener('resize',function(){ var w=el('tourWrap'); if(w&&w.classList.contains('on')) showTour(); });
+try{ if(!localStorage.getItem('tb_studio_tour_done')){ setTimeout(function(){ try{ startTour(); }catch(e){} },900); } }catch(e){}
 </script>
 </body>
 </html>
