@@ -224,6 +224,9 @@
     dom.play.onclick = start;
     dom.again.onclick = start;
     dom.share.onclick = doShare;
+    // 2-second rule: tap anywhere on the start card's backdrop to play instantly
+    dom.start.addEventListener('click', function (e) { if (e.target === dom.start) start(); });
+    dom.over.addEventListener('click', function (e) { if (e.target === dom.over) start(); });
 
     // canvas taps
     dom.cv.addEventListener('pointerdown', function (e) {

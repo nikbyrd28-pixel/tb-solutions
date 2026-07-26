@@ -34,7 +34,7 @@
   <div class="hud"><span class="lv" id="hLv">Lv 1</span><span id="hSc">0 : 0</span><span class="sc" id="hBest">★ 0</span></div>
 </div>
 <canvas id="cv"></canvas>
-<div class="ov" id="startOv"><div class="card">
+<div class="ov" id="startOv" onclick="if(event.target===this)startGame()"><div class="card">
   <div style="font-size:44px">🏒</div><h2>Ice Hockey</h2>
   <p>Drag your paddle. First to 3 wins the level — then the barber bot gets <b style="color:var(--text)">faster and meaner</b>. How many levels can you survive?</p>
   <p>Best: <b id="ovBest0">0</b> levels</p>
