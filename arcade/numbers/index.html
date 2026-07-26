@@ -39,7 +39,7 @@
 </div>
 <div id="board"></div>
 <p class="hint">Swipe (or arrow keys) to slide. Matching numbers merge. Reach <b style="color:var(--gold)">2048</b> 👑</p>
-<div class="ov hide" id="over"><div class="card">
+<div class="ov hide" id="over" onclick="if(!/BUTTON|A/.test(event.target.tagName))reset()"><div class="card">
   <div style="font-size:42px" id="ovEm">🏁</div><h2 id="ovT" style="margin:6px 0">Game over</h2>
   <p style="color:var(--muted);margin:4px 0" id="ovLine"></p>
   <p class="coins hide" id="ovCoins"></p>

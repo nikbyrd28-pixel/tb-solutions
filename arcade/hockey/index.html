@@ -40,7 +40,7 @@
   <p>Best: <b id="ovBest0">0</b> levels</p>
   <button class="btn" onclick="startGame()">▶ Play</button>
 </div></div>
-<div class="ov hide" id="overOv"><div class="card">
+<div class="ov hide" id="overOv" onclick="if(!/BUTTON|A/.test(event.target.tagName))startGame()"><div class="card">
   <div style="font-size:42px" id="ovEm">🏁</div><h2 id="ovT">Game over</h2>
   <p id="ovLine"></p>
   <p class="coins hide" id="ovCoins"></p>

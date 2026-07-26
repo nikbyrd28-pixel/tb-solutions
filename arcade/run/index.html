@@ -41,7 +41,7 @@
 <body>
 <canvas id="c"></canvas>
 
-<div class="overlay" id="startScreen">
+<div class="overlay" id="startScreen" onclick="if(!/BUTTON|A/.test(event.target.tagName))this.querySelector('button').click()">
   <img class="pole" id="poleImg" alt="">
   <h1>BARBER DASH</h1>
   <p class="sub">Tap to jump. Dodge the razors, grab the coins, don't wipe out. It gets fast. 💈</p>
@@ -50,7 +50,7 @@
   <button id="muteBtn" style="margin-top:12px;background:transparent;border:1px solid rgba(150,190,255,.4);color:#eef1ff;border-radius:999px;padding:9px 18px;font:inherit;font-size:13px;font-weight:700;cursor:pointer">🔊 Music on</button>
 </div>
 
-<div class="overlay hide" id="overScreen">
+<div class="overlay hide" id="overScreen" onclick="if(!/BUTTON|A/.test(event.target.tagName))this.querySelector('button').click()">
   <h1 style="font-size:clamp(28px,8vw,46px)">WIPEOUT ✂️</h1>
   <div class="row">
     <div class="stat"><b id="ovScore">0</b><span>metres</span></div>
