@@ -144,6 +144,10 @@
   function setMuteLabel(){ var b=el('muteBtn'); if(b) b.textContent=muted?'🔇':'🔊'; }
   setMuteLabel();
   if(el('muteBtn')) el('muteBtn').addEventListener('click',function(e){ e.stopPropagation(); muted=!muted; try{localStorage.setItem('arcade_muted',muted?'1':'0');}catch(_){} setMuteLabel(); if(muted){ MUS.stop(); } else { MUS.start(actx()); } });
+    document.addEventListener('keydown',function(e){
+    if(e.repeat) return; var k=e.key.toLowerCase();
+    if((k===' '||k==='enter')){ var b=el('actBtn'); if(b && !b.disabled && b.offsetParent!==null){ e.preventDefault(); b.click(); } }
+  });
   el('actBtn').addEventListener('click',function(){
     if(busy)return; actx(); if(!muted) MUS.start(actx());
     if(phase==='bet'){
