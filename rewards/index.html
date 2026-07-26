@@ -845,6 +845,14 @@ function initBooking(m){
   var card=el('bookCard'); if(!card) return;
   if(m.booking_on===false){ card.classList.add('hide'); return; }
   card.classList.remove('hide');
+  // Shop brought its own booking link (Booksy / Square / Calendly) — deep-link out.
+  if(m.book_url){
+    if(el('bookIntro')) el('bookIntro').textContent='Book your next appointment at '+(m.biz_name||'the shop')+'.';
+    showBookState('flow');
+    el('bookFlow').innerHTML='<a class="btn" target="_blank" rel="noopener" href="'+esc(m.book_url)+'" style="text-decoration:none;display:block;text-align:center">📅 Book now →</a>'
+      +'<p class="muted center" style="margin-top:8px;font-size:12.5px">Opens your shop\'s booking page in a new tab.</p>';
+    return;
+  }
   loadUpcoming();
   BOOK={cfg:null,svc:null,staff:'',date:null,time:null,result:null};
   showBookState('flow');

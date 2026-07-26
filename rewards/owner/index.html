@@ -279,6 +279,14 @@
 
     <div class="card" id="bookingSetupCard">
       <h2>📅 <b>Booking setup</b> — services, barbers &amp; hours</h2>
+      <div style="border:1px solid var(--line);border-radius:14px;padding:14px;margin:6px 0 16px;background:rgba(122,162,255,.05)">
+        <b style="font-size:14px">Already use Booksy, Square or Calendly?</b>
+        <p class="muted" style="margin:4px 0 8px;font-size:13px">Paste your existing booking link — the <b style="color:var(--text)">Book</b> button on your rewards card will open it. Keep the booking you already use; rewards, referrals and content still work on top.</p>
+        <input id="setBookUrl" autocapitalize="none" placeholder="https://booksy.com/…  or your Square / Calendly link">
+        <button class="btn ghost" id="saveBookUrlBtn" onclick="saveBookUrl()" style="margin-top:8px">💾 Save my booking link</button>
+        <div class="muted hide" id="bookUrlOk" style="text-align:center;color:var(--good);margin-top:8px;font-weight:800">Saved ✓ — your card now links to your booking.</div>
+        <p class="muted" style="margin:8px 0 0;font-size:12px">Leave this blank to use the built-in booking below instead.</p>
+      </div>
       <div id="bkLoad" class="muted">Loading…</div>
       <div id="bkForm" class="hide">
         <label>Services <span style="text-transform:none;letter-spacing:0;color:var(--muted)">(name · minutes · price)</span></label>
@@ -453,6 +461,17 @@ function renderHours(){
 }
 function renderHoursState(cb){ var row=cb.closest('.hrow'); var off=cb.checked; row.querySelector('.h-open').disabled=off; row.querySelector('.h-close').disabled=off; }
 function readHours(){ var h={}; [].forEach.call(document.querySelectorAll('#hoursEditor .hrow'),function(r){ if(r.querySelector('.h-closed').checked) return; var o=r.querySelector('.h-open').value, c=r.querySelector('.h-close').value; if(o&&c&&o<c) h[r.getAttribute('data-dow')]=[o,c]; }); HOURS=h; return h; }
+function saveBookUrl(){
+  var url=(el('setBookUrl').value||'').trim();
+  if(url && !/^https?:\/\//i.test(url)){ url='https://'+url; el('setBookUrl').value=url; }
+  var b=el('saveBookUrlBtn'); b.disabled=true; var old=b.textContent; b.textContent='Saving…';
+  rpc('set_book_url',{p_client:CODE,p_pin:PIN,p_url:url}).then(function(d){
+    b.disabled=false; b.textContent=old;
+    if(!d||!d.ok){ toast((d&&d.error)||'Could not save'); return; }
+    el('bookUrlOk').classList.remove('hide'); toast('Booking link saved ✓');
+    setTimeout(function(){ el('bookUrlOk').classList.add('hide'); },3200);
+  }).catch(function(){ b.disabled=false; b.textContent=old; toast('Network error'); });
+}
 function saveBooking(){
   readSvc(); readBarb(); readHours();
   var validSvc=SVCS.filter(function(s){return s.name;});
