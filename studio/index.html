@@ -143,6 +143,12 @@
           <label class="btn ghost small" style="cursor:pointer" title="Open a project file">⬆︎<input type="file" accept=".json,application/json" onchange="importProjectFile(this.files[0]);this.value=''" style="display:none"></label>
           <span class="muted" id="projState"></span>
         </div>
+        <div class="bar" style="margin-top:8px">
+          <button class="btn small" onclick="cloudSave()" title="Save to the cloud and get a share link">☁ Save to cloud</button>
+          <button class="btn ghost small" onclick="cloudOpen()" title="Open a teammate's project by code">☁ Open from code</button>
+          <span class="muted" style="font-size:12px">Share &amp; reopen on any device — great for teams.</span>
+        </div>
+        <div id="cloudBox" class="hide" style="margin-top:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:rgba(139,123,255,.06);font-size:13px"></div>
       </div>
 
       <!-- BRAND KITS -->
@@ -1601,9 +1607,8 @@ function saveProject(asNew){
   idx[name]={ scenes:serializeScenes(), look:{ shape:shapeIdx, capStyle:el('capStyle').value, trans:el('trans').value, motion:el('motion').value, accent:el('accent').value, bgfx:el('bgfx').value, grade:(el('grade')?el('grade').value:'none'), endCard:el('endCard').checked, cta:el('ctaText').value, brand:el('aiBrand').value } };
   if(saveProjIndex(idx)){ curProj=name; refreshProjSel(name); el('projState').textContent='Saved ✓'; }
 }
-function loadProject(){
-  var name=el('projSel').value; if(!name) return;
-  var proj=loadProjIndex()[name]; if(!proj) return;
+function applyProjectObj(proj){
+  if(!proj||!proj.scenes) return false;
   scenes=(proj.scenes||[]).map(function(o){ var s=Object.assign(newScene(o.text,o.palI,o.kicker),o); s._img=null; s._vid=null; s.vidUrl=null;
     if(s.photo){ (function(sc){ var im=new Image(); im.onload=function(){ sc._img=im; drawAt(previewT); }; im.src=sc.photo; })(s); } return s; });
   var lk=proj.look||{};
@@ -1616,7 +1621,13 @@ function loadProject(){
   if(lk.endCard!=null) el('endCard').checked=!!lk.endCard;
   if(lk.cta!=null) el('ctaText').value=lk.cta;
   if(lk.brand!=null) el('aiBrand').value=lk.brand;
-  curProj=name; renderScenes(); rebuildTimeline(); resetPreview(); drawAt(0); el('projState').textContent='Opened ✓';
+  if(proj.name) curProj=proj.name;
+  renderScenes(); rebuildTimeline(); resetPreview(); drawAt(0); return true;
+}
+function loadProject(){
+  var name=el('projSel').value; if(!name) return;
+  var proj=loadProjIndex()[name]; if(!proj) return;
+  applyProjectObj(Object.assign({name:name},proj)); el('projState').textContent='Opened ✓';
 }
 function newProject(){
   if(scenes.length && !confirm('Start a new blank project? Save this one first if you want to keep it.')) return;
@@ -1641,16 +1652,40 @@ function importProjectFile(file){
   r.onload=function(){ var proj; try{ proj=JSON.parse(r.result); }catch(e){ alert('That file is not a TB Studio project.'); return; }
     if(!proj||!proj.scenes){ alert('That file is not a TB Studio project.'); return; }
     pushUndo();
-    scenes=(proj.scenes||[]).map(function(o){ var s=Object.assign(newScene(o.text,o.palI,o.kicker),o); s._img=null; s._vid=null; s.vidUrl=null;
-      if(s.photo){ (function(sc){ var im=new Image(); im.onload=function(){ sc._img=im; drawAt(previewT); }; im.src=sc.photo; })(s); } return s; });
-    var lk=proj.look||{};
-    if(lk.shape!=null) setShape(lk.shape); if(lk.capStyle) el('capStyle').value=lk.capStyle; if(lk.trans) el('trans').value=lk.trans;
-    if(lk.motion) el('motion').value=lk.motion; if(lk.accent){ el('accent').value=lk.accent; accent=lk.accent; } if(lk.bgfx) el('bgfx').value=lk.bgfx; if(lk.grade&&el('grade')) el('grade').value=lk.grade;
-    if(lk.endCard!=null) el('endCard').checked=!!lk.endCard; if(lk.cta!=null) el('ctaText').value=lk.cta; if(lk.brand!=null) el('aiBrand').value=lk.brand;
-    if(proj.name) curProj=proj.name;
-    renderScenes(); rebuildTimeline(); resetPreview(); drawAt(0); el('projState').textContent='Imported ✓';
+    applyProjectObj(proj); el('projState').textContent='Imported ✓';
   };
   r.readAsText(file);
+}
+
+/* ---------- cloud project save (share/reopen anywhere) ---------- */
+function rpc(fn,body){
+  return fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(body||{})})
+    .then(function(r){ return r.json().catch(function(){return null;}); });
+}
+function cloudSave(){
+  var st=el('projState'); if(st) st.textContent='Saving to cloud…';
+  var obj=currentProjectObj();
+  var code=localStorage.getItem('tb_cloud_code_'+(curProj||'')) || '';
+  rpc('save_studio_project',{p_code:code,p_name:obj.name||'tb-project',p_data:obj}).then(function(res){
+    if(!res||!res.ok||!res.code){ if(st) st.textContent='Cloud save failed — try again'; return; }
+    try{ localStorage.setItem('tb_cloud_code_'+(curProj||''),res.code); }catch(e){}
+    var link=location.origin+'/studio/?p='+res.code;
+    var box=el('cloudBox');
+    if(box){ box.classList.remove('hide');
+      box.innerHTML='<b>☁ Saved to cloud.</b> Share or reopen anywhere with this link:<div class="bar" style="margin-top:8px"><input id="cloudLink" readonly value="'+link+'" style="flex:1;min-width:180px"><button class="btn small" onclick="copyCloud()">Copy link</button><span class="muted">code: <b>'+res.code+'</b></span></div>'; }
+    if(st) st.textContent='On cloud ✓';
+  }).catch(function(){ if(st) st.textContent='Cloud save failed — check connection'; });
+}
+function copyCloud(){ var i=el('cloudLink'); if(!i) return; i.select(); try{ document.execCommand('copy'); }catch(e){} try{ navigator.clipboard.writeText(i.value); }catch(e){} var b=event&&event.target; if(b){ var t=b.textContent; b.textContent='Copied ✓'; setTimeout(function(){ b.textContent=t; },1400); } }
+function cloudOpen(codeArg){
+  var code=(codeArg||prompt('Enter the project code (from a share link):','')||'').trim().replace(/^.*[?&]p=/,'').replace(/[^a-z0-9]/gi,'').slice(0,12);
+  if(!code) return;
+  var st=el('projState'); if(st) st.textContent='Opening from cloud…';
+  rpc('get_studio_project',{p_code:code}).then(function(res){
+    if(!res||!res.ok||!res.data){ if(st) st.textContent='No project found for that code'; if(!codeArg) alert('No cloud project found for code "'+code+'".'); return; }
+    if(applyProjectObj(res.data)){ try{ localStorage.setItem('tb_cloud_code_'+(curProj||''),code); }catch(e){}
+      if(st) st.textContent='Opened from cloud ✓'; }
+  }).catch(function(){ if(st) st.textContent='Could not reach cloud'; });
 }
 
 /* ---------- brand kits (multi-brand content engine) ---------- */
@@ -1754,10 +1789,13 @@ function init(){
   setShape(0);
   try{ initBrandSel(); }catch(e){}
   try{ refreshProjSel(); }catch(e){}
+  var cloudP='';
   try{ var qp=new URLSearchParams(location.search);
     if(qp.get('embed')){ var bk=document.querySelector('a.back'); if(bk) bk.style.display='none'; }
     var bd=localStorage.getItem('tb_video_brand'); if(bd){ if(el('aiBrand'))el('aiBrand').value=bd; localStorage.removeItem('tb_video_brand'); }
+    cloudP=qp.get('p')||'';
   }catch(e){}
+  if(cloudP){ try{ setTimeout(function(){ cloudOpen(cloudP); },60); }catch(e){} }
   var imported=false;
   try{ var kit=localStorage.getItem('tb_video_kit'); if(kit){ imported=importKit(kit); localStorage.removeItem('tb_video_kit'); if(imported){ el('aiState').innerHTML='<span class="ok">Imported your Video Kit ✓ — tweak & render</span>'; } } }catch(e){}
   if(!imported) useTpl(0); else { renderScenes(); resetPreview(); }
