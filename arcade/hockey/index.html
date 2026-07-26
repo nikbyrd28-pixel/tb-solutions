@@ -36,7 +36,7 @@
 <canvas id="cv"></canvas>
 <div class="ov" id="startOv" onclick="if(event.target===this)startGame()"><div class="card">
   <div style="font-size:44px">🏒</div><h2>Ice Hockey</h2>
-  <p>Drag your paddle. First to 3 wins the level — then the barber bot gets <b style="color:var(--text)">faster and meaner</b>. How many levels can you survive?</p>
+  <p>Drag your paddle. First to 3 wins the level — then the barber bot gets <b style="color:var(--text)">faster and meaner</b>, the goals shrink, and the rink changes color. How many levels can you survive?</p>
   <p>Best: <b id="ovBest0">0</b> levels</p>
   <button class="btn" onclick="startGame()">▶ Play</button>
 </div></div>
@@ -113,7 +113,7 @@ function frame(now){
   if(freeze>0){ freeze-=dt; } else {
     puck.x+=puck.vx*dt; puck.y+=puck.vy*dt;
     puck.vx*=0.995; puck.vy*=0.995;
-    var gw=W*0.36, gx0=(W-gw)/2, gx1=gx0+gw;
+    var gw=W*(0.36-Math.min(0.12,(lvl-1)*0.025)), gx0=(W-gw)/2, gx1=gx0+gw;
     if(puck.x<puck.r){ puck.x=puck.r; puck.vx=Math.abs(puck.vx); wall(); }
     if(puck.x>W-puck.r){ puck.x=W-puck.r; puck.vx=-Math.abs(puck.vx); wall(); }
     if(puck.y<puck.r){ if(puck.x>gx0&&puck.x<gx1){ goal('me'); } else { puck.y=puck.r; puck.vy=Math.abs(puck.vy); wall(); } }
@@ -177,7 +177,7 @@ function render(){
   X.beginPath(); X.arc(W/2,H/2,52,0,6.283); X.stroke();
   X.fillStyle='rgba(255,255,255,.06)'; X.beginPath(); X.arc(W/2,H/2,8,0,6.283); X.fill();
   // goals
-  var gw=W*0.36, gx0=(W-gw)/2;
+  var gw=W*(0.36-Math.min(0.12,(lvl-1)*0.025)), gx0=(W-gw)/2;
   X.strokeStyle='hsl('+h+',80%,62%)'; X.lineWidth=5; X.shadowColor='hsl('+h+',80%,62%)'; X.shadowBlur=12;
   X.beginPath(); X.moveTo(gx0,3); X.lineTo(gx0+gw,3); X.stroke();
   X.beginPath(); X.moveTo(gx0,H-3); X.lineTo(gx0+gw,H-3); X.stroke();
