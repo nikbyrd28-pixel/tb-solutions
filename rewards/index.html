@@ -326,7 +326,7 @@
         <a class="gtile" id="gSlice" href="/arcade/slice/"><span class="newb">NEW</span><div class="ge">✂️</div><b>Fresh Cuts</b><span class="muted" id="hiSlice">Best 0</span></a>
         <a class="gtile" id="gStack" href="/arcade/stack/"><span class="newb">NEW</span><div class="ge">🧱</div><b>Perfect Fade</b><span class="muted" id="hiStack">Best 0</span></a>
         <a class="gtile" id="gTetris" href="/arcade/tetris/"><span class="newb">NEW</span><div class="ge">🧩</div><b>Barber Blocks</b><span class="muted" id="hiTetris">Best 0</span></a>
-        <a class="gtile" id="gBlackjack" href="/arcade/blackjack/"><span class="newb" style="background:var(--gold,#ffcf5a)">BET</span><div class="ge">🃏</div><b>Blackjack</b><span class="muted">Bet &amp; win 🪙</span></a>
+        <a class="gtile" id="gBlackjack" href="/arcade/blackjack/"><span class="newb" style="background:var(--gold,#ffcf5a)">PLAY</span><div class="ge">🃏</div><b>Blackjack</b><span class="muted">Play &amp; win 🪙</span></a>
         <a class="gtile" id="gPoker" href="/arcade/poker/"><span class="newb" style="background:var(--gold,#ffcf5a)">BET</span><div class="ge">♠️</div><b>Video Poker</b><span class="muted">Jacks or better</span></a>
       </div>
       <div class="qh" style="margin-top:16px;flex-wrap:wrap;gap:6px"><b>🏆 Shop leaderboard</b>
@@ -534,6 +534,7 @@ function qrUrl(data,size){ return 'https://api.qrserver.com/v1/create-qr-code/?s
 function showCard(m){
   member=m;
   try{ localStorage.setItem('rw_'+slug, m.code); }catch(e){}
+  if(m.biz_name){ display=m.biz_name; try{ document.title=m.biz_name+' rewards'; var bel=el('brand'); if(bel) bel.innerHTML=String(m.biz_name).replace(/[<>&]/g,'')+' <span>rewards</span>'; }catch(e){} }
   showLoading(false);
   el('joinCard').classList.add('hide');
   el('cardView').classList.remove('hide');
@@ -1195,7 +1196,7 @@ function loadByCode(code){
     if(!m.error) showCard(m); else el('joinCard').classList.remove('hide');
   }).catch(function(){
     showLoading(false); el('joinCard').classList.remove('hide');
-    if(el('jErr')){ el('jErr').textContent='Connection hiccup — check your signal and tap Join again.'; el('jErr').classList.remove('hide'); }
+    if(el('jErr')){ el('jErr').textContent='Tap Join to load your card.'; el('jErr').classList.remove('hide'); }
   });
 }
 function staffAdd(){
