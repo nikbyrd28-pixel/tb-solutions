@@ -159,6 +159,11 @@
           <input id="bkLine" placeholder="Voom Lux · voomlux.com" maxlength="60">
           <label>Default call-to-action</label>
           <input id="bkCta" placeholder="Book your ride → voomlux.com" maxlength="70">
+          <label>Brand logo <span style="text-transform:none;letter-spacing:0;color:var(--muted)">— auto-added as the end card &amp; watermark on every video</span></label>
+          <div class="row" style="align-items:center">
+            <input type="file" id="bkLogo" accept="image/*" onchange="bkLogoPick(this.files[0])">
+            <div><img id="bkLogoPrev" alt="" style="max-height:44px;max-width:100%;border-radius:8px;display:none"></div>
+          </div>
           <label>🧠 Knowledge base — facts the AI uses to write better scripts</label>
           <textarea id="bkKb" style="min-height:74px" placeholder="What the AI should know: what you sell, offers/prices, who it's for, tone, do's &amp; don'ts, proof. e.g. Luxury black-car service in Chester County. Airport runs from $99. Tone: premium, concise. Never mention discounts."></textarea>
           <div class="bar">
@@ -1649,7 +1654,17 @@ function importProjectFile(file){
 }
 
 /* ---------- brand kits (multi-brand content engine) ---------- */
-var BRANDS=[], curBrand=null, editingId=null;
+var BRANDS=[], curBrand=null, editingId=null, bkLogoData='';
+function bkLogoPick(f){ if(!f){ return; }
+  var r=new FileReader();
+  r.onload=function(){ var im=new Image(); im.onload=function(){
+    var mx=440, sc=Math.min(1,mx/Math.max(im.width,im.height)); var cw=Math.max(1,Math.round(im.width*sc)), ch=Math.max(1,Math.round(im.height*sc));
+    var cv=document.createElement('canvas'); cv.width=cw; cv.height=ch; cv.getContext('2d').drawImage(im,0,0,cw,ch);
+    try{ bkLogoData=cv.toDataURL('image/png'); }catch(e){ bkLogoData=r.result; }
+    var p=el('bkLogoPrev'); if(p){ p.src=bkLogoData; p.style.display='block'; }
+  }; im.onerror=function(){ bkLogoData=r.result; var p=el('bkLogoPrev'); if(p){ p.src=r.result; p.style.display='block'; } }; im.src=r.result; };
+  r.readAsDataURL(f);
+}
 function loadBrands(){
   try{ BRANDS=JSON.parse(localStorage.getItem('tb_brandkits')||'null')||[]; }catch(e){ BRANDS=[]; }
   if(!BRANDS.length){
@@ -1677,12 +1692,15 @@ function selectBrand(id){
   if(el('aiBrand')) el('aiBrand').value=b.line||b.name||'';
   if(el('ctaText') && b.cta) el('ctaText').value=b.cta;
   if(el('accent')){ el('accent').value=b.accent||'#8b7bff'; accent=el('accent').value; }
+  // auto-brand: a brand's logo becomes the end card + a watermark on every scene
+  if(b.logo){ var im=new Image(); im.onload=function(){ logoImg=im; if(el('logoWm')) el('logoWm').checked=true; drawAt(previewT); if(window.drawThumb) drawThumb(); }; im.src=b.logo; }
   renderBrandChips(); rebuildTimeline(); drawAt(previewT); if(window.drawThumb) drawThumb();
 }
 function openBrandEditor(b){
   el('brandEditor').classList.remove('hide');
   el('bkName').value=b?b.name:''; el('bkLine').value=b?(b.line||''):''; el('bkCta').value=b?(b.cta||''):''; el('bkAccent').value=b?(b.accent||'#8b7bff'):'#8b7bff';
   if(el('bkKb')) el('bkKb').value=b?(b.kb||''):'';
+  bkLogoData=b?(b.logo||''):''; var _p=el('bkLogoPrev'); if(_p){ if(bkLogoData){ _p.src=bkLogoData; _p.style.display='block'; } else { _p.removeAttribute('src'); _p.style.display='none'; } }
   el('bkDel').style.display=b?'':'none';
 }
 function newBrand(){ editingId=null; openBrandEditor(null); }
@@ -1693,7 +1711,7 @@ function saveBrand(){
   if(!name){ alert('Give the brand a name first.'); return; }
   var b={ id: editingId||('b'+Date.now()), name:name,
     line:(el('bkLine').value||'').replace(/[<>]/g,'').trim()||name,
-    cta:(el('bkCta').value||'').trim(), accent:el('bkAccent').value||'#8b7bff', kb:(el('bkKb')?el('bkKb').value||'':'').trim() };
+    cta:(el('bkCta').value||'').trim(), accent:el('bkAccent').value||'#8b7bff', kb:(el('bkKb')?el('bkKb').value||'':'').trim(), logo:bkLogoData||'' };
   var i=BRANDS.map(function(x){return x.id}).indexOf(b.id);
   if(i>=0) BRANDS[i]=b; else BRANDS.push(b);
   saveBrands(); el('brandEditor').classList.add('hide'); selectBrand(b.id);
