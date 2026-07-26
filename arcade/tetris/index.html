@@ -60,7 +60,7 @@
   <button id="bDrop" class="drop" aria-label="Drop">⤓</button>
 </div>
 
-<div class="overlay" id="startScreen">
+<div class="overlay" id="startScreen" onclick="if(!/BUTTON|A/.test(event.target.tagName))this.querySelector('button').click()">
   <div style="font-size:52px;margin-bottom:4px">🧱</div>
   <h1>BARBER BLOCKS</h1>
   <p class="sub">Stack the blocks, clear full lines. Tap ⟳ to rotate, ◀ ▶ to move, ⤓ to drop. It speeds up! 💈</p>
@@ -69,7 +69,7 @@
   <button id="muteBtn" style="margin-top:12px;background:transparent;border:1px solid rgba(150,190,255,.4);color:#eef1ff;border-radius:999px;padding:9px 18px;font:inherit;font-size:13px;font-weight:700;cursor:pointer">🔊 Music on</button>
 </div>
 
-<div class="overlay hide" id="overScreen">
+<div class="overlay hide" id="overScreen" onclick="if(!/BUTTON|A/.test(event.target.tagName))this.querySelector('button').click()">
   <h1 style="font-size:clamp(28px,8vw,44px)">STACKED OUT 🧱</h1>
   <div class="row">
     <div class="st"><b id="ovScore">0</b><span>score</span></div>
