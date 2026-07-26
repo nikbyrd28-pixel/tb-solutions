@@ -188,7 +188,9 @@ var BARBER_IDEAS=[
   {label:'🤝 Refer a friend',kind:'social_calendar',goal:'get regulars referring their friends',brief:'Referral push: regulars bring a friend, both get a reward. Tie to the shop\'s ambassador/loyalty program. Friendly, community vibe.'},
   {label:'🐢 Slow-day walk-ins',kind:'ad_copy',goal:'fill slow weekday chairs with walk-ins',brief:'Fill dead weekday hours. "Walk-ins welcome today" energy, maybe a small slow-day perk. Short, scroll-stopping.'},
   {label:'👋 Meet the barber',kind:'video_script',goal:'build trust and shop personality',brief:'Meet-the-barber / shop-culture short video. Personality, skill, why clients love it here. Builds trust so first-timers book.'},
-  {label:'🔁 Win back old clients',kind:'email_sequence',goal:'get past clients to rebook',brief:'Win-back sequence for clients who haven\'t been in 6-8+ weeks. "It\'s time for a fresh cut" + an easy rebook link and a small comeback perk.'}
+  {label:'🔁 Win back old clients',kind:'email_sequence',goal:'get past clients to rebook',brief:'Win-back sequence for clients who haven\'t been in 6-8+ weeks. "It\'s time for a fresh cut" + an easy rebook link and a small comeback perk.'},
+  {label:'🏈 Game-day / holiday rush',kind:'ad_copy',goal:'book the pre-event rush',brief:'Drive the pre-weekend / pre-game-day / pre-holiday rush. "Look fresh for [event] — book before slots fill." Urgency + book link.'},
+  {label:'🎓 Student & first-responder deal',kind:'social_calendar',goal:'win loyal recurring clients with a community discount',brief:'Ongoing discount for students, military, and first responders. Community-first tone, builds loyal recurring clients. Ask them to show ID in-chair.'}
 ];
 function renderBarberIdeas(){
   var box=el('barberIdeas'); if(!box)return;
@@ -365,15 +367,21 @@ async function genKit(){
   if(!biz){el('gErr').textContent='Give me at least the business name.';el('gErr').classList.remove('hide');return}
   if(!confirm('Generate ALL 7 assets for '+biz+' and save them to the library? Takes a few minutes.'))return;
   var kb=el('kitBtn'); kb.disabled=true;
+  var barber=/barber|salon|cut|fade|groom|shop/i.test((el('fNiche').value+' '+biz).toLowerCase());
+  var BGOALS={plan:'get more barbershop bookings and repeat clients over 30 days',ad_copy:'bring in new clients with a first-cut offer',website_copy:'turn visitors into booked appointments',email_sequence:'get past clients to rebook and refer',social_calendar:'fill chairs with fresh-cut content and weekly offers',research:'position this shop vs local competitors',one_pager:'sell the shop to new clients',video_script:'a fresh-cut before/after reel that drives bookings'};
+  var userGoal=el('fGoal').value;
+  if(barber) el('genState').textContent='💈 Barber kit mode';
   var done=0, failed=[];
   for (var i=0;i<ASSETS.length;i++){
     sel=ASSETS[i].k; renderAssets();
-    el('genState').innerHTML='<span class="spin"></span>Kit: '+ASSETS[i].t+' ('+(i+1)+'/'+ASSETS.length+')…';
+    if(barber && BGOALS[ASSETS[i].k]) el('fGoal').value=BGOALS[ASSETS[i].k];
+    el('genState').innerHTML='<span class="spin"></span>'+(barber?'💈 ':'')+'Kit: '+ASSETS[i].t+' ('+(i+1)+'/'+ASSETS.length+')…';
     var prev=lastOut; lastOut=null;
     try{ var ok=await generate(); }catch(e){ var ok=false; }
     if(lastOut){ await saveAsset(); done++; } else { failed.push(ASSETS[i].t); lastOut=prev; }
   }
-  el('genState').textContent='Kit done: '+done+'/'+ASSETS.length+' saved'+(failed.length?' — failed: '+failed.join(', '):'');
+  el('fGoal').value=userGoal; saveBrief();
+  el('genState').textContent=(barber?'💈 Barber kit done: ':'Kit done: ')+done+'/'+ASSETS.length+' saved'+(failed.length?' — failed: '+failed.join(', '):'');
   kb.disabled=false;
   loadLibrary();
 }
