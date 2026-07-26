@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Affiliate payouts · TB Command</title>
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%F0%9F%92%B8%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@800;900&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{--text:#f2f4ff;--muted:#8f97b8;--dim:#69719a;--line:rgba(122,162,255,.24);--line2:rgba(122,162,255,.4);
+    --acc:#7aa2ff;--acc2:#5df2e0;--good:#43f0b0;--gold:#ffd45a;--bad:#ff8a9d}
+  *{box-sizing:border-box}
+  @keyframes popin{0%{transform:translateY(8px);opacity:0}100%{transform:none;opacity:1}}
+  body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;color:var(--text);line-height:1.5;min-height:100vh;
+    background:radial-gradient(circle at 14% -6%,rgba(122,162,255,.16),transparent 42%),linear-gradient(180deg,#070811,#04050a)}
+  .wrap{max-width:820px;margin:0 auto;padding:22px 15px 70px}
+  .brand{font-weight:900;font-size:15px}.brand span{background:linear-gradient(90deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tag{color:var(--muted);font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin:2px 0 16px}
+  .card{background:linear-gradient(150deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;animation:popin .3s ease}
+  h1{font-family:Poppins,sans-serif;font-size:21px;margin:0}
+  label{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
+  input{width:100%;background:rgba(2,4,12,.6);border:1px solid var(--line);border-radius:12px;padding:12px 13px;color:var(--text);font:inherit;font-size:16px}
+  input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(122,162,255,.2)}
+  .btn{border:0;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;border-radius:999px;padding:12px 18px;font:inherit;font-weight:900;font-size:14px;cursor:pointer}
+  .btn.ghost{background:rgba(122,162,255,.07);border:1px solid var(--line);color:var(--text);font-weight:700}
+  .btn.sm{padding:8px 13px;font-size:12.5px}
+  .err{color:var(--bad);font-size:13px;margin-top:10px}.hide{display:none!important}.muted{color:var(--muted);font-size:12.5px}
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+  .kpi{background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:15px;padding:14px 10px;text-align:center}
+  .kpi .n{font-family:Poppins,sans-serif;font-size:26px;font-weight:900;font-variant-numeric:tabular-nums}
+  .kpi.owed .n{color:var(--gold)}.kpi .l{font-size:11px;color:var(--muted);margin-top:4px}
+  .aff{border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:10px;background:rgba(2,4,12,.35)}
+  .aff .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .aff .nm{font-weight:800;font-size:15px}
+  .code{font-family:ui-monospace,Menlo,monospace;color:var(--acc2);font-size:12.5px;background:rgba(122,162,255,.1);border-radius:6px;padding:2px 7px}
+  .owed{margin-left:auto;font-weight:900;color:var(--gold);font-variant-numeric:tabular-nums}
+  .aff .sub{color:var(--muted);font-size:12.5px;margin-top:6px;display:flex;gap:12px;flex-wrap:wrap}
+  .aff .sub b{color:var(--text)}
+  .aff .acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .aff a.mail{color:var(--acc2);font-size:12.5px;font-weight:700}
+  .pill{font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+  .pill.off{color:var(--bad);border-color:rgba(255,138,157,.4)}
+  .refs{margin-top:10px;border-top:1px solid rgba(255,255,255,.06);padding-top:8px}
+  .ref{display:flex;justify-content:space-between;font-size:13px;padding:4px 0}
+  .ref .st{font-size:10.5px;font-weight:800;text-transform:uppercase;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+  .st.win{color:var(--good);border-color:rgba(67,240,176,.4)}
+  .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:40;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d;font-weight:800;font-size:13px;border-radius:999px;padding:9px 18px;box-shadow:0 10px 30px rgba(122,162,255,.4);animation:popin .25s ease}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">💸 Affiliate <span>payouts</span></div>
+  <div class="tag">Who referred what · what you owe</div>
+
+  <div class="card" id="login">
+    <h1>Admin sign in</h1>
+    <p class="muted" style="margin:6px 0 0">Owner login only.</p>
+    <label>Email</label><input id="lEmail" type="email" autocomplete="username" placeholder="you@email.com">
+    <label>Password</label><input id="lPass" type="password" autocomplete="current-password" placeholder="••••••••">
+    <button class="btn" id="loginBtn" onclick="doLogin()" style="margin-top:14px">Sign in →</button>
+    <div class="err hide" id="loginErr"></div>
+  </div>
+
+  <div id="app" class="hide">
+    <div class="kpis">
+      <div class="kpi"><div class="n" id="kAff">0</div><div class="l">Affiliates</div></div>
+      <div class="kpi"><div class="n" id="kRef">0</div><div class="l">Shops referred</div></div>
+      <div class="kpi owed"><div class="n" id="kOwed">$0</div><div class="l">You owe (est.)</div></div>
+    </div>
+    <div class="card" style="padding:14px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><b>Affiliates</b>
+        <button class="btn ghost sm" onclick="load()" style="margin-left:auto">↻ Refresh</button>
+        <button class="btn ghost sm" onclick="copyPayouts()">📋 Copy payout list</button></div>
+      <div id="list"><p class="muted">Loading…</p></div>
+      <p class="muted" style="font-size:11.5px;margin-top:10px">"You owe" estimates flat-rate reps ($/shop × converted). Percent reps show the rate to settle manually. A signup counts as converted.</p>
+    </div>
+    <button class="btn ghost sm" onclick="signOut()">Sign out</button>
+  </div>
+  <p class="muted" style="text-align:center;margin-top:16px"><a href="/hq" style="color:var(--dim)">← TB Command</a> · <a href="/affiliate/" style="color:var(--dim)">Rep Portal</a></p>
+</div>
+
+<script>
+var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+function el(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+if(!window.supabase){ el('loginErr').textContent='Could not load sign-in — reload.'; el('loginErr').classList.remove('hide'); throw new Error('no supabase'); }
+var supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+function toast(t){var x=document.createElement('div');x.className='toast';x.textContent=t;document.body.appendChild(x);setTimeout(function(){x.remove();},1300);}
+var ROWS=[];
+
+async function doLogin(){
+  el('loginErr').classList.add('hide');
+  var email=(el('lEmail').value||'').trim(), pass=el('lPass').value||'';
+  if(!email||!pass){ el('loginErr').textContent='Enter email and password.'; el('loginErr').classList.remove('hide'); return; }
+  var b=el('loginBtn'); b.disabled=true; b.textContent='Signing in…';
+  var r=await supa.auth.signInWithPassword({email:email,password:pass});
+  if(r.error){ b.disabled=false; b.textContent='Sign in →'; el('loginErr').textContent=r.error.message||'Could not sign in.'; el('loginErr').classList.remove('hide'); return; }
+  onIn();
+}
+async function onIn(){ el('login').classList.add('hide'); el('app').classList.remove('hide'); load(); }
+function owedFor(a){ return (a.payout_type==='flat') ? (Number(a.rate||0)*Number(a.won||0)) : 0; }
+async function load(){
+  var r=await supa.rpc('affiliate_admin');
+  if(r.error || !r.data || r.data.ok===false){ el('list').innerHTML='<p class="err">'+esc((r.data&&r.data.error)||(r.error&&r.error.message)||'Could not load')+'</p>'; return; }
+  ROWS=r.data.rows||[];
+  var totRef=0, totOwed=0;
+  ROWS.forEach(function(a){ totRef+=Number(a.won||0); totOwed+=owedFor(a); });
+  el('kAff').textContent=ROWS.length; el('kRef').textContent=totRef; el('kOwed').textContent='$'+totOwed.toLocaleString();
+  if(!ROWS.length){ el('list').innerHTML='<p class="muted">No affiliates yet. Share <b>tbsol.net/affiliate/</b> so reps can sign up.</p>'; return; }
+  el('list').innerHTML=ROWS.map(function(a,i){
+    var owed=owedFor(a);
+    var rateLbl=a.payout_type==='flat'?('$'+Number(a.rate||0)+'/shop'):(Number(a.rate||0)+'% (manual)');
+    var recent=(a.recent||[]).slice(0,6).map(function(x){
+      var win=['Won','Booked','Converted','Client'].indexOf(x.status)>=0;
+      return '<div class="ref"><span>'+esc(x.who)+'</span><span class="st'+(win?' win':'')+'">'+esc(x.status||'New')+'</span></div>';
+    }).join('');
+    return '<div class="aff"><div class="top"><span class="nm">'+esc(a.name||a.code)+'</span><span class="code">'+esc(a.code)+'</span>'
+      +(a.active?'':'<span class="pill off">inactive</span>')
+      +'<span class="owed">'+(a.payout_type==='flat'?('$'+owed.toLocaleString()):(rateLbl))+'</span></div>'
+      +'<div class="sub"><span><b>'+Number(a.won||0)+'</b> converted</span><span><b>'+Number(a.total||0)+'</b> total refs</span><span>'+rateLbl+'</span></div>'
+      +'<div class="acts">'
+      +(a.email?'<a class="mail" href="mailto:'+esc(a.email)+'">✉️ '+esc(a.email)+'</a>':'')
+      +(a.phone?'<a class="mail" href="tel:'+esc(a.phone)+'">📞 '+esc(a.phone)+'</a>':'')
+      +'<button class="btn ghost sm" onclick="tog('+i+')">'+(a.won>0?'Referrals':'No referrals yet')+'</button></div>'
+      +(recent?'<div class="refs hide" id="refs'+i+'">'+recent+'</div>':'')
+      +'</div>';
+  }).join('');
+}
+function tog(i){ var e=el('refs'+i); if(e) e.classList.toggle('hide'); }
+function copyPayouts(){
+  var lines=ROWS.filter(function(a){return owedFor(a)>0;}).map(function(a){ return a.name+' ('+a.code+') — $'+owedFor(a).toLocaleString()+(a.email?' · '+a.email:''); });
+  var txt=lines.length?('Affiliate payouts:\n'+lines.join('\n')):'No flat-rate payouts due yet.';
+  try{ navigator.clipboard.writeText(txt); }catch(e){} toast('Payout list copied');
+}
+async function signOut(){ await supa.auth.signOut(); location.reload(); }
+el('lPass').addEventListener('keydown',function(e){ if(e.key==='Enter') doLogin(); });
+supa.auth.getSession().then(function(r){ if(r.data && r.data.session){ onIn(); } });
+</script>
+</body>
+</html>
