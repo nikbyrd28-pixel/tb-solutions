@@ -146,6 +146,7 @@ function setKind(k){ KIND=(k==='solo'?'solo':'shop');
   else { el('bizLabel').textContent='Shop name'; el('biz').placeholder="Joe's Barbershop"; }
 }
 el('pin').addEventListener('keydown',function(e){ if(e.key==='Enter') createShop(); });
+['biz','pin','email'].forEach(function(id){ var f=el(id); if(f) f.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); createShop(); } }); });
 function createShop(){
   var biz=(el('biz').value||'').trim(), pin=(el('pin').value||'').trim(), email=(el('email').value||'').trim();
   el('err').classList.add('hide');
