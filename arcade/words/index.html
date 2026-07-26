@@ -23,6 +23,10 @@
   .cell{width:56px;height:56px;border:2px solid var(--line);border-radius:10px;display:grid;place-items:center;font-weight:900;font-size:24px;text-transform:uppercase;background:rgba(255,255,255,.03);transition:transform .08s}
   @media(max-width:380px){.cell{width:48px;height:48px;font-size:20px}}
   .cell.pop{transform:scale(1.08)}
+  @keyframes wflip{0%{transform:rotateX(0)}49%{transform:rotateX(90deg)}51%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
+  .cell.rv{animation:wflip .4s ease}
+  @keyframes wshake{0%,100%{transform:none}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+  .row.shk{animation:wshake .35s ease}
   .cell.g{background:#1d7a4f;border-color:#1d7a4f}
   .cell.y{background:#b08a2e;border-color:#b08a2e}
   .cell.b{background:var(--bad);border-color:var(--bad)}
@@ -88,12 +92,24 @@ function submit(){
   if(cur.length<5){ flashMsg('Need 5 letters'); return; }
   if(!/^[a-z]{5}$/.test(cur)){ flashMsg('Letters only'); return; }
   var res=score(cur, answer);
-  for(var c=0;c<5;c++){ var cell=el('c'+rowI+'_'+c); cell.classList.add(res[c]); var key=el('k'+cur[c]); if(key && !key.classList.contains('g')) key.classList.add(res[c]); if(key && res[c]==='g'){ key.classList.remove('y','b'); key.classList.add('g'); } }
-  guesses.push({w:cur,r:res});
-  if(cur===answer){ win(); return; }
-  rowI++; cur='';
-  if(rowI>=6){ lose(); }
-  else if(window.LoopFX)LoopFX.sfx('hop');
+  var g=cur, row=rowI;
+  done=true; // lock input during the reveal wave
+  for(var c=0;c<5;c++){ (function(c){ setTimeout(function(){
+    var cell=el('c'+row+'_'+c); if(!cell) return;
+    cell.classList.add('rv');
+    setTimeout(function(){ cell.classList.add(res[c]);
+      var key=el('k'+g[c]); if(key && !key.classList.contains('g')) key.classList.add(res[c]); if(key && res[c]==='g'){ key.classList.remove('y','b'); key.classList.add('g'); }
+    },200);
+    if(window.LoopFX)LoopFX.sfx('click');
+  }, c*140); })(c); }
+  guesses.push({w:g,r:res});
+  setTimeout(function(){
+    done=false;
+    if(g===answer){ win(); return; }
+    rowI++; cur='';
+    if(rowI>=6){ lose(); }
+    else if(window.LoopFX)LoopFX.sfx('hop');
+  }, 5*140+260);
 }
 function score(g,a){
   var res=['b','b','b','b','b'], rem={};
@@ -101,7 +117,13 @@ function score(g,a){
   for(var j=0;j<5;j++){ if(res[j]!=='g' && rem[g[j]]>0){ res[j]='y'; rem[g[j]]--; } }
   return res;
 }
-function flashMsg(m){ el('msg').textContent=m; setTimeout(function(){ if(el('msg').textContent===m) el('msg').textContent=''; },1400); }
+function flashMsg(m){ el('msg').textContent=m; setTimeout(function(){ if(el('msg').textContent===m) el('msg').textContent=''; },1400);
+  if(!done){
+    var rows=document.querySelectorAll('#grid .row'); var rw=rows[rowI];
+    if(rw){ rw.classList.remove('shk'); void rw.offsetWidth; rw.classList.add('shk'); }
+    if(window.LoopFX)LoopFX.sfx('lose');
+  }
+}
 function win(){
   done=true; var tries=rowI+1;
   var s=stats(); s.streak=(s.streak||0)+1; s.wins=(s.wins||0)+1; saveStats(s); showStats();
