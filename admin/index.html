@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>Loop — Super Admin</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%F0%9F%9B%A0%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--text:#eef1fb;--muted:#96a0bd;--line:rgba(122,162,255,.26);--acc:#7aa2ff;--acc2:#5df2e0;--good:#43f0b0;--warn:#ffb15a;--bad:#ff8a9d}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;background:radial-gradient(circle at 12% -6%,rgba(122,162,255,.16),transparent 42%),#06070e;color:var(--text);min-height:100vh;padding:22px 14px 60px}
+  .wrap{max-width:980px;margin:0 auto}
+  .brand{font-weight:900;font-size:17px;margin-bottom:2px}
+  .brand span{background:linear-gradient(90deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tag{color:var(--muted);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px}
+  .card{background:linear-gradient(150deg,rgba(255,255,255,.05),rgba(255,255,255,.014));border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px}
+  input,select{background:rgba(2,4,12,.6);border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--text);font:inherit;font-size:15px}
+  input{width:100%}
+  .btn{border:0;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d;border-radius:999px;padding:12px 18px;font:inherit;font-weight:800;font-size:14px;cursor:pointer;margin-top:12px;width:100%}
+  .err{color:var(--bad);font-size:13px;margin-top:10px;text-align:center}
+  .hide{display:none!important}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+  .tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px}
+  @media(max-width:760px){.tiles{grid-template-columns:repeat(2,1fr)}}
+  .tile{background:rgba(0,0,0,.26);border:1px solid var(--line);border-radius:14px;padding:13px 11px}
+  .tile b{display:block;font-size:24px;background:linear-gradient(135deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tile span{font-size:11px;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{color:var(--muted);text-transform:uppercase;font-size:10.5px;letter-spacing:.06em;text-align:left;padding:8px 8px;border-bottom:1px solid var(--line)}
+  td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.05)}
+  .pill{font-size:10.5px;font-weight:800;border-radius:999px;padding:3px 10px;text-transform:uppercase;letter-spacing:.04em}
+  .pill.on{background:rgba(67,240,176,.14);color:var(--good);border:1px solid rgba(67,240,176,.4)}
+  .pill.off{background:rgba(255,138,157,.12);color:var(--bad);border:1px solid rgba(255,138,157,.4)}
+  .tgl{border:1px solid var(--line);background:rgba(122,162,255,.08);color:var(--text);border-radius:9px;padding:7px 12px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
+  .tgl.danger{border-color:rgba(255,138,157,.5);color:var(--bad)}
+  .muted{color:var(--muted);font-size:12.5px}
+  .tablewrap{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">🛠️ <span>Loop</span> Super Admin</div>
+  <div class="tag">All shops · billing control</div>
+
+  <div class="card" id="login">
+    <b>Admin key</b>
+    <p class="muted" style="margin:6px 0 10px">Owner access only.</p>
+    <input id="key" type="password" placeholder="Admin key" autocomplete="off">
+    <button class="btn" id="goBtn" onclick="load()">Open console →</button>
+    <div class="err hide" id="err"></div>
+  </div>
+
+  <div id="dash" class="hide">
+    <div class="card">
+      <div class="row">
+        <div><b id="hTitle">All shops</b><div class="muted" id="hSub"></div></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="tenant" onchange="render()"></select>
+          <button class="tgl" onclick="load()">↻</button>
+        </div>
+      </div>
+      <div class="tiles" id="tiles"></div>
+    </div>
+    <div class="card">
+      <b>Shops</b>
+      <p class="muted" style="margin:4px 0 10px">One-click disable suspends the whole app for a shop (card, coins, signup) — flip it back on when the invoice clears.</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Shop</th><th>Plan</th><th>Status</th><th>Users</th><th>Active 30d</th><th>Scans</th><th>Points out</th><th>Coins held</th><th>Bookings</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table></div>
+    </div>
+    <p class="muted" style="text-align:center">Loop by TB Solutions · change the key: <code>update admin_config set k='NEW-KEY'</code> in Supabase</p>
+  </div>
+</div>
+<script>
+var SUPA='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+function el(i){return document.getElementById(i)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function rpc(fn,args){ return fetch(SUPA+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify(args)}).then(function(r){return r.json();}); }
+var AK='', SHOPS=[];
+try{ AK=sessionStorage.getItem('lp_admin')||''; if(AK){ el('key').value=AK; } }catch(e){}
+el('key').addEventListener('keydown',function(e){ if(e.key==='Enter') load(); });
+function load(){
+  var k=(el('key').value||'').trim(); if(!k){ return; }
+  el('err').classList.add('hide'); var b=el('goBtn'); b.disabled=true; b.textContent='Loading…';
+  rpc('admin_overview',{p_key:k}).then(function(d){
+    b.disabled=false; b.textContent='Open console →';
+    if(!d||!d.ok){ el('err').textContent=(d&&d.error)||'Could not load.'; el('err').classList.remove('hide'); return; }
+    AK=k; try{ sessionStorage.setItem('lp_admin',k); }catch(e){}
+    SHOPS=d.shops||[];
+    el('login').classList.add('hide'); el('dash').classList.remove('hide');
+    buildTenants(); render();
+  }).catch(function(){ b.disabled=false; b.textContent='Open console →'; el('err').textContent='Network error.'; el('err').classList.remove('hide'); });
+}
+function buildTenants(){
+  var sel=el('tenant'), cur=sel.value;
+  sel.innerHTML='<option value="">All shops ('+SHOPS.length+')</option>'+SHOPS.map(function(s){ return '<option value="'+esc(s.client)+'">'+esc(s.biz_name)+'</option>'; }).join('');
+  if(cur) sel.value=cur;
+}
+function fmt(n){ return (+n||0).toLocaleString(); }
+function render(){
+  var t=el('tenant').value;
+  var list = t ? SHOPS.filter(function(s){return s.client===t;}) : SHOPS;
+  el('hTitle').textContent = t ? (list[0]?list[0].biz_name:t) : 'All shops';
+  el('hSub').textContent = t ? ('code: '+t) : (SHOPS.length+' shops on the platform');
+  var tot={members:0,active30:0,scans:0,points_out:0,coins_held:0,bookings:0};
+  list.forEach(function(s){ for(var k in tot) tot[k]+= (+s[k]||0); });
+  el('tiles').innerHTML=
+    '<div class="tile"><b>'+fmt(tot.members)+'</b><span>Users / cards</span></div>'
+   +'<div class="tile"><b>'+fmt(tot.active30)+'</b><span>Active 30 days</span></div>'
+   +'<div class="tile"><b>'+fmt(tot.scans)+'</b><span>Total scans</span></div>'
+   +'<div class="tile"><b>'+fmt(tot.coins_held)+'</b><span>Coins in circulation</span></div>'
+   +'<div class="tile"><b>'+fmt(tot.points_out)+'</b><span>Points outstanding</span></div>';
+  el('rows').innerHTML=list.map(function(s){
+    var on=s.is_active!==false;
+    return '<tr><td><b>'+esc(s.biz_name)+'</b><div class="muted">'+esc(s.client)+'</div></td>'
+      +'<td>'+esc(s.plan_status)+'</td>'
+      +'<td><span class="pill '+(on?'on':'off')+'">'+(on?'Active':'Suspended')+'</span></td>'
+      +'<td>'+fmt(s.members)+'</td><td>'+fmt(s.active30)+'</td><td>'+fmt(s.scans)+'</td>'
+      +'<td>'+fmt(s.points_out)+'</td><td>'+fmt(s.coins_held)+'</td><td>'+fmt(s.bookings)+'</td>'
+      +'<td><button class="tgl '+(on?'danger':'')+'" onclick="toggle(\''+esc(s.client)+'\','+(on?'false':'true')+')">'+(on?'⛔ Disable':'✅ Enable')+'</button></td></tr>';
+  }).join('') || '<tr><td colspan="10" class="muted">No shops yet.</td></tr>';
+}
+function toggle(client, to){
+  if(to==='false' && !confirm('Suspend '+client+'? Their card, coins and signup stop working immediately.')) return;
+  rpc('admin_set_active',{p_key:AK,p_client:client,p_active:to==='true'}).then(function(d){
+    if(!d||!d.ok){ alert((d&&d.error)||'Failed'); return; }
+    var s=SHOPS.find(function(x){return x.client===client;}); if(s) s.is_active=(to==='true');
+    render();
+  }).catch(function(){ alert('Network error'); });
+}
+</script>
+</body>
+</html>

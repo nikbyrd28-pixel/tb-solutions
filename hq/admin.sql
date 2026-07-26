@@ -1,0 +1,8 @@
+-- Loop Super Admin (applied via migrations loop_admin_panel + loop_gate_game_reward)
+-- * reward_settings.is_active boolean — one-click kill switch per shop
+-- * admin_config(k) — single admin key (change: update admin_config set k='NEW-KEY')
+-- * admin_overview(p_key)  -> per-shop stats: members, active30, scans(lifetime),
+--   points_out, coins_held, redeemed, bookings, plan_status, is_active
+-- * admin_set_active(p_key, p_client, p_active) — suspend/reactivate a shop
+-- * Suspension enforced in get_member, join_rewards, game_reward (card won't load,
+--   no new joins, no coin earning). UI: /admin/ (noindex, key-gated).
