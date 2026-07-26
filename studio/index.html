@@ -261,8 +261,15 @@
         </label>
         <label>Call-to-action on end card</label>
         <input id="ctaText" value="Book your free call → tbsol.net">
-        <label>Logo / photo for end card (optional)</label>
+        <label>Logo / photo for end card &amp; watermark (optional)</label>
         <input type="file" id="logoFile" accept="image/*">
+        <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--text);margin-top:12px">
+          <input type="checkbox" id="logoWm" style="width:auto" onchange="drawAt(previewT)"> Show logo watermark on every scene
+        </label>
+        <div class="row" style="margin-top:8px">
+          <div><label>Watermark position</label><select id="logoWmPos" onchange="drawAt(previewT)"><option value="tr">Top right</option><option value="tl">Top left</option><option value="br">Bottom right</option><option value="bl">Bottom left</option></select></div>
+          <div><label>Watermark size</label><select id="logoWmSize" onchange="drawAt(previewT)"><option value="0.10">Small</option><option value="0.14" selected>Medium</option><option value="0.2">Large</option></select></div>
+        </div>
       </div>
 
       <!-- AUDIO -->
@@ -337,7 +344,11 @@
           <span class="tcode" id="tcode">0.0s</span>
         </div>
         <div class="tl" id="timeline" aria-label="Scene timeline"></div>
-        <div class="bar" style="margin-top:14px">
+        <div style="display:flex;align-items:center;gap:8px;margin-top:14px">
+          <label style="margin:0;flex:0 0 auto;font-size:12px">Export quality</label>
+          <select id="exportQ" style="flex:1"><option value="8000000">Standard — smaller file</option><option value="12000000" selected>High — recommended</option><option value="20000000">Max — crisp, larger file</option></select>
+        </div>
+        <div class="bar" style="margin-top:10px">
           <button class="btn rec wide" id="renderBtn" onclick="startRender()">🎬 Render my video</button>
         </div>
         <div class="bar" style="margin-top:8px">
@@ -916,10 +927,24 @@ function roundRect(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w
 function easeOut(t){return 1-Math.pow(1-t,3)}
 
 function drawWatermark(W,H){
-  var brand=(el('aiBrand').value||'').trim(); if(!brand)return;
-  ctx.font=F(700,Math.round(W*0.026)); ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.globalAlpha=0.72; ctx.fillStyle='rgba(255,255,255,.9)';
-  ctx.fillText(brand, W/2, H-H*0.035); ctx.globalAlpha=1;
+  var brand=(el('aiBrand').value||'').trim();
+  if(brand){
+    ctx.font=F(700,Math.round(W*0.026)); ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.globalAlpha=0.72; ctx.fillStyle='rgba(255,255,255,.9)';
+    ctx.fillText(brand, W/2, H-H*0.035); ctx.globalAlpha=1;
+  }
+  // brand logo watermark on every scene (enterprise branding)
+  if(el('logoWm') && el('logoWm').checked && logoImg && logoImg.width){
+    try{
+      var frac=parseFloat((el('logoWmSize')&&el('logoWmSize').value)||'0.14')||0.14;
+      var lw=W*frac, lh=lw*(logoImg.height/logoImg.width);
+      var pad=W*0.045, pos=(el('logoWmPos')&&el('logoWmPos').value)||'tr';
+      var x=(pos==='tl'||pos==='bl')?pad:(W-pad-lw);
+      var y=(pos==='tl'||pos==='tr')?pad:(H-pad-lh);
+      ctx.save(); ctx.globalAlpha=0.92; ctx.shadowColor='rgba(0,0,0,.35)'; ctx.shadowBlur=W*0.01;
+      ctx.drawImage(logoImg,x,y,lw,lh); ctx.restore();
+    }catch(e){}
+  }
 }
 function drawProgress(t,W,H){
   var p=clamp(t/totalDur,0,1);
@@ -1149,7 +1174,7 @@ function startPreviewAudio(){ if(!voiceBuffer&&!musicBuffer&&!hasSfx())return; i
 /* ---------- render / record ---------- */
 var recorder=null, recChunks=[], recRAF=null, recStart=0, recording=false;
 function pickMime(){ var opts=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm']; for(var i=0;i<opts.length;i++){ if(window.MediaRecorder&&MediaRecorder.isTypeSupported(opts[i]))return opts[i]; } return ''; }
-function bitrate(){ return 12000000; }
+function bitrate(){ var v=el('exportQ')&&parseInt(el('exportQ').value,10); return v||12000000; }
 async function startRender(){
   if(!scenes.length){ el('renderState').innerHTML='<span class="err">Add scenes first.</span>'; return; }
   if(recording)return;
