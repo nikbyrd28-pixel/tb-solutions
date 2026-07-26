@@ -495,19 +495,29 @@ function saveBooking(){
   }).catch(function(){ btn.disabled=false; btn.textContent='💾 Save booking setup'; el('bkSetErr').textContent='Network error — try again.'; el('bkSetErr').classList.remove('hide'); });
 }
 /* ============ Live appointment agenda ============ */
+var agTimer=0;
+function renderAgenda(d){
+  var box=el('agenda'); if(!box) return;
+  if(!d||!d.ok){ box.innerHTML='<p class="muted">'+esc((d&&d.error)||'Could not load schedule.')+'</p>'; return; }
+  var appts=(d.appts||[]).filter(function(a){return a.status!=='cancelled';});
+  if(!appts.length){ box.innerHTML='<p class="muted">No upcoming appointments yet. When members book from their card, they land here automatically.</p>'; return; }
+  var byday={}, order=[], value=0;
+  appts.forEach(function(a){ if(!byday[a.date]){byday[a.date]=[];order.push(a.date);} byday[a.date].push(a); var p=parseFloat(String(a.price||'').replace(/[^0-9.]/g,'')); if(!isNaN(p)) value+=p; });
+  var summary='<div class="muted" style="margin:0 0 6px;font-weight:700">📊 '+appts.length+' upcoming'+(value>0?(' · ~$'+Math.round(value)+' booked'):'')+'</div>';
+  box.innerHTML=summary+order.map(function(dt){
+    return '<div class="agday">'+esc(byday[dt][0].day)+'</div>'+byday[dt].map(apptRow).join('');
+  }).join('');
+}
 function loadAgenda(){
+  var ck='own_ag_'+CODE, cached=null;
+  try{ var cj=localStorage.getItem(ck); if(cj) cached=JSON.parse(cj); }catch(e){ cached=null; }
+  if(cached) renderAgenda(cached);
   rpc('booking_admin',{p_client:CODE,p_pin:PIN,p_from:'',p_to:''}).then(function(d){
-    var box=el('agenda'); if(!box) return;
-    if(!d||!d.ok){ box.innerHTML='<p class="muted">'+esc((d&&d.error)||'Could not load schedule.')+'</p>'; return; }
-    var appts=(d.appts||[]).filter(function(a){return a.status!=='cancelled';});
-    if(!appts.length){ box.innerHTML='<p class="muted">No upcoming appointments yet. When members book from their card, they land here automatically.</p>'; return; }
-    var byday={}, order=[], value=0;
-    appts.forEach(function(a){ if(!byday[a.date]){byday[a.date]=[];order.push(a.date);} byday[a.date].push(a); var p=parseFloat(String(a.price||'').replace(/[^0-9.]/g,'')); if(!isNaN(p)) value+=p; });
-    var summary='<div class="muted" style="margin:0 0 6px;font-weight:700">📊 '+appts.length+' upcoming'+(value>0?(' · ~$'+Math.round(value)+' booked'):'')+'</div>';
-    box.innerHTML=summary+order.map(function(dt){
-      return '<div class="agday">'+esc(byday[dt][0].day)+'</div>'+byday[dt].map(apptRow).join('');
-    }).join('');
-  }).catch(function(){ var b=el('agenda'); if(b) b.innerHTML='<p class="muted">Network error loading schedule.</p>'; });
+    if(d&&d.ok){ try{ localStorage.setItem(ck,JSON.stringify(d)); }catch(e){} }
+    renderAgenda(d);
+  }).catch(function(){ if(!cached){ var b=el('agenda'); if(b) b.innerHTML='<p class="muted">Network error loading schedule.</p>'; } });
+  if(!agTimer){ agTimer=setInterval(loadAgenda,90000);
+    document.addEventListener('visibilitychange',function(){ if(!document.hidden) loadAgenda(); }); }
 }
 function apptRow(a){
   var stColor=a.status==='done'?'var(--good)':a.status==='noshow'?'#ff8a9d':'var(--muted)';
