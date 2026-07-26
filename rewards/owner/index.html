@@ -515,9 +515,10 @@ function apptRow(a){
   var ctrls=(a.status==='confirmed')
     ? btn('good','✓ Done','done')+btn('','No-show','noshow')+btn('bad','Cancel','cancelled')
     : '<span class="st" style="color:'+stColor+'">'+esc(a.status)+'</span>';
+  function gcal(){ if(!a.start_at) return ''; var st=new Date(a.start_at), en=new Date(st.getTime()+(a.mins||30)*60000); function z(x){return (x<10?'0':'')+x;} function f(d){return d.getUTCFullYear()+z(d.getUTCMonth()+1)+z(d.getUTCDate())+'T'+z(d.getUTCHours())+z(d.getUTCMinutes())+'00Z';} return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent((a.service||'Appt')+' — '+(a.name||'Member'))+'&dates='+f(st)+'/'+f(en)+'&details='+encodeURIComponent('Phone: '+(a.phone||'')+' · '+(a.note||'')); }
   return '<div class="appt"><div class="appt-t">'+esc(a.time)+'</div>'
-    +'<div class="appt-b"><b>'+esc(a.name||'Member')+'</b><div class="muted">'+esc(a.service)+(a.staff_name?(' · '+esc(a.staff_name)):'')+(a.price?(' · '+esc(a.price)):'')+'</div></div>'
-    +'<div class="appt-a">'+ctrls+'</div></div>';
+    +'<div class="appt-b"><b>'+esc(a.name||'Member')+'</b><div class="muted">'+esc(a.service)+(a.staff_name?(' · '+esc(a.staff_name)):'')+(a.price?(' · '+esc(a.price)):'')+(a.note?(' · '+esc(a.note)):'')+'</div></div>'
+    +'<div class="appt-a">'+(a.start_at?('<a class="mini" style="text-decoration:none" target="_blank" rel="noopener" href="'+gcal()+'">📅 Cal</a>'):'')+ctrls+'</div></div>';
 }
 function setAppt(id,status){
   rpc('booking_set_status',{p_client:CODE,p_pin:PIN,p_id:id,p_status:status}).then(function(d){
