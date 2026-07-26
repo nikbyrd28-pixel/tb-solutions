@@ -56,6 +56,7 @@
       <div class="row">
         <div><b id="hTitle">All shops</b><div class="muted" id="hSub"></div></div>
         <div style="display:flex;gap:8px;align-items:center">
+          <input id="shopQ" placeholder="Search shops…" style="width:130px" oninput="render()">
           <select id="tenant" onchange="render()"></select>
           <button class="tgl" onclick="load()">↻</button>
         </div>
@@ -92,6 +93,10 @@ function load(){
     SHOPS=d.shops||[];
     el('login').classList.add('hide'); el('dash').classList.remove('hide');
     buildTenants(); render();
+    if(!window.__adT){ window.__adT=setInterval(function(){
+      if(document.hidden||!AK) return;
+      rpc('admin_overview',{p_key:AK}).then(function(d2){ if(d2&&d2.ok){ SHOPS=d2.shops||[]; buildTenants(); render(); } }).catch(function(){});
+    },120000); }
   }).catch(function(){ b.disabled=false; b.textContent='Open console →'; el('err').textContent='Network error.'; el('err').classList.remove('hide'); });
 }
 function buildTenants(){
@@ -103,6 +108,8 @@ function fmt(n){ return (+n||0).toLocaleString(); }
 function render(){
   var t=el('tenant').value;
   var list = t ? SHOPS.filter(function(s){return s.client===t;}) : SHOPS;
+  var q=(el('shopQ').value||'').trim().toLowerCase();
+  if(q) list=list.filter(function(s){ return (s.biz_name||'').toLowerCase().indexOf(q)>=0 || (s.client||'').toLowerCase().indexOf(q)>=0; });
   el('hTitle').textContent = t ? (list[0]?list[0].biz_name:t) : 'All shops';
   el('hSub').textContent = t ? ('code: '+t) : (SHOPS.length+' shops on the platform');
   var tot={members:0,active30:0,scans:0,points_out:0,coins_held:0,bookings:0};

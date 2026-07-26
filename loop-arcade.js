@@ -378,6 +378,7 @@
     function gapH() { var base = pn < 3 ? E.H * 0.40 : E.H * 0.34; return clamp(base - Math.max(0, E.score - 2) * 1.1, E.H * 0.24, E.H * 0.42); }
     function spawnPipe(x) {
       var g = gapH(), center, osc = E.level >= 3 ? Math.min(34, 10 + E.level * 4) : 0;
+      if (E.level >= 6 && (pn % 2)) osc = -osc;
       if (pn < 2) center = E.H * 0.45 + rnd(-E.H * 0.05, E.H * 0.05);        // ease the first pipes toward the bird's height
       else center = rnd(g / 2 + 50, E.H - g / 2 - 60);
       var top = clamp(center - g / 2, 40, E.H - g - 70);
@@ -400,7 +401,7 @@
       for (var i = 0; i < stars.length; i++) { stars[i].x -= stars[i].s; if (stars[i].x < -2) { stars[i].x = E.W + 2; stars[i].y = rnd(0, E.H * 0.7); } }
       for (var ci = 0; ci < clouds.length; ci++) { clouds[ci].x -= clouds[ci].s * 0.6; if (clouds[ci].x < -70) { clouds[ci].x = E.W + 60; clouds[ci].y = rnd(E.H * 0.08, E.H * 0.42); } }
       var sp = speed();
-      for (var k = 0; k < pipes.length; k++) { var pk = pipes[k]; pk.x -= sp; if (pk.osc) pk.top = clamp(pk.top0 + Math.sin(E.clock / 480 + pk.ph) * pk.osc, 30, E.H - pk.gap - 60); }
+      for (var k = 0; k < pipes.length; k++) { var pk = pipes[k]; pk.x -= sp; if (pk.osc) pk.top = clamp(pk.top0 + Math.sin(E.clock / Math.max(300, 480 - Math.max(0, E.level - 3) * 30) + pk.ph) * pk.osc, 30, E.H - pk.gap - 60); }
       if (pipes.length && pipes[pipes.length - 1].x < E.W - gapX()) spawnPipe(E.W + 40);
       while (pipes.length && pipes[0].x < -80) pipes.shift();
 
