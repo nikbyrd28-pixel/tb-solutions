@@ -530,7 +530,7 @@ function el(id){return document.getElementById(id)}
 function rpc(fn,args){
   return fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(args)}).then(function(r){return r.json()});
 }
-function qrUrl(data,size){ return 'https://api.qrserver.com/v1/create-qr-code/?size='+size+'x'+size+'&data='+encodeURIComponent(data); }
+function qrUrl(data,size){ return 'https://api.qrserver.com/v1/create-qr-code/?size='+size+'x'+size+'&ecc=H&color=11-16-36&data='+encodeURIComponent(data); }
 
 function showCard(m){
   member=m;
