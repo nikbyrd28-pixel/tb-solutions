@@ -1873,7 +1873,8 @@ function startTour(){ tourEls(); tourI=0; el('tourWrap').classList.add('on'); sh
 function tourStep(d){ tourI+=d; if(tourI>=TOUR.length){ endTour(true); return; } if(tourI<0) tourI=0; showTour(); }
 function endTour(done){ var w=el('tourWrap'); if(w) w.classList.remove('on'); try{ localStorage.setItem('tb_studio_tour_done','1'); }catch(e){} if(done){ try{ trackEvent('tour_done'); }catch(e){} } }
 window.addEventListener('resize',function(){ var w=el('tourWrap'); if(w&&w.classList.contains('on')) showTour(); });
-try{ if(!localStorage.getItem('tb_studio_tour_done')){ setTimeout(function(){ try{ startTour(); }catch(e){} },900); } }catch(e){}
+try{ var _isEmbed=/[?&]embed/.test(location.search);
+  if(!_isEmbed && !localStorage.getItem('tb_studio_tour_done')){ setTimeout(function(){ try{ startTour(); }catch(e){} },900); } }catch(e){}
 </script>
 </body>
 </html>
