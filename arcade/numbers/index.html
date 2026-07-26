@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Number Rush — Loop Arcade</title>
+<meta name="description" content="Number Rush — swipe to match and merge numbers. Reach 2048 for the crown. Earn coins toward a free cut." />
+<meta name="theme-color" content="#05060d" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='26'%3E%F0%9F%94%A2%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--text:#f2f4ff;--muted:#8f97b8;--line:rgba(122,162,255,.35);--acc:#7aa2ff;--acc2:#5ad0f0;--gold:#ffcf5a}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;background:radial-gradient(circle at 15% -5%,rgba(122,162,255,.18),transparent 42%),linear-gradient(180deg,#070811,#04050a);color:var(--text);min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:14px 10px 26px;-webkit-tap-highlight-color:transparent;touch-action:none;overscroll-behavior:none}
+  .top{width:min(420px,100%);display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .brand{font-weight:900;font-size:16px}
+  .brand a{color:var(--text);text-decoration:none}
+  .brand span{background:linear-gradient(90deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stats{display:flex;gap:10px;font-size:13px;font-weight:900}
+  .stats .sc{color:var(--acc2)} .stats .bs{color:var(--gold)}
+  #board{position:relative;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:16px;touch-action:none}
+  .tile{position:absolute;display:grid;place-items:center;border-radius:10px;font-weight:900;transition:left .12s ease,top .12s ease;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+  .tile.new{animation:pop .16s ease}
+  .tile.mrg{animation:merge .18s ease}
+  @keyframes pop{from{transform:scale(.4)}to{transform:scale(1)}}
+  @keyframes merge{0%{transform:scale(1)}50%{transform:scale(1.18)}100%{transform:scale(1)}}
+  .hint{color:var(--muted);font-size:12.5px;margin:10px 0 0;text-align:center}
+  .ov{position:fixed;inset:0;display:grid;place-items:center;background:rgba(4,6,12,.76);backdrop-filter:blur(4px);z-index:10;padding:16px}
+  .ov.hide{display:none}
+  .card{background:linear-gradient(150deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid var(--line);border-radius:22px;padding:26px;text-align:center;max-width:330px;width:100%}
+  .coins{color:#43f0b0;font-weight:900}
+  .btn{border:0;border-radius:999px;padding:14px;font:inherit;font-weight:900;font-size:15px;cursor:pointer;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;width:100%;margin-top:10px}
+  .btn.ghost{background:rgba(122,162,255,.08);border:1px solid var(--line);color:var(--text);font-weight:700}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="brand"><a href="/arcade/">← 🔢 <span>Number Rush</span></a></div>
+  <div class="stats"><span class="sc" id="sc">0</span><span class="bs" id="bs">★ 0</span></div>
+</div>
+<div id="board"></div>
+<p class="hint">Swipe (or arrow keys) to slide. Matching numbers merge. Reach <b style="color:var(--gold)">2048</b> 👑</p>
+<div class="ov hide" id="over"><div class="card">
+  <div style="font-size:42px" id="ovEm">🏁</div><h2 id="ovT" style="margin:6px 0">Game over</h2>
+  <p style="color:var(--muted);margin:4px 0" id="ovLine"></p>
+  <p class="coins hide" id="ovCoins"></p>
+  <button class="btn" onclick="reset()">▶ Play again</button>
+  <button class="btn ghost" onclick="shareIt()">📣 Share</button>
+</div></div>
+<script src="/loop-fx.js"></script>
+<script>
+var SUPA='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+var q=new URLSearchParams(location.search), client=(q.get('c')||'').toLowerCase().replace(/[^a-z0-9]/g,''), code=q.get('m')||'';
+function el(i){return document.getElementById(i)}
+var N=4, GAP=10, SZ=0, board=el('board'), grid, score=0, best=0, over=false, won=false, tid=0;
+try{ best=+localStorage.getItem('nr_best')||0; }catch(e){} el('bs').textContent='★ '+best;
+var COLORS={2:'#2a3550',4:'#31406b',8:'#7aa2ff',16:'#5ad0f0',32:'#43f0b0',64:'#ffcf5a',128:'#ffb15a',256:'#ff8a5c',512:'#ff6a7a',1024:'#c9a3ff',2048:'#ffd700'};
+function layout(){
+  var w=Math.min(400, window.innerWidth-24); SZ=(w-GAP*(N+1))/N;
+  board.style.width=w+'px'; board.style.height=w+'px';
+  for(var k in cells){ var t=cells[k]; place(t); sizeTile(t.el); }
+}
+function sizeTile(e){ e.style.width=SZ+'px'; e.style.height=SZ+'px'; e.style.fontSize=(SZ*0.38)+'px'; }
+function pos(i){ return GAP+i*(SZ+GAP); }
+var cells={}; // id -> {v,r,c,el}
+function place(t){ t.el.style.left=pos(t.c)+'px'; t.el.style.top=pos(t.r)+'px'; }
+function addTile(r,c,v,isNew){
+  var e=document.createElement('div'); e.className='tile'+(isNew?' new':'');
+  var t={id:++tid,v:v,r:r,c:c,el:e};
+  e.textContent=v; style(t); sizeTile(e); place(t);
+  board.appendChild(e); cells[t.id]=t; return t;
+}
+function style(t){
+  t.el.style.background=COLORS[t.v]||'#ffd700';
+  t.el.style.color=t.v<8?'#c8d2f0':'#04050a';
+  t.el.style.boxShadow=t.v>=128?('0 0 18px '+(COLORS[t.v]||'#ffd700')):'0 4px 14px rgba(0,0,0,.35)';
+}
+function grid2d(){ var g=[]; for(var r=0;r<N;r++){ g.push(new Array(N).fill(null)); } for(var k in cells){ var t=cells[k]; g[t.r][t.c]=t; } return g; }
+function empt(){ var g=grid2d(), out=[]; for(var r=0;r<N;r++)for(var c=0;c<N;c++) if(!g[r][c]) out.push([r,c]); return out; }
+function spawn(){ var e=empt(); if(!e.length) return; var p=e[(Math.random()*e.length)|0]; addTile(p[0],p[1],Math.random()<0.9?2:4,true); }
+function reset(){
+  for(var k in cells){ cells[k].el.remove(); } cells={}; score=0; over=false; won=false;
+  el('sc').textContent='0'; el('over').classList.add('hide');
+  layout(); spawn(); spawn();
+}
+function move(dr,dc){
+  if(over) return;
+  var g=grid2d(), moved=false, gained=0;
+  var rs=[],cs=[];
+  for(var i=0;i<N;i++){ rs.push(dr>0?N-1-i:i); cs.push(dc>0?N-1-i:i); }
+  var merged={};
+  rs.forEach(function(r){ cs.forEach(function(c){
+    var t=g[r][c]; if(!t) return;
+    var nr=r, nc=c;
+    while(true){
+      var tr=nr+dr, tc=nc+dc;
+      if(tr<0||tr>=N||tc<0||tc>=N) break;
+      var o=g[tr][tc];
+      if(!o){ nr=tr; nc=tc; continue; }
+      if(o.v===t.v && !merged[o.id] && !merged[t.id]){ nr=tr; nc=tc; }
+      break;
+    }
+    if(nr!==r||nc!==c){
+      moved=true;
+      var target=g[nr][nc];
+      g[r][c]=null;
+      if(target && target.v===t.v){
+        target.v*=2; gained+=target.v; merged[target.id]=1;
+        target.el.textContent=target.v; style(target); target.el.classList.remove('mrg'); void target.el.offsetWidth; target.el.classList.add('mrg');
+        t.r=nr; t.c=nc; place(t);
+        (function(dead){ setTimeout(function(){ dead.el.remove(); },120); })(t);
+        delete cells[t.id];
+        if(target.v===2048 && !won){ won=true; if(window.LoopFX){LoopFX.confetti(40);LoopFX.sfx('win');LoopFX.float(innerWidth/2,innerHeight*0.3,'👑 2048!','#ffd700',30);} }
+        else if(target.v>=128 && window.LoopFX){ LoopFX.sfx('coin'); }
+      } else {
+        t.r=nr; t.c=nc; g[nr][nc]=t; place(t);
+      }
+    }
+  }); });
+  if(moved){
+    score+=gained; el('sc').textContent=score;
+    if(gained>0 && window.LoopFX) LoopFX.sfx('score'); else if(window.LoopFX) LoopFX.sfx('click');
+    setTimeout(function(){
+      spawn();
+      if(!canMove()) end();
+    },130);
+  }
+}
+function canMove(){
+  var g=grid2d();
+  for(var r=0;r<N;r++)for(var c=0;c<N;c++){
+    var t=g[r][c]; if(!t) return true;
+    if(r+1<N && g[r+1][c] && g[r+1][c].v===t.v) return true;
+    if(c+1<N && g[r][c+1] && g[r][c+1].v===t.v) return true;
+  }
+  return false;
+}
+function end(){
+  over=true;
+  var nb=score>best; if(nb){ best=score; try{ localStorage.setItem('nr_best',best); }catch(e){} el('bs').textContent='★ '+best; }
+  el('ovEm').textContent= won?'👑':nb?'🏆':'🏁';
+  el('ovT').textContent= won?'2048! Legend.':nb?'New best!':'No moves left';
+  el('ovLine').textContent='Score '+score+(nb?'':' · Best '+best);
+  el('over').classList.remove('hide');
+  if(window.LoopFX){ if(nb||won){LoopFX.confetti();LoopFX.sfx('win');} else LoopFX.sfx('lose'); }
+  if(client&&code){
+    fetch(SUPA+'/rest/v1/rpc/game_reward',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify({p_code:code,p_game:'numbers',p_score:Math.min(1000,Math.round(score/20))})})
+    .then(function(r){return r.json();}).then(function(d){ if(d&&!d.error&&d.coins_earned!=null){ var o=el('ovCoins'); o.textContent='🪙 +'+d.coins_earned+' coins'+(d.daily_bonus>0?' (🎁 daily bonus!)':'')+' — spin the slot for a free cut!'; o.classList.remove('hide'); } }).catch(function(){});
+  }
+}
+function shareIt(){
+  var t='I scored '+score+' on Number Rush 🔢'+(won?' and hit 2048 👑':'')+' — play free: https://tbsol.net/arcade/numbers/';
+  if(navigator.share){ navigator.share({text:t}).catch(function(){}); } else { try{ navigator.clipboard.writeText(t); }catch(e){} }
+}
+/* input */
+document.addEventListener('keydown',function(e){
+  if(e.code==='ArrowUp'){e.preventDefault();move(-1,0);} else if(e.code==='ArrowDown'){e.preventDefault();move(1,0);}
+  else if(e.code==='ArrowLeft'){move(0,-1);} else if(e.code==='ArrowRight'){move(0,1);}
+});
+var sx=0, sy=0;
+board.addEventListener('pointerdown',function(e){ sx=e.clientX; sy=e.clientY; });
+board.addEventListener('pointerup',function(e){
+  var dx=e.clientX-sx, dy=e.clientY-sy;
+  if(Math.max(Math.abs(dx),Math.abs(dy))<24) return;
+  if(Math.abs(dx)>Math.abs(dy)) move(0, dx>0?1:-1); else move(dy>0?1:-1, 0);
+});
+window.addEventListener('resize',layout);
+reset();
+</script>
+</body>
+</html>
