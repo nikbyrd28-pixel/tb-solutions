@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Ice Hockey — Loop Arcade</title>
+<meta name="description" content="Classic arcade air hockey — beat the barber bot, level up, it gets faster every round. Earn coins toward a free cut." />
+<meta name="theme-color" content="#05060d" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%F0%9F%8F%92%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--text:#f2f4ff;--muted:#8f97b8;--line:rgba(122,162,255,.35);--acc:#7aa2ff;--acc2:#5ad0f0;--gold:#ffcf5a}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;background:linear-gradient(180deg,#070811,#04050a);color:var(--text);min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:10px 8px 20px;-webkit-tap-highlight-color:transparent;touch-action:none}
+  .top{width:min(460px,100%);display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+  .brand{font-weight:900;font-size:15px}
+  .brand a{color:var(--text);text-decoration:none}
+  .brand span{background:linear-gradient(90deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hud{display:flex;gap:12px;font-weight:900;font-size:14px;align-items:center}
+  .hud .lv{color:#b98bff}.hud .sc{color:var(--gold)}
+  canvas{border-radius:18px;touch-action:none;box-shadow:0 16px 50px rgba(0,0,0,.6),0 0 40px rgba(122,162,255,.18)}
+  .ov{position:fixed;inset:0;display:grid;place-items:center;background:rgba(4,6,12,.74);backdrop-filter:blur(4px);z-index:10;padding:16px}
+  .ov.hide{display:none}
+  .card{background:linear-gradient(150deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid var(--line);border-radius:22px;padding:26px;text-align:center;max-width:330px;width:100%}
+  .card h2{margin:6px 0;font-size:24px}
+  .card p{color:var(--muted);font-size:13.5px;margin:6px 0}
+  .coins{color:#43f0b0;font-weight:900}
+  .btn{border:0;border-radius:999px;padding:14px;font:inherit;font-weight:900;font-size:15px;cursor:pointer;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;width:100%;margin-top:10px}
+  .btn.ghost{background:rgba(122,162,255,.08);border:1px solid var(--line);color:var(--text);font-weight:700}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="brand"><a href="/arcade/">← 🏒 <span>Ice Hockey</span></a></div>
+  <div class="hud"><span class="lv" id="hLv">Lv 1</span><span id="hSc">0 : 0</span><span class="sc" id="hBest">★ 0</span></div>
+</div>
+<canvas id="cv"></canvas>
+<div class="ov" id="startOv"><div class="card">
+  <div style="font-size:44px">🏒</div><h2>Ice Hockey</h2>
+  <p>Drag your paddle. First to 3 wins the level — then the barber bot gets <b style="color:var(--text)">faster and meaner</b>. How many levels can you survive?</p>
+  <p>Best: <b id="ovBest0">0</b> levels</p>
+  <button class="btn" onclick="startGame()">▶ Play</button>
+</div></div>
+<div class="ov hide" id="overOv"><div class="card">
+  <div style="font-size:42px" id="ovEm">🏁</div><h2 id="ovT">Game over</h2>
+  <p id="ovLine"></p>
+  <p class="coins hide" id="ovCoins"></p>
+  <button class="btn" onclick="startGame()">▶ Play again</button>
+  <button class="btn ghost" onclick="shareIt()">📣 Share</button>
+</div></div>
+<script src="/loop-fx.js"></script>
+<script>
+var SUPA='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+var q=new URLSearchParams(location.search), client=(q.get('c')||'').toLowerCase().replace(/[^a-z0-9]/g,''), code=q.get('m')||'';
+function el(i){return document.getElementById(i)}
+var C=el('cv'), X=C.getContext('2d'), W=0, H=0, dpr=1;
+function resize(){
+  dpr=Math.min(2.5,window.devicePixelRatio||1);
+  W=Math.min(440,window.innerWidth-16); H=Math.min(window.innerHeight-90, W*1.65); H=Math.max(H,420);
+  C.style.width=W+'px'; C.style.height=H+'px'; C.width=Math.round(W*dpr); C.height=Math.round(H*dpr);
+  X.setTransform(dpr,0,0,dpr,0,0);
+}
+resize(); window.addEventListener('resize',resize);
+
+var best=0; try{ best=+localStorage.getItem('ih_best')||0; }catch(e){}
+el('hBest').textContent='★ '+best; el('ovBest0').textContent=best;
+
+var running=false, lvl=1, myGoals=0, aiGoals=0, totalGoals=0, freeze=0, clock=0;
+var puck={x:0,y:0,vx:0,vy:0,r:11}, me={x:0,y:0,r:25,vx:0,vy:0,px:0,py:0}, ai={x:0,y:0,r:25,spd:2.6};
+var trail=[]; for(var i=0;i<10;i++) trail.push({x:0,y:0});
+function maxV(){ return 8.5+lvl*1.1; }
+function hue(){ return (205 + (lvl-1)*32) % 360; }
+function resetRound(server){
+  puck.x=W/2; puck.y=H/2 + (server==='me'?60:-60); puck.vx=0; puck.vy=0;
+  me.x=W/2; me.y=H-70; ai.x=W/2; ai.y=70;
+  for(var i=0;i<trail.length;i++){trail[i].x=puck.x;trail[i].y=puck.y;}
+  freeze=30;
+}
+function startGame(){
+  lvl=1; myGoals=0; aiGoals=0; totalGoals=0; ai.spd=2.6; running=true;
+  el('startOv').classList.add('hide'); el('overOv').classList.add('hide');
+  updHud(); resetRound('me'); last=performance.now(); requestAnimationFrame(frame);
+  if(window.LoopFX)LoopFX.sfx('click');
+}
+function updHud(){ el('hLv').textContent='Lv '+lvl; el('hSc').textContent=myGoals+' : '+aiGoals; }
+/* input: drag paddle in bottom half */
+function toLocal(e){ var r=C.getBoundingClientRect(); return {x:(e.clientX-r.left), y:(e.clientY-r.top)}; }
+C.addEventListener('pointerdown',function(e){ e.preventDefault(); mv(e); });
+C.addEventListener('pointermove',function(e){ e.preventDefault(); if(e.buttons||e.pointerType==='touch') mv(e); });
+function mv(e){
+  var p=toLocal(e);
+  me.x=Math.max(me.r,Math.min(W-me.r,p.x));
+  me.y=Math.max(H/2+me.r,Math.min(H-me.r,p.y));
+}
+function collide(pad){
+  var dx=puck.x-pad.x, dy=puck.y-pad.y, d=Math.hypot(dx,dy), min=puck.r+pad.r;
+  if(d<min&&d>0){
+    var nx=dx/d, ny=dy/d;
+    puck.x=pad.x+nx*min; puck.y=pad.y+ny*min;
+    var sp=Math.hypot(puck.vx,puck.vy);
+    var newSp=Math.min(maxV(), Math.max(4.5, sp*1.05)+ (pad===me?Math.hypot(me.vx,me.vy)*0.35:1.2));
+    puck.vx=nx*newSp; puck.vy=ny*newSp;
+    if(window.LoopFX){ LoopFX.sfx('hop'); }
+    return true;
+  }
+  return false;
+}
+var last=0;
+function frame(now){
+  if(!running) return;
+  var dt=Math.min(40,now-last)/16.67; last=now; clock+=dt;
+  me.vx=me.x-me.px; me.vy=me.y-me.py; me.px=me.x; me.py=me.y;
+  if(freeze>0){ freeze-=dt; } else {
+    puck.x+=puck.vx*dt; puck.y+=puck.vy*dt;
+    puck.vx*=0.995; puck.vy*=0.995;
+    var gw=W*0.36, gx0=(W-gw)/2, gx1=gx0+gw;
+    if(puck.x<puck.r){ puck.x=puck.r; puck.vx=Math.abs(puck.vx); wall(); }
+    if(puck.x>W-puck.r){ puck.x=W-puck.r; puck.vx=-Math.abs(puck.vx); wall(); }
+    if(puck.y<puck.r){ if(puck.x>gx0&&puck.x<gx1){ goal('me'); } else { puck.y=puck.r; puck.vy=Math.abs(puck.vy); wall(); } }
+    if(puck.y>H-puck.r){ if(puck.x>gx0&&puck.x<gx1){ goal('ai'); } else { puck.y=H-puck.r; puck.vy=-Math.abs(puck.vy); wall(); } }
+    // AI: chase in top half, strike when close, recover to guard goal
+    var targX = (puck.y < H*0.6) ? puck.x : W/2;
+    var targY = (puck.y < H*0.55 && puck.vy<=0.5) ? Math.min(puck.y, H*0.42) : 64;
+    var asp=ai.spd*(1+lvl*0.06)*dt;
+    ai.x += Math.max(-asp,Math.min(asp, targX-ai.x));
+    ai.y += Math.max(-asp,Math.min(asp, targY-ai.y));
+    ai.x=Math.max(ai.r,Math.min(W-ai.r,ai.x)); ai.y=Math.max(ai.r,Math.min(H/2-ai.r,ai.y));
+    collide(me); collide(ai);
+    trail.pop(); trail.unshift({x:puck.x,y:puck.y});
+  }
+  render();
+  requestAnimationFrame(frame);
+}
+function wall(){ if(window.LoopFX)LoopFX.sfx('click'); }
+function goal(who){
+  totalGoals+= (who==='me'?1:0);
+  if(who==='me'){ myGoals++; if(window.LoopFX){ LoopFX.sfx('score'); LoopFX.burst(puck.x+C.getBoundingClientRect().left, C.getBoundingClientRect().top+8, {n:18,color:'#5ad0f0',up:1}); LoopFX.shake(C); } }
+  else { aiGoals++; if(window.LoopFX){ LoopFX.sfx('hit'); LoopFX.shake(C); } }
+  updHud();
+  if(myGoals>=3){ levelUp(); }
+  else if(aiGoals>=3){ gameOver(); }
+  else resetRound(who==='me'?'ai':'me');
+}
+function levelUp(){
+  lvl++; myGoals=0; aiGoals=0; ai.spd*=1.22; updHud();
+  if(window.LoopFX)LoopFX.levelUp(lvl);
+  resetRound('me'); freeze=55;
+}
+function gameOver(){
+  running=false;
+  var lvls=lvl-1, sc=lvls*10+totalGoals*3;
+  var nb=lvls>best; if(nb){ best=lvls; try{ localStorage.setItem('ih_best',best); }catch(e){} }
+  el('hBest').textContent='★ '+best;
+  el('ovEm').textContent= lvls>=5?'🥇':lvls>=3?'🥈':lvls>=1?'🥉':'🏁';
+  el('ovT').textContent= nb?'🏆 New best!':'Frozen out!';
+  el('ovLine').textContent='You survived '+lvls+' level'+(lvls===1?'':'s')+' · '+totalGoals+' goals scored'+(nb?'':' · Best: '+best);
+  el('overOv').classList.remove('hide');
+  if(window.LoopFX){ if(nb&&lvls>0){LoopFX.confetti();LoopFX.sfx('win');} else LoopFX.sfx('lose'); }
+  if(client&&code){
+    fetch(SUPA+'/rest/v1/rpc/game_reward',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify({p_code:code,p_game:'hockey',p_score:sc})})
+    .then(function(r){return r.json();}).then(function(d){ if(d&&!d.error&&d.coins_earned!=null){ var o=el('ovCoins'); o.textContent='🪙 +'+d.coins_earned+' coins'+(d.daily_bonus>0?' (🎁 daily bonus!)':'')+' — spin the slot for a free cut!'; o.classList.remove('hide'); } }).catch(function(){});
+  }
+}
+function shareIt(){
+  var t='I survived '+best+' levels of Ice Hockey vs the barber bot 🏒 Play free: https://tbsol.net/arcade/hockey/';
+  if(navigator.share){ navigator.share({text:t}).catch(function(){}); } else { try{ navigator.clipboard.writeText(t); }catch(e){} }
+}
+function render(){
+  var h=hue();
+  // ice
+  var g=X.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'hsl('+h+',45%,14%)'); g.addColorStop(0.5,'hsl('+h+',38%,10%)'); g.addColorStop(1,'hsl('+h+',45%,14%)');
+  X.fillStyle=g; X.fillRect(0,0,W,H);
+  // rink lines
+  X.strokeStyle='rgba(255,255,255,.16)'; X.lineWidth=2;
+  X.beginPath(); X.moveTo(0,H/2); X.lineTo(W,H/2); X.stroke();
+  X.beginPath(); X.arc(W/2,H/2,52,0,6.283); X.stroke();
+  X.fillStyle='rgba(255,255,255,.06)'; X.beginPath(); X.arc(W/2,H/2,8,0,6.283); X.fill();
+  // goals
+  var gw=W*0.36, gx0=(W-gw)/2;
+  X.strokeStyle='hsl('+h+',80%,62%)'; X.lineWidth=5; X.shadowColor='hsl('+h+',80%,62%)'; X.shadowBlur=12;
+  X.beginPath(); X.moveTo(gx0,3); X.lineTo(gx0+gw,3); X.stroke();
+  X.beginPath(); X.moveTo(gx0,H-3); X.lineTo(gx0+gw,H-3); X.stroke();
+  X.shadowBlur=0;
+  // paddles first, puck drawn on top so it's never hidden
+  paddle(ai,'#ff6a7a'); paddle(me,'hsl('+h+',85%,66%)');
+  // puck trail
+  for(var i=trail.length-1;i>=0;i--){ var a=(1-i/trail.length)*0.35; X.globalAlpha=a; X.fillStyle='hsl('+h+',90%,70%)'; X.beginPath(); X.arc(trail[i].x,trail[i].y,puck.r*(1-i*0.06),0,6.283); X.fill(); }
+  X.globalAlpha=1;
+  // puck
+  X.shadowColor='hsl('+h+',95%,72%)'; X.shadowBlur=18; X.fillStyle='#eef4ff';
+  X.beginPath(); X.arc(puck.x,puck.y,puck.r,0,6.283); X.fill(); X.shadowBlur=0;
+  X.fillStyle='rgba(0,0,0,.25)'; X.beginPath(); X.arc(puck.x,puck.y,puck.r*0.5,0,6.283); X.fill();
+  // freeze countdown pulse
+  if(freeze>0&&running){ X.fillStyle='rgba(255,255,255,'+(0.08+0.05*Math.sin(clock/4))+')'; X.beginPath(); X.arc(puck.x,puck.y,puck.r+8,0,6.283); X.fill(); }
+}
+function paddle(p,col){
+  X.shadowColor=col; X.shadowBlur=16; X.fillStyle=col;
+  X.beginPath(); X.arc(p.x,p.y,p.r,0,6.283); X.fill(); X.shadowBlur=0;
+  X.fillStyle='rgba(255,255,255,.35)'; X.beginPath(); X.arc(p.x,p.y,p.r*0.62,0,6.283); X.fill();
+  X.fillStyle='rgba(0,0,0,.18)'; X.beginPath(); X.arc(p.x,p.y,p.r*0.3,0,6.283); X.fill();
+}
+resetRound('me'); render();
+</script>
+</body>
+</html>
