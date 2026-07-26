@@ -377,12 +377,12 @@
     function speed() { return 2.0 + Math.min(2.8, E.score * 0.028); }
     function gapH() { var base = pn < 3 ? E.H * 0.40 : E.H * 0.34; return clamp(base - Math.max(0, E.score - 2) * 1.1, E.H * 0.24, E.H * 0.42); }
     function spawnPipe(x) {
-      var g = gapH(), center;
+      var g = gapH(), center, osc = E.level >= 3 ? Math.min(34, 10 + E.level * 4) : 0;
       if (pn < 2) center = E.H * 0.45 + rnd(-E.H * 0.05, E.H * 0.05);        // ease the first pipes toward the bird's height
       else center = rnd(g / 2 + 50, E.H - g / 2 - 60);
       var top = clamp(center - g / 2, 40, E.H - g - 70);
       var hasCoin = pn >= 1 && Math.random() < 0.5;
-      pipes.push({ x: x, top: top, gap: g, passed: false, coin: hasCoin, coinGot: false, pow: !hasCoin && pn >= 2 && Math.random() < 0.22, powGot: false });
+      pipes.push({ x: x, top: top, top0: top, osc: osc, ph: rnd(0, 6.28), gap: g, passed: false, coin: hasCoin, coinGot: false, pow: !hasCoin && pn >= 2 && Math.random() < 0.22, powGot: false });
       pn++;
     }
     function tap() {
@@ -400,7 +400,7 @@
       for (var i = 0; i < stars.length; i++) { stars[i].x -= stars[i].s; if (stars[i].x < -2) { stars[i].x = E.W + 2; stars[i].y = rnd(0, E.H * 0.7); } }
       for (var ci = 0; ci < clouds.length; ci++) { clouds[ci].x -= clouds[ci].s * 0.6; if (clouds[ci].x < -70) { clouds[ci].x = E.W + 60; clouds[ci].y = rnd(E.H * 0.08, E.H * 0.42); } }
       var sp = speed();
-      for (var k = 0; k < pipes.length; k++) pipes[k].x -= sp;
+      for (var k = 0; k < pipes.length; k++) { var pk = pipes[k]; pk.x -= sp; if (pk.osc) pk.top = clamp(pk.top0 + Math.sin(E.clock / 480 + pk.ph) * pk.osc, 30, E.H - pk.gap - 60); }
       if (pipes.length && pipes[pipes.length - 1].x < E.W - gapX()) spawnPipe(E.W + 40);
       while (pipes.length && pipes[0].x < -80) pipes.shift();
 
@@ -449,7 +449,7 @@
     function render(c, a) {
       var W = E.W, H = E.H, iy = lerp(pby, by, a), t = E.clock;
       // sky (cached gradient — recomputed only on resize)
-      if (!E.skyGrad || E.skyH !== H) { E.skyGrad = c.createLinearGradient(0, 0, 0, H); E.skyGrad.addColorStop(0, '#0b1330'); E.skyGrad.addColorStop(0.55, '#0a1024'); E.skyGrad.addColorStop(1, '#05060d'); E.skyH = H; }
+      if (!E.skyGrad || E.skyH !== H || E.skyLvl !== E.level) { var _sh = (222 + (E.level - 1) * 26) % 360; E.skyGrad = c.createLinearGradient(0, 0, 0, H); E.skyGrad.addColorStop(0, 'hsl(' + _sh + ',48%,12%)'); E.skyGrad.addColorStop(0.55, 'hsl(' + _sh + ',42%,8%)'); E.skyGrad.addColorStop(1, '#05060d'); E.skyH = H; E.skyLvl = E.level; }
       c.fillStyle = E.skyGrad; c.fillRect(0, 0, W, H);
       // moon with soft glow (cached radial gradient)
       var mx = W * 0.80, my = H * 0.16;
@@ -726,7 +726,7 @@
       if (E.combo >= 3) { dom.combo.textContent = '🔥 x' + E.combo; dom.combo.classList.add('show'); }
       if (E.score > 0 && E.score % 10 === 0) { addShake(0.2); floatText(E.W / 2, E.H * 0.28, E.score + '!', E.accent2); Audio.near(); }
     } else if (E.combo && E.clock - E.comboAt > 2600) { E.combo = 0; dom.combo.classList.remove('show'); }
-    var _lv = 1 + Math.floor(E.score / 6);
+    var _lv = 1 + Math.floor(E.score / 5);
     if (_lv > E.level) { E.level = _lv; if (dom.level) dom.level.textContent = 'Lv ' + _lv; Audio.levelup(); floatText(E.W / 2, E.H * 0.34, 'LEVEL ' + _lv + '!', '#c9a3ff'); E.flash = Math.max(E.flash, 0.6); addShake(0.28); Audio.music.setRate(Math.max(150, 236 - _lv * 7)); }
     // smooth score readout
     if (E.shownScore !== E.score) { E.shownScore += Math.sign(E.score - E.shownScore); dom.score.textContent = E.shownScore; if (E.score > E.best) { dom.best2.textContent = '★ ' + E.score; } }
