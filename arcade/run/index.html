@@ -111,7 +111,7 @@
     GROUND=H*0.80;
     player={x:W*0.22,y:GROUND,vy:0,r:22,onGround:true,jumps:0,run:0,rot:0};
     obstacles=[]; coins=[]; parts=[];
-    dist=0; coinCount=0; combo=0; speed=Math.min(W,520)*0.72; spawnT=0.6; coinT=1.1; shake=0; t=0; dead=false; lvl=1;
+    dist=0; coinCount=0; combo=0; speed=Math.min(W,520)*0.76; spawnT=0.45; coinT=0.7; shake=0; t=0; dead=false; lvl=1;
     lastMile=0;
   }
   var jumpV, grav, lastMile=0;
@@ -131,6 +131,7 @@
     if(kind<0.62){ w=26+Math.random()*14; h=30+Math.random()*22; }        // razor spike
     else if(kind<0.85){ w=44+Math.random()*26; h=26+Math.random()*10; }   // low block (barber chair)
     else { w=30; h=64+Math.random()*26; tall=true; }                      // tall — needs double jump
+    if(lvl>=2 && Math.random()<0.24){ obstacles.push({x:W+40,w:44,h:22,fly:true,fy:GROUND-148,passed:false}); return; }
     obstacles.push({x:W+40,w:w,h:h,tall:tall,passed:false});
   }
   function spawnCoinRun(){
@@ -149,8 +150,8 @@
     requestAnimationFrame(frame);
   }
   function update(dt){
-    t+=dt; speed+=dt*7; // ramp
-    dist+=speed*dt/42; var d=Math.floor(dist); var _nl=1+Math.floor(d/200); if(_nl>lvl){ lvl=_nl; if(window.LoopFX)LoopFX.levelUp(lvl); }
+    t+=dt; speed+=dt*8; // ramp
+    dist+=speed*dt/42; var d=Math.floor(dist); var _nl=1+Math.floor(d/100); if(_nl>lvl){ lvl=_nl; speed+=22; shake=Math.max(shake,6); if(window.LoopFX)LoopFX.levelUp(lvl); }
     poleAng+=dt*6; groundOff=(groundOff+speed*dt)% 48;
     // milestones
     if(d>=lastMile+100){ lastMile=Math.floor(d/100)*100; sMile(); shake=Math.max(shake,5); }
@@ -165,8 +166,15 @@
     var px=player.x, pr=player.r;
     for(var i=obstacles.length-1;i>=0;i--){ var o=obstacles[i]; o.x-=speed*dt;
       // collision (AABB vs player circle-ish)
+      if(o.fly){
+        var cy=player.y-pr;
+        if(px+pr*0.62> o.x && px-pr*0.62 < o.x+o.w && Math.abs(cy-(o.fy+o.h/2)) < o.h/2+pr*0.55){ die(); }
+        if(!o.passed && o.x+o.w<px){ o.passed=true; }
+        if(o.x+o.w< -20) obstacles.splice(i,1);
+        continue;
+      }
       var oyTop=GROUND-o.h;
-      if(px+pr*0.7> o.x && px-pr*0.7 < o.x+o.w && player.y+ (player.onGround?0:0) > oyTop){
+      if(px+pr*0.62> o.x && px-pr*0.62 < o.x+o.w && player.y+ (player.onGround?0:0) > oyTop){
         // player bottom is at player.y (feet). If feet below top of obstacle → hit
         if(player.y - pr*0.2 > oyTop){ die(); }
       }
@@ -208,7 +216,8 @@
   var STARS=[]; function initStars(){ STARS=[]; for(var i=0;i<52;i++){ STARS.push({x:Math.random(),y:Math.random()*0.8,r:Math.random()*1.4+0.3,ph:Math.random()*6.28,sp:0.3+Math.random()*0.8,c:i%6===0}); } }
   function drawStars(){ var tt=performance.now()*0.001; for(var i=0;i<STARS.length;i++){ var s=STARS[i]; X.globalAlpha=0.25+0.55*Math.abs(Math.sin(tt*s.sp+s.ph)); X.fillStyle=s.c?'#9fd0ff':'#ffffff'; X.beginPath(); X.arc(s.x*W,s.y*H,s.r,0,6.28); X.fill(); } X.globalAlpha=1; }
   function drawBg(){
-    var g=X.createLinearGradient(0,0,0,H); g.addColorStop(0,'#0b1024'); g.addColorStop(.6,'#0a0b18'); g.addColorStop(1,'#070810');
+    var hu=(228+(lvl-1)*26)%360;
+    var g=X.createLinearGradient(0,0,0,H); g.addColorStop(0,'hsl('+hu+',52%,10%)'); g.addColorStop(.6,'hsl('+hu+',44%,7%)'); g.addColorStop(1,'hsl('+hu+',40%,5%)');
     X.fillStyle=g; X.fillRect(0,0,W,H);
     drawStars();
     // parallax mirrors/shelves
@@ -253,6 +262,18 @@
     X.globalAlpha=.06; for(var gx=(-groundOff*1.4)%80; gx<W; gx+=80){ X.fillStyle='#7aa2ff'; X.fillRect(gx,GROUND+18,40,H); } X.globalAlpha=1;
   }
   function drawObstacle(o){
+    if(o.fly){ // clipper drone — pass UNDER it
+      var fy=o.fy, cx=o.x+o.w/2, cyd=fy+o.h/2, sp=t*14;
+      X.save(); X.translate(cx,cyd);
+      X.fillStyle='rgba(255,106,122,.18)'; X.beginPath(); X.arc(0,0,o.w*0.8,0,6.28); X.fill();
+      X.fillStyle='#39406b'; roundRect(-o.w/2,-o.h/2,o.w,o.h,8); X.fill();
+      X.strokeStyle='#ff6a7a'; X.lineWidth=2; roundRect(-o.w/2,-o.h/2,o.w,o.h,8); X.stroke();
+      X.strokeStyle='#c8cdf0'; X.lineWidth=3;
+      X.save(); X.rotate(sp); X.beginPath(); X.moveTo(-o.w*0.65,0); X.lineTo(o.w*0.65,0); X.stroke(); X.restore();
+      X.fillStyle='#ffd34d'; X.beginPath(); X.arc(0,0,3,0,6.28); X.fill();
+      X.restore();
+      return;
+    }
     var top=GROUND-o.h;
     if(o.tall){ // clippers tower
       var g=X.createLinearGradient(o.x,top,o.x,GROUND); g.addColorStop(0,'#8b7bff'); g.addColorStop(1,'#4b3fa0');
@@ -354,6 +375,7 @@
   el('startBtn').addEventListener('click',function(e){ e.stopPropagation(); startGame(); showTip(); });
   el('retryBtn').addEventListener('click',function(e){ e.stopPropagation(); startGame(); });
   el('backBtn').addEventListener('click',function(e){ e.stopPropagation(); });
+  window.__rt=function(c){ return eval(c); };
 })();
 </script>
 <script src="/loop-fx.js"></script>

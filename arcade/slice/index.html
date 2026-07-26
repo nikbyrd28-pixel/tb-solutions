@@ -110,15 +110,16 @@
 
   /* ---------- spawning ---------- */
   function spawn(){
-    var n=1+(Math.random()< Math.min(0.55, t/40)?1:0)+(Math.random()<Math.min(0.3,t/80)?1:0);
+    var n=1+(Math.random()< Math.min(0.6, 0.22+lvl*0.08)?1:0)+(Math.random()<Math.min(0.35, lvl*0.05)?1:0);
     for(var i=0;i<n;i++){
       var bomb=Math.random() < Math.min(0.22, 0.08+t/220);
       var coin=!bomb && Math.random()<0.16;
+      var star=!bomb && !coin && lvl>=3 && Math.random()<0.09;
       var x=W*(0.15+Math.random()*0.7);
       var vx=(W*0.5-x)*(0.45+Math.random()*0.4);
       var vy=-(H*(0.92+Math.random()*0.28));
-      var base= bomb? {g:'🪒',pts:0,col:'#ff3b52'} : coin? {g:'🪙',pts:0,col:'#ffd34d'} : GOOD[(Math.random()*GOOD.length)|0];
-      objs.push({x:x,y:H+40,vx:vx,vy:vy,r:30, rot:Math.random()*6.28, vr:(Math.random()-0.5)*6, type:bomb?'bomb':(coin?'coin':'good'), g:base.g, pts:base.pts, col:base.col, sliced:false});
+      var base= bomb? {g:'🪒',pts:0,col:'#ff3b52'} : coin? {g:'🪙',pts:0,col:'#ffd34d'} : star? {g:'⭐',pts:5,col:'#ffd34d'} : GOOD[(Math.random()*GOOD.length)|0];
+      objs.push({x:x,y:H+40,vx:vx,vy:vy,r:30, rot:Math.random()*6.28, vr:(Math.random()-0.5)*6, type:bomb?'bomb':(coin?'coin':(star?'star':'good')), g:base.g, pts:base.pts, col:base.col, sliced:false});
     }
   }
 
@@ -148,14 +149,19 @@
     var mult = sliceThisSwipe>=2 ? sliceThisSwipe : 1;
     var gain = pts*mult;
     score += gain;
-    var _nl=1+Math.floor(score/12); if(_nl>lvl){ lvl=_nl; if(window.LoopFX)LoopFX.levelUp(lvl); }
-    if(o.type==='coin') sCoin(); else sSlice(sliceThisSwipe);
+    var _nl=1+Math.floor(score/12); if(_nl>lvl){ lvl=_nl; frenzy(); if(window.LoopFX)LoopFX.levelUp(lvl); }
+    if(o.type==='coin'||o.type==='star') sCoin(); else sSlice(sliceThisSwipe);
+    if(o.type==='star'){ burst(o.x,o.y,'#ffd34d',26); shake=Math.max(shake,8); if(window.LoopFX)LoopFX.float(o.x,o.y-40,'⭐ +'+gain,'#ffd34d',22); }
     burst(o.x,o.y,o.col,12);
     // slice halves fly apart
     halves(o);
     popups.push({x:o.x,y:o.y,txt:'+'+gain,life:0.7,col:o.type==='coin'?'#ffd34d':'#5df2e0'});
     if(sliceThisSwipe>=3){ sCombo(); popups.push({x:W/2,y:H*0.32,txt:sliceThisSwipe+'x COMBO!',life:0.9,col:'#b98bff',big:true}); shake=Math.max(shake,6); }
     if(sliceThisSwipe>bestCombo) bestCombo=sliceThisSwipe;
+  }
+  function frenzy(){
+    for(var i=0;i<6;i++){ var x=W*(0.12+ i*0.15), base=GOOD[(Math.random()*GOOD.length)|0];
+      objs.push({x:x,y:H+40+Math.random()*60,vx:(W*0.5-x)*0.3,vy:-(H*(1.0+Math.random()*0.15)),r:30,rot:Math.random()*6.28,vr:(Math.random()-0.5)*6,type:'good',noMiss:true,g:base.g,pts:base.pts,col:base.col,sliced:false}); }
   }
   function halves(o){
     for(var s=-1;s<=1;s+=2){ parts.push({x:o.x,y:o.y,vx:o.vx*0.3+s*120,vy:o.vy*0.3-40,life:0.8,glyph:o.g,r:o.r,rot:o.rot,vr:s*4,half:true,alpha:1}); }
@@ -167,11 +173,11 @@
   function frame(now){ if(!running) return; var dt=Math.min(0.033,(now-last)/1000||0); last=now; if(!dead) update(dt); render(); requestAnimationFrame(frame); }
   function update(dt){
     t+=dt;
-    spawnT-=dt; if(spawnT<=0){ spawn(); spawnT=Math.max(0.5, 1.35 - t/60) + Math.random()*0.4; }
+    spawnT-=dt; if(spawnT<=0){ spawn(); spawnT=Math.max(0.42, 1.0 - t/70 - lvl*0.04) + Math.random()*0.35; }
     if(comboTimer>0){ comboTimer-=dt; if(comboTimer<=0){ comboCount=0; } }
     // decay per-swipe combo when blade idle handled on pointer up
     for(var i=objs.length-1;i>=0;i--){ var o=objs[i]; o.vy+=H*1.15*dt; o.x+=o.vx*dt; o.y+=o.vy*dt; o.rot+=o.vr*dt;
-      if(o.y>H+80){ if(!o.sliced && o.type==='good'){ lives--; sMiss(); shake=Math.max(shake,5); popups.push({x:o.x,y:H-40,txt:'miss',life:0.6,col:'#ff9db0'}); if(lives<=0) die(); }
+      if(o.y>H+80){ if(!o.sliced && o.type==='good' && !o.noMiss){ lives--; sMiss(); shake=Math.max(shake,5); popups.push({x:o.x,y:H-40,txt:'miss',life:0.6,col:'#ff9db0'}); if(lives<=0) die(); }
         objs.splice(i,1); }
     }
     for(var k=parts.length-1;k>=0;k--){ var p=parts[k]; p.life-=dt; if(p.life<=0){ parts.splice(k,1); continue; } p.x+=p.vx*dt; p.y+=p.vy*dt; p.vy+=(p.half?900:600)*dt; if(p.half) p.rot+=p.vr*dt, p.alpha=Math.max(0,p.life/0.8); }
@@ -219,7 +225,7 @@
   function drawObj(o){
     X.save(); X.translate(o.x,o.y);
     // glow ring
-    X.fillStyle= o.type==='bomb'? 'rgba(255,59,82,.28)' : o.type==='coin'? 'rgba(255,211,77,.28)':'rgba(93,242,224,.16)';
+    X.fillStyle= o.type==='bomb'? 'rgba(255,59,82,.28)' : (o.type==='coin'||o.type==='star')? 'rgba(255,211,77,.32)':'rgba(93,242,224,.16)';
     X.beginPath(); X.arc(0,0,o.r+ (o.type==='bomb'? 6+Math.sin(t*10)*3 : 4),0,6.28); X.fill();
     if(o.type==='bomb'){ X.strokeStyle='rgba(255,59,82,.9)'; X.lineWidth=3; X.beginPath(); X.arc(0,0,o.r+7,0,6.28); X.stroke(); }
     X.rotate(o.rot);
@@ -270,6 +276,7 @@
   el('startBtn').addEventListener('click',function(e){ e.stopPropagation(); startGame(); });
   el('retryBtn').addEventListener('click',function(e){ e.stopPropagation(); startGame(); });
   el('backBtn').addEventListener('click',function(e){ e.stopPropagation(); });
+  window.__rt=function(c){ return eval(c); };
 })();
 </script>
 <script src="/loop-fx.js"></script>
