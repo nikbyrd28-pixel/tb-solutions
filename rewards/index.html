@@ -534,7 +534,7 @@ function qrUrl(data,size){ return 'https://api.qrserver.com/v1/create-qr-code/?s
 
 function showCard(m){
   member=m;
-  try{ localStorage.setItem('rw_'+slug, m.code); }catch(e){}
+  try{ localStorage.setItem('rw_'+slug, m.code); localStorage.setItem('rw_cache_'+slug, JSON.stringify(m)); }catch(e){}
   if(m.biz_name){ display=m.biz_name; try{ document.title=m.biz_name+' rewards'; var bel=el('brand'); if(bel) bel.innerHTML=String(m.biz_name).replace(/[<>&]/g,'')+' <span>rewards</span>'; }catch(e){} }
   showLoading(false);
   el('joinCard').classList.add('hide');
@@ -1211,12 +1211,18 @@ function join(){
 }
 function showLoading(b){ var e=el('loadingCard'); if(e) e.classList.toggle('hide',!b); }
 function loadByCode(code){
-  showLoading(true);
+  var cached=null;
+  try{ var cj=localStorage.getItem('rw_cache_'+slug); if(cj){ cached=JSON.parse(cj); if(cached && cached.code!==code) cached=null; } }catch(e){ cached=null; }
+  if(cached){ showCard(cached); } else { showLoading(true); }
   rpc('get_member',{p_code:code}).then(function(m){
     showLoading(false);
-    if(!m.error) showCard(m); else el('joinCard').classList.remove('hide');
+    if(m.error){ if(!cached) el('joinCard').classList.remove('hide'); return; }
+    try{ if(cached && JSON.stringify(m)===JSON.stringify(cached)) return; }catch(e){}
+    showCard(m);
   }).catch(function(){
-    showLoading(false); el('joinCard').classList.remove('hide');
+    showLoading(false);
+    if(cached) return; // offline — cached card already on screen
+    el('joinCard').classList.remove('hide');
     if(el('jErr')){ el('jErr').textContent='Tap Join to load your card.'; el('jErr').classList.remove('hide'); }
   });
 }
