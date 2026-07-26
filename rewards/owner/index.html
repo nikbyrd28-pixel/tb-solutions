@@ -136,6 +136,21 @@
       <div class="stats" id="stats"></div>
     </div>
 
+    <div class="card" id="qrCard">
+      <h2>📱 <b>Your shop QR</b> — customers scan this to join</h2>
+      <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+        <div style="background:#fff;border-radius:14px;padding:8px;flex:0 0 auto"><img id="shopQrImg" alt="Your shop QR" style="width:132px;height:132px;display:block"></div>
+        <div style="flex:1;min-width:200px">
+          <p class="muted" style="margin:0 0 10px;font-size:13px">Show it, print it, text it — every scan opens your rewards card.</p>
+          <div class="links" style="flex-wrap:wrap">
+            <button class="btn ghost" id="qrCopy">🔗 Copy join link</button>
+            <button class="btn ghost" id="qrShare">📣 Share</button>
+            <button class="btn ghost" id="qrPoster">🖨️ Print poster</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="card">
       <h2>📅 <b>Appointments</b> — your live schedule</h2>
       <div id="agenda"><p class="muted">Loading…</p></div>
@@ -371,6 +386,13 @@ function showErr(m){ el('err').textContent=m; el('err').classList.remove('hide')
 
 function render(d){
   el('login').classList.add('hide'); el('dash').classList.remove('hide');
+  (function(){
+    var join=location.origin+'/rewards/?c='+d.client;
+    var img=el('shopQrImg'); if(img) img.src='https://api.qrserver.com/v1/create-qr-code/?size=264x264&ecc=H&margin=0&color=11-16-36&data='+encodeURIComponent(join);
+    var cb=el('qrCopy'); if(cb) cb.onclick=function(){ cp(join); };
+    var sb=el('qrShare'); if(sb) sb.onclick=function(){ if(navigator.share){ navigator.share({title:cap(d.client)+' rewards',url:join}).catch(function(){}); } else cp(join); };
+    var pb=el('qrPoster'); if(pb) pb.onclick=function(){ window.open(location.origin+'/rewards/poster/?c='+d.client,'_blank'); };
+  })();
   el('bizName').textContent=cap(d.client)+' — Loop';
   el('bizSub').textContent='Reward: '+d.reward_text+' at '+d.reward_at+' points';
   var tiles=[
