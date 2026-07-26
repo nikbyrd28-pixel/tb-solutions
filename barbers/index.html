@@ -261,6 +261,11 @@
 var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
 var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
 function el(id){return document.getElementById(id)}
+// affiliate ref: remember an affiliate's ?ref= and carry it into the free signup
+var REF='';
+(function(){ try{ var r=(new URLSearchParams(location.search).get('ref')||'').trim(); if(r){ REF=r; localStorage.setItem('tb_aff_ref',r); } else { REF=localStorage.getItem('tb_aff_ref')||''; } }catch(e){}
+  if(REF){ [].forEach.call(document.querySelectorAll('a[href^="/rewards/signup/"]'),function(a){ a.href='/rewards/signup/?ref='+encodeURIComponent(REF); }); }
+})();
 (function(){ if(!('IntersectionObserver' in window)){ [].forEach.call(document.querySelectorAll('.reveal'),function(x){x.style.opacity=1}); return; }
   var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.style.animationDelay='0s';io.unobserve(en.target);}else{en.target.style.opacity='0';}});},{threshold:.1});
   document.querySelectorAll('.reveal').forEach(function(x){io.observe(x);});
@@ -273,7 +278,7 @@ function subscribe(){
   if(!email || email.indexOf('@')<1){ f.email.focus(); return subFlash('Add a valid email so we can reach you.'); }
   var btn=el('subBtn'); btn.disabled=true; btn.textContent='Sending…'; el('subErr').style.display='none';
   fetch(SUPA_URL+'/rest/v1/intakes',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
-    body:JSON.stringify({business:biz,name:name,email:email,phone:phone,niche:'barbershop',city:(f.city.value||''),about:'💈 Barbershop system signup',interest:'Barbershop all-in-one',goal:'keep my chairs booked',timeline:'ASAP',notes:'From barbers landing'+(window.adSrc?adSrc():'')})})
+    body:JSON.stringify({business:biz,name:name,email:email,phone:phone,niche:'barbershop',city:(f.city.value||''),ref:REF||'',about:'💈 Barbershop system signup',interest:'Barbershop all-in-one',goal:'keep my chairs booked',timeline:'ASAP',notes:'From barbers landing'+(window.adSrc?adSrc():'')})})
   .then(function(r){ if(!r.ok) throw 0;
     if(window.trackLead) trackLead('Barber system signup');
     [].forEach.call(f.querySelectorAll('input,button'),function(x){x.style.display='none';});

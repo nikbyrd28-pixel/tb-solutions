@@ -136,6 +136,9 @@ function el(id){return document.getElementById(id)}
 function rpc(fn,args){ return fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(args)}).then(function(r){return r.json();}); }
 function qrUrl(data){ return 'https://api.qrserver.com/v1/create-qr-code/?size=232x232&margin=0&data='+encodeURIComponent(data); }
 function flash(m){ var e=el('err'); e.textContent=m; e.classList.remove('hide'); }
+// affiliate attribution: capture ?ref= (from an affiliate's link) and remember it
+var REF='';
+(function(){ try{ var r=(new URLSearchParams(location.search).get('ref')||'').trim(); if(r){ REF=r; localStorage.setItem('tb_aff_ref',r); } else { REF=localStorage.getItem('tb_aff_ref')||''; } }catch(e){} })();
 var KIND='shop';
 function setKind(k){ KIND=(k==='solo'?'solo':'shop');
   [].forEach.call(document.querySelectorAll('#kindSeg .segbtn'),function(b){ b.classList.toggle('on', b.getAttribute('data-kind')===KIND); });
@@ -149,7 +152,7 @@ function createShop(){
   if(biz.length<2){ el('biz').focus(); return flash(KIND==='solo'?'Add your name or brand.':'Add your business name.'); }
   if(!/^[0-9]{4,8}$/.test(pin)){ el('pin').focus(); return flash('Pick a 4–8 digit PIN (numbers only).'); }
   var btn=el('goBtn'); btn.disabled=true; btn.textContent='Creating…';
-  rpc('create_loop_shop',{p_name:biz,p_pin:pin,p_email:email||null,p_kind:KIND}).then(function(d){
+  rpc('create_loop_shop',{p_name:biz,p_pin:pin,p_email:email||null,p_kind:KIND,p_ref:REF||null}).then(function(d){
     if(!d||!d.ok){ btn.disabled=false; btn.textContent='Create my Loop — free →'; return flash((d&&d.error)||'Could not create — try again.'); }
     showDone(d, email);
   }).catch(function(){ btn.disabled=false; btn.textContent='Create my Loop — free →'; flash('Network hiccup — try again.'); });

@@ -67,13 +67,29 @@
   <!-- LOGIN -->
   <div class="card" id="login">
     <h1>Welcome, <span>partner</span> 👋</h1>
-    <p class="muted">Enter your code and PIN to see how you're doing. Don't have them yet? Ask your TB Solutions contact.</p>
+    <p class="muted">Enter your code and PIN to see how you're doing.</p>
     <label>Your code</label>
     <input id="code" placeholder="JORDAN" style="text-transform:uppercase" autocomplete="off">
     <label>PIN</label>
     <input id="pin" type="tel" inputmode="numeric" placeholder="4-digit PIN" autocomplete="off">
     <button class="btn" id="loginBtn" onclick="loadDash()">See my dashboard →</button>
     <div class="err hide" id="err"></div>
+    <button class="btn ghost" onclick="showJoin()" style="margin-top:10px">New here? Become an affiliate →</button>
+  </div>
+
+  <!-- JOIN -->
+  <div class="card hide" id="joinCard">
+    <h1>Earn by <span>referring shops</span> 💸</h1>
+    <p class="muted">Get your own link in 10 seconds. Share it with barbershops — when one signs up, you earn. We'll pay you per shop you bring in.</p>
+    <label>Your name</label>
+    <input id="jName" placeholder="Jordan Smith" autocomplete="name">
+    <label>Email</label>
+    <input id="jEmail" type="email" placeholder="you@email.com" autocomplete="email">
+    <label>Phone <span style="color:var(--muted)">(optional)</span></label>
+    <input id="jPhone" type="tel" placeholder="(555) 555-5555" autocomplete="tel">
+    <button class="btn" id="joinBtn" onclick="doAffJoin()">Get my referral link →</button>
+    <div class="err hide" id="jErr"></div>
+    <button class="btn ghost" onclick="showLogin()" style="margin-top:10px">Already have a code? Sign in</button>
   </div>
 
   <!-- DASHBOARD -->
@@ -130,6 +146,25 @@ el('pin').addEventListener('keydown',function(e){ if(e.key==='Enter') loadDash()
 
 function toast(t){ var x=document.createElement('div'); x.className='toast'; x.textContent=t; document.body.appendChild(x); setTimeout(function(){x.remove()},1300); }
 
+function showJoin(){ el('login').classList.add('hide'); el('joinCard').classList.remove('hide'); }
+function showLogin(){ el('joinCard').classList.add('hide'); el('login').classList.remove('hide'); }
+function showJErr(m){ el('jErr').textContent=m; el('jErr').classList.remove('hide'); }
+async function doAffJoin(){
+  var name=(el('jName').value||'').trim(), email=(el('jEmail').value||'').trim(), phone=(el('jPhone').value||'').trim();
+  el('jErr').classList.add('hide');
+  if(name.length<2){ el('jName').focus(); return showJErr('Enter your name.'); }
+  if(!email || email.indexOf('@')<1){ el('jEmail').focus(); return showJErr('Add a valid email so we can pay you.'); }
+  var b=el('joinBtn'); b.disabled=true; b.textContent='Creating…';
+  try{
+    var r=await fetch(SUPA_URL+'/rest/v1/rpc/affiliate_join',{method:'POST',
+      headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_name:name,p_email:email||null,p_phone:phone||null})});
+    var d=await r.json();
+    if(!d || d.ok===false){ b.disabled=false; b.textContent='Get my referral link →'; return showJErr((d&&d.error)||'Could not sign up — try again.'); }
+    el('code').value=d.code; el('pin').value=d.pin;
+    showLogin(); loadDash();
+  }catch(e){ b.disabled=false; b.textContent='Get my referral link →'; showJErr('Network error — try again.'); }
+}
 async function loadDash(){
   var code=(el('code').value||'').trim().toUpperCase(), pin=(el('pin').value||'').trim();
   if(!code){ showErr('Enter your code.'); return; }
@@ -166,7 +201,7 @@ function render(d){
   el('earn').textContent=earn; el('earnSub').textContent=sub;
   // links
   var base='https://tbsol.net';
-  var links=[['🎮 Plan game',base+'/play/?ref='+d.code],['🌐 Homepage',base+'/?ref='+d.code],['📝 Intake',base+'/start/?ref='+d.code]];
+  var links=[['💈 Barber pitch',base+'/barbers/?ref='+d.code],['⚡ Free signup',base+'/rewards/signup/?ref='+d.code],['🌐 Homepage',base+'/?ref='+d.code]];
   el('links').innerHTML=links.map(function(l,i){return '<button onclick="cp('+i+')">'+l[0]+'</button>';}).join('');
   window._links=links.map(function(l){return l[1]});
   // recent
