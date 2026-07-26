@@ -371,17 +371,17 @@
       by = pby = E.H * 0.44; bvy = 0; rot = 0; squash = 0; pipes = []; groundX = 0; dead = false; pn = 0; wing = 0; shield = false; inv = 0; E._fly = {};
       stars = []; for (var i = 0; i < 26; i++) stars.push({ x: rnd(0, E.W), y: rnd(0, E.H * 0.7), r: rnd(0.5, 1.6), s: rnd(0.1, 0.4) });
       clouds = []; for (var j = 0; j < 4; j++) clouds.push({ x: rnd(0, E.W), y: rnd(E.H * 0.08, E.H * 0.42), s: rnd(0.15, 0.4), sc: rnd(0.7, 1.5) });
-      spawnPipe(E.W + 90); spawnPipe(E.W + 90 + gapX());
+      spawnPipe(E.W + 40); spawnPipe(E.W + 40 + gapX());
     }
-    function gapX() { return clamp(E.W * 0.62, 190, 300); }
-    function speed() { return 2.0 + Math.min(2.8, E.score * 0.028); }
+    function gapX() { return clamp(E.W * 0.50, 150, 240); }
+    function speed() { return 2.7 + Math.min(3.2, E.score * 0.045); }
     function gapH() { var base = pn < 3 ? E.H * 0.40 : E.H * 0.34; return clamp(base - Math.max(0, E.score - 2) * 1.1, E.H * 0.24, E.H * 0.42); }
     function spawnPipe(x) {
       var g = gapH(), center, osc = E.level >= 3 ? Math.min(34, 10 + E.level * 4) : 0;
       if (pn < 2) center = E.H * 0.45 + rnd(-E.H * 0.05, E.H * 0.05);        // ease the first pipes toward the bird's height
       else center = rnd(g / 2 + 50, E.H - g / 2 - 60);
       var top = clamp(center - g / 2, 40, E.H - g - 70);
-      var hasCoin = pn >= 1 && Math.random() < 0.5;
+      var hasCoin = pn >= 1 && Math.random() < 0.75;
       pipes.push({ x: x, top: top, top0: top, osc: osc, ph: rnd(0, 6.28), gap: g, passed: false, coin: hasCoin, coinGot: false, pow: !hasCoin && pn >= 2 && Math.random() < 0.22, powGot: false });
       pn++;
     }
@@ -545,7 +545,7 @@
     function makeRow(idx) {
       if (idx < 2) return { type: 'safe', cars: [], coin: false, deco: [] };
       var roll = Math.random();
-      if (roll < 0.36) {
+      if (roll < 0.28) {
         var coinCol = ri(0, COLS - 1), deco = [], nd = ri(0, 3);
         for (var q = 0; q < nd; q++) { var dc = ri(0, COLS - 1); if (dc !== coinCol) deco.push({ c: dc, t: Math.random() < 0.6 ? 'tree' : 'bush' }); }
         return { type: 'safe', cars: [], coin: Math.random() < 0.45, coinCol: coinCol, coinGot: false, deco: deco, mag: Math.random() < 0.12, magCol: ri(0, COLS - 1), magGot: false };
@@ -555,7 +555,7 @@
       if (idx >= 15 && Math.random() < 0.22) {
         return { type: 'road', cars: [{ x: Math.random() * 1.2 - 0.1, w: 0.42 }], speed: (0.011 + idx * 0.00015) * dir, col: ['#ffd86a', '#e0a83e'] };
       }
-      var speed = (0.0045 + Math.random() * 0.006 + idx * 0.00012) * dir;
+      var speed = (0.006 + Math.random() * 0.007 + idx * 0.00015) * dir;
       var cars = [], n = 1 + (Math.random() < 0.5 ? 1 : 0), col = CARCOL[ri(0, CARCOL.length - 1)];
       for (var k = 0; k < n; k++) cars.push({ x: Math.random() * 1.3 - 0.15, w: 0.12 + Math.random() * 0.07 });
       return { type: 'road', cars: cars, speed: speed, col: col };
