@@ -161,6 +161,7 @@ function createShop(){
 }
 function showDone(d, email){
   var base=location.origin, slug=d.slug;
+  try{ localStorage.setItem('loop_owner', JSON.stringify({c:slug, p:d.pin||''})); }catch(e){}
   el('signupCard').classList.add('hide'); el('doneCard').classList.remove('hide');
   el('doneName').textContent=d.biz_name||'Your shop';
   el('slugPill').textContent=slug;
