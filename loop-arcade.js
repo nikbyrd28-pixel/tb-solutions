@@ -551,6 +551,10 @@
         return { type: 'safe', cars: [], coin: Math.random() < 0.45, coinCol: coinCol, coinGot: false, deco: deco, mag: Math.random() < 0.12, magCol: ri(0, COLS - 1), magGot: false };
       }
       var dir = Math.random() < 0.5 ? 1 : -1;
+      // deeper rows unlock TRAINS: one long, fast hazard — a whole new dodge pattern
+      if (idx >= 15 && Math.random() < 0.22) {
+        return { type: 'road', cars: [{ x: Math.random() * 1.2 - 0.1, w: 0.42 }], speed: (0.011 + idx * 0.00015) * dir, col: ['#ffd86a', '#e0a83e'] };
+      }
       var speed = (0.0045 + Math.random() * 0.006 + idx * 0.00012) * dir;
       var cars = [], n = 1 + (Math.random() < 0.5 ? 1 : 0), col = CARCOL[ri(0, CARCOL.length - 1)];
       for (var k = 0; k < n; k++) cars.push({ x: Math.random() * 1.3 - 0.15, w: 0.12 + Math.random() * 0.07 });
