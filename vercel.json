@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "git": {
+    "deploymentEnabled": {
+      "claude/loop-loyalty-booking-n6lu6b": false,
+      "claude/viral-promo-video-editing-quo4bx": false
+    }
+  }
+}
