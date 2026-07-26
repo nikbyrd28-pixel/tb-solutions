@@ -163,6 +163,8 @@
       <div id="setForm" class="hide">
         <label>Business name</label>
         <input id="setBiz" placeholder="Joe's Barbershop">
+        <button class="btn ghost" type="button" onclick="loadBarberPreset()" style="margin:10px 0;width:100%">💈 Load barber preset (recommended)</button>
+        <p class="muted" style="margin:-2px 0 4px;font-size:12.5px">Fills a proven barbershop setup — free-cut reward, barber prizes, a coin store, and a 10th-cut milestone. Review and Save.</p>
 
         <div class="grid2">
           <div><label>Reward customers earn</label><input id="setRewardText" placeholder="a free cut"></div>
@@ -657,6 +659,35 @@ function renderOdds(){
   var winPct=Math.round(winW/total*100);
   var grandTxt=grand>0?('🏆 Grand prize hits about <b>1 in '+Math.max(1,Math.round(total/grand))+'</b> spins.'):'No grand prize set.';
   box.innerHTML='Players win something on about <b>'+winPct+'%</b> of spins. '+grandTxt+' Odds run server-side — customers can’t game them.';
+}
+function loadBarberPreset(){
+  function set(id,v){ var e=el(id); if(e && e.type!=='checkbox') e.value=v; }
+  function chk(id,on){ var e=el(id); if(e && e.type==='checkbox'){ e.checked=on; try{e.dispatchEvent(new Event('change'));}catch(_){} } }
+  set('setRewardText','a free haircut');
+  set('setPPV',20); set('setRewardAt',120); set('setSpinCost',30); set('setSurvey',20);
+  PRIZES=[
+    {label:'Free line-up',type:'grand',weight:5},
+    {label:'Free beard trim',type:'service',weight:6},
+    {label:'$5 off next cut',type:'discount',weight:18},
+    {label:'10% off any product',type:'discount',weight:14},
+    {label:'Free hot-towel add-on',type:'service',weight:12},
+    {label:'+3 bonus points',type:'points',weight:18},
+    {label:'So close — spin again next visit',type:'nothing',weight:34}
+  ];
+  if(typeof renderPrizeEditor==='function') renderPrizeEditor();
+  function sid(){ return 's'+Math.random().toString(36).slice(2,8); }
+  STORE=[
+    {id:sid(),label:'$5 off any cut',cost:80,type:'discount',icon:'💵',category:'Discounts',sale:'',stock:'',per_customer:'',featured:false,barber:''},
+    {id:sid(),label:'Free beard trim',cost:150,type:'service',icon:'🧔',category:'Services',sale:'',stock:'',per_customer:'',featured:true,barber:''},
+    {id:sid(),label:'Free line-up',cost:100,type:'service',icon:'💈',category:'Services',sale:'',stock:'',per_customer:'',featured:false,barber:''},
+    {id:sid(),label:'$15 off a full groom',cost:250,type:'discount',icon:'✂️',category:'Discounts',sale:'',stock:'',per_customer:'',featured:false,barber:''}
+  ];
+  if(typeof renderStoreEditor==='function') renderStoreEditor();
+  chk('setMileOn',true); set('setMileCuts',10); set('setMileIcon','✂️'); set('setMileLabel','Every 10th cut is on us');
+  set('setTourPrize','Free haircut for this week\'s #1 player');
+  set('setMemNote','Tap join — your barber sets you up next visit. Earn a free cut, spin for prizes, and climb the leaderboard. 💈');
+  var ok=el('setOk'); if(ok){ ok.textContent='💈 Barber preset loaded — review the fields and tap Save.'; ok.classList.remove('hide'); }
+  el('settingsCard') && el('settingsCard').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function saveSettings(){
   readPrizes();

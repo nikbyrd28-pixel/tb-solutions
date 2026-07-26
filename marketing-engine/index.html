@@ -19,6 +19,9 @@
   label{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:12px 0 4px}
   input,select,textarea{width:100%;background:rgba(0,0,0,.4);border:1px solid var(--line);border-radius:10px;padding:11px 12px;color:var(--text);font:inherit;font-size:15px}
   textarea{min-height:64px;resize:vertical}
+  .bchip{border:1px solid var(--line);background:rgba(139,123,255,.08);color:var(--text);border-radius:999px;padding:9px 13px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:border-color .12s,transform .1s}
+  .bchip:hover{border-color:var(--acc);transform:translateY(-1px)}
+  .bchip:active{transform:scale(.97)}
   input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(139,123,255,.15)}
   option{color:#111}
   .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -127,6 +130,10 @@
         <option value="Luxury and premium">Luxury &amp; premium</option>
         <option value="Urgent and high-converting">Urgent &amp; high-converting</option>
       </select>
+      <div id="barberPack" style="margin-top:14px">
+        <label style="margin:0 0 6px">💈 Barber quick-ideas <span class="muted" style="text-transform:none;font-weight:400;letter-spacing:0">— tap one, then hit Generate</span></label>
+        <div id="barberIdeas" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+      </div>
       <div class="bar">
         <button class="btn" id="genBtn" onclick="generate()">⚡ Generate</button>
         <button class="btn ghost" id="kitBtn" onclick="genKit()">🧰 Full campaign kit</button>
@@ -174,6 +181,31 @@ var ASSETS=[
 ];
 var sel='plan', lastOut=null, clients=[], profiles={};
 
+var BARBER_IDEAS=[
+  {label:'📅 Fill this week\'s chairs',kind:'social_calendar',goal:'book out this week\'s open chairs',brief:'Local barbershop pushing this week\'s open appointment slots. Urgency + easy "book now / DM to book". Include a QR/link mention.'},
+  {label:'💈 Before/after reel',kind:'video_script',goal:'turn a fresh-cut transformation into bookings',brief:'Short vertical before/after fade transformation reel. Strong 3-second hook, satisfying reveal, CTA to book. Trending, punchy captions.'},
+  {label:'✨ New-client first-cut offer',kind:'ad_copy',goal:'bring in new clients with a first-visit offer',brief:'Meta/Instagram ad for a first-visit new-client offer (e.g. $5 off or free line-up). Target local men 18-45. Clear offer + book link.'},
+  {label:'🤝 Refer a friend',kind:'social_calendar',goal:'get regulars referring their friends',brief:'Referral push: regulars bring a friend, both get a reward. Tie to the shop\'s ambassador/loyalty program. Friendly, community vibe.'},
+  {label:'🐢 Slow-day walk-ins',kind:'ad_copy',goal:'fill slow weekday chairs with walk-ins',brief:'Fill dead weekday hours. "Walk-ins welcome today" energy, maybe a small slow-day perk. Short, scroll-stopping.'},
+  {label:'👋 Meet the barber',kind:'video_script',goal:'build trust and shop personality',brief:'Meet-the-barber / shop-culture short video. Personality, skill, why clients love it here. Builds trust so first-timers book.'},
+  {label:'🔁 Win back old clients',kind:'email_sequence',goal:'get past clients to rebook',brief:'Win-back sequence for clients who haven\'t been in 6-8+ weeks. "It\'s time for a fresh cut" + an easy rebook link and a small comeback perk.'}
+];
+function renderBarberIdeas(){
+  var box=el('barberIdeas'); if(!box)return;
+  box.innerHTML=BARBER_IDEAS.map(function(_,i){ return '<button type="button" class="bchip" onclick="applyBarberIdea('+i+')">'+esc(BARBER_IDEAS[i].label)+'</button>'; }).join('');
+}
+function applyBarberIdea(i){
+  var idea=BARBER_IDEAS[i]; if(!idea)return;
+  if(!el('fNiche').value.trim()) el('fNiche').value='barbershop';
+  el('fGoal').value=idea.goal;
+  var cur=el('fExtra').value.trim();
+  el('fExtra').value=(cur?cur+'\n':'')+idea.brief;
+  if(idea.kind){ sel=idea.kind; renderAssets(); }
+  saveBrief();
+  el('genState').textContent='Loaded — tap ⚡ Generate';
+  el('assetGrid').scrollIntoView({behavior:'smooth',block:'center'});
+}
+
 function el(id){return document.getElementById(id)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 
@@ -200,7 +232,7 @@ async function showEngine(){
   el('loginCard').classList.add('hide');
   el('engine').classList.remove('hide');
   el('logoutBtn').classList.remove('hide');
-  renderAssets(); loadClients(); loadLibrary(); loadProfiles();
+  renderAssets(); renderBarberIdeas(); loadClients(); loadLibrary(); loadProfiles();
   el('modes').classList.remove('hide');
   setMode(location.hash==='#video'?'video':'copy');
   document.addEventListener('keydown',function(e){ if((e.metaKey||e.ctrlKey)&&e.key==='Enter' && !el('engine').classList.contains('hide')){ e.preventDefault(); generate(); } });
