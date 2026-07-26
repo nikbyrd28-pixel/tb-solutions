@@ -53,6 +53,9 @@
   .qrbox{background:#fff;border-radius:18px;padding:12px;width:232px;height:232px;margin:6px auto 4px;box-shadow:0 0 0 1px var(--line),0 0 34px rgba(122,162,255,.3)}
   .qrbox img{width:100%;height:100%;display:block}
   .slugpill{display:inline-block;background:rgba(122,162,255,.12);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:800;font-size:14px;margin:4px 0}
+  .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:2px 0 6px}
+  .segbtn{border:1px solid var(--line);background:rgba(122,162,255,.05);color:#eef1fb;border-radius:12px;padding:12px 8px;font:inherit;font-weight:800;font-size:13px;cursor:pointer;transition:border-color .12s,background .12s}
+  .segbtn.on{border-color:#7aa2ff;background:rgba(122,162,255,.18);box-shadow:0 0 0 2px rgba(122,162,255,.22)}
   .links{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
   .lk{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;text-decoration:none;color:var(--text);border:1px solid var(--line);border-radius:14px;padding:14px 8px;background:rgba(122,162,255,.05);font-weight:700;font-size:13px}
   .lk .e{font-size:24px}
@@ -78,11 +81,16 @@
 
   <!-- SIGNUP -->
   <div class="card" id="signupCard">
-    <h1>Your shop, <span>live in 30 seconds</span></h1>
+    <h1>You're <span>live in 30 seconds</span></h1>
     <p class="lead">Create your loyalty + booking program and get your own QR code instantly. No app, no hardware, no card.</p>
     <div class="perk"><span>✨ No app</span><span>📷 No hardware</span><span>🎮 Games included</span><span>💳 No card</span></div>
 
-    <label>Business name</label>
+    <label>I'm setting up…</label>
+    <div class="seg" id="kindSeg">
+      <button type="button" class="segbtn on" data-kind="shop" onclick="setKind('shop')">🏪 A whole barbershop</button>
+      <button type="button" class="segbtn" data-kind="solo" onclick="setKind('solo')">💈 Just me (independent)</button>
+    </div>
+    <label id="bizLabel">Shop name</label>
     <input id="biz" placeholder="Joe's Barbershop" autocomplete="organization">
     <label>Staff PIN <span style="text-transform:none;letter-spacing:0;color:var(--muted)">— 4–8 digits, you'll use it to scan &amp; log in</span></label>
     <input id="pin" type="tel" inputmode="numeric" maxlength="8" placeholder="e.g. 1234">
@@ -128,14 +136,20 @@ function el(id){return document.getElementById(id)}
 function rpc(fn,args){ return fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(args)}).then(function(r){return r.json();}); }
 function qrUrl(data){ return 'https://api.qrserver.com/v1/create-qr-code/?size=232x232&margin=0&data='+encodeURIComponent(data); }
 function flash(m){ var e=el('err'); e.textContent=m; e.classList.remove('hide'); }
+var KIND='shop';
+function setKind(k){ KIND=(k==='solo'?'solo':'shop');
+  [].forEach.call(document.querySelectorAll('#kindSeg .segbtn'),function(b){ b.classList.toggle('on', b.getAttribute('data-kind')===KIND); });
+  if(KIND==='solo'){ el('bizLabel').textContent='Your name or brand'; el('biz').placeholder='Marcus the Barber'; }
+  else { el('bizLabel').textContent='Shop name'; el('biz').placeholder="Joe's Barbershop"; }
+}
 el('pin').addEventListener('keydown',function(e){ if(e.key==='Enter') createShop(); });
 function createShop(){
   var biz=(el('biz').value||'').trim(), pin=(el('pin').value||'').trim(), email=(el('email').value||'').trim();
   el('err').classList.add('hide');
-  if(biz.length<2){ el('biz').focus(); return flash('Add your business name.'); }
+  if(biz.length<2){ el('biz').focus(); return flash(KIND==='solo'?'Add your name or brand.':'Add your business name.'); }
   if(!/^[0-9]{4,8}$/.test(pin)){ el('pin').focus(); return flash('Pick a 4–8 digit PIN (numbers only).'); }
   var btn=el('goBtn'); btn.disabled=true; btn.textContent='Creating…';
-  rpc('create_loop_shop',{p_name:biz,p_pin:pin,p_email:email||null}).then(function(d){
+  rpc('create_loop_shop',{p_name:biz,p_pin:pin,p_email:email||null,p_kind:KIND}).then(function(d){
     if(!d||!d.ok){ btn.disabled=false; btn.textContent='Create my Loop — free →'; return flash((d&&d.error)||'Could not create — try again.'); }
     showDone(d, email);
   }).catch(function(){ btn.disabled=false; btn.textContent='Create my Loop — free →'; flash('Network hiccup — try again.'); });
