@@ -52,7 +52,7 @@ var SUPA='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
 var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
 var q=new URLSearchParams(location.search), client=(q.get('c')||'').toLowerCase().replace(/[^a-z0-9]/g,''), code=q.get('m')||'';
 function el(i){return document.getElementById(i)}
-var N=4, GAP=10, SZ=0, board=el('board'), grid, score=0, best=0, over=false, won=false, tid=0, maxTile=0;
+var N=4, GAP=10, SZ=0, board=el('board'), grid, score=0, best=0, over=false, won=false, tid=0, maxTile=0, streak=0;
 try{ best=+localStorage.getItem('nr_best')||0; }catch(e){} el('bs').textContent='★ '+best;
 var COLORS={2:'#2a3550',4:'#31406b',8:'#7aa2ff',16:'#5ad0f0',32:'#43f0b0',64:'#ffcf5a',128:'#ffb15a',256:'#ff8a5c',512:'#ff6a7a',1024:'#c9a3ff',2048:'#ffd700'};
 function layout(){
@@ -79,7 +79,7 @@ function grid2d(){ var g=[]; for(var r=0;r<N;r++){ g.push(new Array(N).fill(null
 function empt(){ var g=grid2d(), out=[]; for(var r=0;r<N;r++)for(var c=0;c<N;c++) if(!g[r][c]) out.push([r,c]); return out; }
 function spawn(){ var e=empt(); if(!e.length) return; var p=e[(Math.random()*e.length)|0]; addTile(p[0],p[1],Math.random()<0.9?2:4,true); }
 function reset(){
-  for(var k in cells){ cells[k].el.remove(); } cells={}; score=0; over=false; won=false; maxTile=0; board.style.boxShadow='';
+  for(var k in cells){ cells[k].el.remove(); } cells={}; score=0; over=false; won=false; maxTile=0; streak=0; board.style.boxShadow='';
   el('sc').textContent='0'; el('over').classList.add('hide');
   layout(); spawn(); spawn();
 }
@@ -119,6 +119,10 @@ function move(dr,dc){
     }
   }); });
   if(moved){
+    if(gained>0){ streak++;
+      if(streak>=3){ var bon=streak*4; gained+=bon;
+        if(window.LoopFX){ LoopFX.float(innerWidth/2, innerHeight*0.22, '\ud83d\udd25 streak x'+streak+' +'+bon, '#ff9d5a', 22); if(streak%5===0) LoopFX.confetti(14); } }
+    } else { streak=0; }
     score+=gained; el('sc').textContent=score;
     if(gained>0 && window.LoopFX) LoopFX.sfx('score'); else if(window.LoopFX) LoopFX.sfx('click');
     setTimeout(function(){

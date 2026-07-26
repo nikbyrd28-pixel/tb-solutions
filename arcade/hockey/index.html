@@ -36,7 +36,7 @@
 <canvas id="cv"></canvas>
 <div class="ov" id="startOv" onclick="if(event.target===this)startGame()"><div class="card">
   <div style="font-size:44px">🏒</div><h2>Ice Hockey</h2>
-  <p>Drag your paddle. First to 3 wins the level — then the barber bot gets <b style="color:var(--text)">faster and meaner</b>, the goals shrink, and the rink changes color. How many levels can you survive?</p>
+  <p>Drag your paddle. First to 3 wins the level — then the barber bot gets <b style="color:var(--text)">faster and meaner</b>, the goals shrink, bumpers appear, and the rink changes color. How many levels can you survive?</p>
   <p>Best: <b id="ovBest0">0</b> levels</p>
   <button class="btn" onclick="startGame()">▶ Play</button>
 </div></div>
@@ -66,6 +66,11 @@ var best=0; try{ best=+localStorage.getItem('ih_best')||0; }catch(e){}
 el('hBest').textContent='★ '+best; el('ovBest0').textContent=best;
 
 var running=false, lvl=1, myGoals=0, aiGoals=0, totalGoals=0, freeze=0, clock=0;
+var pegs=[];
+function setPegs(){ pegs=[];
+  if(lvl>=3){ pegs.push({x:W*0.24,y:H*0.5,r:13},{x:W*0.76,y:H*0.5,r:13}); }
+  if(lvl>=5){ pegs.push({x:W*0.5,y:H*0.32,r:11},{x:W*0.5,y:H*0.68,r:11}); }
+}
 var puck={x:0,y:0,vx:0,vy:0,r:11}, me={x:0,y:0,r:25,vx:0,vy:0,px:0,py:0}, ai={x:0,y:0,r:25,spd:2.6};
 var trail=[]; for(var i=0;i<10;i++) trail.push({x:0,y:0});
 function maxV(){ return 8.5+lvl*1.1; }
@@ -77,7 +82,7 @@ function resetRound(server){
   freeze=30;
 }
 function startGame(){
-  lvl=1; myGoals=0; aiGoals=0; totalGoals=0; ai.spd=2.6; running=true;
+  lvl=1; myGoals=0; aiGoals=0; totalGoals=0; ai.spd=2.6; running=true; setPegs();
   el('startOv').classList.add('hide'); el('overOv').classList.add('hide');
   updHud(); resetRound('me'); last=performance.now(); requestAnimationFrame(frame);
   if(window.LoopFX)LoopFX.sfx('click');
@@ -118,6 +123,9 @@ function frame(now){
     if(puck.x>W-puck.r){ puck.x=W-puck.r; puck.vx=-Math.abs(puck.vx); wall(); }
     if(puck.y<puck.r){ if(puck.x>gx0&&puck.x<gx1){ goal('me'); } else { puck.y=puck.r; puck.vy=Math.abs(puck.vy); wall(); } }
     if(puck.y>H-puck.r){ if(puck.x>gx0&&puck.x<gx1){ goal('ai'); } else { puck.y=H-puck.r; puck.vy=-Math.abs(puck.vy); wall(); } }
+    for(var pi=0;pi<pegs.length;pi++){ var pgg=pegs[pi], pdx=puck.x-pgg.x, pdy=puck.y-pgg.y, pd=Math.hypot(pdx,pdy), pmin=puck.r+pgg.r;
+      if(pd<pmin && pd>0){ var pnx=pdx/pd, pny=pdy/pd; puck.x=pgg.x+pnx*pmin; puck.y=pgg.y+pny*pmin;
+        var pdot=puck.vx*pnx+puck.vy*pny; puck.vx-=2*pdot*pnx; puck.vy-=2*pdot*pny; puck.vx*=1.04; puck.vy*=1.04; wall(); } }
     // AI: chase in top half, strike when close, recover to guard goal
     var targX = (puck.y < H*0.6) ? puck.x : W/2;
     var targY = (puck.y < H*0.55 && puck.vy<=0.5) ? Math.min(puck.y, H*0.42) : 64;
@@ -142,7 +150,7 @@ function goal(who){
   else resetRound(who==='me'?'ai':'me');
 }
 function levelUp(){
-  lvl++; myGoals=0; aiGoals=0; ai.spd*=1.22; updHud();
+  lvl++; myGoals=0; aiGoals=0; ai.spd*=1.22; setPegs(); updHud();
   if(window.LoopFX)LoopFX.levelUp(lvl);
   resetRound('me'); freeze=55;
 }
@@ -176,6 +184,11 @@ function render(){
   X.beginPath(); X.moveTo(0,H/2); X.lineTo(W,H/2); X.stroke();
   X.beginPath(); X.arc(W/2,H/2,52,0,6.283); X.stroke();
   X.fillStyle='rgba(255,255,255,.06)'; X.beginPath(); X.arc(W/2,H/2,8,0,6.283); X.fill();
+  // bumper pegs
+  for(var bp=0;bp<pegs.length;bp++){ var pe=pegs[bp];
+    X.fillStyle='hsla('+h+',80%,62%,.18)'; X.beginPath(); X.arc(pe.x,pe.y,pe.r+5+Math.sin(clock/10+bp)*2,0,6.283); X.fill();
+    X.fillStyle='hsl('+h+',60%,40%)'; X.beginPath(); X.arc(pe.x,pe.y,pe.r,0,6.283); X.fill();
+    X.strokeStyle='hsl('+h+',85%,70%)'; X.lineWidth=2; X.beginPath(); X.arc(pe.x,pe.y,pe.r,0,6.283); X.stroke(); }
   // goals
   var gw=W*(0.36-Math.min(0.12,(lvl-1)*0.025)), gx0=(W-gw)/2;
   X.strokeStyle='hsl('+h+',80%,62%)'; X.lineWidth=5; X.shadowColor='hsl('+h+',80%,62%)'; X.shadowBlur=12;
