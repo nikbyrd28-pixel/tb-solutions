@@ -146,7 +146,13 @@ function celebrate(m,delta){
 
 function boot(){
   var c=cfg();
-  if(c&&c.slug&&c.pin){ el('setupCard').classList.add('hide'); el('console').classList.remove('hide'); el('bizTag').textContent=c.slug+' · change';  if(c.fast) el('fastMode').checked=true; showScans(); }
+  if(c&&c.slug&&c.pin){ el('setupCard').classList.add('hide'); el('console').classList.remove('hide'); el('bizTag').textContent=c.slug+' · change';  if(c.fast) el('fastMode').checked=true; showScans(); return; }
+  // owner already signed in on this device → prefill so setup is one tap
+  try{
+    var ow=JSON.parse(localStorage.getItem('loop_owner')||'null');
+    if(ow && ow.c && ow.p){ el('sSlug').value=ow.c; el('sPin').value=ow.p;
+      el('sErr').style.color='var(--muted)'; el('sErr').textContent='Found your owner sign-in — tap Connect to use this device as the scanner.'; el('sErr').classList.remove('hide'); }
+  }catch(e){}
 }
 function saveSetup(){
   var slug=(el('sSlug').value||'').toLowerCase().replace(/[^a-z0-9]/g,''), pin=el('sPin').value.trim();
