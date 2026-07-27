@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Loop for Barbershops — brand kit</title>
+<meta name="description" content="The Loop barbershop logo: mark, app icon and wordmark. Download SVG or PNG for posters, socials and shop windows." />
+<meta name="theme-color" content="#05060d" />
+<meta name="robots" content="noindex" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-size='34'%3E%F0%9F%92%88%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--text:#f2f4ff;--muted:#8f97b8;--line:rgba(122,162,255,.3);--acc:#7aa2ff;--acc2:#5ad0f0;--vio:#b98bff;--gold:#ffcf5a}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.55;
+    background:radial-gradient(circle at 12% -8%,rgba(122,162,255,.18),transparent 44%),linear-gradient(180deg,#070811,#04050a);
+    min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:20px 14px 60px}
+  .wrap{width:min(760px,100%)}
+  .top{text-align:center;margin-bottom:22px}
+  h1{font-size:clamp(24px,6vw,32px);margin:6px 0 4px;letter-spacing:-.02em}
+  h1 span{background:linear-gradient(90deg,var(--acc2),var(--acc),var(--vio));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);font-size:14px;margin:0}
+  .card{background:linear-gradient(150deg,rgba(255,255,255,.055),rgba(255,255,255,.015));border:1px solid var(--line);
+    border-radius:20px;padding:20px;margin-bottom:16px}
+  .card h2{font-size:16px;margin:0 0 4px}
+  .card p.note{color:var(--muted);font-size:13px;margin:0 0 14px}
+  .stage{border-radius:16px;display:grid;place-items:center;padding:26px 16px;min-height:190px}
+  .stage.dark{background:#0a0d18;border:1px solid rgba(255,255,255,.07)}
+  .stage.light{background:#f4f6fd;border:1px solid rgba(0,0,0,.06)}
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:560px){.duo{grid-template-columns:1fr}}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .btn{flex:1;min-width:120px;border:0;border-radius:999px;padding:12px 16px;font:inherit;font-weight:800;font-size:13.5px;cursor:pointer;
+    background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d}
+  .btn.ghost{background:rgba(122,162,255,.08);border:1px solid var(--line);color:var(--text);font-weight:700}
+  .btn:active{transform:scale(.985)}
+  .sw{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+  .chip{border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12px;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.02)}
+  .dot{width:22px;height:22px;border-radius:7px;flex:0 0 auto;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+  code{background:rgba(122,162,255,.1);border:1px solid var(--line);border-radius:7px;padding:2px 6px;font-size:12px}
+  .why{color:var(--muted);font-size:13.5px}
+  .why b{color:var(--text)}
+  .toast{position:fixed;left:50%;top:16px;transform:translateX(-50%);background:linear-gradient(135deg,var(--acc2),var(--acc));
+    color:#05060d;font-weight:800;font-size:13px;border-radius:999px;padding:9px 18px;z-index:40;box-shadow:0 10px 30px rgba(122,162,255,.4)}
+  .foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:10px}
+  .foot a{color:var(--acc);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div style="font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)">Brand kit</div>
+    <h1>Loop <span>for barbershops</span></h1>
+    <p class="sub">One mark: a barber pole bent into a loop. The pole says barbershop, the loop says they come back.</p>
+  </div>
+
+  <div class="card">
+    <h2>The mark</h2>
+    <p class="note">Use anywhere. Works on dark or light, down to a 16px favicon.</p>
+    <div class="duo">
+      <div class="stage dark" id="stageMarkDark"></div>
+      <div class="stage light" id="stageMarkLight"></div>
+    </div>
+    <div class="btns">
+      <button class="btn" onclick="dl('mark','svg')">⬇ SVG</button>
+      <button class="btn ghost" onclick="dl('mark','png',1024)">⬇ PNG 1024</button>
+      <button class="btn ghost" onclick="dl('mark','png',512)">⬇ PNG 512</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>App icon</h2>
+    <p class="note">Rounded tile for phone home screens, profile pictures and the site favicon.</p>
+    <div class="duo">
+      <div class="stage dark" id="stageIcon"></div>
+      <div class="stage light" id="stageIconLight"></div>
+    </div>
+    <div class="btns">
+      <button class="btn" onclick="dl('icon','png',1024)">⬇ PNG 1024</button>
+      <button class="btn ghost" onclick="dl('icon','png',512)">⬇ PNG 512</button>
+      <button class="btn ghost" onclick="dl('icon','svg')">⬇ SVG</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Wordmark</h2>
+    <p class="note">For posters, flyers, shop windows and the top of any page.</p>
+    <div class="stage dark" id="stageWordDark" style="padding:34px 16px"></div>
+    <div class="stage light" id="stageWordLight" style="margin-top:12px;padding:34px 16px"></div>
+    <div class="btns">
+      <button class="btn" onclick="dl('word','svg')">⬇ SVG (dark bg)</button>
+      <button class="btn ghost" onclick="dl('wordLight','svg')">⬇ SVG (light bg)</button>
+      <button class="btn ghost" onclick="dl('word','png',1600)">⬇ PNG 1600</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Colors</h2>
+    <p class="note">Pole colors carry the barbershop signal. Brand colors carry the app.</p>
+    <div class="sw" id="swatches"></div>
+    <p class="why" style="margin-top:14px">Favicon snippet for any page: <code>&lt;link rel="icon" href="/brand/icon.svg"&gt;</code></p>
+  </div>
+
+  <div class="card">
+    <h2>Why this mark</h2>
+    <p class="why">
+      <b>Barbers recognize it in half a second.</b> The red-white-blue diagonal is the one symbol every barbershop already
+      owns — it reads as "barber" before anyone reads a word.<br><br>
+      <b>It says the thing you sell.</b> The pole is bent into a loop with an arrow: customers leave and come back. That's
+      the whole pitch in one shape.<br><br>
+      <b>It survives being tiny.</b> No thin lines, no text inside — it holds up as a favicon, a phone icon, an embroidered
+      hat, or a sticker on a mirror.
+    </p>
+  </div>
+
+  <p class="foot">Loop by <a href="https://tbsol.net">TB Solutions</a> · <a href="/barbers/">the barber pitch</a> · <a href="/share/">share kit</a></p>
+</div>
+
+<script>
+/* ---- one source of truth: every preview, download and PNG comes from these builders ---- */
+var POLE_RED='#e8394a', POLE_WHITE='#f7f9ff', POLE_BLUE='#3b6dff', INK='#0a0d18';
+
+function stripes(id, scale){
+  var s = scale || 1;
+  return '<pattern id="'+id+'" width="'+(27*s)+'" height="'+(27*s)+'" patternUnits="userSpaceOnUse" patternTransform="rotate(-38)">'
+    + '<rect width="'+(27*s)+'" height="'+(27*s)+'" fill="'+POLE_WHITE+'"/>'
+    + '<rect x="0" width="'+(9*s)+'" height="'+(27*s)+'" fill="'+POLE_RED+'"/>'
+    + '<rect x="'+(18*s)+'" width="'+(9*s)+'" height="'+(27*s)+'" fill="'+POLE_BLUE+'"/>'
+    + '</pattern>';
+}
+/* the loop: an open ring of barber-pole stripes with an arrowhead — pole + "they come back" */
+function markBody(pid){
+  return ''
+   + '<path d="M95.1 32.9 A44 44 0 1 1 45.4 24.1" fill="none" stroke="url(#'+pid+')" stroke-width="20" stroke-linecap="butt"/>'
+   + '<path d="M95.1 32.9 A44 44 0 1 1 45.4 24.1" fill="none" stroke="rgba(0,0,0,.28)" stroke-width="20" stroke-linecap="butt" opacity=".18"/>'
+   + '<path d="M62.4 15.6 L49.6 36.2 L38.6 12.6 Z" fill="'+POLE_RED+'"/>';
+}
+function svgMark(){
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="Loop for barbershops">'
+    + '<defs>'+stripes('p1')+'</defs>' + markBody('p1') + '</svg>';
+}
+function svgIcon(){
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="Loop app icon">'
+    + '<defs>'+stripes('p2')+'</defs>'
+    + '<rect width="128" height="128" rx="29" fill="'+INK+'"/>'
+    + '<g transform="translate(64 64) scale(.8) translate(-64 -64)">' + markBody('p2') + '</g>'
+    + '</svg>';
+}
+function svgWord(dark){
+  var fg = dark ? '#f2f4ff' : '#0a0d18', sub = dark ? '#8f97b8' : '#5a627d';
+  var bg = dark ? INK : '#f4f6fd';
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 170" width="620" height="170" role="img" aria-label="Loop for barbershops">'
+    + '<defs>'+stripes('p3'+(dark?'d':'l'))+'</defs>'
+    + '<rect width="620" height="170" rx="22" fill="'+bg+'"/>'
+    + '<g transform="translate(26 21) scale(1)">' + markBody('p3'+(dark?'d':'l')) + '</g>'
+    + '<text x="182" y="86" font-family="Poppins,Inter,system-ui,Arial,sans-serif" font-size="62" font-weight="900" fill="'+fg+'" letter-spacing="-1.5">Loop</text>'
+    + '<text x="185" y="118" font-family="Inter,system-ui,Arial,sans-serif" font-size="18" font-weight="800" fill="'+sub+'" letter-spacing="5.2">FOR BARBERSHOPS</text>'
+    + '</svg>';
+}
+var BUILD={ mark:svgMark, icon:svgIcon, word:function(){return svgWord(true)}, wordLight:function(){return svgWord(false)} };
+
+/* ---- previews ---- */
+function put(id, svg, size){
+  var e=document.getElementById(id); if(!e) return;
+  e.innerHTML=svg;
+  var s=e.querySelector('svg'); if(s && size){ s.setAttribute('width',size); s.setAttribute('height',''); s.style.width=size+'px'; s.style.height='auto'; }
+}
+put('stageMarkDark', svgMark(), 120);
+put('stageMarkLight', svgMark(), 120);
+put('stageIcon', svgIcon(), 118);
+put('stageIconLight', svgIcon(), 118);
+put('stageWordDark', svgWord(true), 300);
+put('stageWordLight', svgWord(false), 300);
+
+/* ---- colors ---- */
+var COLORS=[['Pole red',POLE_RED],['Pole white',POLE_WHITE],['Pole blue',POLE_BLUE],['Ink',INK],['Loop cyan','#5ad0f0'],['Loop blue','#7aa2ff'],['Loop violet','#b98bff'],['Gold',
+'#ffcf5a']];
+document.getElementById('swatches').innerHTML=COLORS.map(function(c){
+  return '<button class="chip" onclick="copyTxt(\''+c[1]+'\')"><span class="dot" style="background:'+c[1]+'"></span>'+c[0]+' <code>'+c[1]+'</code></button>';
+}).join('');
+
+/* ---- downloads ---- */
+function toast(t){ var x=document.createElement('div'); x.className='toast'; x.textContent=t; document.body.appendChild(x); setTimeout(function(){x.remove()},1500); }
+function copyTxt(t){ try{ navigator.clipboard.writeText(t); toast('Copied '+t); }catch(e){} }
+function saveBlob(blob, name){
+  var url=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 800);
+}
+function dl(which, kind, px){
+  var svg=BUILD[which](); var base='loop-barber-'+which;
+  if(kind==='svg'){ saveBlob(new Blob([svg],{type:'image/svg+xml'}), base+'.svg'); toast('Saved SVG'); return; }
+  var vb=svg.match(/viewBox="0 0 (\d+) (\d+)"/); var vw=vb?+vb[1]:128, vh=vb?+vb[2]:128;
+  var w=px||1024, h=Math.round(w*vh/vw);
+  var img=new Image();
+  img.onload=function(){
+    var c=document.createElement('canvas'); c.width=w; c.height=h;
+    var x=c.getContext('2d'); x.drawImage(img,0,0,w,h);
+    c.toBlob(function(b){ if(b){ saveBlob(b, base+'-'+w+'.png'); toast('Saved PNG'); } });
+  };
+  img.onerror=function(){ toast('Could not render PNG — use SVG'); };
+  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+}
+</script>
+</body>
+</html>
