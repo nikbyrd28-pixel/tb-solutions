@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Loop — shop-signing kit</title>
+<meta name="description" content="Scripts, objection handlers, DM templates, social hooks and a printable flyer for signing barbershops onto Loop." />
+<meta name="theme-color" content="#05060d" />
+<meta name="robots" content="noindex" />
+<link rel="icon" href="/brand/icon.svg" />
+<style>
+  :root{--text:#f2f4ff;--muted:#8f97b8;--line:rgba(122,162,255,.3);--acc:#7aa2ff;--acc2:#5ad0f0;--vio:#b98bff;--good:#43f0b0;--gold:#ffcf5a}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.55;
+    background:radial-gradient(circle at 12% -8%,rgba(122,162,255,.18),transparent 44%),linear-gradient(180deg,#070811,#04050a);
+    min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:18px 13px 70px;-webkit-tap-highlight-color:transparent}
+  .wrap{width:min(680px,100%)}
+  .top{text-align:center;margin-bottom:18px}
+  .top img{width:44px;height:44px;display:block;margin:0 auto 8px}
+  h1{font-size:clamp(23px,6vw,30px);margin:0 0 4px;letter-spacing:-.02em}
+  h1 span{background:linear-gradient(90deg,var(--acc2),var(--acc),var(--vio));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);font-size:13.5px;margin:0}
+  .jump{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin:16px 0 20px}
+  .jump a{border:1px solid var(--line);border-radius:999px;padding:8px 13px;font-size:12.5px;font-weight:700;color:var(--text);
+    text-decoration:none;background:rgba(122,162,255,.06)}
+  .card{background:linear-gradient(150deg,rgba(255,255,255,.055),rgba(255,255,255,.015));border:1px solid var(--line);
+    border-radius:19px;padding:18px;margin-bottom:15px;scroll-margin-top:14px}
+  .card h2{font-size:16.5px;margin:0 0 3px;display:flex;align-items:center;gap:7px}
+  .card .note{color:var(--muted);font-size:12.5px;margin:0 0 14px}
+  .blk{border:1px solid rgba(122,162,255,.2);background:rgba(4,6,14,.5);border-radius:14px;padding:13px;margin-bottom:10px}
+  .blk .lbl{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc2);font-weight:800;margin-bottom:6px}
+  .blk p{margin:0 0 8px;font-size:14.5px}
+  .blk p:last-of-type{margin-bottom:10px}
+  .blk .stage{color:var(--gold);font-size:12.5px;font-style:italic;margin:0 0 8px}
+  .cp{border:0;border-radius:999px;padding:9px 15px;font:inherit;font-weight:800;font-size:12.5px;cursor:pointer;
+    background:rgba(122,162,255,.14);border:1px solid var(--line);color:var(--text)}
+  .cp:active{transform:scale(.97)}
+  .cp.done{background:linear-gradient(135deg,var(--good),#2fd39a);color:#04150d;border-color:transparent}
+  .obj{border-bottom:1px solid rgba(122,162,255,.14);padding:12px 0}
+  .obj:last-child{border-bottom:0;padding-bottom:0}
+  .obj .q{font-weight:800;font-size:14px;color:var(--gold);margin:0 0 5px}
+  .obj .a{margin:0 0 9px;font-size:14.5px}
+  .hook{display:flex;gap:9px;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(122,162,255,.12)}
+  .hook:last-child{border-bottom:0}
+  .hook .n{flex:0 0 auto;width:22px;height:22px;border-radius:7px;background:rgba(185,139,255,.2);color:var(--vio);
+    font-size:11px;font-weight:900;display:grid;place-items:center;margin-top:2px}
+  .hook .t{flex:1;font-size:14px}
+  .hook button{flex:0 0 auto}
+  .links{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  @media(max-width:420px){.links{grid-template-columns:1fr}}
+  .lk{display:block;text-align:center;text-decoration:none;color:var(--text);border:1px solid var(--line);border-radius:13px;
+    padding:12px 9px;background:rgba(122,162,255,.06);font-weight:700;font-size:13.5px}
+  .toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:linear-gradient(135deg,var(--acc2),var(--acc));
+    color:#05060d;font-weight:800;font-size:13px;border-radius:999px;padding:9px 18px;z-index:60;box-shadow:0 10px 30px rgba(122,162,255,.4)}
+  .foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:12px}
+  .foot a{color:var(--acc);text-decoration:none}
+  .btn-print{width:100%;border:0;border-radius:999px;padding:14px;font:inherit;font-weight:900;font-size:14.5px;cursor:pointer;
+    background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d;margin-top:4px}
+
+  /* ---------- printable leave-behind flyer ---------- */
+  #flyer{display:none}
+  @media print{
+    body{background:#fff;color:#000;padding:0;display:block}
+    .wrap{width:100%}
+    .wrap > *:not(#flyer){display:none!important}
+    #flyer{display:block;padding:14mm 12mm;font-family:Inter,system-ui,Arial,sans-serif;color:#0a0d18}
+    #flyer .fhead{display:flex;align-items:center;gap:12px;border-bottom:3px solid #0a0d18;padding-bottom:10px}
+    #flyer .fhead img{width:54px;height:54px}
+    #flyer .fname{font-size:34px;font-weight:900;letter-spacing:-1px;line-height:1}
+    #flyer .ftag{font-size:11px;font-weight:800;letter-spacing:4px;color:#5a627d}
+    #flyer h2{font-size:27px;margin:16px 0 6px;line-height:1.15}
+    #flyer .lede{font-size:14.5px;color:#333a52;margin:0 0 14px}
+    #flyer ul{margin:0 0 14px;padding-left:17px;font-size:14px}
+    #flyer li{margin-bottom:6px}
+    #flyer .qrrow{display:flex;gap:16px;align-items:center;border:2px solid #0a0d18;border-radius:12px;padding:12px;margin-top:6px}
+    #flyer .qrrow img{width:118px;height:118px}
+    #flyer .qrtxt b{font-size:17px;display:block;margin-bottom:3px}
+    #flyer .qrtxt span{font-size:13px;color:#333a52}
+    #flyer .ffoot{margin-top:14px;font-size:11.5px;color:#5a627d;border-top:1px solid #ccd;padding-top:8px}
+    @page{margin:0}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <img src="/brand/mark.svg" alt="Loop">
+    <h1>Shop-signing <span>kit</span></h1>
+    <p class="sub">Open this in the car before you walk in. Everything taps to copy.</p>
+  </div>
+
+  <div class="jump">
+    <a href="#walkin">Walk-in</a><a href="#obj">Objections</a><a href="#dm">DMs &amp; texts</a>
+    <a href="#social">Social</a><a href="#flyerbox">Flyer</a><a href="#links">Links</a>
+  </div>
+
+  <!-- WALK-IN -->
+  <div class="card" id="walkin">
+    <h2>🚪 The walk-in</h2>
+    <p class="note">Thirty seconds, then the phone does the selling. Don't pitch past the handoff — let them play.</p>
+
+    <div class="blk">
+      <div class="lbl">1 · Opener</div>
+      <p id="c1">Hey — you the owner? I'm Nick, I'm local. I built a rewards app for barbershops. It's free to start and takes about 30 seconds to set up. Can I show you on my phone real quick?</p>
+      <button class="cp" onclick="cp('c1',this)">Copy</button>
+    </div>
+
+    <div class="blk">
+      <div class="lbl">2 · Hand them the phone</div>
+      <p class="stage">Open tbsol.net/rewards/?c=demo first. Unlock your phone. Hand it over — don't hold it.</p>
+      <p id="c2">So this is what your customer sees. They scan your QR when they sit down, and every cut is a point toward a free one. See those games? They play while they wait and earn coins toward the free cut. Try one.</p>
+      <button class="cp" onclick="cp('c2',this)">Copy</button>
+    </div>
+
+    <div class="blk">
+      <div class="lbl">3 · The why (say it while they're playing)</div>
+      <p id="c3">Here's the real thing. Your regulars are one bad week from trying the shop down the street. This gives them a reason to come back to you — they've got points sitting here with your name on them. It's the same reason nobody switches coffee shops when they're three stamps from a free one.</p>
+      <button class="cp" onclick="cp('c3',this)">Copy</button>
+    </div>
+
+    <div class="blk">
+      <div class="lbl">4 · Close</div>
+      <p id="c4">Want me to set yours up right now? I just need your shop name and a 4-digit PIN. You'll have your own QR code before I leave.</p>
+      <button class="cp" onclick="cp('c4',this)">Copy</button>
+    </div>
+
+    <div class="blk">
+      <div class="lbl">5 · If they say yes</div>
+      <p class="stage">Hand them your phone on tbsol.net/rewards/signup/ — let them type their own name and PIN. It's theirs, not yours. Then: print their poster, put it on the counter, and add their first customer right there while you're standing in the shop.</p>
+    </div>
+  </div>
+
+  <!-- OBJECTIONS -->
+  <div class="card" id="obj">
+    <h2>🛡️ When they push back</h2>
+    <p class="note">Short answers. Agree first, then flip it. Never argue with a barber in his own shop.</p>
+    <div id="objs"></div>
+  </div>
+
+  <!-- DMs -->
+  <div class="card" id="dm">
+    <h2>💬 DMs &amp; texts</h2>
+    <p class="note">Swap <b>{shop}</b> for their name. Send from your personal account, not a business page — barbers ignore business pages.</p>
+    <div id="dms"></div>
+  </div>
+
+  <!-- SOCIAL -->
+  <div class="card" id="social">
+    <h2>🎬 Content that pulls shops in</h2>
+    <p class="note">The arcade is the hook — no other barber software has games. Film the phone, not yourself. First 2 seconds decide everything.</p>
+    <div id="hooks"></div>
+    <p class="note" style="margin:14px 0 0">Shoot it once: film a real customer playing Barber Dash in the chair, cut it to 12 seconds, post the same clip to TikTok, Reels, and a barber Facebook group with three different hooks above.</p>
+  </div>
+
+  <!-- FLYER -->
+  <div class="card" id="flyerbox">
+    <h2>🖨️ Leave-behind flyer</h2>
+    <p class="note">One page. Print a stack, leave one on the counter of every shop that says "not today" — half of them scan it that night.</p>
+    <button class="btn-print" onclick="window.print()">🖨️ Print the flyer</button>
+  </div>
+
+  <!-- LINKS -->
+  <div class="card" id="links">
+    <h2>🔗 Everything you need open</h2>
+    <p class="note">Bookmark this page. These are the only four links you need in a shop.</p>
+    <div class="links">
+      <a class="lk" href="/rewards/?c=demo" target="_blank" rel="noopener">🎮 The demo card</a>
+      <a class="lk" href="/rewards/signup/" target="_blank" rel="noopener">⚡ Sign them up</a>
+      <a class="lk" href="/barbers/" target="_blank" rel="noopener">💈 The pitch page</a>
+      <a class="lk" href="/share/" target="_blank" rel="noopener">📲 Offline QR kit</a>
+    </div>
+    <div class="links" style="margin-top:9px">
+      <a class="lk" href="/rewards/owner/" target="_blank" rel="noopener">📊 Owner dashboard</a>
+      <a class="lk" href="/brand/" target="_blank" rel="noopener">🎨 Logo &amp; brand</a>
+    </div>
+  </div>
+
+  <p class="foot">Loop by <a href="https://tbsol.net">TB Solutions</a></p>
+
+  <!-- ============ PRINT-ONLY FLYER ============ -->
+  <div id="flyer">
+    <div class="fhead">
+      <img src="/brand/mark.svg" alt="">
+      <div><div class="fname">Loop</div><div class="ftag">FOR BARBERSHOPS</div></div>
+    </div>
+    <h2>Your regulars, on a loop.</h2>
+    <p class="lede">A rewards card, your own booking, and an arcade your customers play while they wait — all from one QR code on your counter. No app to download. No hardware. Free to start.</p>
+    <ul>
+      <li><b>They come back.</b> Every cut is a point toward a free one — points they lose if they go somewhere else.</li>
+      <li><b>They play while they wait.</b> 12 games in the chair, earning coins toward a free haircut. Nobody else has this.</li>
+      <li><b>They bring friends.</b> One tap shares your shop; both of them get rewarded.</li>
+      <li><b>You keep your Booksy.</b> This runs on top of whatever you already use.</li>
+      <li><b>Live in 30 seconds.</b> Shop name, a PIN, done. Your QR prints the same minute.</li>
+    </ul>
+    <div class="qrrow">
+      <img id="flyerQr" alt="Scan to start free">
+      <div class="qrtxt">
+        <b>Scan to start — free</b>
+        <span>Or go to tbsol.net/rewards/signup/<br>Set it up yourself in 30 seconds. No card, no contract.</span>
+      </div>
+    </div>
+    <div class="ffoot">Loop by TB Solutions · tbsol.net · Built for barbershops, by someone who kept hearing the same problem.</div>
+  </div>
+</div>
+
+<script>
+/* ---------- objection handlers ---------- */
+var OBJECTIONS=[
+  ["“I already use Booksy.”",
+   "Keep it. I'm not asking you to switch anything — this runs on top. Booksy books them, this is the part that makes them come back. I'll even put your Booksy link right inside it so it's all one place for your customers."],
+  ["“How much is it?”",
+   "Free to start, no card. Set it up, run it a month. If it doesn't bring people back, delete it — you're out nothing but 30 seconds."],
+  ["“My clients are older, they don't do apps.”",
+   "There's no app. They point their camera at your QR and it opens like a website — same as a menu at a restaurant. And if somebody won't pull their phone out, you tap their point in yourself from your phone. Takes two seconds."],
+  ["“I don't have time right now.”",
+   "That's why it's 30 seconds. Name and a PIN, that's it. Finish that cut — I'll have it ready before you're done."],
+  ["“Does it cost my customers anything?”",
+   "Nothing, ever. They scan, they play, they earn. You decide what the reward is — free cut, line-up, whatever you want."],
+  ["“What's the catch — why is it free?”",
+   "Because I need shops actually using it more than I need your money right now. If it works for you, you'll tell other barbers, and that's worth more to me than a monthly fee today."],
+  ["“I'll think about it.”",
+   "All good, no pressure. Can I just stand the free one up now so it's sitting there if you want it? Nothing to cancel, no card on file. If you never touch it, nothing happens."],
+  ["“I already tried a punch card thing.”",
+   "Paper ones? Everybody loses those. This one lives in their phone, texts them their points, and honestly — the games are why they open it. Punch cards don't have a leaderboard with your other regulars on it."]
+];
+document.getElementById('objs').innerHTML=OBJECTIONS.map(function(o,i){
+  return '<div class="obj"><p class="q">'+o[0]+'</p><p class="a" id="o'+i+'">'+o[1]+'</p>'
+       + '<button class="cp" onclick="cp(\'o'+i+'\',this)">Copy</button></div>';
+}).join('');
+
+/* ---------- DM / text templates ---------- */
+var DMS=[
+  ["Instagram DM — first touch",
+   "Yo {shop} — your fades are clean. I'm local and I build a rewards app for barbershops: customers scan a QR at your chair, every cut earns points toward a free one, and they play games while they wait. Free to start, live in 30 seconds. Want me to send you the 60-second demo?"],
+  ["Follow-up (2 days later, no reply)",
+   "Hey {shop} — not trying to blow you up. Here's the demo so you can look whenever: tbsol.net/rewards/?c=demo — play one of the games, that's what your customers do in the chair. If it's not for you, no worries at all."],
+  ["Text after you demoed in person",
+   "Hey it's Nick — good meeting you today. Here's your setup link, takes 30 seconds and it's free: tbsol.net/rewards/signup/ — shop name and a 4-digit PIN, then your QR prints straight from your phone. Hit me if anything looks weird, I'll fix it same day."],
+  ["Cold text to a shop number",
+   "Hi — is this the owner? I'm Nick, local. I made a free rewards + booking app built just for barbershops (customers earn free cuts and play games while they wait). Can I swing by and show you on my phone this week? Two minutes, no pitch if you hate it."],
+  ["After they sign up (day 1)",
+   "You're live 🎉 Print your poster and stick it by the register — the first 5 customers who scan it are the ones that matter. Want me to come by and add your first few customers with you?"],
+  ["Re-engage a shop that went quiet",
+   "Hey {shop} — checked your Loop and you've got customers sitting on points. Want me to send them a 'come back this week' blast? Takes me two minutes and it's free."]
+];
+document.getElementById('dms').innerHTML=DMS.map(function(d,i){
+  return '<div class="blk"><div class="lbl">'+d[0]+'</div><p id="d'+i+'">'+d[1]+'</p>'
+       + '<button class="cp" onclick="cp(\'d'+i+'\',this)">Copy</button></div>';
+}).join('');
+
+/* ---------- social hooks ---------- */
+var HOOKS=[
+  "My barber pays me to wait. 🎮✂️",
+  "POV: your barbershop has an arcade now.",
+  "Your punch card is why your regulars leave.",
+  "Barbers: your customers are playing this in your chair and earning free cuts. From YOU.",
+  "I spent 6 weeks building the thing every barbershop is missing.",
+  "This shop turned waiting into a game. Their rebook rate is stupid.",
+  "Show me your loyalty program — I'll go first. 👈",
+  "If your customer can't see how close they are to a free cut, they're not coming back for it."
+];
+document.getElementById('hooks').innerHTML=HOOKS.map(function(h,i){
+  return '<div class="hook"><span class="n">'+(i+1)+'</span><span class="t" id="h'+i+'">'+h+'</span>'
+       + '<button class="cp" onclick="cp(\'h'+i+'\',this)">Copy</button></div>';
+}).join('');
+
+/* ---------- flyer QR ---------- */
+(function(){
+  var url=(location.origin||'https://tbsol.net')+'/rewards/signup/';
+  var q=document.getElementById('flyerQr');
+  if(q) q.src='https://api.qrserver.com/v1/create-qr-code/?size=360x360&ecc=H&margin=0&color=11-16-36&data='+encodeURIComponent(url);
+})();
+
+/* ---------- copy ---------- */
+function toast(t){ var x=document.createElement('div'); x.className='toast'; x.textContent=t; document.body.appendChild(x); setTimeout(function(){x.remove()},1400); }
+function cp(id,btn){
+  var e=document.getElementById(id); if(!e) return;
+  var txt=(e.textContent||'').trim();
+  function ok(){ if(btn){ var o=btn.textContent; btn.textContent='Copied ✓'; btn.classList.add('done');
+    setTimeout(function(){ btn.textContent=o; btn.classList.remove('done'); },1400); } toast('Copied'); }
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(ok,fallback); }
+    else fallback();
+  }catch(err){ fallback(); }
+  function fallback(){
+    try{
+      var ta=document.createElement('textarea'); ta.value=txt; ta.setAttribute('readonly','');
+      ta.style.position='fixed'; ta.style.top='-1000px'; document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy'); ta.remove(); ok();
+    }catch(e2){ toast('Select and copy manually'); }
+  }
+}
+</script>
+</body>
+</html>
