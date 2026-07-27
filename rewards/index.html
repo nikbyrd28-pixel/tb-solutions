@@ -549,7 +549,7 @@ function showCard(m){
   el('readyLine').classList.toggle('hide',!ready);
   var myUrl=location.origin+'/rewards/?c='+slug+'&m='+m.code;
   el('mQr').src=qrUrl(myUrl,196);
-  el('refQr').src=qrUrl(location.origin+'/capture/?c='+slug+'&name='+encodeURIComponent(display)+'&ref='+m.code,160);
+  el('refQr').src=qrUrl(location.origin+'/rewards/?c='+slug+'&ref='+m.code,160);
   renderPlayer(m);
   renderStats(m);
   renderQuests(m);
@@ -1243,7 +1243,7 @@ function staffRedeem(){
   });
 }
 function shareRef(){
-  var link=location.origin+'/capture/?c='+slug+'&name='+encodeURIComponent(display)+'&ref='+member.code;
+  var link=location.origin+'/rewards/?c='+slug+'&ref='+member.code;
   if(navigator.share){ navigator.share({title:display+' — come check them out',url:link}).catch(function(){}); }
   else { navigator.clipboard.writeText(link); el('copied').classList.remove('hide'); }
   lsSet('rw_shared_'); if(member){renderQuests(member);renderAchievements(member);}
