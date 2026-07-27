@@ -114,12 +114,14 @@ function render(){
   el('hSub').textContent = t ? ('code: '+t) : (SHOPS.length+' shops on the platform');
   var tot={members:0,active30:0,scans:0,points_out:0,coins_held:0,bookings:0};
   list.forEach(function(s){ for(var k in tot) tot[k]+= (+s[k]||0); });
+  var susp=list.filter(function(s){ return s.is_active===false; }).length;
   el('tiles').innerHTML=
     '<div class="tile"><b>'+fmt(tot.members)+'</b><span>Users / cards</span></div>'
    +'<div class="tile"><b>'+fmt(tot.active30)+'</b><span>Active 30 days</span></div>'
    +'<div class="tile"><b>'+fmt(tot.scans)+'</b><span>Total scans</span></div>'
    +'<div class="tile"><b>'+fmt(tot.coins_held)+'</b><span>Coins in circulation</span></div>'
-   +'<div class="tile"><b>'+fmt(tot.points_out)+'</b><span>Points outstanding</span></div>';
+   +'<div class="tile"><b>'+fmt(tot.points_out)+'</b><span>Points outstanding</span></div>'
+   +(susp>0? '<div class="tile"><b style="color:#ff8a9d">'+fmt(susp)+'</b><span>Suspended shops</span></div>':'');
   el('rows').innerHTML=list.map(function(s){
     var on=s.is_active!==false;
     return '<tr><td><b>'+esc(s.biz_name)+'</b><div class="muted">'+esc(s.client)+'</div></td>'
