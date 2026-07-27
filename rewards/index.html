@@ -1263,7 +1263,10 @@ function symOf(label){
 function shortLabel(l){ l=String(l||'').replace(/[<>&]/g,''); return l.length>11?l.slice(0,11):l; }
 function reelCell(sym,label){ return '<div class="cell"><span class="sy">'+sym+'</span><span class="lb">'+shortLabel(label)+'</span></div>'; }
 function renderSlot(m){
-  slotLabels=m.wheel||[];
+  var w=m.wheel;
+  slotLabels = Array.isArray(w) ? w
+    : (w && Array.isArray(w.prizes)) ? w.prizes.map(function(p){ return (p&&p.label)?p.label:String(p); })
+    : [];
   slotSyms=slotLabels.map(function(l){return {sym:symOf(l),label:l};});
   if(!slotSyms.length) slotSyms=[{sym:'⭐',label:'point'},{sym:'💎',label:'prize'},{sym:'🍋',label:'try again'}];
   // idle reels: a few symbols each, offset so they don't line up
