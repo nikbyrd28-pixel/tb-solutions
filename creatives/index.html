@@ -65,15 +65,18 @@
     <h2>1 · What's it saying?</h2>
     <p class="note">Tap a line to load it, then edit it however you want.</p>
     <div class="chips" id="presets"></div>
-    <label>Headline</label>
+    <div id="eyeRow" hidden><label>Little line at the top</label><input id="eye" oninput="draw()"></div>
+    <label id="lbHead">Headline</label>
     <textarea id="head" rows="2" oninput="draw()"></textarea>
-    <label>Small line underneath</label>
+    <label id="lbSub">Small line underneath</label>
     <input id="sub" oninput="draw()">
   </div>
 
   <div class="card">
     <h2>2 · How's it look?</h2>
-    <p class="note">Square for the feed, tall for stories and Reels covers.</p>
+    <p class="note">Clean is one big line. Ad is the loud one — price bubble, arrow, the works.</p>
+    <div class="chips" id="styles"></div>
+    <div style="height:9px"></div>
     <div class="chips" id="fmts"></div>
     <div style="height:9px"></div>
     <div class="chips" id="themes"></div>
@@ -93,6 +96,7 @@
       <p id="capTxt"></p>
       <button class="chip" onclick="cpCap(this)">Copy caption</button>
     </div>
+    <p class="tip"><b>Which style:</b> the loud <b>Ad</b> one is for cold reach — boosted posts, barber Facebook groups, anywhere people are scrolling past strangers. <b>Clean</b> is for your own feed once people already know the name.</p>
     <p class="tip"><b>Posting it:</b> film 10 seconds of someone playing a game in the chair, use this as the cover, and put the caption underneath. Same clip works on TikTok, Reels and a barber Facebook group — just swap the first line.</p>
   </div>
 
@@ -140,6 +144,52 @@ var PRESETS=[
   {h:"Get paid to sign up barbershops.", s:"You're already in shops. Now get paid.", c:"If you're in barbershops every week — barber students, apprentices, mobile barbers — you can get paid for it 💸\n\nShow shops a free app they actually want, get paid when they start. No cost, no quota.\n\ntbsol.net/barbers/"}
 ];
 
+/* the loud ad layout — eyebrow, two-tone shout, callout bubble, phone, badge, feature row */
+var ADS=[
+  {e:"Rewards + booking for barbershops",
+   h1:"YOUR BARBERSHOP", h2:"HAS AN ARCADE NOW",
+   call:"nothing to install", bub:["FREE","TO START"],
+   badge:["KEEP YOUR","BOOKSY ✓"], clab:"EVERY SHOP GETS",
+   pills:["11 GAMES","PRIZE SLOT","REFERRALS"],
+   c:"Your barbershop has an arcade now 🎮💈\n\n11 games your customers play right there in the chair — every point earns coins toward a free cut AT YOUR SHOP. That's the whole trick: they come back to you.\n\nFree to start, live in 30 seconds 👉 tbsol.net/barbers/"},
+
+  {e:"For shops still running a paper punch card",
+   h1:"PAPER PUNCH CARDS", h2:"ARE COSTING YOU REGULARS",
+   call:"they never lose it", bub:["NO","APP"],
+   badge:["LIVES IN","THEIR PHONE"], clab:"WHAT REPLACES IT",
+   pills:["AUTO POINTS","FREE CUTS","REMINDERS"],
+   c:"Your punch card is why your regulars leave 💈\n\nPaper gets lost, forgotten, thrown in the truck. Loop lives in their phone, shows exactly how close they are to a free cut, and nudges them back.\n\nFree to start 👉 tbsol.net/barbers/"},
+
+  {e:"You don't have to switch anything",
+   h1:"KEEP BOOKSY.", h2:"ADD THE PART THAT BRINGS THEM BACK",
+   call:"links in one tap", bub:["30","SECONDS"],
+   badge:["WORKS ON","TOP OF IT"], clab:"LOOP ADDS",
+   pills:["REWARDS","THE ARCADE","REFERRALS"],
+   c:"You don't have to switch anything 💈\n\nKeep Booksy for booking. Loop runs on top — rewards, referrals and games that make regulars actually come back. Link them in one tap.\n\ntbsol.net/barbers/"},
+
+  {e:"Loyalty · Booking · Games — one QR on your counter",
+   h1:"ONE QR CODE", h2:"ON YOUR COUNTER",
+   call:"print it yourself", bub:["NO","HARDWARE"],
+   badge:["NO CARD","TO START"], clab:"THEY SCAN, THEY GET",
+   pills:["POINTS","GAMES","BOOKING"],
+   c:"One QR on the counter. That's the whole setup 💈\n\nThey scan it, the card opens in their browser — points, games, booking, free cuts. No app store, no card reader, no tablet.\n\nFree to start 👉 tbsol.net/barbers/"},
+
+  {e:"For customers — tell your barber",
+   h1:"FREE HAIRCUTS", h2:"FOR PLAYING GAMES",
+   call:"ask your barber", bub:["FREE","CUTS"],
+   badge:["NO APP","TO DOWNLOAD"], clab:"HOW IT WORKS",
+   pills:["SCAN","PLAY","GET CUT FREE"],
+   c:"Free haircuts. For playing games. 🎮✂️\n\nScan your barber's QR, play in the chair, earn coins toward a free cut. Nothing to download.\n\nTell your barber 👉 tbsol.net/barbers/"},
+
+  {e:"For anyone in barbershops every week",
+   h1:"GET PAID", h2:"TO SIGN UP BARBERSHOPS",
+   call:"no cost to join", bub:["NO","QUOTA"],
+   badge:["FREE FOR","THE SHOP"], clab:"YOU GET",
+   pills:["YOUR LINK","A SALES KIT","PAID PER SHOP"],
+   c:"In barbershops every week already? Get paid for it 💸\n\nBarber students, apprentices, mobile barbers — show shops a free app they actually want, get paid when they start. No cost, no quota.\n\ntbsol.net/reps/"}
+];
+
+var STYLES=[{k:'min',n:'✨ Clean'},{k:'ad',n:'📣 Ad'}];
 var FORMATS=[{k:'post',n:'⬛ Square post',w:1080,h:1080},{k:'story',n:'📱 Story / Reel',w:1080,h:1920}];
 var THEMES=[
   {k:'ink',   n:'🌌 Ink',    bg:['#0a0d18','#05060d'], fg:'#f4f6ff', mut:'#93a0c8', glow:'#5ad0f0', accent:'#7aa2ff', pole:false},
@@ -148,13 +198,22 @@ var THEMES=[
   {k:'light', n:'⚪ Light',  bg:['#f4f6fd','#e7ecf9'], fg:'#0a0d18', mut:'#5a627d', glow:'#7aa2ff', accent:'#3b6dff', pole:false}
 ];
 
-var idx=0, fmt=FORMATS[0], theme=THEMES[0];
+var idx=0, fmt=FORMATS[0], theme=THEMES[0], style=STYLES[0];
 function el(i){return document.getElementById(i)}
+function isAd(){ return style.k==='ad'; }
+function list(){ return isAd()?ADS:PRESETS; }
 
 /* ---------------- chips ---------------- */
-el('presets').innerHTML=PRESETS.map(function(p,i){
-  var short=p.h.length>26?p.h.slice(0,24)+'…':p.h;
-  return '<button class="chip'+(i===0?' on':'')+'" data-p="'+i+'" onclick="pick('+i+')">'+short.replace(/[<>&]/g,'')+'</button>';
+function renderPresets(){
+  var L=list();
+  el('presets').innerHTML=L.map(function(p,i){
+    var t=isAd()?p.h1:p.h;
+    var short=t.length>26?t.slice(0,24)+'…':t;
+    return '<button class="chip'+(i===idx?' on':'')+'" data-p="'+i+'" onclick="pick('+i+')">'+short.replace(/[<>&]/g,'')+'</button>';
+  }).join('');
+}
+el('styles').innerHTML=STYLES.map(function(s,i){
+  return '<button class="chip'+(i===0?' on':'')+'" data-s="'+i+'" onclick="setStyle('+i+')">'+s.n+'</button>';
 }).join('');
 el('fmts').innerHTML=FORMATS.map(function(f,i){
   return '<button class="chip'+(i===0?' on':'')+'" data-f="'+i+'" onclick="setFmt('+i+')">'+f.n+'</button>';
@@ -165,10 +224,23 @@ el('themes').innerHTML=THEMES.map(function(t,i){
 function markOn(box,attr,i){
   [].forEach.call(el(box).querySelectorAll('.chip'),function(c){ c.classList.toggle('on', +c.getAttribute(attr)===i); });
 }
-function pick(i){ idx=i; var p=PRESETS[i]; el('head').value=p.h; el('sub').value=p.s; el('capTxt').textContent=p.c; markOn('presets','data-p',i); draw(); }
+function pick(i){
+  idx=i; var p=list()[i];
+  if(isAd()){ el('eye').value=p.e; el('head').value=p.h1; el('sub').value=p.h2; }
+  else { el('head').value=p.h; el('sub').value=p.s; }
+  el('capTxt').textContent=p.c; markOn('presets','data-p',i); draw();
+}
+function setStyle(i){
+  style=STYLES[i]; markOn('styles','data-s',i);
+  el('eyeRow').hidden=!isAd();
+  el('lbHead').textContent=isAd()?'Big line — plain':'Headline';
+  el('lbSub').textContent=isAd()?'Big line — coloured':'Small line underneath';
+  if(idx>=list().length) idx=0;
+  renderPresets(); pick(idx);
+}
 function setFmt(i){ fmt=FORMATS[i]; markOn('fmts','data-f',i); draw(); }
 function setTheme(i){ theme=THEMES[i]; markOn('themes','data-t',i); draw(); }
-function shuffle(){ pick((idx+1)%PRESETS.length); }
+function shuffle(){ pick((idx+1)%list().length); }
 
 /* ---------------- logo ---------------- */
 var LOGO=new Image(), logoReady=false;
@@ -217,18 +289,10 @@ function draw(){
   rg.addColorStop(0,hexA(theme.glow,theme.k==='light'?0.22:0.30)); rg.addColorStop(1,hexA(theme.glow,0));
   x.fillStyle=rg; x.fillRect(0,0,W,H);
 
-  // barber-pole band down the left edge — diagonal, same angle as the logo
-  var bw=Math.round(W*0.034);
-  x.save();
-  x.beginPath(); x.rect(0,0,bw,H); x.clip();
-  x.translate(bw/2,H/2); x.rotate(-38*Math.PI/180);
-  var sw=Math.round(W*0.028), span=Math.max(W,H)*1.7;
-  for(var y=-span;y<span;y+=sw*3){
-    x.fillStyle='#e8394a'; x.fillRect(-span,y,span*2,sw);
-    x.fillStyle=theme.k==='light'?'#ffffff':'#f7f9ff'; x.fillRect(-span,y+sw,span*2,sw);
-    x.fillStyle='#3b6dff'; x.fillRect(-span,y+sw*2,span*2,sw);
-  }
-  x.restore();
+  // barber-pole band — down the left edge normally, across the top in ad mode
+  poleBand(x,W,H,isAd());
+
+  if(isAd()){ drawAd(x,W,H,FAM,pad); return; }
 
   // logo + wordmark
   var lx=pad, ly=pad, ls=Math.round(W*0.098);
@@ -273,6 +337,215 @@ function draw(){
   x.fillText('Free to start · no app · no card', pad, fy+Math.round(W*0.048));
 }
 
+/* barber-pole stripes, clipped to a band. horiz=true → strip across the top */
+function poleBand(x,W,H,horiz){
+  var bw=Math.round(W*0.034);
+  x.save();
+  if(horiz){ x.beginPath(); x.rect(0,0,W,bw); x.clip(); x.translate(W/2,bw/2); }
+  else { x.beginPath(); x.rect(0,0,bw,H); x.clip(); x.translate(bw/2,H/2); }
+  x.rotate(-38*Math.PI/180);
+  var sw=Math.round(W*0.028), span=Math.max(W,H)*1.7;
+  for(var y=-span;y<span;y+=sw*3){
+    x.fillStyle='#e8394a'; x.fillRect(-span,y,span*2,sw);
+    x.fillStyle=theme.k==='light'?'#ffffff':'#f7f9ff'; x.fillRect(-span,y+sw,span*2,sw);
+    x.fillStyle='#3b6dff'; x.fillRect(-span,y+sw*2,span*2,sw);
+  }
+  x.restore();
+}
+function track(x,v){ try{ x.letterSpacing=v; }catch(e){} }
+
+/* ---------------- the loud ad layout ---------------- */
+function drawAd(x,W,H,FAM,pad){
+  var p=ADS[Math.min(idx,ADS.length-1)];
+  var st=fmt.k==='story';
+  var safeBot=st?Math.round(H*0.10):0;
+  var footH=Math.round(W*0.115);
+  var floor=H-safeBot-pad*0.7-footH;               // nothing draws below this
+  var maxW=W-pad*1.5;
+
+  x.textAlign='center'; x.textBaseline='top';
+
+  // eyebrow
+  var y=Math.round(H*(st?0.085:0.062));
+  var eyeS=Math.round(W*0.0245);
+  x.font='800 '+eyeS+'px '+FAM; x.fillStyle=theme.mut; track(x,Math.round(W*0.0035)+'px');
+  var eb=((el('eye').value||'').trim()||p.e).toUpperCase();
+  var eL=wrap(x,eb,W-pad*2.6).slice(0,2);
+  eL.forEach(function(l,i){ x.fillText(l,W/2,y+i*eyeS*1.55); });
+  track(x,'0px');
+  y+=eL.length*eyeS*1.55+Math.round(H*0.020);
+
+  // two-tone shout
+  var t1=((el('head').value||'').trim()||p.h1).toUpperCase();
+  var t2=((el('sub').value||'').trim()||p.h2).toUpperCase();
+  var headMaxH=Math.round(H*(st?0.215:0.255));
+  var s=Math.round(W*0.118), L1=[], L2=[], lh=0;
+  track(x,'-'+Math.round(W*0.002)+'px');
+  for(; s>=Math.round(W*0.05); s-=3){
+    x.font='900 '+s+'px '+FAM;
+    L1=t1?wrap(x,t1,maxW):[]; L2=t2?wrap(x,t2,maxW):[]; lh=Math.round(s*0.99);
+    if((L1.length+L2.length)*lh<=headMaxH && (L1.length+L2.length)<=4) break;
+  }
+  if(s<Math.round(W*0.05)){ s=Math.round(W*0.05); x.font='900 '+s+'px '+FAM; lh=Math.round(s*0.99);
+    L1=(t1?wrap(x,t1,maxW):[]).slice(0,2); L2=(t2?wrap(x,t2,maxW):[]).slice(0,2); }
+  x.fillStyle=theme.fg; L1.forEach(function(l,i){ x.fillText(l,W/2,y+i*lh); });
+  x.fillStyle=theme.accent; L2.forEach(function(l,i){ x.fillText(l,W/2,y+(L1.length+i)*lh); });
+  track(x,'0px');
+  y+=(L1.length+L2.length)*lh+Math.round(H*0.028);
+
+  // ---- feature row at the bottom of the content area (the org-chart nod) ----
+  var pillH=Math.round(W*0.062), clabS=Math.round(W*0.021);
+  var clusterH=clabS*1.5+Math.round(H*0.026)+pillH;
+  var cTop=floor-clusterH;
+
+  x.font='800 '+clabS+'px '+FAM; x.fillStyle=theme.mut; track(x,Math.round(W*0.004)+'px');
+  x.fillText(String(p.clab).toUpperCase(),W/2,cTop); track(x,'0px');
+
+  var pills=p.pills||[], n=Math.max(1,pills.length);
+  var gap=Math.round(W*0.022), pw=Math.floor((W-pad*1.4-gap*(n-1))/n);
+  var px0=Math.round((W-(pw*n+gap*(n-1)))/2), pTop=cTop+clabS*1.5+Math.round(H*0.026);
+  var stemY=cTop+clabS*1.5+Math.round(H*0.006), barY=pTop-Math.round(H*0.012);
+
+  x.strokeStyle=hexA(theme.accent,.5); x.lineWidth=Math.max(2,Math.round(W*0.003));
+  x.beginPath(); x.moveTo(W/2,stemY); x.lineTo(W/2,barY);
+  var firstC=px0+pw/2, lastC=px0+(n-1)*(pw+gap)+pw/2;
+  x.moveTo(firstC,barY); x.lineTo(lastC,barY);
+  for(var i=0;i<n;i++){ var cxp=px0+i*(pw+gap)+pw/2; x.moveTo(cxp,barY); x.lineTo(cxp,pTop); }
+  x.stroke();
+
+  for(i=0;i<n;i++){
+    var bx=px0+i*(pw+gap);
+    x.fillStyle=hexA(theme.accent,theme.k==='light'?.14:.13);
+    roundRect(x,x,bx,pTop,pw,pillH,pillH/2); x.fill();
+    x.strokeStyle=hexA(theme.accent,.45); x.lineWidth=Math.max(2,Math.round(W*0.0022));
+    roundRect(x,x,bx,pTop,pw,pillH,pillH/2); x.stroke();
+    var ps=Math.round(W*0.024);
+    x.font='900 '+ps+'px '+FAM;
+    while(ps>Math.round(W*0.015) && x.measureText(pills[i]).width>pw-Math.round(W*0.03)){ ps-=1; x.font='900 '+ps+'px '+FAM; }
+    x.fillStyle=theme.fg; x.textBaseline='middle';
+    x.fillText(String(pills[i]).toUpperCase(),bx+pw/2,pTop+pillH/2+1);
+    x.textBaseline='top';
+  }
+
+  // ---- middle band: callout + bubble | phone | badge ----
+  var avail=cTop-Math.round(H*0.042)-y;
+  var mh=Math.min(avail,Math.round(W*0.66)), my=y+Math.round((avail-mh)/2);
+  if(mh>Math.round(W*0.20)) drawMid(x,W,H,FAM,pad,p,my,mh);
+
+  // ---- footer ----
+  var fy=H-safeBot-pad*0.7-footH;
+  var lsz=Math.round(W*0.072);
+  if(logoReady){ try{ x.drawImage(LOGO,pad,fy+Math.round(footH*0.10),lsz,lsz); }catch(e){} }
+  x.textAlign='left'; x.textBaseline='alphabetic';
+  x.fillStyle=theme.fg; x.font='900 '+Math.round(W*0.046)+'px '+FAM;
+  x.fillText('Loop',pad+lsz+Math.round(W*0.022),fy+Math.round(footH*0.10)+lsz*0.62);
+  x.fillStyle=theme.mut; x.font='800 '+Math.round(W*0.0175)+'px '+FAM; track(x,Math.round(W*0.003)+'px');
+  x.fillText('FOR BARBERSHOPS',pad+lsz+Math.round(W*0.023),fy+Math.round(footH*0.10)+lsz*0.92);
+  track(x,'0px');
+
+  x.textAlign='right';
+  x.fillStyle=theme.accent; x.font='900 '+Math.round(W*0.034)+'px '+FAM;
+  x.fillText('tbsol.net/barbers',W-pad,fy+Math.round(footH*0.44));
+  x.fillStyle=theme.mut; x.font='700 '+Math.round(W*0.0215)+'px '+FAM;
+  x.fillText('free to start · no app · no card',W-pad,fy+Math.round(footH*0.76));
+  x.textAlign='left';
+}
+
+function drawMid(x,W,H,FAM,pad,p,my,mh){
+  var colW=Math.round(W*0.27);
+
+  /* --- left: handwritten callout, curved arrow, price-style bubble --- */
+  var bcx=pad+Math.round(colW*0.46);
+  var r=Math.min(Math.round(mh*0.30),Math.round(W*0.115));
+  var bcy=my+mh-r-Math.round(mh*0.03);
+
+  x.textAlign='center'; x.textBaseline='top';
+  var cs=Math.round(W*0.026);
+  x.font='italic 800 '+cs+'px '+FAM; x.fillStyle=theme.accent;
+  var cl=wrap(x,p.call,Math.round(colW*1.2)).slice(0,2);
+  var ctop=my+Math.round(mh*0.02);
+  x.save(); x.translate(bcx-Math.round(W*0.010),ctop); x.rotate(-7*Math.PI/180);
+  cl.forEach(function(l,i){ x.fillText(l,0,i*cs*1.25); });
+  x.restore();
+
+  // hand-drawn hook: sweeps out right from under the callout, back down into the bubble
+  var sx=bcx+Math.round(colW*0.30), sy=ctop+cl.length*cs*1.25+Math.round(mh*0.05);
+  var ex=bcx+r*0.45, ey=bcy-r-Math.round(W*0.012);
+  var qx=ex+Math.max(Math.round(W*0.13),Math.round(colW*0.45)), qy=sy+(ey-sy)*0.25;
+  if(ey>sy+W*0.04){
+    x.strokeStyle=theme.accent; x.lineWidth=Math.max(3,Math.round(W*0.0055)); x.lineCap='round';
+    x.beginPath(); x.moveTo(sx,sy); x.quadraticCurveTo(qx,qy,ex,ey); x.stroke();
+    var ang=Math.atan2(ey-qy,ex-qx), ah=Math.round(W*0.028);
+    x.fillStyle=theme.accent; x.beginPath();
+    x.moveTo(ex,ey);
+    x.lineTo(ex-ah*Math.cos(ang-0.42),ey-ah*Math.sin(ang-0.42));
+    x.lineTo(ex-ah*Math.cos(ang+0.42),ey-ah*Math.sin(ang+0.42));
+    x.closePath(); x.fill();
+  }
+
+  // bubble
+  x.save(); x.translate(bcx,bcy); x.rotate(-8*Math.PI/180);
+  x.fillStyle=theme.accent; x.beginPath(); x.arc(0,0,r,0,Math.PI*2); x.fill();
+  x.fillStyle=hexA(theme.k==='light'?'#ffffff':'#05060d',.92);
+  x.textBaseline='alphabetic';
+  var b1=Math.round(r*0.52);
+  x.font='900 '+b1+'px '+FAM;
+  while(b1>10 && x.measureText(p.bub[0]).width>r*1.5){ b1-=2; x.font='900 '+b1+'px '+FAM; }
+  x.fillText(p.bub[0],0,r*0.06);
+  var b2=Math.round(r*0.20);
+  x.font='900 '+b2+'px '+FAM; track(x,Math.round(r*0.03)+'px');
+  x.fillText(p.bub[1],0,r*0.42); track(x,'0px');
+  x.restore();
+
+  /* --- centre: the card itself --- */
+  var ph=Math.round(mh*0.94), pw=Math.min(Math.round(ph*0.52),Math.round(W*0.24));
+  ph=Math.round(pw/0.52);
+  var phx=Math.round(W/2-pw/2), phy=Math.round(my+(mh-ph)/2);
+  x.save();
+  x.shadowColor='rgba(0,0,0,.5)'; x.shadowBlur=Math.round(W*0.05); x.shadowOffsetY=Math.round(W*0.014);
+  x.fillStyle=theme.k==='light'?'#0a0d18':'#0d1120';
+  roundRect(x,x,phx,phy,pw,ph,Math.round(pw*0.14)); x.fill();
+  x.restore();
+  x.strokeStyle=hexA(theme.accent,.5); x.lineWidth=Math.max(2,Math.round(W*0.0026));
+  roundRect(x,x,phx,phy,pw,ph,Math.round(pw*0.14)); x.stroke();
+
+  var ip=Math.round(pw*0.10), iw=pw-ip*2, iy=phy+Math.round(ph*0.075);
+  // header strip
+  x.fillStyle=hexA(theme.accent,.22); roundRect(x,x,phx+ip,iy,iw,Math.round(ph*0.085),Math.round(ph*0.02)); x.fill();
+  iy+=Math.round(ph*0.085)+Math.round(ph*0.035);
+  // stars
+  var sn=5, sg=Math.round(iw*0.045), sz=Math.floor((iw-sg*(sn-1))/sn);
+  for(var i=0;i<sn;i++){
+    x.fillStyle=i<3?'#ffcf5a':hexA(theme.mut,.3);
+    x.beginPath(); x.arc(phx+ip+i*(sz+sg)+sz/2,iy+sz/2,sz*0.42,0,Math.PI*2); x.fill();
+  }
+  iy+=sz+Math.round(ph*0.045);
+  // game tiles
+  var gc=3, gg=Math.round(iw*0.055), gw=Math.floor((iw-gg*(gc-1))/gc), rows=Math.max(1,Math.floor((phy+ph-Math.round(ph*0.09)-iy)/(gw+gg)));
+  rows=Math.min(rows,3);
+  for(var rI=0;rI<rows;rI++) for(var cI=0;cI<gc;cI++){
+    x.fillStyle=hexA((rI+cI)%2?theme.glow:theme.accent,.28);
+    roundRect(x,x,phx+ip+cI*(gw+gg),iy+rI*(gw+gg),gw,gw,Math.round(gw*0.3)); x.fill();
+  }
+
+  /* --- right: the reassurance badge --- */
+  var bw2=colW, bh=Math.round(mh*0.40), bx2=W-pad-bw2, by2=Math.round(my+(mh-bh)/2);
+  x.fillStyle=hexA(theme.good||'#43f0b0',theme.k==='light'?.14:.12);
+  roundRect(x,x,bx2,by2,bw2,bh,Math.round(bh*0.22)); x.fill();
+  x.strokeStyle=hexA('#43f0b0',.55); x.lineWidth=Math.max(2,Math.round(W*0.0026));
+  roundRect(x,x,bx2,by2,bw2,bh,Math.round(bh*0.22)); x.stroke();
+  x.textAlign='center'; x.textBaseline='middle';
+  var ts=Math.round(W*0.026);
+  x.font='800 '+ts+'px '+FAM; x.fillStyle=theme.mut;
+  x.fillText(String(p.badge[0]).toUpperCase(),bx2+bw2/2,by2+bh*0.34);
+  var ts2=Math.round(W*0.038);
+  x.font='900 '+ts2+'px '+FAM;
+  while(ts2>Math.round(W*0.02) && x.measureText(p.badge[1]).width>bw2-Math.round(W*0.03)){ ts2-=1; x.font='900 '+ts2+'px '+FAM; }
+  x.fillStyle=theme.fg;
+  x.fillText(String(p.badge[1]).toUpperCase(),bx2+bw2/2,by2+bh*0.66);
+  x.textAlign='left'; x.textBaseline='top';
+}
+
 function hexA(h,a){
   h=String(h).replace('#','');
   if(h.length===3) h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
@@ -281,7 +554,7 @@ function hexA(h,a){
 
 /* ---------------- output ---------------- */
 function toast(t){ var e=document.createElement('div'); e.className='toast'; e.textContent=t; document.body.appendChild(e); setTimeout(function(){e.remove()},1500); }
-function fileName(){ return 'loop-'+fmt.k+'-'+theme.k+'-'+(idx+1)+'.png'; }
+function fileName(){ return 'loop-'+style.k+'-'+fmt.k+'-'+theme.k+'-'+(idx+1)+'.png'; }
 function dl(){
   el('cv').toBlob(function(b){
     if(!b){ toast('Could not export — try again'); return; }
@@ -351,6 +624,7 @@ function dlPfp(){
   img.src='/brand/icon.svg';
 }
 
+renderPresets();
 pick(0);
 </script>
 </body>
