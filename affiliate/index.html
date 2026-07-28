@@ -46,9 +46,20 @@
   .earn{text-align:center;padding:6px 0 2px}
   .earn .amt{font-size:38px;font-weight:900;background:linear-gradient(135deg,#43f0b0,var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(67,240,176,.4))}
   .earn .sub{color:var(--muted);font-size:12.5px}
-  .linkrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-  .linkrow button{flex:1;min-width:120px;border:1px solid var(--line);background:rgba(122,162,255,.06);color:var(--text);border-radius:12px;padding:11px;font:inherit;font-weight:700;font-size:13px;cursor:pointer}
-  .linkrow button:active{transform:scale(.97)}
+  .linkrow{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+  .lrow{border:1px solid var(--line);background:rgba(122,162,255,.05);border-radius:14px;padding:12px}
+  .lrow .lhead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
+  .lrow .lname{font-weight:800;font-size:14px}
+  .lrow .lurl{display:block;width:100%;background:rgba(2,4,12,.55);border:1px solid rgba(122,162,255,.22);border-radius:10px;
+    padding:9px 10px;color:#cfd8ff;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;
+    overflow-x:auto;white-space:nowrap;-webkit-user-select:all;user-select:all;cursor:text}
+  .lacts{display:flex;gap:7px;margin-top:8px}
+  .lacts a,.lacts button{flex:1;text-align:center;text-decoration:none;border:1px solid var(--line);background:rgba(122,162,255,.08);
+    color:var(--text);border-radius:10px;padding:9px 8px;font:inherit;font-weight:800;font-size:12.5px;cursor:pointer}
+  .lacts .primary{background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d;border-color:transparent}
+  .lacts a:active,.lacts button:active{transform:scale(.97)}
+  .lacts button.ok{background:linear-gradient(135deg,var(--good,#43f0b0),#2fd39a);color:#04150d;border-color:transparent}
+  .codetap{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
   h2{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:2px 0 10px;font-weight:800}
   .lead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px}
   .lead:last-child{border-bottom:0}
@@ -183,7 +194,7 @@ function showErr(m){ el('err').textContent=m; el('err').classList.remove('hide')
 
 function render(d){
   el('login').classList.add('hide'); el('dash').classList.remove('hide');
-  el('repName').textContent=(d.name||d.code)+' · '+d.code;
+  el('repName').innerHTML=String(d.name||d.code).replace(/[<>&]/g,'')+' · <span class="codetap" onclick="cpCode()" title="Tap to copy your code">'+String(d.code).replace(/[<>&]/g,'')+'</span>';
   var total=d.total||0, won=d.won||0, rate=total?Math.round(won/total*100):0;
   // rank/level from won
   var ranks=[[0,'🥉','Rookie'],[1,'🥈','Closer'],[3,'🥇','Pro'],[6,'💎','Elite'],[12,'👑','Legend']];
@@ -203,7 +214,18 @@ function render(d){
   var base='https://tbsol.net';
   var links=[['💈 Barber pitch',base+'/barbers/?ref='+d.code],['⚡ Free signup',base+'/rewards/signup/?ref='+d.code],['🌐 Homepage',base+'/?ref='+d.code],['🧰 My selling kit',base+'/kit/?ref='+d.code+(d.name?('&name='+encodeURIComponent(String(d.name).split(' ')[0])):'')]];
   try{ localStorage.setItem('loop_rep',JSON.stringify({code:d.code,name:(d.name||'').split(' ')[0]})); }catch(e){}
-  el('links').innerHTML=links.map(function(l,i){return '<button onclick="cp('+i+')">'+l[0]+'</button>';}).join('');
+  window._links=links.map(function(l){return l[1];});
+  el('links').innerHTML=links.map(function(l,i){
+    var pretty=String(l[1]).replace(/^https?:\/\//,'');
+    return '<div class="lrow">'
+      + '<div class="lhead"><span class="lname">'+l[0]+'</span></div>'
+      + '<code class="lurl" id="lu'+i+'">'+pretty+'</code>'
+      + '<div class="lacts">'
+      +   '<a class="primary" href="'+l[1]+'" target="_blank" rel="noopener">Open ↗</a>'
+      +   '<button onclick="cp('+i+',this)">Copy</button>'
+      +   '<button onclick="sh('+i+')">Share</button>'
+      + '</div></div>';
+  }).join('');
   window._links=links.map(function(l){return l[1]});
   // recent
   var rec=d.recent||[];
@@ -216,7 +238,30 @@ function render(d){
     }).join('');
   }
 }
-function cp(i){ try{ navigator.clipboard.writeText(window._links[i]); toast('Link copied ✓'); }catch(e){} }
+function copyText(txt, btn, okMsg){
+  function done(){
+    toast(okMsg||'Copied ✓');
+    if(btn){ var o=btn.textContent; btn.textContent='Copied ✓'; btn.classList.add('ok');
+      setTimeout(function(){ btn.textContent=o; btn.classList.remove('ok'); },1400); }
+  }
+  function fallback(){
+    try{ var ta=document.createElement('textarea'); ta.value=txt; ta.setAttribute('readonly','');
+      ta.style.position='fixed'; ta.style.top='-1000px'; document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy'); ta.remove(); done(); }
+    catch(e){ toast('Tap the link to select it'); }
+  }
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done, fallback); }
+    else fallback();
+  }catch(e){ fallback(); }
+}
+function cp(i,btn){ var u=(window._links||[])[i]; if(u) copyText(u, btn, 'Link copied ✓'); }
+function sh(i){
+  var u=(window._links||[])[i]; if(!u) return;
+  if(navigator.share){ navigator.share({title:'Loop for barbershops', url:u}).catch(function(){}); }
+  else copyText(u, null, 'Link copied ✓');
+}
+function cpCode(){ var c=(el('repName').textContent||'').split('·').pop().trim(); if(c) copyText(c, null, 'Code copied ✓'); }
 function countTo(id,val){ var e=el(id),s=0,step=Math.max(1,Math.ceil(val/18)); (function tick(){ s=Math.min(val,s+step); e.textContent=s; if(s<val) requestAnimationFrame(tick); })(); }
 
 if(q.get('code') && q.get('pin')){ el('pin').value=q.get('pin'); loadDash(); }
