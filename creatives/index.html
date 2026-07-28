@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Loop — creative maker</title>
+<meta name="description" content="Make post-ready Loop graphics for Instagram, TikTok and stories. Pick a line, pick a look, download the PNG." />
+<meta name="theme-color" content="#05060d" />
+<meta name="robots" content="noindex" />
+<link rel="icon" href="/brand/icon.svg" />
+<style>
+  :root{--text:#f2f4ff;--muted:#8f97b8;--line:rgba(122,162,255,.3);--acc:#7aa2ff;--acc2:#5ad0f0;--vio:#b98bff;--good:#43f0b0;--gold:#ffcf5a}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.55;
+    background:radial-gradient(circle at 12% -8%,rgba(122,162,255,.18),transparent 44%),linear-gradient(180deg,#070811,#04050a);
+    min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:18px 13px 70px;-webkit-tap-highlight-color:transparent}
+  .wrap{width:min(700px,100%)}
+  .top{text-align:center;margin-bottom:16px}
+  .top img{width:40px;height:40px;display:block;margin:0 auto 8px}
+  h1{font-size:clamp(23px,6vw,30px);margin:0 0 4px;letter-spacing:-.02em}
+  h1 span{background:linear-gradient(90deg,var(--acc2),var(--acc),var(--vio));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);font-size:13.5px;margin:0}
+  .card{background:linear-gradient(150deg,rgba(255,255,255,.055),rgba(255,255,255,.015));border:1px solid var(--line);
+    border-radius:19px;padding:17px;margin-bottom:14px}
+  .card h2{font-size:15.5px;margin:0 0 3px}
+  .card .note{color:var(--muted);font-size:12.5px;margin:0 0 13px}
+  .chips{display:flex;gap:7px;flex-wrap:wrap}
+  .chip{border:1px solid var(--line);background:rgba(122,162,255,.06);color:var(--text);border-radius:999px;
+    padding:8px 13px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+  .chip.on{background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d;border-color:transparent}
+  .chip:active{transform:scale(.97)}
+  label{display:block;margin:13px 0 5px;font-size:10.5px;color:var(--muted);font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+  textarea,input{width:100%;background:rgba(2,4,12,.6);border:1px solid var(--line);border-radius:12px;padding:12px;
+    color:var(--text);font:inherit;font-size:15px;resize:vertical}
+  textarea:focus,input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(122,162,255,.18)}
+  .stage{display:grid;place-items:center;background:rgba(2,4,12,.4);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:4px}
+  canvas{max-width:100%;height:auto;border-radius:10px;box-shadow:0 14px 40px rgba(0,0,0,.55);display:block}
+  .btn{width:100%;margin-top:12px;border:0;border-radius:999px;padding:14px;font:inherit;font-weight:900;font-size:14.5px;cursor:pointer;
+    background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d}
+  .btn.ghost{background:rgba(122,162,255,.08);border:1px solid var(--line);color:var(--text);font-weight:700}
+  .btn:active{transform:scale(.985)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  @media(max-width:430px){.row2{grid-template-columns:1fr}}
+  .toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:linear-gradient(135deg,var(--acc2),var(--acc));
+    color:#05060d;font-weight:800;font-size:13px;border-radius:999px;padding:9px 18px;z-index:60;box-shadow:0 10px 30px rgba(122,162,255,.4)}
+  .cap{border:1px solid rgba(122,162,255,.2);background:rgba(4,6,14,.5);border-radius:13px;padding:12px;margin-top:11px}
+  .cap .lbl{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc2);font-weight:800;margin-bottom:6px}
+  .cap p{margin:0 0 9px;font-size:14px;white-space:pre-wrap}
+  .foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:12px}
+  .foot a{color:var(--acc);text-decoration:none}
+  .tip{color:var(--muted);font-size:12.5px;margin:11px 0 0}
+  .tip b{color:var(--text)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <img src="/brand/mark.svg" alt="Loop">
+    <h1>Creative <span>maker</span></h1>
+    <p class="sub">Pick a line, pick a look, download the PNG. Post it.</p>
+  </div>
+
+  <div class="card">
+    <h2>1 · What's it saying?</h2>
+    <p class="note">Tap a line to load it, then edit it however you want.</p>
+    <div class="chips" id="presets"></div>
+    <label>Headline</label>
+    <textarea id="head" rows="2" oninput="draw()"></textarea>
+    <label>Small line underneath</label>
+    <input id="sub" oninput="draw()">
+  </div>
+
+  <div class="card">
+    <h2>2 · How's it look?</h2>
+    <p class="note">Square for the feed, tall for stories and Reels covers.</p>
+    <div class="chips" id="fmts"></div>
+    <div style="height:9px"></div>
+    <div class="chips" id="themes"></div>
+  </div>
+
+  <div class="card">
+    <h2>3 · Grab it</h2>
+    <p class="note">Downloads at full resolution — 1080 wide, ready to post.</p>
+    <div class="stage"><canvas id="cv"></canvas></div>
+    <button class="btn" onclick="dl()">⬇ Download PNG</button>
+    <div class="row2">
+      <button class="btn ghost" onclick="shuffle()">🎲 Another line</button>
+      <button class="btn ghost" onclick="shareIt()">📤 Share</button>
+    </div>
+    <div class="cap">
+      <div class="lbl">Caption to paste with it</div>
+      <p id="capTxt"></p>
+      <button class="chip" onclick="cpCap(this)">Copy caption</button>
+    </div>
+    <p class="tip"><b>Posting it:</b> film 10 seconds of someone playing a game in the chair, use this as the cover, and put the caption underneath. Same clip works on TikTok, Reels and a barber Facebook group — just swap the first line.</p>
+  </div>
+
+  <p class="foot">Loop by <a href="https://tbsol.net">TB Solutions</a> · <a href="/kit/">selling kit</a> · <a href="/brand/">brand kit</a></p>
+</div>
+
+<script>
+/* ---------------- content ---------------- */
+var PRESETS=[
+  {h:"My barber pays me to wait.", s:"Free cuts for playing games.", c:"My barber pays me to wait 😭🎮\n\nHe put in a rewards app — every cut earns points toward a free one, and there's a whole arcade in the chair. I'm not switching shops now.\n\nBarbers: it's free to set up 👉 tbsol.net/barbers/"},
+  {h:"Your barbershop has an arcade now.", s:"11 games. Every one earns free cuts.", c:"Your barbershop has an arcade now 🎮💈\n\n11 games your customers play while they wait, all earning coins toward a free cut AT YOUR SHOP. That's the whole trick — they come back to you.\n\nFree to start 👉 tbsol.net/barbers/"},
+  {h:"Your punch card is why regulars leave.", s:"Paper gets lost. This doesn't.", c:"Your punch card is why your regulars leave 💈\n\nPaper gets lost, forgotten, thrown out. Loop lives in their phone, shows exactly how close they are to a free cut, and reminds them.\n\nFree to start 👉 tbsol.net/barbers/"},
+  {h:"Keep your Booksy.", s:"This is the part that brings them back.", c:"You don't have to switch anything 💈\n\nKeep Booksy for booking. Loop runs on top — rewards, referrals and games that make your regulars actually come back. Link them together in one tap.\n\ntbsol.net/barbers/"},
+  {h:"Free haircuts. For playing games.", s:"Ask your barber about Loop.", c:"Free haircuts. For playing games. 🎮✂️\n\nScan your barber's QR, play in the chair, earn coins toward a free cut. No app to download.\n\nTell your barber: tbsol.net/barbers/"},
+  {h:"Live in 30 seconds.", s:"Shop name, a PIN, done. No card.", c:"Set your whole loyalty program up in 30 seconds 💈\n\nShop name, a 4-digit PIN, and your QR code prints from your phone. No app, no hardware, no card, free to start.\n\ntbsol.net/barbers/"},
+  {h:"They're one bad week from the shop down the street.", s:"Give them a reason to come back.", c:"Every barber knows the feeling — a regular disappears and you never find out why 💈\n\nLoop gives them points sitting there with your name on them. That's the reason they come back instead of trying the shop down the street.\n\nFree to start 👉 tbsol.net/barbers/"},
+  {h:"Get paid to sign up barbershops.", s:"You're already in shops. Now get paid.", c:"If you're in barbershops every week — barber students, apprentices, mobile barbers — you can get paid for it 💸\n\nShow shops a free app they actually want, get paid when they start. No cost, no quota.\n\ntbsol.net/barbers/"}
+];
+
+var FORMATS=[{k:'post',n:'⬛ Square post',w:1080,h:1080},{k:'story',n:'📱 Story / Reel',w:1080,h:1920}];
+var THEMES=[
+  {k:'ink',   n:'🌌 Ink',    bg:['#0a0d18','#05060d'], fg:'#f4f6ff', mut:'#93a0c8', glow:'#5ad0f0', accent:'#7aa2ff', pole:false},
+  {k:'pole',  n:'💈 Pole',   bg:['#12060a','#080406'], fg:'#fff6f6', mut:'#c9a3ab', glow:'#e8394a', accent:'#e8394a', pole:true},
+  {k:'gold',  n:'🏆 Gold',   bg:['#14100a','#080605'], fg:'#fff8e8', mut:'#c4b48c', glow:'#ffcf5a', accent:'#ffcf5a', pole:false},
+  {k:'light', n:'⚪ Light',  bg:['#f4f6fd','#e7ecf9'], fg:'#0a0d18', mut:'#5a627d', glow:'#7aa2ff', accent:'#3b6dff', pole:false}
+];
+
+var idx=0, fmt=FORMATS[0], theme=THEMES[0];
+function el(i){return document.getElementById(i)}
+
+/* ---------------- chips ---------------- */
+el('presets').innerHTML=PRESETS.map(function(p,i){
+  var short=p.h.length>26?p.h.slice(0,24)+'…':p.h;
+  return '<button class="chip'+(i===0?' on':'')+'" data-p="'+i+'" onclick="pick('+i+')">'+short.replace(/[<>&]/g,'')+'</button>';
+}).join('');
+el('fmts').innerHTML=FORMATS.map(function(f,i){
+  return '<button class="chip'+(i===0?' on':'')+'" data-f="'+i+'" onclick="setFmt('+i+')">'+f.n+'</button>';
+}).join('');
+el('themes').innerHTML=THEMES.map(function(t,i){
+  return '<button class="chip'+(i===0?' on':'')+'" data-t="'+i+'" onclick="setTheme('+i+')">'+t.n+'</button>';
+}).join('');
+function markOn(box,attr,i){
+  [].forEach.call(el(box).querySelectorAll('.chip'),function(c){ c.classList.toggle('on', +c.getAttribute(attr)===i); });
+}
+function pick(i){ idx=i; var p=PRESETS[i]; el('head').value=p.h; el('sub').value=p.s; el('capTxt').textContent=p.c; markOn('presets','data-p',i); draw(); }
+function setFmt(i){ fmt=FORMATS[i]; markOn('fmts','data-f',i); draw(); }
+function setTheme(i){ theme=THEMES[i]; markOn('themes','data-t',i); draw(); }
+function shuffle(){ pick((idx+1)%PRESETS.length); }
+
+/* ---------------- logo ---------------- */
+var LOGO=new Image(), logoReady=false;
+LOGO.onload=function(){ logoReady=true; draw(); };
+LOGO.onerror=function(){ logoReady=false; draw(); };
+LOGO.src='/brand/mark.svg';
+
+/* ---------------- drawing ---------------- */
+function roundRect(x,c,X,Y,W,H,R){ R=Math.min(R,W/2,H/2); x.beginPath(); x.moveTo(X+R,Y);
+  x.arcTo(X+W,Y,X+W,Y+H,R); x.arcTo(X+W,Y+H,X,Y+H,R); x.arcTo(X,Y+H,X,Y,R); x.arcTo(X,Y,X+W,Y,R); x.closePath(); }
+
+function wrap(x,text,maxW){
+  var words=String(text||'').split(/\s+/).filter(Boolean), lines=[], cur='';
+  for(var i=0;i<words.length;i++){
+    var t=cur?cur+' '+words[i]:words[i];
+    if(x.measureText(t).width>maxW && cur){ lines.push(cur); cur=words[i]; } else cur=t;
+  }
+  if(cur) lines.push(cur);
+  return lines;
+}
+function fitLines(x,text,maxW,maxH,start,min,family){
+  for(var s=start;s>=min;s-=4){
+    x.font='900 '+s+'px '+family;
+    var ls=wrap(x,text,maxW), lh=s*1.08;
+    if(ls.length*lh<=maxH && ls.length<=6) return {size:s,lines:ls,lh:lh};
+  }
+  x.font='900 '+min+'px '+family;
+  return {size:min,lines:wrap(x,text,maxW),lh:min*1.08};
+}
+
+function draw(){
+  var W=fmt.w, H=fmt.h, c=el('cv');
+  c.width=W; c.height=H;
+  c.style.width=(fmt.k==='story'?260:330)+'px';
+  var x=c.getContext('2d');
+  var FAM='Poppins,Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif';
+  var pad=Math.round(W*0.085);
+
+  // background
+  var g=x.createLinearGradient(0,0,W*0.3,H);
+  g.addColorStop(0,theme.bg[0]); g.addColorStop(1,theme.bg[1]);
+  x.fillStyle=g; x.fillRect(0,0,W,H);
+
+  // glow
+  var rg=x.createRadialGradient(W*0.16,H*0.06,0,W*0.16,H*0.06,W*0.95);
+  rg.addColorStop(0,hexA(theme.glow,theme.k==='light'?0.22:0.30)); rg.addColorStop(1,hexA(theme.glow,0));
+  x.fillStyle=rg; x.fillRect(0,0,W,H);
+
+  // barber-pole band down the left edge — diagonal, same angle as the logo
+  var bw=Math.round(W*0.034);
+  x.save();
+  x.beginPath(); x.rect(0,0,bw,H); x.clip();
+  x.translate(bw/2,H/2); x.rotate(-38*Math.PI/180);
+  var sw=Math.round(W*0.028), span=Math.max(W,H)*1.7;
+  for(var y=-span;y<span;y+=sw*3){
+    x.fillStyle='#e8394a'; x.fillRect(-span,y,span*2,sw);
+    x.fillStyle=theme.k==='light'?'#ffffff':'#f7f9ff'; x.fillRect(-span,y+sw,span*2,sw);
+    x.fillStyle='#3b6dff'; x.fillRect(-span,y+sw*2,span*2,sw);
+  }
+  x.restore();
+
+  // logo + wordmark
+  var lx=pad, ly=pad, ls=Math.round(W*0.098);
+  if(logoReady){ try{ x.drawImage(LOGO,lx,ly,ls,ls); }catch(e){} }
+  x.fillStyle=theme.fg; x.font='900 '+Math.round(W*0.052)+'px '+FAM; x.textBaseline='alphabetic';
+  x.fillText('Loop', lx+ls+Math.round(W*0.026), ly+ls*0.62);
+  x.fillStyle=theme.mut; x.font='800 '+Math.round(W*0.019)+'px '+FAM;
+  x.fillText('FOR BARBERSHOPS', lx+ls+Math.round(W*0.027), ly+ls*0.93);
+
+  // headline — fills the middle
+  var safeBot=fmt.k==='story'?Math.round(H*0.11):0;   // IG story UI sits over the bottom strip
+  var topY=ly+ls+Math.round(H*(fmt.k==='story'?0.09:0.05));
+  var botRes=Math.round(H*(fmt.k==='story'?0.26:0.33))+safeBot;
+  var maxW=W-pad*2, maxH=H-topY-botRes-pad;
+  var head=(el('head').value||'').trim()||PRESETS[idx].h;
+  var fit=fitLines(x,head,maxW,maxH,Math.round(W*(fmt.k==='story'?0.115:0.105)),Math.round(W*0.045),FAM);
+  x.fillStyle=theme.fg; x.textBaseline='top';
+  var y0=topY+Math.max(0,(maxH-fit.lines.length*fit.lh)*(fmt.k==='story'?0.42:0.34));
+  x.font='900 '+fit.size+'px '+FAM;
+  fit.lines.forEach(function(ln,i){ x.fillText(ln,pad,y0+i*fit.lh); });
+
+  // footer bar sits first — everything else is measured up from it
+  var fy=H-pad-safeBot-Math.round(W*0.052);
+
+  // subline, parked just above the footer
+  var sb=(el('sub').value||'').trim();
+  var subSize=Math.round(W*0.040), subLh=Math.round(W*0.050), subTop=fy;
+  if(sb){
+    x.font='700 '+subSize+'px '+FAM;
+    var sl=wrap(x,sb,maxW).slice(0,2);
+    subTop=fy-Math.round(H*0.055)-sl.length*subLh;
+    x.fillStyle=theme.mut;
+    sl.forEach(function(ln,i){ x.fillText(ln,pad,subTop+i*subLh); });
+  }
+
+  // accent rule above the subline, clamped so it never rides into the headline
+  var ruleY=Math.max(y0+fit.lines.length*fit.lh+Math.round(H*0.022), subTop-Math.round(H*0.038));
+  x.fillStyle=theme.accent; roundRect(x,x,pad,ruleY,Math.round(W*0.17),Math.round(H*0.009),99); x.fill();
+  x.fillStyle=theme.accent; x.font='900 '+Math.round(W*0.036)+'px '+FAM;
+  x.fillText('tbsol.net/barbers', pad, fy);
+  x.fillStyle=theme.mut; x.font='700 '+Math.round(W*0.027)+'px '+FAM;
+  x.fillText('Free to start · no app · no card', pad, fy+Math.round(W*0.048));
+}
+
+function hexA(h,a){
+  h=String(h).replace('#','');
+  if(h.length===3) h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  return 'rgba('+parseInt(h.substr(0,2),16)+','+parseInt(h.substr(2,2),16)+','+parseInt(h.substr(4,2),16)+','+a+')';
+}
+
+/* ---------------- output ---------------- */
+function toast(t){ var e=document.createElement('div'); e.className='toast'; e.textContent=t; document.body.appendChild(e); setTimeout(function(){e.remove()},1500); }
+function fileName(){ return 'loop-'+fmt.k+'-'+theme.k+'-'+(idx+1)+'.png'; }
+function dl(){
+  el('cv').toBlob(function(b){
+    if(!b){ toast('Could not export — try again'); return; }
+    var u=URL.createObjectURL(b), a=document.createElement('a');
+    a.href=u; a.download=fileName(); document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){URL.revokeObjectURL(u)},800); toast('Saved ✓');
+  },'image/png');
+}
+function shareIt(){
+  var c=el('cv');
+  c.toBlob(function(b){
+    if(!b) return toast('Could not export');
+    var f=null;
+    try{ f=new File([b],fileName(),{type:'image/png'}); }catch(e){}
+    if(f && navigator.canShare && navigator.canShare({files:[f]}) && navigator.share){
+      navigator.share({files:[f],text:el('capTxt').textContent}).catch(function(){});
+    } else { dl(); }
+  },'image/png');
+}
+function cpCap(btn){
+  var t=el('capTxt').textContent||'';
+  function ok(){ toast('Caption copied ✓'); if(btn){ var o=btn.textContent; btn.textContent='Copied ✓';
+    setTimeout(function(){btn.textContent=o},1400); } }
+  function fb(){ try{ var ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.top='-1000px';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); ok(); }catch(e){ toast('Select it manually'); } }
+  try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(ok,fb); } else fb(); }
+  catch(e){ fb(); }
+}
+
+pick(0);
+</script>
+</body>
+</html>
