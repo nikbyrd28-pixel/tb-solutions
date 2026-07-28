@@ -73,6 +73,13 @@
   .stack{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
   @media(max-width:820px){.stack{grid-template-columns:1fr 1fr}}
   @media(max-width:520px){.stack{grid-template-columns:1fr}}
+  .gwrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:11px}
+  .gtile{display:flex;flex-direction:column;gap:3px;text-decoration:none;color:var(--text);border:1px solid var(--line);
+    border-radius:15px;padding:14px 13px;background:var(--panel);transition:transform .12s,border-color .12s}
+  .gtile:hover{transform:translateY(-2px);border-color:rgba(94,242,224,.5)}
+  .gtile .ge{font-size:26px;line-height:1}
+  .gtile b{font-size:14.5px;margin-top:4px}
+  .gtile .gd{font-size:12.3px;color:var(--muted);line-height:1.4}
   .mod{border:1px solid var(--line);border-radius:18px;padding:22px;background:var(--panel);display:flex;flex-direction:column}
   .mod .e{font-size:30px}
   .mod .role{font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--acc2);margin-top:12px}
@@ -166,6 +173,31 @@
         <p style="text-align:center">One link. One counter QR. One dashboard. Built to keep your chairs full without juggling five apps.</p>
         <div class="links" style="justify-content:center"><a href="#get" class="btn sm">Set up my shop →</a></div>
       </div>
+    </div>
+  </div>
+</section>
+
+<section id="arcade">
+  <div class="wrap">
+    <div class="eyebrow reveal">Nobody else has this</div>
+    <h2 class="sec reveal">11 games your customers play in your chair</h2>
+    <p class="sub reveal">Waiting is the worst part of a haircut. Loop turns it into an arcade — and every game earns coins toward a free cut <b style="color:var(--text)">at your shop</b>. That's why they come back to you instead of whoever's closest. Tap any game and play it right now.</p>
+    <div class="gwrap">
+      <a class="gtile reveal" href="/arcade/"><span class="ge">🐦</span><b>Loop Flyer</b><span class="gd">Tap to fly. Dodge the clippers.</span></a>
+      <a class="gtile reveal" href="/arcade/"><span class="ge">🚦</span><b>Chair Hopper</b><span class="gd">Hop across the traffic.</span></a>
+      <a class="gtile reveal" href="/arcade/run/"><span class="ge">💈</span><b>Barber Dash</b><span class="gd">Run &amp; jump. Dodge the razors.</span></a>
+      <a class="gtile reveal" href="/arcade/slice/"><span class="ge">✂️</span><b>Fresh Cuts</b><span class="gd">Swipe to slice. Miss the razors.</span></a>
+      <a class="gtile reveal" href="/arcade/stack/"><span class="ge">🧱</span><b>Perfect Fade</b><span class="gd">Tap to stack the cleanest fade.</span></a>
+      <a class="gtile reveal" href="/arcade/tetris/"><span class="ge">🧩</span><b>Barber Blocks</b><span class="gd">Stack blocks, clear lines.</span></a>
+      <a class="gtile reveal" href="/arcade/hockey/"><span class="ge">🏒</span><b>Ice Hockey</b><span class="gd">Beat the bot. Every level gets faster.</span></a>
+      <a class="gtile reveal" href="/arcade/numbers/"><span class="ge">🔢</span><b>Number Rush</b><span class="gd">Swipe, match &amp; merge to 2048.</span></a>
+      <a class="gtile reveal" href="/arcade/words/"><span class="ge">🔤</span><b>Fresh Words</b><span class="gd">Daily barber word. 6 tries.</span></a>
+      <a class="gtile reveal" href="/arcade/blackjack/"><span class="ge">🃏</span><b>Blackjack</b><span class="gd">Bet coins, beat the dealer.</span></a>
+      <a class="gtile reveal" href="/arcade/poker/"><span class="ge">♠️</span><b>Video Poker</b><span class="gd">Jacks or better. Hold &amp; draw.</span></a>
+    </div>
+    <div class="cta-row" style="margin-top:20px">
+      <a href="/arcade/" class="btn sm">🎮 Open the arcade</a>
+      <a href="/rewards/?c=demo" class="btn sm ghost">See it inside a real card</a>
     </div>
   </div>
 </section>
