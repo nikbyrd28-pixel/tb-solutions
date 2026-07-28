@@ -96,6 +96,34 @@
     <p class="tip"><b>Posting it:</b> film 10 seconds of someone playing a game in the chair, use this as the cover, and put the caption underneath. Same clip works on TikTok, Reels and a barber Facebook group — just swap the first line.</p>
   </div>
 
+
+  <div class="card" id="igsetup">
+    <h2>4 · Set up the Instagram</h2>
+    <p class="note">Handle, name, bio and profile picture. Tap anything to copy it.</p>
+
+    <label>Profile picture</label>
+    <div class="stage" style="padding:18px"><img src="/brand/icon.svg" alt="Loop icon" style="width:104px;height:104px;border-radius:24px"></div>
+    <button class="btn ghost" onclick="dlPfp()">⬇ Download profile picture</button>
+
+    <label>Handle — pick one that's free</label>
+    <div class="chips" id="handles"></div>
+
+    <label>Name field (this is what IG search matches)</label>
+    <div class="cap"><p id="igName">Loop · Barbershop Rewards</p><button class="chip" onclick="cpEl('igName',this)">Copy name</button></div>
+
+    <label>Bio</label>
+    <div class="chips" id="bioTabs"></div>
+    <div class="cap" style="margin-top:9px"><p id="igBio"></p><button class="chip" onclick="cpEl('igBio',this)">Copy bio</button></div>
+
+    <label>Link in bio</label>
+    <div class="cap"><p id="igLink">tbsol.net/barbers/</p><button class="chip" onclick="cpEl('igLink',this)">Copy link</button></div>
+
+    <label>Story highlight names</label>
+    <div class="cap"><p id="igHigh">The Games · How It Works · Shops On Loop · Free Cuts · Start Free</p><button class="chip" onclick="cpEl('igHigh',this)">Copy</button></div>
+
+    <p class="tip"><b>First three posts:</b> 1) someone playing a game in the chair with the "arcade now" graphic as the cover, 2) a shop's counter QR with "live in 30 seconds", 3) a customer's card showing points filling up. Then keep posting the same clip with different hooks.</p>
+  </div>
+
   <p class="foot">Loop by <a href="https://tbsol.net">TB Solutions</a> · <a href="/kit/">selling kit</a> · <a href="/brand/">brand kit</a></p>
 </div>
 
@@ -281,6 +309,46 @@ function cpCap(btn){
     document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); ok(); }catch(e){ toast('Select it manually'); } }
   try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(ok,fb); } else fb(); }
   catch(e){ fb(); }
+}
+
+/* ---------------- instagram setup ---------------- */
+var HANDLES=['@loopforbarbers','@getloopapp','@loop.barbershop','@useloop.app','@loopbarberapp'];
+var BIOS=[
+  {n:'💈 Straight',   t:"💈 Rewards + booking built for barbershops\n🎮 Your customers play games in the chair\n✂️ They earn free cuts — from YOU\n👇 Free to start, live in 30 seconds"},
+  {n:'🎮 Games-first',t:"🎮 The barbershop with an arcade in it\n✂️ Play while you wait, earn free cuts\n💈 11 games · no app to download\n👇 Barbers: set yours up free"},
+  {n:'📈 Owner',      t:"💈 Stop losing regulars to the shop down the street\n🔁 Rewards, booking + games that bring them back\n🚫 No app, no hardware, no card\n👇 Free to start"},
+  {n:'⚡ Short',      t:"💈 Loyalty + games for barbershops\n✂️ Your customers earn free cuts\n👇 Free to start"}
+];
+document.getElementById('handles').innerHTML=HANDLES.map(function(h,i){
+  return '<button class="chip" onclick="cpText(\''+h+'\',this)">'+h+'</button>';
+}).join('');
+document.getElementById('bioTabs').innerHTML=BIOS.map(function(b,i){
+  return '<button class="chip'+(i===0?' on':'')+'" data-b="'+i+'" onclick="setBio('+i+')">'+b.n+'</button>';
+}).join('');
+function setBio(i){
+  document.getElementById('igBio').textContent=BIOS[i].t;
+  [].forEach.call(document.getElementById('bioTabs').querySelectorAll('.chip'),function(c){ c.classList.toggle('on',+c.getAttribute('data-b')===i); });
+}
+setBio(0);
+function cpText(t,btn){
+  function ok(){ toast('Copied ✓'); if(btn){ var o=btn.textContent; btn.textContent='Copied ✓'; setTimeout(function(){btn.textContent=o},1300); } }
+  function fb(){ try{ var ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.top='-1000px';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); ok(); }catch(e){ toast('Select it manually'); } }
+  try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(ok,fb); } else fb(); }catch(e){ fb(); }
+}
+function cpEl(id,btn){ var e=document.getElementById(id); if(e) cpText((e.textContent||'').trim(),btn); }
+function dlPfp(){
+  var img=new Image();
+  img.onload=function(){
+    var c=document.createElement('canvas'); c.width=c.height=1080;
+    c.getContext('2d').drawImage(img,0,0,1080,1080);
+    c.toBlob(function(b){ if(!b) return toast('Could not export');
+      var u=URL.createObjectURL(b), a=document.createElement('a');
+      a.href=u; a.download='loop-profile-1080.png'; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){URL.revokeObjectURL(u)},800); toast('Saved ✓'); },'image/png');
+  };
+  img.onerror=function(){ toast('Could not load the icon'); };
+  img.src='/brand/icon.svg';
 }
 
 pick(0);
