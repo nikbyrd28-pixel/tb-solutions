@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>See Loop working — live demo for barbershops</title>
+<meta name="description" content="A real Loop rewards card, running live. Play the games, spin for a free cut, book an appointment — then set your own shop up free in 30 seconds." />
+<meta name="theme-color" content="#05060d" />
+<meta property="og:title" content="See Loop working — live barbershop demo" />
+<meta property="og:description" content="Play the arcade, earn coins toward a free cut, book an appointment. This is exactly what your customers get." />
+<meta property="og:url" content="https://tbsol.net/demo/" />
+<link rel="canonical" href="https://tbsol.net/demo/" />
+<link rel="icon" href="/brand/icon.svg" />
+<style>
+  :root{--text:#f2f4ff;--muted:#8f97b8;--line:rgba(122,162,255,.3);--acc:#7aa2ff;--acc2:#5ad0f0;--vio:#b98bff;--good:#43f0b0;--gold:#ffcf5a}
+  *{box-sizing:border-box}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes pulse{0%,100%{box-shadow:0 12px 34px rgba(122,162,255,.34)}50%{box-shadow:0 12px 46px rgba(90,208,240,.55)}}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.58;
+    background:radial-gradient(circle at 14% -8%,rgba(122,162,255,.2),transparent 46%),radial-gradient(circle at 92% 104%,rgba(90,208,240,.13),transparent 44%),linear-gradient(180deg,#070811,#04050a);
+    min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:22px 14px 64px;-webkit-tap-highlight-color:transparent}
+  .wrap{width:min(660px,100%)}
+  .brand{display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:18px}
+  .brand img{width:34px;height:34px}
+  .brand span{font-weight:900;font-size:17px}
+  .hero{text-align:center;animation:rise .5s ease}
+  h1{font-size:clamp(26px,7vw,38px);line-height:1.14;margin:0 0 11px;letter-spacing:-.025em}
+  h1 em{font-style:normal;background:linear-gradient(90deg,var(--acc2),var(--acc),var(--vio));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{color:var(--muted);font-size:15.5px;margin:0 auto 20px;max-width:470px}
+  .cta{display:block;width:100%;text-align:center;text-decoration:none;border-radius:999px;padding:17px;
+    font-weight:900;font-size:16px;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;animation:pulse 2.6s ease-in-out infinite}
+  .cta.ghost{background:rgba(122,162,255,.08);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:14.5px;animation:none;margin-top:10px}
+  .card{background:linear-gradient(150deg,rgba(255,255,255,.055),rgba(255,255,255,.015));border:1px solid var(--line);
+    border-radius:20px;padding:20px 18px;margin:15px 0}
+  .card h2{font-size:18.5px;margin:0 0 4px;letter-spacing:-.01em}
+  .card .note{color:var(--muted);font-size:13.5px;margin:0 0 15px}
+  .try{display:flex;gap:12px;align-items:flex-start;padding:13px 0;border-bottom:1px solid rgba(122,162,255,.13)}
+  .try:last-of-type{border-bottom:0;padding-bottom:2px}
+  .try .n{flex:0 0 auto;width:29px;height:29px;border-radius:10px;display:grid;place-items:center;font-weight:900;font-size:14px;
+    background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d}
+  .try b{display:block;font-size:15.5px;margin-bottom:2px}
+  .try p{margin:0;color:var(--muted);font-size:13.8px}
+  .gwrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px}
+  .gtile{display:flex;flex-direction:column;gap:2px;text-decoration:none;color:var(--text);border:1px solid var(--line);
+    border-radius:14px;padding:13px 12px;background:rgba(122,162,255,.05);transition:transform .12s,border-color .12s}
+  .gtile:hover{transform:translateY(-2px);border-color:rgba(90,208,240,.5)}
+  .gtile .ge{font-size:24px;line-height:1}
+  .gtile b{font-size:14px;margin-top:3px}
+  .gtile .gd{font-size:12.2px;color:var(--muted);line-height:1.4}
+  .qrbox{background:#fff;border-radius:16px;padding:11px;width:190px;height:190px;margin:4px auto 10px}
+  .qrbox img{width:100%;height:100%;display:block}
+  .center{text-align:center}
+  .foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:14px}
+  .foot a{color:var(--acc);text-decoration:none}
+  .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:12px;color:var(--muted);margin:0 4px 7px 0;background:rgba(255,255,255,.02)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand"><img src="/brand/mark.svg" alt=""><span>Loop</span></div>
+
+  <div class="hero">
+    <h1>This is a <em>real</em> Loop card. Go break it.</h1>
+    <p class="lede">Not a video, not a mockup — a live rewards card for a demo shop. Play the games, spin for a free cut, book a slot. Exactly what your customers get when they scan your QR.</p>
+    <div>
+      <span class="pill">🎮 11 games</span><span class="pill">🎰 Prize slot</span><span class="pill">📅 Real booking</span><span class="pill">📵 No app</span>
+    </div>
+    <a class="cta" href="/rewards/?c=demo">🎮 Open the live demo →</a>
+    <a class="cta ghost" href="/rewards/signup/">💈 Skip it — set my shop up free</a>
+  </div>
+
+  <div class="card">
+    <h2>Try these four things</h2>
+    <p class="note">Takes about a minute. Do them in order and you'll see the whole loop.</p>
+    <div class="try"><span class="n">1</span><div><b>Play a game</b><p>Tap any game tile. Every point earns coins — that's what your customer is doing in your chair instead of scrolling somebody else's feed.</p></div></div>
+    <div class="try"><span class="n">2</span><div><b>Spin the prize slot</b><p>Spend the coins you just earned. The grand prize is a free cut — you decide the odds and the prizes from your dashboard.</p></div></div>
+    <div class="try"><span class="n">3</span><div><b>Book an appointment</b><p>Pick a service, a barber, a day, a time. It lands on the shop's schedule instantly. Or keep your Booksy and we'll link to it instead.</p></div></div>
+    <div class="try"><span class="n">4</span><div><b>Watch the points fill</b><p>That row of stars is why they come back to you — walking away means leaving those points behind.</p></div></div>
+  </div>
+
+  <div class="card">
+    <h2>The arcade, one tap away</h2>
+    <p class="note">Play any of them right now — no signup, nothing to install.</p>
+    <div class="gwrap">
+      <a class="gtile" href="/arcade/"><span class="ge">🐦</span><b>Loop Flyer</b><span class="gd">Tap to fly. Dodge the clippers.</span></a>
+      <a class="gtile" href="/arcade/"><span class="ge">🚦</span><b>Chair Hopper</b><span class="gd">Hop across the traffic.</span></a>
+      <a class="gtile" href="/arcade/run/"><span class="ge">💈</span><b>Barber Dash</b><span class="gd">Run &amp; jump. Dodge the razors.</span></a>
+      <a class="gtile" href="/arcade/slice/"><span class="ge">✂️</span><b>Fresh Cuts</b><span class="gd">Swipe to slice. Miss the razors.</span></a>
+      <a class="gtile" href="/arcade/stack/"><span class="ge">🧱</span><b>Perfect Fade</b><span class="gd">Stack the cleanest fade.</span></a>
+      <a class="gtile" href="/arcade/tetris/"><span class="ge">🧩</span><b>Barber Blocks</b><span class="gd">Stack blocks, clear lines.</span></a>
+      <a class="gtile" href="/arcade/hockey/"><span class="ge">🏒</span><b>Ice Hockey</b><span class="gd">Beat the bot. It gets faster.</span></a>
+      <a class="gtile" href="/arcade/numbers/"><span class="ge">🔢</span><b>Number Rush</b><span class="gd">Match &amp; merge to 2048.</span></a>
+      <a class="gtile" href="/arcade/words/"><span class="ge">🔤</span><b>Fresh Words</b><span class="gd">Daily barber word. 6 tries.</span></a>
+      <a class="gtile" href="/arcade/blackjack/"><span class="ge">🃏</span><b>Blackjack</b><span class="gd">Play coins, beat the dealer.</span></a>
+      <a class="gtile" href="/arcade/poker/"><span class="ge">♠️</span><b>Video Poker</b><span class="gd">Jacks or better. Hold &amp; draw.</span></a>
+    </div>
+  </div>
+
+  <div class="card center">
+    <h2>Or scan it like a customer would</h2>
+    <p class="note">This is the same QR that goes on a shop counter. Point another phone at it.</p>
+    <div class="qrbox"><img id="qr" alt="Scan to open the demo card" loading="lazy"></div>
+    <p class="note" style="margin:0">Every shop gets their own — printed straight from their dashboard.</p>
+  </div>
+
+  <div class="card center">
+    <h2>Seen enough?</h2>
+    <p class="note">Shop name and a 4-digit PIN. You'll have your own QR before you finish this page.</p>
+    <a class="cta" href="/rewards/signup/">⚡ Start free — 30 seconds</a>
+    <a class="cta ghost" href="/barbers/">See everything a shop gets</a>
+    <p class="note" style="margin:13px 0 0">Free to start · no app · no hardware · no card · keep your Booksy</p>
+  </div>
+
+  <p class="foot">Loop by <a href="https://tbsol.net">TB Solutions</a> · <a href="/arcade/">the arcade</a> · <a href="/barbers/">for barbershops</a></p>
+</div>
+
+<script>
+(function(){
+  var url=(location.origin||'https://tbsol.net')+'/rewards/?c=demo';
+  var q=document.getElementById('qr');
+  if(q) q.src='https://api.qrserver.com/v1/create-qr-code/?size=420x420&ecc=H&margin=0&color=11-16-36&data='+encodeURIComponent(url);
+})();
+</script>
+</body>
+</html>
