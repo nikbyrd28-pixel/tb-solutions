@@ -81,6 +81,18 @@
   .sharecard h3{margin:0 0 4px;font-size:15px}.sharecard p{color:var(--muted);font-size:13px;margin:0 0 12px}
   .qr{width:150px;height:150px;border-radius:12px;background:#fff;padding:8px;margin:0 auto 12px;display:block}
   .linkbox{display:flex;gap:8px;margin-top:8px}.linkbox input{font-size:13px}
+  .auto{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:14px;margin-top:12px}
+  .auto.off{opacity:.55}
+  .auto-h{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .auto-h b{font-size:15px}
+  .auto-cnt{font-size:12px;font-weight:800;color:#05060d;background:var(--gold);border-radius:999px;padding:2px 9px;white-space:nowrap}
+  .auto-cnt.zero{background:rgba(255,255,255,.1);color:var(--muted)}
+  .auto textarea{margin-top:10px;min-height:58px;font-size:13.5px}
+  .auto-acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .sw{position:relative;width:42px;height:24px;border-radius:999px;background:rgba(255,255,255,.15);cursor:pointer;flex:0 0 auto;border:0}
+  .sw.on{background:var(--good)}
+  .sw::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .15s}
+  .sw.on::after{transform:translateX(18px)}
   .foot{text-align:center;color:#5e6584;font-size:12px;margin:26px 0}
   .hide{display:none!important}
   .load{color:var(--muted);padding:16px;text-align:center}
@@ -114,6 +126,7 @@
       <button class="tab" data-t="calendar" onclick="showTab('calendar')">📅 Calendar</button>
       <button class="tab" data-t="customers" onclick="showTab('customers')">👥 Customers</button>
       <button class="tab" data-t="messages" onclick="showTab('messages')">💬 Messages</button>
+      <button class="tab" data-t="autos" onclick="showTab('autos')">⚡ Automations</button>
       <button class="tab" data-t="share" onclick="showTab('share')">🔗 Share</button>
       <button class="tab" data-t="tools" onclick="showTab('tools')">🛠️ Tools</button>
     </div>
@@ -168,6 +181,11 @@
         </div>
         <p class="hint">Want automated bulk SMS &amp; email blasts (no tapping per person)? That needs a Twilio/Resend key — tell your Loop rep and I'll switch it on.</p>
       </div>
+    </div>
+
+    <div class="panel" id="p-autos">
+      <p class="muted" style="margin:0 0 6px;font-size:13px">Loop watches your customers and lines up the right message at the right moment. Review each batch, tap to send from your phone, and mark it done — no one gets messaged twice. <b style="color:var(--text)">{name}</b>, <b style="color:var(--text)">{biz}</b>, <b style="color:var(--text)">{reward}</b>, <b style="color:var(--text)">{link}</b>, <b style="color:var(--text)">{review}</b> fill in automatically.</p>
+      <div id="autosBody"><div class="load">Loading…</div></div>
     </div>
 
     <div class="panel" id="p-share">
@@ -247,7 +265,66 @@
     if(t==='calendar'&&!loaded.cal){ loaded.cal=1; calRange('today'); }
     if(t==='customers'&&!loaded.crm){ loaded.crm=1; loadCrm(); }
     if(t==='messages'&&!loaded.msg){ loaded.msg=1; initMsg(); }
+    if(t==='autos'&&!loaded.autos){ loaded.autos=1; loadAutos(); }
     window.scrollTo(0,0);
+  };
+
+  /* ---------- automations ---------- */
+  var AUTOS=null, AUTO_ORDER=['welcome','winback','reward_ready','review','birthday','reminder'];
+  window.loadAutos=function(){
+    el('autosBody').innerHTML='<div class="load">Loading…</div>';
+    rpc('automations_due',{p_client:CODE,p_pin:PIN}).then(function(d){
+      if(!d||d.ok===false){ el('autosBody').innerHTML='<p class="muted">'+((d&&d.error)||'Could not load.')+'</p>'; return; }
+      AUTOS=d; renderAutos();
+    }).catch(function(){ el('autosBody').innerHTML='<p class="muted">Network error.</p>'; });
+  };
+  function autoBase(){ return location.origin; }
+  function personalize(kind, tpl, m){
+    var first=(m.name||'there').split(/\s+/)[0];
+    var link=autoBase()+'/rewards/?c='+AUTOS.client+(m.code?('&m='+encodeURIComponent(m.code)):'');
+    return (tpl||'').replace(/\{name\}/g,first).replace(/\{biz\}/g,AUTOS.biz_name||'us')
+      .replace(/\{reward\}/g,AUTOS.reward_text||'a reward').replace(/\{reward_at\}/g,AUTOS.reward_at||5)
+      .replace(/\{link\}/g,link).replace(/\{review\}/g,AUTOS.review_url||'').replace(/\{when\}/g,m.when||'your appointment');
+  }
+  function renderAutos(){
+    var kinds=AUTOS.kinds||{}, html='';
+    AUTO_ORDER.forEach(function(k){
+      var a=kinds[k]; if(!a) return; var n=(a.members||[]).length, on=a.on!==false;
+      html+='<div class="auto'+(on?'':' off')+'" data-k="'+k+'">'
+        +'<div class="auto-h"><b>'+esc(a.label)+'</b>'
+          +'<span style="display:flex;align-items:center;gap:10px"><span class="auto-cnt'+(n?'':' zero')+'">'+n+' due</span>'
+          +'<button class="sw'+(on?' on':'')+'" onclick="toggleAuto(\''+k+'\')" title="on/off"></button></span></div>'
+        +'<textarea data-tpl="'+k+'" onchange="saveAutoCfg()">'+esc(a.template||'')+'</textarea>'
+        +'<div class="auto-acts">'
+          +'<button class="btn sm" '+(n&&on?'':'disabled')+' onclick="sendAuto(\''+k+'\')">📲 Send ('+n+')</button>'
+          +'<button class="btn ghost sm" '+(n?'':'disabled')+' onclick="markAuto(\''+k+'\')">✓ Mark all sent</button>'
+        +'</div></div>';
+    });
+    el('autosBody').innerHTML=html || '<p class="muted">No automations available.</p>';
+  }
+  window.toggleAuto=function(k){ var a=AUTOS.kinds[k]; a.on = a.on===false; saveAutoCfg(); renderAutos(); };
+  window.saveAutoCfg=function(){
+    // read templates back from DOM into AUTOS, build config, save
+    [].forEach.call(document.querySelectorAll('#autosBody textarea[data-tpl]'),function(t){ var k=t.getAttribute('data-tpl'); if(AUTOS.kinds[k]) AUTOS.kinds[k].template=t.value; });
+    var cfg={}; AUTO_ORDER.forEach(function(k){ var a=AUTOS.kinds[k]; if(!a)return; cfg[k]={on:a.on!==false, template:a.template}; if(k==='winback') cfg[k].days=(AUTOS.config&&AUTOS.config.winback&&AUTOS.config.winback.days)||30; });
+    rpc('automations_set',{p_client:CODE,p_pin:PIN,p_config:cfg}).catch(function(){});
+  };
+  var autoQ={};
+  window.sendAuto=function(k){
+    var a=AUTOS.kinds[k]; if(!a||!a.members.length) return; if(autoQ[k]==null) autoQ[k]=0;
+    var m=a.members[autoQ[k]]; if(!m){ toast('All opened — tap "Mark all sent"'); return; }
+    var tpl=(document.querySelector('#autosBody textarea[data-tpl="'+k+'"]')||{}).value || a.template;
+    var body=personalize(k,tpl,m); location.href='sms:'+tel(m.phone)+'?&body='+encodeURIComponent(body);
+    autoQ[k]++;
+    var btn=document.querySelector('.auto[data-k="'+k+'"] .btn.sm'); if(btn) btn.textContent = autoQ[k]<a.members.length ? ('📲 Next ('+(autoQ[k]+1)+'/'+a.members.length+')') : '📲 All opened';
+  };
+  window.markAuto=function(k){
+    var a=AUTOS.kinds[k]; if(!a||!a.members.length) return;
+    var codes=a.members.map(function(m){return m.code;}).filter(Boolean);
+    rpc('automation_mark',{p_client:CODE,p_pin:PIN,p_kind:k,p_codes:codes}).then(function(d){
+      if(d&&d.ok!==false){ toast('Marked '+(d.marked||codes.length)+' sent ✓'); autoQ[k]=0; loadAutos(); }
+      else toast((d&&d.error)||'Could not mark.');
+    }).catch(function(){ toast('Network error.'); });
   };
 
   function renderOverview(){
