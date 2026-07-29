@@ -219,6 +219,13 @@
 
     <div class="panel" id="p-tools">
       <div class="card"><h2>🛠️ Shop tools</h2><div id="toolLinks"></div></div>
+      <div class="card">
+        <h2>📱 Automated texting</h2>
+        <p class="muted" style="margin:2px 0 12px">When your Twilio number is switched on, Loop automatically texts customers who've drifted away (31+ days) to win them back — no tapping. Send yourself a test to confirm it's live.</p>
+        <div class="linkbox"><input id="smsTestNum" placeholder="Your mobile, e.g. 555-123-4567" inputmode="tel"></div>
+        <button class="btn" id="smsTestBtn" style="margin-top:10px" onclick="testSms()">📲 Send me a test text</button>
+        <div id="smsTestMsg" class="muted" style="margin-top:10px"></div>
+      </div>
     </div>
 
     <div class="foot">🔁 <b>Loop</b> Command Center · <a href="https://tbsol.net">TB Solutions</a></div>
@@ -346,6 +353,17 @@
       return '<div class="cust"><div class="av">'+(['🥇','🥈','🥉'][i]||initials(m.name))+'</div><div class="info"><b>'+esc(m.name||'A member')+'</b><div class="meta">'+(m.lifetime||0)+' lifetime pts · Lv '+(m.level||1)+(m.streak>=2?(' · 🔥 '+m.streak):'')+'</div></div></div>';
     }).join('') : '<p class="muted">No members yet — share your join link to get started.</p>';
   }
+
+  window.testSms=function(){
+    var b=el('smsTestBtn'), m=el('smsTestMsg'), num=(el('smsTestNum').value||'').trim();
+    if(!b||b.disabled) return;
+    if(tel(num).replace('+','').length<10){ m.style.color='#ff8a8a'; m.textContent='Enter a valid mobile number.'; return; }
+    b.disabled=true; var old=b.textContent; b.textContent='Sending…'; m.style.color=''; m.textContent='';
+    rpc('send_test_sms',{p_client:CODE,p_pin:PIN,p_to:num}).then(function(d){
+      if(d&&d.ok){ m.style.color='#4caf82'; m.textContent='✅ Text sent to '+(d.sent_to||num)+' — check your phone.'; b.textContent='📲 Sent!'; setTimeout(function(){ b.disabled=false; b.textContent=old; },4000); }
+      else { m.style.color='#ff8a8a'; m.textContent=(d&&d.error)||'Could not send.'; b.disabled=false; b.textContent=old; }
+    }).catch(function(){ m.style.color='#ff8a8a'; m.textContent='Network error — try again.'; b.disabled=false; b.textContent=old; });
+  };
 
   window.emailReport=function(){
     var b=el('rptBtn'), m=el('rptMsg');
