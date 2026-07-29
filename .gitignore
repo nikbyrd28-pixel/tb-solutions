@@ -1,8 +1,22 @@
 .DS_Store
 .env
 *.log
-# preview PNGs the headless suites drop in the repo root when run from here
+
+# Headless test suites live in the scratchpad but run with the repo root as cwd, so any
+# artefact written to a relative path lands here. All suites now write absolute paths
+# (fixed 14:16Z Wed); this is the backstop if a new one forgets.
+/*-sample*.png
+/*-preview*.png
+/ad-*.png
+/aaa-*.png
+/fly*.png
+/hopper.png
+/game.png
+/hockey.png
 /ig-post.png
 /ig-story.png
-/ad-*.png
+/logo-preview.png
+/p-*.png
+/signup.png
+/skins-*.png
 /spaz*.png
