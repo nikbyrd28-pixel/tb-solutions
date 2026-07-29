@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Voom Lux — VIP Rewards</title>
+<meta name="description" content="Join Voom Lux VIP Rewards — earn points on every premium ride toward complimentary rides, upgrades and priority pickup. Your premium ride awaits." />
+<meta name="theme-color" content="#0a0a0c" />
+<meta property="og:title" content="Voom Lux — VIP Rewards" />
+<meta property="og:description" content="Earn on every ride. Complimentary rides, upgrades & priority pickup for those who demand excellence." />
+<meta property="og:type" content="website" />
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0a0c'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' dominant-baseline='middle' font-size='34' fill='%23e3b23c'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--gold:#e3b23c;--gold2:#f6d67a;--silver:#c9ccd1;--ink:#0a0a0c;--ink2:#141418;--line:rgba(227,178,60,.22);--muted:#9a9aa4;--text:#f4f4f6}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0}
+  body{font-family:"Helvetica Neue",Inter,system-ui,Arial,sans-serif;color:var(--text);line-height:1.55;background:var(--ink);overflow-x:hidden}
+  a{color:var(--gold)}
+  .wrap{max-width:520px;margin:0 auto;padding:0 20px}
+  .gold{background:linear-gradient(180deg,var(--gold2),var(--gold) 55%,#a97b1e);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .btn{display:inline-block;border:0;border-radius:999px;padding:15px 26px;font:inherit;font-weight:800;font-size:15px;cursor:pointer;text-decoration:none;letter-spacing:.02em;
+    background:linear-gradient(180deg,var(--gold2),var(--gold));color:#1a1408;box-shadow:0 10px 30px rgba(227,178,60,.28)}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text);box-shadow:none;font-weight:700}
+  .btn.wide{display:block;width:100%;text-align:center}
+  /* top */
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+  .brand{font-weight:900;font-size:19px;letter-spacing:.14em}
+  .brand .lux{font-style:italic}
+  .login{border:1px solid var(--line);border-radius:999px;padding:8px 16px;color:var(--text);text-decoration:none;font-size:13px;font-weight:700}
+  /* hero */
+  .hero{position:relative;padding:36px 0 46px;text-align:center;overflow:hidden}
+  .hero::before{content:'';position:absolute;inset:-40% -40% auto -40%;height:70%;background:radial-gradient(ellipse at 50% 0,rgba(227,178,60,.16),transparent 60%);pointer-events:none}
+  .kick{font-size:12px;font-weight:800;letter-spacing:.36em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+  h1{font-size:clamp(38px,12vw,60px);line-height:1.02;margin:0 0 16px;font-weight:800;letter-spacing:-.02em}
+  .hero p{color:var(--muted);font-size:15.5px;max-width:400px;margin:0 auto 26px}
+  .cta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  /* sections */
+  section{padding:34px 0;border-top:1px solid rgba(255,255,255,.06)}
+  h2{font-size:13px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:0 0 6px;text-align:center}
+  .sub{color:var(--muted);text-align:center;margin:0 0 22px;font-size:14px}
+  .perks{display:grid;gap:12px}
+  .perk{display:flex;gap:14px;align-items:flex-start;border:1px solid var(--line);border-radius:16px;padding:16px;background:linear-gradient(160deg,rgba(227,178,60,.06),rgba(255,255,255,.01))}
+  .perk .i{font-size:26px;line-height:1;filter:drop-shadow(0 2px 6px rgba(227,178,60,.4))}
+  .perk b{display:block;font-size:15.5px;margin-bottom:2px}
+  .perk span{color:var(--muted);font-size:13.5px}
+  /* join card */
+  .join{border:1px solid var(--line);border-radius:22px;padding:24px;background:linear-gradient(160deg,rgba(227,178,60,.08),rgba(20,20,24,.6));box-shadow:0 20px 50px rgba(0,0,0,.5)}
+  .join h3{margin:0 0 4px;font-size:22px;text-align:center}
+  .join .sub{margin-bottom:18px}
+  label{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:12px 0 6px}
+  input{width:100%;padding:14px 15px;border-radius:12px;background:rgba(0,0,0,.35);border:1px solid var(--line);color:var(--text);font:inherit;font-size:16px}
+  input:focus{outline:none;border-color:var(--gold)}
+  .err{color:#ff8a9d;font-size:13px;margin-top:10px;min-height:16px;font-weight:700;text-align:center}
+  .fine{color:#70707a;font-size:11.5px;text-align:center;margin-top:12px}
+  .steps{display:grid;gap:14px}
+  .step{display:flex;gap:14px;align-items:center}
+  .step .n{width:34px;height:34px;flex:0 0 auto;border-radius:50%;display:grid;place-items:center;font-weight:900;color:#1a1408;background:linear-gradient(180deg,var(--gold2),var(--gold))}
+  .step b{font-size:15px}.step span{display:block;color:var(--muted);font-size:13px}
+  footer{padding:30px 0 40px;text-align:center;color:#6a6a72;font-size:12.5px;border-top:1px solid rgba(255,255,255,.06)}
+  .hide{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav">
+    <div class="brand">VOOM <span class="lux gold">LUX</span></div>
+    <a class="login" href="/rewards/?c=voomlux&ac=e3b23c&ac2=f6d67a">Members ↗</a>
+  </div>
+
+  <div class="hero">
+    <div class="kick">Ready to experience luxury?</div>
+    <h1>Your Premium Ride <span class="gold">Awaits</span></h1>
+    <p>More than luxury — it's an experience. Now every ride earns you rewards: complimentary rides, upgrades and priority pickup for those who demand excellence.</p>
+    <div class="cta">
+      <a class="btn" href="#join">✦ Join VIP Rewards</a>
+      <a class="btn ghost" href="#how">How it works</a>
+    </div>
+  </div>
+
+  <section>
+    <h2>The VIP Rewards</h2>
+    <p class="sub">Every ride moves you closer to the good stuff.</p>
+    <div class="perks">
+      <div class="perk"><span class="i">✦</span><div><b>Earn on every ride</b><span>Points on each trip — reach 10 and your next ride is on us.</span></div></div>
+      <div class="perk"><span class="i">⚡</span><div><b>Priority pickup</b><span>Skip the wait. VIP members get first pick of the fleet.</span></div></div>
+      <div class="perk"><span class="i">🥂</span><div><b>Upgrades &amp; experiences</b><span>Champagne service, complimentary rides and more from the rewards store.</span></div></div>
+      <div class="perk"><span class="i">👑</span><div><b>The Voom Club</b><span>Go all-in: monthly rides, 10% off everything, concierge booking.</span></div></div>
+    </div>
+  </section>
+
+  <section id="join">
+    <div class="join">
+      <h3>Join <span class="gold">VIP Rewards</span></h3>
+      <p class="sub">Free to join. Start earning on your very next ride.</p>
+      <div id="form">
+        <label>Full name</label>
+        <input id="inName" autocomplete="name" placeholder="Your name" />
+        <label>Mobile number</label>
+        <input id="inPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(555) 123-4567" />
+        <button class="btn wide" id="joinBtn" style="margin-top:18px" onclick="joinNow()">✦ Get my VIP card →</button>
+        <div class="err" id="err"></div>
+        <p class="fine">By joining you agree to receive ride updates &amp; offers by text. Reply STOP anytime.</p>
+      </div>
+      <div id="done" class="hide" style="text-align:center">
+        <div style="font-size:48px">✦</div>
+        <h3 style="margin:10px 0 6px">Welcome to <span class="gold">Voom Lux VIP</span></h3>
+        <p class="sub" id="doneName">Your card is ready.</p>
+        <a class="btn wide" id="cardLink" href="#">Open my VIP card →</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <h2>How it works</h2>
+    <p class="sub">Three steps to the smoothest ride in town.</p>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div><b>Join free</b><span>Add your name &amp; number — takes 10 seconds.</span></div></div>
+      <div class="step"><div class="n">2</div><div><b>Ride &amp; earn</b><span>Show your VIP card each ride to collect points.</span></div></div>
+      <div class="step"><div class="n">3</div><div><b>Cash in</b><span>Redeem points for free rides, upgrades &amp; priority pickup.</span></div></div>
+    </div>
+    <a class="btn wide" href="#join" style="margin-top:22px">✦ Join VIP Rewards</a>
+  </section>
+
+  <footer>
+    <div class="brand" style="font-size:16px;margin-bottom:8px">VOOM <span class="lux gold">LUX</span></div>
+    Premium transportation for those who demand excellence.<br>
+    VIP Rewards powered by <a href="https://tbsol.net/loyalty/" style="text-decoration:none">Loop</a>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var SUPA='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+  var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+  var CLIENT='voomlux', THEME='&ac=e3b23c&ac2=f6d67a';
+  function rpc(fn,args){ return fetch(SUPA+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify(args)}).then(function(r){return r.json();}); }
+  var el=function(id){return document.getElementById(id);};
+  var q=new URLSearchParams(location.search), ref=q.get('ref')||null;
+
+  window.joinNow=function(){
+    var name=(el('inName').value||'').trim(), phone=(el('inPhone').value||'').replace(/[^0-9+]/g,'');
+    if(name.length<2){ el('err').textContent='Please enter your name.'; el('inName').focus(); return; }
+    if(phone.replace(/\D/g,'').length<10){ el('err').textContent='Enter a valid mobile number.'; el('inPhone').focus(); return; }
+    var b=el('joinBtn'); b.disabled=true; b.textContent='Creating your VIP card…'; el('err').textContent='';
+    rpc('join_rewards',{p_client:CLIENT,p_name:name,p_phone:phone,p_ref:ref}).then(function(m){
+      b.disabled=false; b.textContent='✦ Get my VIP card →';
+      if(!m || m.error || !m.code){ el('err').textContent=(m&&m.error)||'Could not join — try again.'; return; }
+      var url='/rewards/?c='+CLIENT+'&m='+encodeURIComponent(m.code)+THEME;
+      el('form').classList.add('hide'); el('done').classList.remove('hide');
+      el('doneName').textContent=(m.name? (m.name.split(/\s+/)[0]+', your') : 'Your')+' VIP card is ready.';
+      el('cardLink').href=url;
+      try{ localStorage.setItem('rw_'+CLIENT, m.code); }catch(e){}
+      setTimeout(function(){ location.href=url; }, 1400);
+    }).catch(function(){ b.disabled=false; b.textContent='✦ Get my VIP card →'; el('err').textContent='Network error — try again.'; });
+  };
+  el('inPhone').addEventListener('keydown',function(e){ if(e.key==='Enter') joinNow(); });
+})();
+</script>
+</body>
+</html>
