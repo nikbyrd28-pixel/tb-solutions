@@ -106,10 +106,12 @@
     {g:'💇',pts:1,col:'#8b6f4e'},{g:'✂️',pts:1,col:'#9fb4ff'},{g:'🧴',pts:1,col:'#5df2e0'},
     {g:'🪮',pts:1,col:'#b98bff'},{g:'💈',pts:2,col:'#ff6a7a'}
   ];
-  function reset(){ objs=[]; parts=[]; blade=[]; popups=[]; score=0; lives=3; t=0; spawnT=0.4; shake=0; flash=0; dead=false; down=false; comboCount=0; comboTimer=0; bestCombo=0; sliceThisSwipe=0; lvl=1; }
+  function reset(){ objs=[]; parts=[]; blade=[]; popups=[]; score=0; lives=3; t=0; spawnT=0.4; shake=0; flash=0; dead=false; down=false; comboCount=0; comboTimer=0; bestCombo=0; sliceThisSwipe=0; lvl=1; frenzyCd=0; }
 
   /* ---------- spawning ---------- */
+  var MAXOBJ=26;
   function spawn(){
+    if(objs.length>=MAXOBJ) return;
     var n=1+(Math.random()< Math.min(0.6, 0.22+lvl*0.08)?1:0)+(Math.random()<Math.min(0.35, lvl*0.05)?1:0);
     for(var i=0;i<n;i++){
       var bomb=Math.random() < Math.min(0.22, 0.08+t/220);
@@ -131,9 +133,10 @@
     return Math.hypot(px-(ax+tt*dx), py-(ay+tt*dy));
   }
   function slash(x,y){
-    if(down){ var ax=lastX,ay=lastY;
-      // move so fast? sample points on segment for collision, handled by segDist
-      for(var i=0;i<objs.length;i++){ var o=objs[i]; if(o.sliced) continue;
+    if(down && !dead){ var ax=lastX,ay=lastY;
+      var n=objs.length;                       // snapshot: anything spawned mid-swipe waits for the next one
+      for(var i=0;i<n && !dead;i++){ var o=objs[i]; if(!o || o.sliced) continue;
+        if(o.y>H+10) continue;                 // nothing is sliceable while it's still off the bottom
         if(segDist(o.x,o.y,ax,ay,x,y) < o.r+6){ sliceObj(o); }
       }
     }
@@ -146,10 +149,11 @@
     sliceThisSwipe++; comboCount++; comboTimer=0.55;
     var pts = (o.type==='coin'? 3 : o.pts);
     // combo multiplier: 2+ in a swipe scales
-    var mult = sliceThisSwipe>=2 ? sliceThisSwipe : 1;
+    var mult = sliceThisSwipe>=2 ? Math.min(5,sliceThisSwipe) : 1;
     var gain = pts*mult;
     score += gain;
-    var _nl=1+Math.floor(score/12); if(_nl>lvl){ lvl=_nl; frenzy(); if(window.LoopFX)LoopFX.levelUp(lvl); }
+    if(1+Math.floor(score/12)>lvl){ lvl++; frenzy(); if(window.LoopFX)LoopFX.levelUp(lvl); }
+    if(comboTimer>0 && sliceThisSwipe>bestCombo) bestCombo=sliceThisSwipe;
     if(o.type==='coin'||o.type==='star') sCoin(); else sSlice(sliceThisSwipe);
     if(o.type==='star'){ burst(o.x,o.y,'#ffd34d',26); shake=Math.max(shake,8); if(window.LoopFX)LoopFX.float(o.x,o.y-40,'⭐ +'+gain,'#ffd34d',22); }
     burst(o.x,o.y,o.col,12);
@@ -159,7 +163,10 @@
     if(sliceThisSwipe>=3){ sCombo(); popups.push({x:W/2,y:H*0.32,txt:sliceThisSwipe+'x COMBO!',life:0.9,col:'#b98bff',big:true}); shake=Math.max(shake,6); }
     if(sliceThisSwipe>bestCombo) bestCombo=sliceThisSwipe;
   }
+  var frenzyCd=0;
   function frenzy(){
+    if(frenzyCd>0 || objs.length>MAXOBJ-6) return;   // no stacking frenzies, no screen flood
+    frenzyCd=1.4;
     for(var i=0;i<6;i++){ var x=W*(0.12+ i*0.15), base=GOOD[(Math.random()*GOOD.length)|0];
       objs.push({x:x,y:H+40+Math.random()*60,vx:(W*0.5-x)*0.3,vy:-(H*(1.0+Math.random()*0.15)),r:30,rot:Math.random()*6.28,vr:(Math.random()-0.5)*6,type:'good',noMiss:true,g:base.g,pts:base.pts,col:base.col,sliced:false}); }
   }
@@ -175,6 +182,7 @@
     t+=dt;
     spawnT-=dt; if(spawnT<=0){ spawn(); spawnT=Math.max(0.42, 1.0 - t/70 - lvl*0.04) + Math.random()*0.35; }
     if(comboTimer>0){ comboTimer-=dt; if(comboTimer<=0){ comboCount=0; } }
+    if(frenzyCd>0) frenzyCd-=dt;
     // decay per-swipe combo when blade idle handled on pointer up
     for(var i=objs.length-1;i>=0;i--){ var o=objs[i]; o.vy+=H*1.15*dt; o.x+=o.vx*dt; o.y+=o.vy*dt; o.rot+=o.vr*dt;
       if(o.y>H+80){ if(!o.sliced && o.type==='good' && !o.noMiss){ lives--; sMiss(); shake=Math.max(shake,5); popups.push({x:o.x,y:H-40,txt:'miss',life:0.6,col:'#ff9db0'}); if(lives<=0) die(); }
@@ -276,7 +284,8 @@
   el('startBtn').addEventListener('click',function(e){ e.stopPropagation(); startGame(); });
   el('retryBtn').addEventListener('click',function(e){ e.stopPropagation(); startGame(); });
   el('backBtn').addEventListener('click',function(e){ e.stopPropagation(); });
-  window.__rt=function(c){ return eval(c); };
+  // local-only test hook — never defined on the live site
+  if(/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__rt=function(c){ return eval(c); };
 })();
 </script>
 <script src="/loop-fx.js"></script>
