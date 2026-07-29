@@ -48,7 +48,13 @@
   .navlinks{display:flex;gap:22px;align-items:center}
   .navlinks a{color:var(--muted);font-size:14px;font-weight:600}
   .navlinks a:hover{color:var(--text)}
-  @media(max-width:720px){.navlinks a.hidesm{display:none}}
+  @media(max-width:720px){.navlinks a.hidesm{display:none}
+    .navlinks{gap:8px}
+    .navlinks .btn.sm{padding:9px 13px;font-size:13px}}
+  nav .logo,.navlinks .btn{white-space:nowrap}
+  @media(max-width:520px){.hidexs{display:none}
+    nav .logo{font-size:15px}
+    .navlinks .btn.sm{padding:8px 12px;font-size:12.5px}}
   .btn{display:inline-flex;align-items:center;gap:8px;border:0;cursor:pointer;font:inherit;font-weight:800;font-size:15px;
     border-radius:999px;padding:13px 22px;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#04050a;
     box-shadow:0 8px 26px rgba(122,162,255,.35);transition:transform .12s,box-shadow .12s;text-decoration:none}
@@ -118,10 +124,11 @@
 
 <nav>
   <div class="wrap">
-    <div class="logo">💈 <span class="grad">Barbershop System</span></div>
+    <div class="logo">💈 <span class="grad">Barbershop<span class="hidexs"> System</span></span></div>
     <div class="navlinks">
       <a href="#stack" class="hidesm">What's inside</a>
       <a href="#try" class="hidesm">Try it live</a>
+      <a href="/rewards/owner/" class="btn sm ghost">Sign in</a>
       <a href="#get" class="btn sm">Get set up →</a>
     </div>
   </div>
@@ -280,7 +287,7 @@
 </section>
 
 <footer>
-  <div class="wrap">💈 <b>Barbershop System</b> · <a href="/booking/">Chair</a> · <a href="/loyalty/">Loop</a> · <a href="/ambassadors/">Ambassadors</a> · part of <a href="/command/">TB Command</a> · by <a href="https://tbsol.net">TB Solutions</a></div>
+  <div class="wrap">💈 <b>Barbershop System</b> · <a href="/rewards/owner/">Shop sign in</a> · <a href="/booking/">Chair</a> · <a href="/loyalty/">Loop</a> · <a href="/ambassadors/">Ambassadors</a> · part of <a href="/command/">TB Command</a> · by <a href="https://tbsol.net">TB Solutions</a></div>
 </footer>
 
 <script>

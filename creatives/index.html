@@ -80,6 +80,10 @@
     <div class="chips" id="fmts"></div>
     <div style="height:9px"></div>
     <div class="chips" id="themes"></div>
+    <div id="shotRow" hidden>
+      <label>What's on the phone — real screenshots of the live site</label>
+      <div class="chips" id="shots"></div>
+    </div>
   </div>
 
   <div class="card">
@@ -149,44 +153,53 @@ var ADS=[
   {e:"Rewards + booking for barbershops",
    h1:"YOUR BARBERSHOP", h2:"HAS AN ARCADE NOW",
    call:"nothing to install", bub:["FREE","TO START"],
-   badge:["KEEP YOUR","BOOKSY ✓"], clab:"EVERY SHOP GETS",
+   badge:["KEEP YOUR","BOOKSY ✓"], clab:"EVERY SHOP GETS", shot:"arcade",
    pills:["11 GAMES","PRIZE SLOT","REFERRALS"],
    c:"Your barbershop has an arcade now 🎮💈\n\n11 games your customers play right there in the chair — every point earns coins toward a free cut AT YOUR SHOP. That's the whole trick: they come back to you.\n\nFree to start, live in 30 seconds 👉 tbsol.net/barbers/"},
 
   {e:"For shops still running a paper punch card",
    h1:"PAPER PUNCH CARDS", h2:"ARE COSTING YOU REGULARS",
    call:"they never lose it", bub:["NO","APP"],
-   badge:["LIVES IN","THEIR PHONE"], clab:"WHAT REPLACES IT",
+   badge:["LIVES IN","THEIR PHONE"], clab:"WHAT REPLACES IT", shot:"card",
    pills:["AUTO POINTS","FREE CUTS","REMINDERS"],
    c:"Your punch card is why your regulars leave 💈\n\nPaper gets lost, forgotten, thrown in the truck. Loop lives in their phone, shows exactly how close they are to a free cut, and nudges them back.\n\nFree to start 👉 tbsol.net/barbers/"},
 
   {e:"You don't have to switch anything",
    h1:"KEEP BOOKSY.", h2:"ADD THE PART THAT BRINGS THEM BACK",
    call:"links in one tap", bub:["30","SECONDS"],
-   badge:["WORKS ON","TOP OF IT"], clab:"LOOP ADDS",
+   badge:["WORKS ON","TOP OF IT"], clab:"LOOP ADDS", shot:"card",
    pills:["REWARDS","THE ARCADE","REFERRALS"],
    c:"You don't have to switch anything 💈\n\nKeep Booksy for booking. Loop runs on top — rewards, referrals and games that make regulars actually come back. Link them in one tap.\n\ntbsol.net/barbers/"},
 
   {e:"Loyalty · Booking · Games — one QR on your counter",
    h1:"ONE QR CODE", h2:"ON YOUR COUNTER",
    call:"print it yourself", bub:["NO","HARDWARE"],
-   badge:["NO CARD","TO START"], clab:"THEY SCAN, THEY GET",
+   badge:["NO CARD","TO START"], clab:"THEY SCAN, THEY GET", shot:"owner",
    pills:["POINTS","GAMES","BOOKING"],
    c:"One QR on the counter. That's the whole setup 💈\n\nThey scan it, the card opens in their browser — points, games, booking, free cuts. No app store, no card reader, no tablet.\n\nFree to start 👉 tbsol.net/barbers/"},
 
   {e:"For customers — tell your barber",
    h1:"FREE HAIRCUTS", h2:"FOR PLAYING GAMES",
    call:"ask your barber", bub:["FREE","CUTS"],
-   badge:["NO APP","TO DOWNLOAD"], clab:"HOW IT WORKS",
+   badge:["NO APP","TO DOWNLOAD"], clab:"HOW IT WORKS", shot:"game",
    pills:["SCAN","PLAY","GET CUT FREE"],
    c:"Free haircuts. For playing games. 🎮✂️\n\nScan your barber's QR, play in the chair, earn coins toward a free cut. Nothing to download.\n\nTell your barber 👉 tbsol.net/barbers/"},
 
   {e:"For anyone in barbershops every week",
    h1:"GET PAID", h2:"TO SIGN UP BARBERSHOPS",
    call:"no cost to join", bub:["NO","QUOTA"],
-   badge:["FREE FOR","THE SHOP"], clab:"YOU GET",
+   badge:["FREE FOR","THE SHOP"], clab:"YOU GET", shot:"owner",
    pills:["YOUR LINK","A SALES KIT","PAID PER SHOP"],
    c:"In barbershops every week already? Get paid for it 💸\n\nBarber students, apprentices, mobile barbers — show shops a free app they actually want, get paid when they start. No cost, no quota.\n\ntbsol.net/reps/"}
+];
+
+/* real screenshots of the live product — 640×1280, straight off the running site */
+/* sy/sh crop the 640×1280 capture down to the part worth reading at post size */
+var SHOTS=[
+  {k:'card',   n:'💳 The card',      f:'/brand/shots/card.jpg',   sy:190, sh:880},
+  {k:'arcade', n:'🎮 The arcade',    f:'/brand/shots/arcade.jpg', sy:220, sh:880},
+  {k:'game',   n:'🕹 A game',        f:'/brand/shots/game.jpg',   sy:250, sh:820},
+  {k:'owner',  n:'📊 The dashboard', f:'/brand/shots/owner.jpg',  sy:140, sh:880}
 ];
 
 var STYLES=[{k:'min',n:'✨ Clean'},{k:'ad',n:'📣 Ad'}];
@@ -198,7 +211,7 @@ var THEMES=[
   {k:'light', n:'⚪ Light',  bg:['#f4f6fd','#e7ecf9'], fg:'#0a0d18', mut:'#5a627d', glow:'#7aa2ff', accent:'#3b6dff', pole:false}
 ];
 
-var idx=0, fmt=FORMATS[0], theme=THEMES[0], style=STYLES[0];
+var idx=0, shotI=0, fmt=FORMATS[0], theme=THEMES[0], style=STYLES[0];
 function el(i){return document.getElementById(i)}
 function isAd(){ return style.k==='ad'; }
 function list(){ return isAd()?ADS:PRESETS; }
@@ -221,18 +234,26 @@ el('fmts').innerHTML=FORMATS.map(function(f,i){
 el('themes').innerHTML=THEMES.map(function(t,i){
   return '<button class="chip'+(i===0?' on':'')+'" data-t="'+i+'" onclick="setTheme('+i+')">'+t.n+'</button>';
 }).join('');
+el('shots').innerHTML=SHOTS.map(function(s,i){
+  return '<button class="chip'+(i===0?' on':'')+'" data-h="'+i+'" onclick="setShot('+i+')">'+s.n+'</button>';
+}).join('');
 function markOn(box,attr,i){
   [].forEach.call(el(box).querySelectorAll('.chip'),function(c){ c.classList.toggle('on', +c.getAttribute(attr)===i); });
 }
 function pick(i){
   idx=i; var p=list()[i];
-  if(isAd()){ el('eye').value=p.e; el('head').value=p.h1; el('sub').value=p.h2; }
+  if(isAd()){
+    el('eye').value=p.e; el('head').value=p.h1; el('sub').value=p.h2;
+    var si=0; for(var j=0;j<SHOTS.length;j++) if(SHOTS[j].k===p.shot) si=j;
+    shotI=si; markOn('shots','data-h',si);
+  }
   else { el('head').value=p.h; el('sub').value=p.s; }
   el('capTxt').textContent=p.c; markOn('presets','data-p',i); draw();
 }
+function setShot(i){ shotI=i; markOn('shots','data-h',i); draw(); }
 function setStyle(i){
   style=STYLES[i]; markOn('styles','data-s',i);
-  el('eyeRow').hidden=!isAd();
+  el('eyeRow').hidden=!isAd(); el('shotRow').hidden=!isAd();
   el('lbHead').textContent=isAd()?'Big line — plain':'Headline';
   el('lbSub').textContent=isAd()?'Big line — coloured':'Small line underneath';
   if(idx>=list().length) idx=0;
@@ -247,6 +268,14 @@ var LOGO=new Image(), logoReady=false;
 LOGO.onload=function(){ logoReady=true; draw(); };
 LOGO.onerror=function(){ logoReady=false; draw(); };
 LOGO.src='/brand/mark.svg';
+
+/* real product screenshots, loaded lazily and redrawn when they land */
+SHOTS.forEach(function(s){
+  s.img=new Image(); s.ok=false;
+  s.img.onload=function(){ s.ok=true; draw(); };
+  s.img.onerror=function(){ s.ok=false; };
+  s.img.src=s.f;
+});
 
 /* ---------------- drawing ---------------- */
 function roundRect(x,c,X,Y,W,H,R){ R=Math.min(R,W/2,H/2); x.beginPath(); x.moveTo(X+R,Y);
@@ -497,36 +526,31 @@ function drawMid(x,W,H,FAM,pad,p,my,mh){
   x.fillText(p.bub[1],0,r*0.42); track(x,'0px');
   x.restore();
 
-  /* --- centre: the card itself --- */
-  var ph=Math.round(mh*0.94), pw=Math.min(Math.round(ph*0.52),Math.round(W*0.24));
-  ph=Math.round(pw/0.52);
+  /* --- centre: a real screenshot of the live site, in a phone --- */
+  var sh=SHOTS[Math.min(shotI,SHOTS.length-1)];
+  var AR=(640/(sh&&sh.sh?sh.sh:1280));               // captures are 640 wide
+  var ph=Math.round(mh*0.98), pw=Math.min(Math.round(ph*AR),Math.round(W*0.30));
+  ph=Math.round(pw/AR);
+  var bez=Math.max(3,Math.round(pw*0.028)), rad=Math.round(pw*0.15);
   var phx=Math.round(W/2-pw/2), phy=Math.round(my+(mh-ph)/2);
-  x.save();
-  x.shadowColor='rgba(0,0,0,.5)'; x.shadowBlur=Math.round(W*0.05); x.shadowOffsetY=Math.round(W*0.014);
-  x.fillStyle=theme.k==='light'?'#0a0d18':'#0d1120';
-  roundRect(x,x,phx,phy,pw,ph,Math.round(pw*0.14)); x.fill();
-  x.restore();
-  x.strokeStyle=hexA(theme.accent,.5); x.lineWidth=Math.max(2,Math.round(W*0.0026));
-  roundRect(x,x,phx,phy,pw,ph,Math.round(pw*0.14)); x.stroke();
 
-  var ip=Math.round(pw*0.10), iw=pw-ip*2, iy=phy+Math.round(ph*0.075);
-  // header strip
-  x.fillStyle=hexA(theme.accent,.22); roundRect(x,x,phx+ip,iy,iw,Math.round(ph*0.085),Math.round(ph*0.02)); x.fill();
-  iy+=Math.round(ph*0.085)+Math.round(ph*0.035);
-  // stars
-  var sn=5, sg=Math.round(iw*0.045), sz=Math.floor((iw-sg*(sn-1))/sn);
-  for(var i=0;i<sn;i++){
-    x.fillStyle=i<3?'#ffcf5a':hexA(theme.mut,.3);
-    x.beginPath(); x.arc(phx+ip+i*(sz+sg)+sz/2,iy+sz/2,sz*0.42,0,Math.PI*2); x.fill();
-  }
-  iy+=sz+Math.round(ph*0.045);
-  // game tiles
-  var gc=3, gg=Math.round(iw*0.055), gw=Math.floor((iw-gg*(gc-1))/gc), rows=Math.max(1,Math.floor((phy+ph-Math.round(ph*0.09)-iy)/(gw+gg)));
-  rows=Math.min(rows,3);
-  for(var rI=0;rI<rows;rI++) for(var cI=0;cI<gc;cI++){
-    x.fillStyle=hexA((rI+cI)%2?theme.glow:theme.accent,.28);
-    roundRect(x,x,phx+ip+cI*(gw+gg),iy+rI*(gw+gg),gw,gw,Math.round(gw*0.3)); x.fill();
-  }
+  x.save();
+  x.shadowColor='rgba(0,0,0,.55)'; x.shadowBlur=Math.round(W*0.055); x.shadowOffsetY=Math.round(W*0.015);
+  x.fillStyle=theme.k==='light'?'#171b2a':'#0b0e1a';
+  roundRect(x,x,phx,phy,pw,ph,rad); x.fill();
+  x.restore();
+
+  var sx0=phx+bez, sy0=phy+bez, sw0=pw-bez*2, sh0=ph-bez*2;
+  x.save();
+  roundRect(x,x,sx0,sy0,sw0,sh0,Math.max(2,rad-bez)); x.clip();
+  if(sh && sh.ok){
+    try{ x.drawImage(sh.img,0,sh.sy,640,sh.sh,sx0,sy0,sw0,sh0); }
+    catch(e){ x.fillStyle='#0d1120'; x.fillRect(sx0,sy0,sw0,sh0); }
+  } else { x.fillStyle='#0d1120'; x.fillRect(sx0,sy0,sw0,sh0); }
+  x.restore();
+
+  x.strokeStyle=hexA(theme.accent,.45); x.lineWidth=Math.max(2,Math.round(W*0.0026));
+  roundRect(x,x,phx,phy,pw,ph,rad); x.stroke();
 
   /* --- right: the reassurance badge --- */
   var bw2=colW, bh=Math.round(mh*0.40), bx2=W-pad-bw2, by2=Math.round(my+(mh-bh)/2);
