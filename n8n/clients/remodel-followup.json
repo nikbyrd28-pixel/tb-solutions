@@ -1,0 +1,156 @@
+{
+  "name": "CLIENT: D&E Remodeling — consultation requests + calm follow-up",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## D&E Remodeling lead machine\nConsultation requests come from tbsol.net/clients/remodel (or any form posting to this webhook).\n\nWhat happens automatically:\n1. D&E gets an instant lead alert (you're CC'd)\n2. The homeowner gets an instant, calm confirmation\n3. Day 3: a gentle no-pressure nudge\n4. Day 10: a final soft check-in, then it stops\n\n### Tone rule (important)\nThis client's whole promise is NO PRESSURE. Every message to the\nhomeowner must stay calm and low-key. No urgency, no 'act now',\nno sales push. Two follow-ups maximum, then we leave them alone.\n\n### Setup\n1. Replace CLIENT_EMAIL_HERE in the marked nodes with D&E's real email.\n2. Attach your email credential on all 4 Email nodes.\n3. Save → flip **Active**.\n\nLead page to give the client: https://tbsol.net/clients/remodel",
+        "height": 460,
+        "width": 400
+      },
+      "id": "note1",
+      "name": "Read me",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-200, 40]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "remodel-leads",
+        "options": {}
+      },
+      "id": "wh1",
+      "name": "Remodel Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [280, 300],
+      "webhookId": "remodel-leads"
+    },
+    {
+      "parameters": {
+        "fromEmail": "nikbyrd28@gmail.com",
+        "toEmail": "CLIENT_EMAIL_HERE",
+        "ccEmail": "nikbyrd28@gmail.com",
+        "subject": "=New consultation request: {{ $json.body.name }} — {{ $json.body.service }}",
+        "emailFormat": "text",
+        "text": "=New consultation request from your website.\n\nName: {{ $json.body.name }}\nPhone: {{ $json.body.phone }}\nEmail: {{ $json.body.email }}\nProject: {{ $json.body.service }}\nTown/area: {{ $json.body.town }}\nTimeline: {{ $json.body.timeline }}\n\nWhat they said:\n{{ $json.body.message }}\n\nReceived: {{ $json.body.ts }}\n\n---\nThey've been sent a calm confirmation email already, so there's no rush\non your end — but reaching out within a day or two keeps the momentum.\n\n— Automated by TB Solutions",
+        "options": {}
+      },
+      "id": "em_client",
+      "name": "Alert D&E (EDIT EMAIL)",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [560, 160]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "loose" },
+          "conditions": [
+            { "leftValue": "={{ $json.body.email }}", "rightValue": "", "operator": { "type": "string", "operation": "notEmpty", "singleValue": true } }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if_email",
+      "name": "Homeowner left an email?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [560, 440]
+    },
+    {
+      "parameters": {
+        "fromEmail": "CLIENT_EMAIL_HERE",
+        "toEmail": "={{ $json.body.email }}",
+        "subject": "Thanks for reaching out — we've got your request",
+        "emailFormat": "text",
+        "text": "=Hi {{ $json.body.name }},\n\nThank you for reaching out about your {{ $json.body.service }}. We have your\nrequest and we'll be in touch shortly to find a time that works for you.\n\nA few things worth saying up front, so you know what to expect:\n\n  - The consultation is free, and there's no obligation of any kind.\n  - It's a conversation, not a quote visit. We'll listen first.\n  - You will never be asked to decide on the spot.\n\nWe'll walk your space together at your pace, explain your options in plain\nlanguage, and talk honestly about cost and timeline. Ask us as many questions\nas you'd like — that's what the visit is for.\n\nIf anything changes or you'd rather reach us directly, just reply to this\nemail or call (484) 841-8501.\n\nTalk soon,\nD&E Remodeling\nWoman-owned - Kitchens, baths, and plumbing-related basements",
+        "options": {}
+      },
+      "id": "em_ack",
+      "name": "Calm confirmation to homeowner",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [840, 380]
+    },
+    {
+      "parameters": { "amount": 3, "unit": "days" },
+      "id": "wait3",
+      "name": "Wait 3 days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1080, 380],
+      "webhookId": "remodel-wait-3"
+    },
+    {
+      "parameters": {
+        "fromEmail": "CLIENT_EMAIL_HERE",
+        "toEmail": "={{ $json.body.email }}",
+        "subject": "Still happy to answer questions, whenever you're ready",
+        "emailFormat": "text",
+        "text": "=Hi {{ $json.body.name }},\n\nJust a quiet follow-up on your {{ $json.body.service }} — no pressure at all.\n\nIf you're still in the thinking-it-through stage, that's completely normal, and\nhonestly it's the right way to approach a project like this. Whenever you'd\nlike to talk it over, we're glad to come out and walk through it with you.\n\nAnd if you'd rather just ask a question or two by email first, reply here and\nwe'll answer plainly — no sales pitch attached.\n\nEither way, we hope the project goes well for you.\n\nD&E Remodeling\n(484) 841-8501",
+        "options": {}
+      },
+      "id": "em_d3",
+      "name": "Day-3 gentle nudge",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1320, 380]
+    },
+    {
+      "parameters": { "amount": 7, "unit": "days" },
+      "id": "wait7",
+      "name": "Wait 7 more days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1560, 380],
+      "webhookId": "remodel-wait-7"
+    },
+    {
+      "parameters": {
+        "fromEmail": "CLIENT_EMAIL_HERE",
+        "toEmail": "={{ $json.body.email }}",
+        "subject": "Last note from us — the door stays open",
+        "emailFormat": "text",
+        "text": "=Hi {{ $json.body.name }},\n\nThis is the last you'll hear from us unless you reach out — we don't believe in\nchasing people, and we know you have plenty going on.\n\nIf your {{ $json.body.service }} is still on your mind next month, or next year,\nthe offer stands: a free, no-pressure conversation whenever the timing is right\nfor you. Nothing expires.\n\nAnd if you end up working with someone else, we genuinely hope it goes well. If\nit helps, here are the questions worth asking any contractor before you sign:\nare they registered and insured, who's actually in your home each day, how are\nchanges priced and approved, and what's the payment schedule. A good one will\nwelcome all four.\n\nBest of luck with the project.\n\nD&E Remodeling\n(484) 841-8501",
+        "options": {}
+      },
+      "id": "em_d10",
+      "name": "Day-10 final soft check-in",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1800, 380]
+    }
+  ],
+  "connections": {
+    "Remodel Webhook": {
+      "main": [
+        [
+          { "node": "Alert D&E (EDIT EMAIL)", "type": "main", "index": 0 },
+          { "node": "Homeowner left an email?", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Homeowner left an email?": {
+      "main": [
+        [ { "node": "Calm confirmation to homeowner", "type": "main", "index": 0 } ],
+        []
+      ]
+    },
+    "Calm confirmation to homeowner": {
+      "main": [ [ { "node": "Wait 3 days", "type": "main", "index": 0 } ] ]
+    },
+    "Wait 3 days": {
+      "main": [ [ { "node": "Day-3 gentle nudge", "type": "main", "index": 0 } ] ]
+    },
+    "Day-3 gentle nudge": {
+      "main": [ [ { "node": "Wait 7 more days", "type": "main", "index": 0 } ] ]
+    },
+    "Wait 7 more days": {
+      "main": [ [ { "node": "Day-10 final soft check-in", "type": "main", "index": 0 } ] ]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {}
+}
