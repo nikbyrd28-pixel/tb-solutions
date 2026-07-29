@@ -137,6 +137,12 @@
       <div class="grid" id="stats"></div>
       <div class="card"><h2>💈 Member tiers</h2><div class="tierbar" id="tierbar"></div><div class="tierleg" id="tierleg"></div></div>
       <div class="card"><h2>🏆 Top members</h2><div id="topMembers"><div class="load">Loading…</div></div></div>
+      <div class="card">
+        <h2>📧 Weekly report</h2>
+        <p class="muted" style="margin:2px 0 12px">A snapshot of your shop — members, active customers, new signups, lapsed customers and rewards ready to redeem. It's emailed to you automatically every Monday. Want it now? Tap below.</p>
+        <button class="btn" id="rptBtn" onclick="emailReport()">📧 Email me a report now</button>
+        <div id="rptMsg" class="muted" style="margin-top:10px"></div>
+      </div>
     </div>
 
     <div class="panel" id="p-calendar">
@@ -340,6 +346,16 @@
       return '<div class="cust"><div class="av">'+(['🥇','🥈','🥉'][i]||initials(m.name))+'</div><div class="info"><b>'+esc(m.name||'A member')+'</b><div class="meta">'+(m.lifetime||0)+' lifetime pts · Lv '+(m.level||1)+(m.streak>=2?(' · 🔥 '+m.streak):'')+'</div></div></div>';
     }).join('') : '<p class="muted">No members yet — share your join link to get started.</p>';
   }
+
+  window.emailReport=function(){
+    var b=el('rptBtn'), m=el('rptMsg');
+    if(!b||b.disabled) return;
+    b.disabled=true; var old=b.textContent; b.textContent='Sending…'; m.style.color=''; m.textContent='';
+    rpc('send_owner_digest',{p_client:CODE,p_pin:PIN}).then(function(d){
+      if(d&&d.ok){ m.style.color='#4caf82'; m.textContent='✅ Sent to '+(d.sent_to||'your email')+' — check your inbox (and spam).'; b.textContent='📧 Sent!'; setTimeout(function(){ b.disabled=false; b.textContent=old; },4000); }
+      else { m.style.color='#ff8a8a'; m.textContent=(d&&d.error)||'Could not send. Add your email in the owner dashboard first.'; b.disabled=false; b.textContent=old; }
+    }).catch(function(){ m.style.color='#ff8a8a'; m.textContent='Network error — try again.'; b.disabled=false; b.textContent=old; });
+  };
 
   window.calRange=function(r){
     [].forEach.call(document.querySelectorAll('#calSegs .seg'),function(b){ b.classList.toggle('on',b.getAttribute('data-r')===r); });
