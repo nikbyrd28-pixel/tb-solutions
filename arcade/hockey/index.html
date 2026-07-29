@@ -88,7 +88,7 @@ window.addEventListener('orientationchange',resize);
 var best=0; try{ best=+localStorage.getItem('ih_best')||0; }catch(e){}
 el('hBest').textContent='★ '+best; el('ovBest0').textContent=best;
 
-var running=false, lvl=1, myGoals=0, aiGoals=0, totalGoals=0, freeze=0, clock=0;
+var running=false, lvl=1, myGoals=0, aiGoals=0, totalGoals=0, freeze=0, clock=0, stall=0;
 var pegs=[];
 function setPegs(){ pegs=[];
   if(lvl>=3){ pegs.push({x:W*0.24,y:H*0.5,r:13},{x:W*0.76,y:H*0.5,r:13}); }
@@ -102,6 +102,7 @@ function resetRound(server){
   puck.x=W/2; puck.y=H/2 + (server==='me'?60:-60); puck.vx=0; puck.vy=0;
   me.x=W/2; me.y=H-70; ai.x=W/2; ai.y=70;
   for(var i=0;i<trail.length;i++){trail[i].x=puck.x;trail[i].y=puck.y;}
+  stall=0;
   freeze=30;
 }
 var rafId=0;
@@ -170,7 +171,50 @@ function physics(dt){
     ai.x=Math.max(ai.r,Math.min(W-ai.r,ai.x)); ai.y=Math.max(ai.r,Math.min(H/2-ai.r,ai.y));
     collide(me); collide(ai);
     clampPuck();                       // a paddle can no longer push the puck through a wall or its own goal
+    unpin(me); unpin(ai);              // ...and can no longer trap it flat against one
+    // last resort: anything dead in a corner or against a rail gets sent back into play
+    if(Math.hypot(puck.vx,puck.vy)<1.2 && nearRail()) { stall+=dt; if(stall>70){ stall=0; kick(); } }
+    else stall=0;
     trail.pop(); trail.unshift({x:puck.x,y:puck.y});
+}
+function nearRail(){
+  var m=puck.r+42;
+  return puck.x<m || puck.x>W-m || puck.y<m || puck.y>H-m;
+}
+function kick(){
+  var sp=6, dir=puck.y>H/2?-1:1;
+  puck.vx=(puck.x<W/2?1:-1)*sp*0.6; puck.vy=dir*sp;
+  if(window.LoopFX)LoopFX.sfx('click');
+}
+/* A paddle held against a wall used to trap the puck: collide shoved it out of bounds,
+   the clamp pulled it back, and it sat there at full speed going nowhere. When the puck
+   is still inside a paddle after clamping, slide it out ALONG the rail instead. */
+function unpin(pad){
+  var dx=puck.x-pad.x, dy=puck.y-pad.y, min=puck.r+pad.r;
+  var d=Math.hypot(dx,dy);
+  if(d>=min-0.01) return;
+  var eps=1.2, sp=Math.max(5,Math.min(maxV(),Math.hypot(puck.vx,puck.vy)));
+  var onSide = puck.x<=puck.r+eps || puck.x>=W-puck.r-eps;
+  var onEnd  = puck.y<=puck.r+eps || puck.y>=H-puck.r-eps;
+  if(onSide){                                    // pinned against a left/right rail → slide vertically
+    var ny=Math.sqrt(Math.max(1,min*min-dx*dx));
+    var roomUp=(pad.y-ny)-puck.r, roomDn=(H-puck.r)-(pad.y+ny);
+    var up = roomUp>0 && (puck.vy<0 || roomDn<=0);
+    puck.y = up ? pad.y-ny : pad.y+ny;
+    puck.vy = (up?-1:1)*sp;
+    puck.vx = (puck.x<W/2?1:-1)*sp*0.4;           // and push it off the rail
+  } else if(onEnd){                              // pinned against a top/bottom rail → slide sideways
+    var nx=Math.sqrt(Math.max(1,min*min-dy*dy));
+    var roomL=(pad.x-nx)-puck.r, roomR=(W-puck.r)-(pad.x+nx);
+    var lf = roomL>0 && (puck.vx<0 || roomR<=0);
+    puck.x = lf ? pad.x-nx : pad.x+nx;
+    puck.vx = (lf?-1:1)*sp;
+    puck.vy = (puck.y<H/2?1:-1)*sp*0.4;
+  } else {                                       // free space — just separate along the normal
+    var n=d>0?d:1;
+    puck.x=pad.x+(dx/n)*min; puck.y=pad.y+(dy/n)*min;
+  }
+  clampPuck();
 }
 function wall(){ if(window.LoopFX)LoopFX.sfx('click'); }
 function goal(who){
