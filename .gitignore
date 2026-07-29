@@ -1,3 +1,8 @@
 .DS_Store
 .env
 *.log
+# preview PNGs the headless suites drop in the repo root when run from here
+/ig-post.png
+/ig-story.png
+/ad-*.png
+/spaz*.png
