@@ -390,11 +390,13 @@ function render(d){
     var join=location.origin+'/rewards/?c='+d.client;
     var img=el('shopQrImg'); if(img) img.src='https://api.qrserver.com/v1/create-qr-code/?size=264x264&ecc=H&margin=0&color=11-16-36&data='+encodeURIComponent(join);
     var cb=el('qrCopy'); if(cb) cb.onclick=function(){ cp(join); };
-    var sb=el('qrShare'); if(sb) sb.onclick=function(){ if(navigator.share){ navigator.share({title:cap(d.client)+' rewards',url:join}).catch(function(){}); } else cp(join); };
+    var sb=el('qrShare'); if(sb) sb.onclick=function(){ if(navigator.share){ navigator.share({title:((d.biz_name&&String(d.biz_name).trim())||cap(d.client))+' rewards',url:join}).catch(function(){}); } else cp(join); };
     var pb=el('qrPoster'); if(pb) pb.onclick=function(){ window.open(location.origin+'/rewards/poster/?c='+d.client,'_blank'); };
   })();
-  el('bizName').textContent=cap(d.client)+' — Loop';
-  el('bizSub').textContent='Reward: '+d.reward_text+' at '+d.reward_at+' points';
+  // show the shop's real name — the slug ("2005marketstsuite192") is not what they called it
+  var shopName=(d.biz_name && String(d.biz_name).trim()) ? String(d.biz_name).trim() : cap(d.client);
+  el('bizName').textContent=shopName;
+  el('bizSub').textContent=(shopName===d.client?'':d.client+' · ')+'Reward: '+d.reward_text+' at '+d.reward_at+' points';
   var tiles=[
     {n:d.members,l:'Members',c:''},
     {n:d.active30,l:'Active (30 days)',c:'alt'},
