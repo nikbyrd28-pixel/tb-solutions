@@ -254,7 +254,8 @@
     <label>Phone number</label><input id="jPhone" type="tel" autocomplete="tel" placeholder="Used to find your card">
     <button class="btn" onclick="join()">Join the club</button>
     <div class="err hide" id="jErr"></div>
-    <p class="muted" style="margin-top:10px">Already a member? Same button — your phone number finds your card. <a href="/privacy/" style="color:var(--muted)">Privacy</a></p>
+    <p class="muted" style="margin-top:10px;font-size:12px;line-height:1.5">By joining you agree to receive appointment &amp; rewards text messages at the number provided. Consent is not a condition of purchase. Msg &amp; data rates may apply. Msg frequency varies. Reply STOP to cancel, HELP for help. <a href="/sms-terms/" style="color:var(--muted)">SMS Terms</a> · <a href="/privacy/" style="color:var(--muted)">Privacy</a></p>
+    <p class="muted" style="margin-top:8px">Already a member? Same button — your phone number finds your card.</p>
   </div>
 
   <!-- LOADING -->
@@ -432,6 +433,7 @@
         <label class="f">Phone to confirm</label>
         <input id="bkPhone" type="tel" placeholder="Your number">
         <button class="btn" onclick="bookVisit()">Request my spot</button>
+        <p class="muted" style="margin-top:8px;font-size:11.5px;line-height:1.5">By requesting, you agree to receive booking &amp; reminder texts. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help. <a href="/sms-terms/" style="color:var(--muted)">SMS Terms</a></p>
         <p class="ok hide" id="bkOk">✅ Booked! We\'ll reach out to confirm your time.</p>
         <div class="err hide" id="bkErr"></div>
       </div>
@@ -879,6 +881,7 @@ function buildBookFlow(cfg){
    +'<label class="f">Your phone (so we can text a confirmation)</label>'
    +'<input id="bkPhone2" type="tel" placeholder="Your number"><p class="muted" id="bkPolicy" style="margin:8px 0 0"></p>'
    +'<button class="btn" id="bkConfirmBtn" onclick="confirmBooking()">Confirm booking</button>'
+   +'<p class="muted" style="margin-top:8px;font-size:11.5px;line-height:1.5">By confirming, you agree to receive booking &amp; reminder texts at this number. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help. <a href="/sms-terms/" style="color:var(--muted)">SMS Terms</a></p>'
    +'<div class="err hide" id="bkErr2"></div></div>';
   el('svcChips').innerHTML=cfg.services.map(function(s,i){
     return '<button class="chip" id="svc'+i+'" onclick="pickSvc('+i+')">'+esc(s.name)+'<small>'+(s.mins||30)+' min'+(s.price?(' · '+esc(s.price)):'')+'</small></button>';
