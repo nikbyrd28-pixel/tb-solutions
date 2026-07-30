@@ -20,3 +20,9 @@
 /signup.png
 /skins-*.png
 /spaz*.png
+
+# Higgsfield CLI companion skills (installed with `npx skills add higgsfield-ai/skills`).
+# Regenerable local tooling, not product code.
+/.agents/
+/.claude/skills/
+/skills-lock.json
