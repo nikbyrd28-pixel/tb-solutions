@@ -74,7 +74,7 @@
 
   var C=el('c'), X=C.getContext('2d'), W=0, H=0, DPR=Math.min(2, window.devicePixelRatio||1);
   function resize(){ W=C.clientWidth; H=C.clientHeight; C.width=Math.floor(W*DPR); C.height=Math.floor(H*DPR); X.setTransform(DPR,0,0,DPR,0,0); }
-  window.addEventListener('resize',resize); resize();
+  window.addEventListener('resize',function(){ resize(); BG=null; }); resize();
 
   /* ---------- audio ---------- */
   var AC=null, muted=false; try{ muted=localStorage.getItem('arcade_muted')==='1'; }catch(e){}
@@ -114,7 +114,7 @@
     if(objs.length>=MAXOBJ) return;
     var n=1+(Math.random()< Math.min(0.55, 0.18+lvl*0.06)?1:0)+(lvl>=4&&Math.random()<Math.min(0.28, lvl*0.035)?1:0);
     for(var i=0;i<n;i++){
-      var bomb=Math.random() < Math.min(0.22, 0.08+t/220);
+      var bomb=Math.random() < Math.min(0.13, 0.04+t/420);
       var coin=!bomb && Math.random()<0.16;
       var star=!bomb && !coin && lvl>=3 && Math.random()<0.09;
       var x=W*(0.15+Math.random()*0.7);
@@ -137,7 +137,7 @@
       var n=objs.length;                       // snapshot: anything spawned mid-swipe waits for the next one
       for(var i=0;i<n && !dead;i++){ var o=objs[i]; if(!o || o.sliced) continue;
         if(o.y>H+10) continue;                 // nothing is sliceable while it's still off the bottom
-        if(segDist(o.x,o.y,ax,ay,x,y) < o.r+6){ sliceObj(o); }
+        if(segDist(o.x,o.y,ax,ay,x,y) < o.r+14){ sliceObj(o); }
       }
     }
     blade.push({x:x,y:y,life:0.32}); if(blade.length>16) blade.shift();
@@ -221,14 +221,28 @@
     if(flash>0){ X.fillStyle='rgba(255,59,82,'+flash*0.5+')'; X.fillRect(0,0,W,H); }
     drawHUD();
   }
-  var STARS=[]; function initStars(){ STARS=[]; for(var i=0;i<52;i++){ STARS.push({x:Math.random(),y:Math.random(),r:Math.random()*1.4+0.3,ph:Math.random()*6.28,sp:0.3+Math.random()*0.8,c:i%6===0}); } }
-  function drawStars(){ var tt=performance.now()*0.001; for(var i=0;i<STARS.length;i++){ var s=STARS[i]; X.globalAlpha=0.26+0.2*Math.abs(Math.sin(tt*s.sp*0.5+s.ph)); X.fillStyle=s.c?'#9fd0ff':'#ffffff'; X.beginPath(); X.arc(s.x*W,s.y*H,s.r,0,6.28); X.fill(); } X.globalAlpha=1; }
+  /* The background never changes, but it was being rebuilt every single frame: a
+     full-screen gradient, 52 arcs and a checker grid. That is the most expensive
+     thing on the canvas and it was pure waste. Bake it once, then blit it. */
+  var STARS=[], BG=null;
+  function initStars(){ STARS=[]; for(var i=0;i<52;i++){ STARS.push({x:Math.random(),y:Math.random(),r:Math.random()*1.4+0.3,c:i%6===0}); } }
+  function bakeBg(){
+    if(!W||!H) return;
+    BG=document.createElement('canvas');
+    BG.width=Math.max(1,Math.floor(W*DPR)); BG.height=Math.max(1,Math.floor(H*DPR));
+    var b=BG.getContext('2d'); b.setTransform(DPR,0,0,DPR,0,0);
+    var g=b.createLinearGradient(0,0,0,H); g.addColorStop(0,'#0b1024'); g.addColorStop(.6,'#0a0b18'); g.addColorStop(1,'#070810');
+    b.fillStyle=g; b.fillRect(0,0,W,H);
+    for(var i=0;i<STARS.length;i++){ var s=STARS[i];
+      b.globalAlpha=0.30+0.16*((i*37)%7)/7; b.fillStyle=s.c?'#9fd0ff':'#ffffff';
+      b.beginPath(); b.arc(s.x*W,s.y*H,s.r,0,6.28); b.fill(); }
+    b.globalAlpha=.05; b.fillStyle='#7aa2ff';
+    for(var y=0;y<H;y+=90){ for(var x=((y/90)%2)*90;x<W;x+=180) b.fillRect(x,y,90,90); }
+    b.globalAlpha=1;
+  }
   function drawBg(){
-    var g=X.createLinearGradient(0,0,0,H); g.addColorStop(0,'#0b1024'); g.addColorStop(.6,'#0a0b18'); g.addColorStop(1,'#070810');
-    X.fillStyle=g; X.fillRect(0,0,W,H);
-    drawStars();
-    // faint checker
-    X.globalAlpha=.05; for(var y=0;y<H;y+=90){ for(var x=((y/90)%2)*90;x<W;x+=180){ X.fillStyle='#7aa2ff'; X.fillRect(x,y,90,90); } } X.globalAlpha=1;
+    if(!BG || BG.width!==Math.floor(W*DPR)) bakeBg();
+    if(BG) X.drawImage(BG,0,0,W,H); else { X.fillStyle='#0a0b18'; X.fillRect(0,0,W,H); }
   }
   function drawObj(o){
     X.save(); X.translate(o.x,o.y);
@@ -252,7 +266,7 @@
   }
 
   /* ---------- flow ---------- */
-  function startGame(){ if(running) return; actx(); if(!muted) MUS.start(actx()); resize(); initStars(); reset(); running=true; dead=false; el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); last=performance.now(); requestAnimationFrame(frame); }
+  function startGame(){ if(running) return; actx(); if(!muted) MUS.start(actx()); resize(); initStars(); bakeBg(); reset(); running=true; dead=false; el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); last=performance.now(); requestAnimationFrame(frame); }
   function gameOver(){
     MUS.stop();
     running=false;
