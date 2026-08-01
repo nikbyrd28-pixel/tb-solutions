@@ -1,0 +1,202 @@
+{
+  "name": "TLG — Faceless Auto-Channel (auto-post)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [ { "field": "cronExpression", "expression": "0 17 * * *" } ] }
+      },
+      "id": "a1000000-0000-4000-8000-000000000001",
+      "name": "Daily 10am PT",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [ 0, 0 ]
+    },
+    {
+      "parameters": {
+        "url": "https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/tlg_segments",
+        "sendQuery": true,
+        "queryParameters": { "parameters": [
+          { "name": "status", "value": "eq.rendered" },
+          { "name": "video_url", "value": "not.is.null" },
+          { "name": "order", "value": "seq.asc" },
+          { "name": "limit", "value": "1" }
+        ] },
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [
+          { "name": "apikey", "value": "PASTE_SERVICE_KEY" },
+          { "name": "Authorization", "value": "Bearer PASTE_SERVICE_KEY" }
+        ] },
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000002",
+      "name": "Get next rendered",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [ 220, 0 ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json;\nconst arr = Array.isArray(raw) ? raw : (raw.body && Array.isArray(raw.body) ? raw.body : (raw.id ? [raw] : []));\nif (!arr.length) return [{ json: { ready: false } }];\nconst s = arr[0];\nconst tags = (s.hashtags || []).map(t => '#' + String(t).replace(/[^A-Za-z0-9]/g,'')).join(' ');\nconst caption = [s.caption || s.title, tags].filter(Boolean).join('\\n\\n');\nreturn [{ json: { ready: true, seg: s, caption } }];"
+      },
+      "id": "a1000000-0000-4000-8000-000000000003",
+      "name": "Normalize",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [ 440, 0 ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "typeValidation": "loose", "version": 2 },
+          "combinator": "and",
+          "conditions": [ {
+            "id": "cond-ready",
+            "leftValue": "={{ $json.ready }}",
+            "rightValue": true,
+            "operator": { "type": "boolean", "operation": "true", "singleValue": true }
+          } ]
+        },
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000004",
+      "name": "Ready to post?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [ 660, 0 ]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/tlg_segments?id=eq.{{ $json.seg.id }}",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [
+          { "name": "apikey", "value": "PASTE_SERVICE_KEY" },
+          { "name": "Authorization", "value": "Bearer PASTE_SERVICE_KEY" },
+          { "name": "Content-Type", "value": "application/json" },
+          { "name": "Prefer", "value": "return=minimal" }
+        ] },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"status\": \"posting\" }",
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000005",
+      "name": "Mark posting",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [ 880, -120 ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ayrshare.com/api/post",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [
+          { "name": "Authorization", "value": "Bearer PASTE_AYRSHARE_KEY" },
+          { "name": "Content-Type", "value": "application/json" }
+        ] },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"post\": {{ JSON.stringify($('Normalize').item.json.caption) }},\n  \"platforms\": [\"tiktok\", \"instagram\", \"youtube\"],\n  \"mediaUrls\": [ {{ JSON.stringify($('Normalize').item.json.seg.video_url) }} ],\n  \"isVideo\": true,\n  \"instagramOptions\": { \"reels\": true },\n  \"youTubeOptions\": { \"title\": {{ JSON.stringify($('Normalize').item.json.seg.title) }}, \"shorts\": true, \"visibility\": \"public\" },\n  \"tikTokOptions\": { \"disableComments\": false }\n}",
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000006",
+      "name": "Post to TikTok+IG+YouTube",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [ 1100, -120 ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const seg = $('Normalize').item.json.seg;\nconst res = $input.first().json || {};\nconst byPlat = {};\n(res.postIds || []).forEach(p => { byPlat[p.platform] = p; });\nreturn [{ json: {\n  seg,\n  status: res.status || 'unknown',\n  ayrshare_id: res.id || null,\n  tiktok_post_id: (byPlat.tiktok && (byPlat.tiktok.postUrl || byPlat.tiktok.id)) || null,\n  ig_post_id: (byPlat.instagram && (byPlat.instagram.postUrl || byPlat.instagram.id)) || null,\n  yt_video_id: (byPlat.youtube && (byPlat.youtube.postUrl || byPlat.youtube.id)) || null,\n  postIds: res.postIds || []\n} }];"
+      },
+      "id": "a1000000-0000-4000-8000-000000000007",
+      "name": "Parse result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [ 1320, -120 ]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/tlg_segments?id=eq.{{ $json.seg.id }}",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [
+          { "name": "apikey", "value": "PASTE_SERVICE_KEY" },
+          { "name": "Authorization", "value": "Bearer PASTE_SERVICE_KEY" },
+          { "name": "Content-Type", "value": "application/json" },
+          { "name": "Prefer", "value": "return=minimal" }
+        ] },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"posted\",\n  \"posted_at\": {{ JSON.stringify($now.toISO()) }},\n  \"tiktok_post_id\": {{ JSON.stringify($json.tiktok_post_id) }},\n  \"ig_post_id\": {{ JSON.stringify($json.ig_post_id) }},\n  \"yt_video_id\": {{ JSON.stringify($json.yt_video_id) }}\n}",
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000008",
+      "name": "Mark posted",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [ 1540, -120 ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/tlg_posts",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [
+          { "name": "apikey", "value": "PASTE_SERVICE_KEY" },
+          { "name": "Authorization", "value": "Bearer PASTE_SERVICE_KEY" },
+          { "name": "Content-Type", "value": "application/json" },
+          { "name": "Prefer", "value": "return=minimal" }
+        ] },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[\n  { \"segment_id\": {{ JSON.stringify($json.seg.id) }}, \"platform\": \"tiktok\", \"external_id\": {{ JSON.stringify($json.tiktok_post_id) }}, \"url\": {{ JSON.stringify($json.tiktok_post_id) }}, \"status\": {{ JSON.stringify($json.status) }} },\n  { \"segment_id\": {{ JSON.stringify($json.seg.id) }}, \"platform\": \"instagram\", \"external_id\": {{ JSON.stringify($json.ig_post_id) }}, \"url\": {{ JSON.stringify($json.ig_post_id) }}, \"status\": {{ JSON.stringify($json.status) }} },\n  { \"segment_id\": {{ JSON.stringify($json.seg.id) }}, \"platform\": \"youtube\", \"external_id\": {{ JSON.stringify($json.yt_video_id) }}, \"url\": {{ JSON.stringify($json.yt_video_id) }}, \"status\": {{ JSON.stringify($json.status) }} }\n]",
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000009",
+      "name": "Log posts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [ 1760, -120 ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "nikbyrd28@gmail.com",
+        "toEmail": "nikbyrd28@gmail.com",
+        "subject": "=🎬 The Last Game posted: {{ $json.seg.title }}",
+        "emailFormat": "html",
+        "html": "=<h2>Posted to TikTok + Instagram + YouTube</h2><p><b>{{ $json.seg.title }}</b> (seq {{ $json.seg.seq }})</p><p>{{ $json.seg.hook_line }}</p><ul><li>TikTok: {{ $json.tiktok_post_id || 'n/a' }}</li><li>Instagram: {{ $json.ig_post_id || 'n/a' }}</li><li>YouTube: {{ $json.yt_video_id || 'n/a' }}</li></ul><p>Ayrshare status: {{ $json.status }}</p><p>Video: {{ $json.seg.video_url }}</p>",
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-00000000000a",
+      "name": "Email recap",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [ 1980, -120 ]
+    },
+    {
+      "parameters": {},
+      "id": "a1000000-0000-4000-8000-00000000000b",
+      "name": "Nothing ready (stop)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [ 880, 140 ]
+    }
+  ],
+  "connections": {
+    "Daily 10am PT": { "main": [ [ { "node": "Get next rendered", "type": "main", "index": 0 } ] ] },
+    "Get next rendered": { "main": [ [ { "node": "Normalize", "type": "main", "index": 0 } ] ] },
+    "Normalize": { "main": [ [ { "node": "Ready to post?", "type": "main", "index": 0 } ] ] },
+    "Ready to post?": { "main": [ [ { "node": "Mark posting", "type": "main", "index": 0 } ], [ { "node": "Nothing ready (stop)", "type": "main", "index": 0 } ] ] },
+    "Mark posting": { "main": [ [ { "node": "Post to TikTok+IG+YouTube", "type": "main", "index": 0 } ] ] },
+    "Post to TikTok+IG+YouTube": { "main": [ [ { "node": "Parse result", "type": "main", "index": 0 } ] ] },
+    "Parse result": { "main": [ [ { "node": "Mark posted", "type": "main", "index": 0 } ] ] },
+    "Mark posted": { "main": [ [ { "node": "Log posts", "type": "main", "index": 0 } ] ] },
+    "Log posts": { "main": [ [ { "node": "Email recap", "type": "main", "index": 0 } ] ] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "active": false,
+  "pinData": {},
+  "meta": { "note": "The Last Game — faceless auto-channel poster. Reads rendered segments from Supabase tlg_segments and publishes to TikTok/IG/YouTube via Ayrshare. Paste PASTE_SERVICE_KEY (Supabase service_role) and PASTE_AYRSHARE_KEY, connect an SMTP credential on Email recap, then Activate." }
+}

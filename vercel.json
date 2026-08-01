@@ -5,5 +5,13 @@
       "claude/loop-loyalty-booking-n6lu6b": false,
       "claude/viral-promo-video-editing-quo4bx": false
     }
-  }
+  },
+  "functions": {
+    "api/render-next.js": { "maxDuration": 60 },
+    "api/post-next.js": { "maxDuration": 60 }
+  },
+  "crons": [
+    { "path": "/api/render-next", "schedule": "0 16 * * *" },
+    { "path": "/api/post-next", "schedule": "0 17 * * *" }
+  ]
 }
