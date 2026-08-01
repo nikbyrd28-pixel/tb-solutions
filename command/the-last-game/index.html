@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Last Game Studio — TB Command</title>
+<meta name="robots" content="noindex,nofollow" />
+<meta name="theme-color" content="#06070e" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2306070e'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-size='34'%3E%F0%9F%8E%B2%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{--bg:#06070e;--panel:#0c0e18;--panel2:#11131f;--line:#1e2233;--text:#eef1f8;--muted:#8b90a6;--red:#ff4d5e;--blue:#4d8bff;--green:#7cfcc6;--amber:#ffb648;--purple:#b98bff}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 18px}
+  nav{position:sticky;top:0;z-index:30;background:rgba(6,7,14,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  nav .row{display:flex;align-items:center;justify-content:space-between;height:60px;gap:12px}
+  .logo{font-family:Poppins;font-weight:900;font-size:18px;let-spacing:.2px}
+  .logo .rb{background:linear-gradient(90deg,var(--red),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .btn{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(90deg,var(--red),var(--blue));color:#fff;font-weight:800;border:0;border-radius:11px;padding:10px 16px;cursor:pointer;font-size:14px}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+  .btn.sm{padding:7px 12px;font-size:13px;border-radius:9px}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .muted{color:var(--muted)}
+  /* login */
+  #gate{min-height:calc(100vh - 60px);display:flex;align-items:center;justify-content:center;padding:24px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px}
+  .login{width:100%;max-width:400px}
+  .login h1{font-family:Poppins;font-size:26px;margin:0 0 4px}
+  .login .sub{color:var(--muted);font-size:14px;margin:0 0 18px}
+  .field{margin:12px 0}
+  .field label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+  .field input{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:11px;color:var(--text);padding:12px 14px;font-size:15px}
+  .field input:focus{outline:0;border-color:var(--blue)}
+  .err{color:var(--red);font-size:13px;min-height:18px;margin-top:8px}
+  .rbline{height:3px;width:64px;background:linear-gradient(90deg,var(--red),var(--blue));border-radius:3px;margin:0 0 16px}
+  /* app */
+  #app{display:none;padding:22px 0 60px}
+  .head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:6px 0 16px}
+  .head h1{font-family:Poppins;font-size:24px;margin:0}
+  .stats{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:0 0 20px}
+  @media(max-width:720px){.stats{grid-template-columns:repeat(3,1fr)}}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:12px 14px}
+  .stat b{display:block;font-size:24px;font-family:Poppins}
+  .stat span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+  .seg{background:var(--panel);border:1px solid var(--line);border-radius:15px;overflow:hidden;display:flex;flex-direction:column}
+  .seg .media{aspect-ratio:9/16;max-height:360px;background:#000;display:flex;align-items:center;justify-content:center;position:relative;border-bottom:1px solid var(--line)}
+  .seg .media video{width:100%;height:100%;object-fit:contain;background:#000}
+  .seg .media .ph{color:var(--muted);font-size:13px;text-align:center;padding:20px}
+  .seg .body{padding:14px;display:flex;flex-direction:column;gap:8px;flex:1}
+  .seg .seq{font-size:11px;color:var(--muted);font-weight:700}
+  .seg h3{margin:0;font-size:16px;line-height:1.25}
+  .seg .hook{font-size:13px;color:var(--muted);line-height:1.4}
+  .tags{display:flex;flex-wrap:wrap;gap:5px}
+  .tag{font-size:11px;background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:2px 9px;color:var(--muted)}
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:4px 10px;border-radius:20px;border:1px solid}
+  .b-queued{color:var(--muted);border-color:var(--line);background:var(--panel2)}
+  .b-rendering{color:var(--amber);border-color:rgba(255,182,72,.35);background:rgba(255,182,72,.10)}
+  .b-rendered{color:var(--blue);border-color:rgba(77,139,255,.35);background:rgba(77,139,255,.10)}
+  .b-posting{color:var(--purple);border-color:rgba(185,139,255,.35);background:rgba(185,139,255,.10)}
+  .b-posted{color:var(--green);border-color:rgba(124,252,198,.35);background:rgba(124,252,198,.10)}
+  .b-error{color:var(--red);border-color:rgba(255,77,94,.35);background:rgba(255,77,94,.10)}
+  .dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+  .b-rendering .dot{animation:pulse 1.1s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+  .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:10px 16px;border-radius:11px;font-size:14px;opacity:0;transition:.2s;pointer-events:none;z-index:60}
+  .toast.show{opacity:1}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+  .chip{font-size:13px;padding:6px 13px;border-radius:20px;border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer;font-weight:600}
+  .chip.on{color:#fff;border-color:transparent;background:linear-gradient(90deg,var(--red),var(--blue))}
+</style>
+</head>
+<body>
+<nav><div class="wrap row">
+  <div class="logo">🎲 The Last Game <span class="rb">Studio</span></div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <a href="/command/" class="muted" style="font-size:13px">↩ TB Command</a>
+    <button class="btn ghost sm" id="logoutBtn" style="display:none" onclick="logout()">Log out</button>
+  </div>
+</div></nav>
+
+<!-- LOGIN GATE -->
+<div id="gate"><div class="card login">
+  <div class="rbline"></div>
+  <h1>Last Game Studio</h1>
+  <p class="sub">Owner access only. Sign in to run the faceless auto-channel.</p>
+  <form id="loginForm" onsubmit="return doLogin(event)">
+    <div class="field"><label>Email</label><input id="email" type="email" autocomplete="username" value="nikbyrd28@gmail.com" required></div>
+    <div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="••••••••" required></div>
+    <button class="btn" type="submit" id="loginBtn" style="width:100%;justify-content:center;margin-top:6px">Enter the Studio →</button>
+    <div class="err" id="loginErr"></div>
+  </form>
+</div></div>
+
+<!-- APP -->
+<div id="app"><div class="wrap">
+  <div class="head">
+    <div>
+      <h1>Content Queue</h1>
+      <p class="muted" style="margin:4px 0 0;font-size:13px">The Last Game — the memoir, cut into short-form beats. Rendered clips auto-post to TikTok, Reels &amp; Shorts.</p>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn ghost sm" onclick="load()">⟳ Refresh</button>
+      <a class="btn sm" href="https://supabase.com/dashboard/project/qgbjiqdwzgkjkmqyjsmc/editor" target="_blank" rel="noopener">Open DB ↗</a>
+    </div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+  <div class="filters" id="filters"></div>
+  <div class="grid" id="grid"></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+var supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+var ROWS=[], FILTER='all', POLL=null;
+var ORDER=['error','rendering','rendered','posting','posted','queued'];
+
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2200)}
+
+async function doLogin(e){
+  e.preventDefault();
+  var btn=document.getElementById('loginBtn'), err=document.getElementById('loginErr');
+  err.textContent=''; btn.disabled=true; btn.textContent='Signing in…';
+  var email=document.getElementById('email').value.trim();
+  var password=document.getElementById('password').value;
+  var r=await supa.auth.signInWithPassword({email:email,password:password});
+  btn.disabled=false; btn.textContent='Enter the Studio →';
+  if(r.error){err.textContent=r.error.message||'Sign-in failed.';return false}
+  showApp();
+  return false;
+}
+async function logout(){ await supa.auth.signOut(); if(POLL)clearInterval(POLL); location.reload(); }
+
+function showApp(){
+  document.getElementById('gate').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('logoutBtn').style.display='inline-flex';
+  load();
+  if(POLL)clearInterval(POLL);
+  POLL=setInterval(load,20000); // live-ish refresh
+}
+
+async function load(){
+  var r=await supa.from('tlg_segments').select('*').order('seq',{ascending:true});
+  if(r.error){toast('Load error: '+r.error.message);return}
+  ROWS=r.data||[];
+  renderStats(); renderFilters(); renderGrid();
+}
+
+function renderStats(){
+  var c={total:ROWS.length,queued:0,rendering:0,rendered:0,posting:0,posted:0,error:0};
+  ROWS.forEach(function(x){if(c[x.status]!==undefined)c[x.status]++});
+  var defs=[['total','Total','var(--text)'],['queued','Queued','var(--muted)'],['rendering','Rendering','var(--amber)'],['rendered','Ready','var(--blue)'],['posted','Posted','var(--green)'],['error','Errors','var(--red)']];
+  document.getElementById('stats').innerHTML=defs.map(function(d){
+    return '<div class="stat"><b style="color:'+d[2]+'">'+c[d[0]]+'</b><span>'+d[1]+'</span></div>';
+  }).join('');
+}
+function renderFilters(){
+  var f=['all','queued','rendering','rendered','posting','posted','error'];
+  document.getElementById('filters').innerHTML=f.map(function(s){
+    return '<div class="chip'+(FILTER===s?' on':'')+'" onclick="setFilter(\''+s+'\')">'+s+'</div>';
+  }).join('');
+}
+function setFilter(s){FILTER=s;renderFilters();renderGrid()}
+
+function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+function renderGrid(){
+  var list=ROWS.slice().sort(function(a,b){
+    var d=ORDER.indexOf(a.status)-ORDER.indexOf(b.status); return d!==0?d:(a.seq-b.seq);
+  });
+  if(FILTER!=='all')list=list.filter(function(x){return x.status===FILTER});
+  document.getElementById('grid').innerHTML=list.map(card).join('') || '<p class="muted">Nothing here.</p>';
+}
+
+function card(x){
+  var media = x.video_url
+    ? '<video src="'+esc(x.video_url)+'" controls preload="metadata" playsinline></video>'
+    : '<div class="ph">'+(x.status==='rendering'?'🎬 Rendering…':(x.status==='error'?'⚠️ '+esc(x.last_error||'Render error'):'⏳ Waiting to render'))+'</div>';
+  var tags=(x.hashtags||[]).slice(0,5).map(function(t){return '<span class="tag">#'+esc(t)+'</span>'}).join('');
+  var acts='';
+  if(x.video_url){acts+='<button class="btn sm ghost" onclick="copy(\''+x.id+'\',\'url\')">Copy link</button>';}
+  acts+='<button class="btn sm ghost" onclick="copy(\''+x.id+'\',\'cap\')">Copy caption</button>';
+  if(x.status==='error'||x.status==='rendered'||x.status==='posted'){acts+='<button class="btn sm ghost" onclick="requeue(\''+x.id+'\')">Re-render</button>';}
+  return '<div class="seg">'
+    +'<div class="media">'+media+'</div>'
+    +'<div class="body">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">'
+        +'<span class="seq">#'+x.seq+' · '+esc(x.slug)+'</span>'
+        +'<span class="badge b-'+esc(x.status)+'"><span class="dot"></span>'+esc(x.status)+'</span>'
+      +'</div>'
+      +'<h3>'+esc(x.title)+'</h3>'
+      +'<div class="hook">'+esc(x.hook_line||'')+'</div>'
+      +'<div class="tags">'+tags+'</div>'
+      +'<div class="actions">'+acts+'</div>'
+    +'</div></div>';
+}
+
+function find(id){for(var i=0;i<ROWS.length;i++)if(ROWS[i].id===id)return ROWS[i];return null}
+async function copy(id,what){
+  var x=find(id);if(!x)return;
+  var txt = what==='url' ? x.video_url : ((x.caption||x.title)+'\n\n'+(x.hashtags||[]).map(function(t){return '#'+t}).join(' '));
+  try{await navigator.clipboard.writeText(txt);toast(what==='url'?'Video link copied':'Caption copied');}catch(e){toast('Copy failed');}
+}
+async function requeue(id){
+  if(!confirm('Reset this beat to queued for a fresh render?'))return;
+  var r=await supa.from('tlg_segments').update({status:'queued',video_url:null,render_job_id:null,last_error:null}).eq('id',id);
+  if(r.error){toast('Update failed: '+r.error.message);return}
+  toast('Re-queued for render');load();
+}
+
+// auto-resume session
+(async function(){
+  var s=await supa.auth.getSession();
+  if(s.data&&s.data.session){showApp();}
+})();
+</script>
+</body>
+</html>
