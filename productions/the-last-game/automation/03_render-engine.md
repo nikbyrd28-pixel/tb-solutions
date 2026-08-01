@@ -26,11 +26,20 @@ Keeping them decoupled through the database means either half can run on its own
    On failure: `status='error'`, `last_error=<message>` (the next run skips it and
    takes the following `queued` row; you can reset it to `queued` from the dashboard).
 
-## The scheduled job (Claude Code Routine — armed)
+## The scheduled job (Claude Code Routine)
 
-A Routine fires on a cron, spins up a fresh session with the Higgsfield + Supabase
+A Routine fires on a cron, spins up a session with the Higgsfield + Supabase
 connectors, and runs exactly the prompt below. It renders **one** Short per firing
 (so credit spend is paced and predictable) and writes the result back to the queue.
+
+> **Arming note (important):** a Routine must carry the **Higgsfield + Supabase
+> connectors** or its fired session can't reach those tools. Triggers created from
+> inside this coding session can't attach connectors on this org, so **arm this from
+> the claude.ai → Routines UI**, where you can attach connectors: create a new
+> scheduled Routine, paste the prompt below, attach **Higgsfield** and **Supabase**,
+> set the cron to daily 16:00 UTC (9am PT). Until it's armed there, I render beats
+> **on demand from this session** (which already holds the connectors) — just say which
+> ones, or "render the next 3."
 
 **Standalone prompt the Routine runs each firing:**
 

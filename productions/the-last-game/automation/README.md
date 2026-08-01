@@ -22,8 +22,12 @@ tlg_segments (Supabase)  ──►  Render engine (Higgsfield, daily 9am)  ─�
 
 ## Current status
 - ✅ **State layer live** — 16 beats seeded, all `status='queued'`, in your Base DB.
-- ✅ **Render engine defined** — daily job renders one 9:16 Short and writes it back.
+- ✅ **Render engine defined** — renders one 9:16 Short per run and writes it back.
 - ✅ **First video rendering now** — the cold open (`two-photographs`).
+- ⏳ **Daily render Routine** — arm from the **claude.ai → Routines UI** with the
+  Higgsfield + Supabase connectors attached (scheduled Routines created from inside a
+  coding session can't carry connectors on this org). Prompt is in `03_render-engine.md`.
+  Until then, I render beats on demand from an active session.
 - ⏳ **Auto-post workflow ready to import** — inactive until you do the 3 setup steps below
   (it publishes publicly, so it waits for your go).
 
