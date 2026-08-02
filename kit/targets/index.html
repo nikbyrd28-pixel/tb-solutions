@@ -130,6 +130,13 @@
   var CYCLE=['todo','visited','signed','no'];
   var LABEL={todo:'○ To do',visited:'👋 Visited',signed:'✅ Signed',no:'✕ Not now'};
 
+  // Same code the rest of the kit stores. Every outbound link carries it so a rep
+  // still gets credit when the shop signs up off the demo.
+  var REF='';
+  try{ var _r=JSON.parse(localStorage.getItem('loop_rep')||'null'); if(_r&&_r.code) REF=String(_r.code).replace(/[^A-Za-z0-9_-]/g,'').slice(0,16); }catch(e){}
+  var _q=new URLSearchParams(location.search);
+  if(_q.get('ref')) REF=(_q.get('ref')||'').replace(/[^A-Za-z0-9_-]/g,'').slice(0,16);
+
   var el=function(id){return document.getElementById(id);};
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   function slug(n){ return n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
@@ -188,7 +195,7 @@
         +'<a href="'+map+'" target="_blank" rel="noopener">🗺 Map</a>'
         +(ph?'<a href="tel:'+ph+'">📞 '+esc(s[4])+'</a>':'')
         +(ig?'<a href="https://instagram.com/'+encodeURIComponent(ig)+'" target="_blank" rel="noopener">📸 @'+esc(ig)+'</a>':'')
-        +'<a href="/rewards/?c=demo&biz='+encodeURIComponent(s[0])+'" target="_blank" rel="noopener">💈 Demo as them</a>'
+        +'<a href="/rewards/?c=demo&biz='+encodeURIComponent(s[0])+(REF?('&ref='+encodeURIComponent(REF)):'')+'" target="_blank" rel="noopener">💈 Demo as them</a>'
         +'<button data-dm="'+esc(sl)+'">💬 Copy DM</button>'
       +'</div></div>';
   }
