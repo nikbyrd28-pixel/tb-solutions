@@ -1459,7 +1459,8 @@ var mParam=q.get('m');
 var saved=null; try{ saved=localStorage.getItem('rw_'+slug); }catch(e){}
 if(DEMO_MEMBER[slug]){
   var _cta=document.createElement('a');
-  _cta.href='/rewards/signup/';
+  // Carry the rep's code through the demo, or whoever demoed the shop loses the credit.
+  _cta.href='/rewards/signup/'+(refCode?('?ref='+encodeURIComponent(refCode)):'');
   _cta.id='demoCta';
   _cta.innerHTML='\ud83d\udc88 Get this for MY shop \u2014 free in 30 sec \u2192';
   _cta.style.cssText='position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:60;background:linear-gradient(135deg,#5ad0f0,#7aa2ff);color:#04050a;font-weight:900;font-size:14px;padding:13px 20px;border-radius:999px;text-decoration:none;box-shadow:0 12px 34px rgba(122,162,255,.55);white-space:nowrap;animation:popin .4s ease';
