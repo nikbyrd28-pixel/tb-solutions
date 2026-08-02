@@ -491,6 +491,11 @@ var q=new URLSearchParams(location.search);
 var slug=(q.get('c')||'').toLowerCase().replace(/[^a-z0-9]/g,'');
 var display=q.get('name')||slug.charAt(0).toUpperCase()+slug.slice(1)||'Rewards';
 var refCode=(q.get('ref')||'').slice(0,16);
+// Demo shops skip the sign-up gate and open a pre-loaded, populated card.
+var DEMO_MEMBER={demo:'demo0001'};
+// ?biz= relabels a DEMO card so a barber sees their own shop name during a pitch.
+// Gated on DEMO_MEMBER so a real shop's card can never be relabelled by a crafted link.
+var DEMO_BIZ=DEMO_MEMBER[slug] ? (q.get('biz')||'').replace(/[<>&]/g,'').trim().slice(0,40) : '';
 var member=null;
 
 /* Brand themes (same system as the capture page) */
@@ -539,7 +544,17 @@ function qrUrl(data,size){ return 'https://api.qrserver.com/v1/create-qr-code/?s
 function showCard(m){
   member=m;
   try{ localStorage.setItem('rw_'+slug, m.code); localStorage.setItem('rw_cache_'+slug, JSON.stringify(m)); }catch(e){}
-  if(m.biz_name){ display=m.biz_name; try{ document.title=m.biz_name+' rewards'; var bel=el('brand'); if(bel) bel.innerHTML=String(m.biz_name).replace(/[<>&]/g,'')+' <span>rewards</span>'; }catch(e){} }
+  // On a demo card only, ?biz= relabels the shop so a barber sees their own name
+  // during a pitch. Never applied to a real shop's card — see DEMO_BIZ.
+  var bizName=DEMO_BIZ||m.biz_name;
+  if(bizName){ display=bizName; try{
+    document.title=bizName+' rewards';
+    var bel=el('brand');
+    if(bel){ // built as nodes, not innerHTML — a shop name can never inject markup
+      var sp=document.createElement('span'); sp.textContent='rewards';
+      bel.textContent=String(bizName)+' '; bel.appendChild(sp);
+    }
+  }catch(e){} }
   showLoading(false);
   el('joinCard').classList.add('hide');
   el('cardView').classList.remove('hide');
@@ -1442,8 +1457,6 @@ function countUp(to){
 }
 var mParam=q.get('m');
 var saved=null; try{ saved=localStorage.getItem('rw_'+slug); }catch(e){}
-// Demo shops skip the sign-up gate and open a pre-loaded, populated card.
-var DEMO_MEMBER={demo:'demo0001'};
 if(DEMO_MEMBER[slug]){
   var _cta=document.createElement('a');
   _cta.href='/rewards/signup/';
