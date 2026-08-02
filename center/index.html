@@ -93,6 +93,22 @@
   .sw.on{background:var(--good)}
   .sw::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .15s}
   .sw.on::after{transform:translateX(18px)}
+  .dmrow{display:grid;grid-template-columns:1fr 130px;gap:8px;margin-top:10px}
+  @media(max-width:520px){.dmrow{grid-template-columns:1fr}}
+  .dmrow input,.dmrow select{font-size:14px}
+  .dmlbl{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
+  .dmstat{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;border-radius:999px;padding:4px 11px}
+  .dmstat.live{background:rgba(67,240,176,.14);color:var(--good)}
+  .dmstat.pend{background:rgba(255,207,90,.14);color:var(--gold)}
+  .dmfeed{margin-top:6px}
+  .dmfeed .r{display:flex;gap:10px;align-items:baseline;border-top:1px solid var(--line);padding:9px 0;font-size:13px}
+  .dmfeed .r:first-child{border-top:0}
+  .dmfeed .w{flex:1;min-width:0}
+  .dmfeed .w i{display:block;color:var(--muted);font-style:normal;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dmfeed .t{color:var(--muted);font-size:11.5px;white-space:nowrap}
+  .dmsteps{counter-reset:s;padding-left:0;list-style:none;margin:10px 0 0}
+  .dmsteps li{counter-increment:s;position:relative;padding-left:30px;margin-bottom:9px;font-size:13.5px;color:var(--muted)}
+  .dmsteps li::before{content:counter(s);position:absolute;left:0;top:0;width:21px;height:21px;border-radius:50%;background:rgba(122,162,255,.16);color:var(--acc2);font-size:11.5px;font-weight:900;display:grid;place-items:center}
   .foot{text-align:center;color:#5e6584;font-size:12px;margin:26px 0}
   .hide{display:none!important}
   .load{color:var(--muted);padding:16px;text-align:center}
@@ -127,6 +143,7 @@
       <button class="tab" data-t="customers" onclick="showTab('customers')">👥 Customers</button>
       <button class="tab" data-t="messages" onclick="showTab('messages')">💬 Messages</button>
       <button class="tab" data-t="autos" onclick="showTab('autos')">⚡ Automations</button>
+      <button class="tab" data-t="dm" onclick="showTab('dm')">📩 Comment → DM</button>
       <button class="tab" data-t="share" onclick="showTab('share')">🔗 Share</button>
       <button class="tab" data-t="tools" onclick="showTab('tools')">🛠️ Tools</button>
     </div>
@@ -192,6 +209,11 @@
     <div class="panel" id="p-autos">
       <p class="muted" style="margin:0 0 6px;font-size:13px">Loop watches your customers and lines up the right message at the right moment. Review each batch, tap to send from your phone, and mark it done — no one gets messaged twice. <b style="color:var(--text)">{name}</b>, <b style="color:var(--text)">{biz}</b>, <b style="color:var(--text)">{reward}</b>, <b style="color:var(--text)">{link}</b>, <b style="color:var(--text)">{review}</b> fill in automatically.</p>
       <div id="autosBody"><div class="load">Loading…</div></div>
+    </div>
+
+    <div class="panel" id="p-dm">
+      <p class="muted" style="margin:0 0 6px;font-size:13px">Post a cut, tell people to comment a word, and Loop DMs every one of them instantly — your booking link, your price list, whatever you want. Use <b style="color:var(--text)">{name}</b> in the message and it fills in their Instagram handle.</p>
+      <div id="dmBody"><div class="load">Loading…</div></div>
     </div>
 
     <div class="panel" id="p-share">
@@ -279,6 +301,7 @@
     if(t==='customers'&&!loaded.crm){ loaded.crm=1; loadCrm(); }
     if(t==='messages'&&!loaded.msg){ loaded.msg=1; initMsg(); }
     if(t==='autos'&&!loaded.autos){ loaded.autos=1; loadAutos(); }
+    if(t==='dm'&&!loaded.dm){ loaded.dm=1; loadDm(); }
     window.scrollTo(0,0);
   };
 
@@ -337,6 +360,117 @@
     rpc('automation_mark',{p_client:CODE,p_pin:PIN,p_kind:k,p_codes:codes}).then(function(d){
       if(d&&d.ok!==false){ toast('Marked '+(d.marked||codes.length)+' sent ✓'); autoQ[k]=0; loadAutos(); }
       else toast((d&&d.error)||'Could not mark.');
+    }).catch(function(){ toast('Network error.'); });
+  };
+
+  /* ---------- comment → DM ---------- */
+  var DM=null, dmEditing=null;
+  var DM_IDEAS=[
+    ['📅 Book a cut','BOOK','Yo {name} 👋 here\'s the link to grab your chair — pick any open slot and it\'s yours.','/rewards/?c=','Sent you the link 📩'],
+    ['💵 Price list','PRICE','Hey {name}! Full price list + what\'s included is right here 👇 Any questions just reply to this DM.','',''],
+    ['🎁 Free cut card','FREE','{name} you\'re in 🙌 Every cut earns a point, and points turn into free cuts. Here\'s your card:','/rewards/?c=','Check your DMs 📩'],
+    ['🎮 Arcade','PLAY','Yo {name} 🎮 play the shop arcade, win coins, cash them in for cuts and merch. Have fun:','/arcade/?c=','']
+  ];
+  window.loadDm=function(){
+    el('dmBody').innerHTML='<div class="load">Loading…</div>';
+    rpc('dm_triggers_list',{p_client:CODE,p_pin:PIN}).then(function(d){
+      if(!d||d.ok===false){ el('dmBody').innerHTML='<p class="muted">'+((d&&d.error)||'Could not load.')+'</p>'; return; }
+      DM=d; renderDm();
+    }).catch(function(){ el('dmBody').innerHTML='<p class="muted">Network error.</p>'; });
+  };
+  function dmStatusCard(){
+    if(DM.connected){
+      return '<div class="card"><div class="auto-h"><b>📸 Instagram</b>'
+        +'<span class="dmstat live">● Connected'+(DM.ig_username?(' · @'+esc(DM.ig_username)):'')+'</span></div>'
+        +'<p class="muted" style="margin:8px 0 0;font-size:13px">'+(DM.sent_total||0)+' DM'+((DM.sent_total===1)?'':'s')+' sent automatically so far.</p></div>';
+    }
+    return '<div class="card"><div class="auto-h"><b>📸 Instagram</b><span class="dmstat pend">Not connected yet</span></div>'
+      +'<p class="muted" style="margin:8px 0 0;font-size:13px">Write your rules now — they start firing the moment your account is hooked up. Instagram only lets an app DM a commenter if the account is a <b style="color:var(--text)">Business or Creator</b> account linked to a Facebook Page.</p>'
+      +'<ol class="dmsteps">'
+        +'<li>Open Instagram → Settings → Account type, and switch to <b style="color:var(--text)">Business</b> or <b style="color:var(--text)">Creator</b>.</li>'
+        +'<li>Link it to your shop\'s Facebook Page (Instagram will walk you through it).</li>'
+        +'<li>Text your Loop rep and say "Instagram is ready" — connecting it takes about five minutes on our end.</li>'
+      +'</ol></div>';
+  }
+  function dmRuleCard(t){
+    var on=t.active!==false, mt=t.match||'contains';
+    var when = mt==='any' ? 'Any comment at all' : (mt==='exact'?'Comment is exactly':'Comment contains')+' "'+esc(t.keyword)+'"';
+    return '<div class="auto'+(on?'':' off')+'" data-dm="'+esc(t.id)+'">'
+      +'<div class="auto-h"><b>'+esc(when)+'</b>'
+        +'<span style="display:flex;align-items:center;gap:10px"><span class="auto-cnt'+(t.sent?'':' zero')+'">'+(t.sent||0)+' sent</span>'
+        +'<button class="sw'+(on?' on':'')+'" onclick="dmToggle(\''+esc(t.id)+'\')" title="on/off"></button></span></div>'
+      +'<p class="muted" style="margin:9px 0 0;font-size:13.5px;white-space:pre-wrap">'+esc(t.message)+'</p>'
+      +(t.link?'<p class="muted" style="margin:6px 0 0;font-size:12.5px">🔗 '+esc(t.link)+'</p>':'')
+      +(t.public_reply?'<p class="muted" style="margin:6px 0 0;font-size:12.5px">💬 Public reply: '+esc(t.public_reply)+'</p>':'')
+      +'<div class="auto-acts"><button class="btn ghost sm" onclick="dmEdit(\''+esc(t.id)+'\')">✏️ Edit</button>'
+      +'<button class="btn ghost sm" onclick="dmDelete(\''+esc(t.id)+'\')">🗑 Delete</button></div></div>';
+  }
+  function dmForm(){
+    var e=dmEditing||{}, mt=e.match||'contains';
+    var opt=function(v,l){ return '<option value="'+v+'"'+(mt===v?' selected':'')+'>'+l+'</option>'; };
+    return '<div class="card"><h2>'+(e.id?'✏️ Edit rule':'➕ New rule')+'</h2>'
+      +(e.id?'':'<div class="tmpls" id="dmIdeas">'+DM_IDEAS.map(function(x,i){ return '<button class="tmpl" onclick="dmIdea('+i+')">'+esc(x[0])+'</button>'; }).join('')+'</div>')
+      +'<div class="dmrow"><div><div class="dmlbl">Keyword</div><input id="dmKw" placeholder="BOOK" value="'+esc(e.keyword||'')+'"></div>'
+        +'<div><div class="dmlbl">Match</div><select id="dmMatch" onchange="dmMatchChanged()">'+opt('contains','Contains')+opt('exact','Exact')+opt('any','Any comment')+'</select></div></div>'
+      +'<div class="dmlbl">The DM to send <span id="dmCount" class="muted" style="text-transform:none;letter-spacing:0"></span></div>'
+      +'<textarea id="dmMsg" style="min-height:88px" placeholder="Yo {name} 👋 here\'s the link to grab your chair 👇">'+esc(e.message||'')+'</textarea>'
+      +'<div class="dmlbl">Link to include (optional)</div><input id="dmLink" placeholder="https://tbsol.net/rewards/?c='+esc(CODE)+'" value="'+esc(e.link||'')+'">'
+      +'<div class="dmlbl">Public reply under the comment (optional)</div><input id="dmPub" placeholder="Check your DMs 📩" value="'+esc(e.public_reply||'')+'">'
+      +'<div class="auto-acts"><button class="btn" id="dmSaveBtn" onclick="dmSave()">'+(e.id?'Save changes':'Add this rule')+'</button>'
+      +(e.id?'<button class="btn ghost sm" onclick="dmCancel()">Cancel</button>':'')+'</div>'
+      +'<div class="err" id="dmErr"></div></div>';
+  }
+  function dmFeed(){
+    var r=DM.recent||[]; if(!r.length) return '';
+    return '<div class="card"><h2>📜 Recent</h2><div class="dmfeed">'+r.map(function(x){
+      var icon=x.status==='sent'?'✅':(x.status==='error'?'⚠️':'⏳');
+      return '<div class="r"><span>'+icon+'</span><span class="w"><b>'+esc(x.commenter_name||'Someone')+'</b>'
+        +'<i>'+esc(x.error||x.comment_text||'')+'</i></span><span class="t">'+esc(ago(x.at))+'</span></div>';
+    }).join('')+'</div></div>';
+  }
+  function renderDm(){
+    var list=DM.triggers||[];
+    el('dmBody').innerHTML = dmStatusCard()
+      + (list.length ? list.map(dmRuleCard).join('') : '<div class="card"><p class="muted" style="margin:0">No rules yet — add your first one below. Most shops start with <b style="color:var(--text)">BOOK</b>.</p></div>')
+      + dmForm() + dmFeed();
+    var m=el('dmMsg'); if(m){ m.addEventListener('input',dmCount); dmCount(); }
+    dmMatchChanged();
+  }
+  function dmCount(){ var n=((el('dmMsg')||{}).value||'').length; var c=el('dmCount'); if(c) c.textContent='· '+n+'/900'; }
+  window.dmMatchChanged=function(){ var s=el('dmMatch'), k=el('dmKw'); if(!s||!k) return; var any=s.value==='any'; k.disabled=any; k.placeholder=any?'(not needed)':'BOOK'; };
+  window.dmIdea=function(i){ var x=DM_IDEAS[i];
+    el('dmKw').value=x[1]; el('dmMatch').value='contains'; el('dmMsg').value=x[2];
+    el('dmLink').value=x[3]?(location.origin+x[3]+CODE):''; el('dmPub').value=x[4];
+    dmMatchChanged(); dmCount(); };
+  window.dmEdit=function(id){ dmEditing=(DM.triggers||[]).filter(function(t){return String(t.id)===String(id);})[0]||null; renderDm(); var f=el('dmKw'); if(f) f.scrollIntoView({behavior:'smooth',block:'center'}); };
+  window.dmCancel=function(){ dmEditing=null; renderDm(); };
+  window.dmSave=function(){
+    var b=el('dmSaveBtn'); if(!b||b.disabled) return;
+    var args={p_client:CODE,p_pin:PIN,p_id:(dmEditing&&dmEditing.id)||null,
+      p_keyword:el('dmKw').value||'',p_message:el('dmMsg').value||'',
+      p_link:el('dmLink').value||'',p_public_reply:el('dmPub').value||'',
+      p_match:el('dmMatch').value,p_active:dmEditing?dmEditing.active!==false:true};
+    b.disabled=true; var old=b.textContent; b.textContent='Saving…'; el('dmErr').textContent='';
+    rpc('dm_trigger_save',args).then(function(d){
+      b.disabled=false; b.textContent=old;
+      if(!d||d.ok===false){ el('dmErr').textContent=(d&&d.error)||'Could not save.'; return; }
+      toast(dmEditing?'Rule updated ✓':'Rule added ✓'); dmEditing=null; loadDm();
+    }).catch(function(){ b.disabled=false; b.textContent=old; el('dmErr').textContent='Network error — try again.'; });
+  };
+  window.dmToggle=function(id){
+    var t=(DM.triggers||[]).filter(function(r){return String(r.id)===String(id);})[0]; if(!t) return;
+    var next=t.active===false;
+    rpc('dm_trigger_save',{p_client:CODE,p_pin:PIN,p_id:t.id,p_keyword:t.keyword,p_message:t.message,
+      p_link:t.link||'',p_public_reply:t.public_reply||'',p_match:t.match,p_active:next}).then(function(d){
+      if(d&&d.ok!==false){ t.active=next; renderDm(); toast(next?'Rule on':'Rule paused'); }
+      else toast((d&&d.error)||'Could not update.');
+    }).catch(function(){ toast('Network error.'); });
+  };
+  window.dmDelete=function(id){
+    if(!confirm('Delete this rule? Comments with that keyword will stop getting a DM.')) return;
+    rpc('dm_trigger_delete',{p_client:CODE,p_pin:PIN,p_id:id}).then(function(d){
+      if(d&&d.ok!==false){ toast('Rule deleted'); if(dmEditing&&String(dmEditing.id)===String(id)) dmEditing=null; loadDm(); }
+      else toast((d&&d.error)||'Could not delete.');
     }).catch(function(){ toast('Network error.'); });
   };
 
@@ -452,8 +586,10 @@
   window.msgSeg=function(s){ msgSegVal=s; [].forEach.call(document.querySelectorAll('#msgSegs .seg'),function(b){ b.classList.toggle('on',b.getAttribute('data-s')===s); });
     rpc('crm_members',{p_client:CODE,p_pin:PIN,p_search:'',p_segment:s}).then(function(d){ MSG=((d&&d.members)||[]).filter(function(m){return tel(m.phone);}); renderRecips(); }).catch(function(){}); };
   function renderRecips(){ el('msgRecips').innerHTML='<p class="muted" style="font-size:12.5px;margin:2px 0">Will text <b style="color:var(--text)">'+MSG.length+'</b> customer'+(MSG.length===1?'':'s')+' with a phone number. Tap "Open first text" to send from your Messages app.</p>'; }
-  function personalize(tpl,m){ return (tpl||'').replace(/\{name\}/g, (m.name||'there').split(/\s+/)[0]); }
-  window.sendFirst=function(){ if(!MSG.length){ toast('No one to text in this group.'); return; } var m=MSG[0], body=personalize(el('msgText').value,m); location.href='sms:'+tel(m.phone)+'?&body='+encodeURIComponent(body); };
+  // Distinct name on purpose: the automations tab declares its own personalize() in this
+  // same scope, and a second declaration here would silently override it.
+  function msgPersonalize(tpl,m){ return (tpl||'').replace(/\{name\}/g, (m.name||'there').split(/\s+/)[0]); }
+  window.sendFirst=function(){ if(!MSG.length){ toast('No one to text in this group.'); return; } var m=MSG[0], body=msgPersonalize(el('msgText').value,m); location.href='sms:'+tel(m.phone)+'?&body='+encodeURIComponent(body); };
   window.copyBlast=function(){ var txt=el('msgText').value||''; if(navigator.clipboard) navigator.clipboard.writeText(txt).then(function(){toast('Message copied 📋');},function(){toast('Copy failed');}); else toast('Copy not supported'); };
 
   function qr(url){ return 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=0&data='+encodeURIComponent(url); }
