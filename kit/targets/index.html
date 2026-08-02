@@ -152,6 +152,7 @@
     if(FILTER==='all') return true;
     if(FILTER==='top10') return s[6]>0;
     if(FILTER==='todo') return stat(s)==='todo';
+    if(FILTER==='ig') return !!s[3];
     return s[1]===FILTER;
   }
 
@@ -175,7 +176,9 @@
 
   function renderFilters(){
     var counts={}; SHOPS.forEach(function(s){ counts[s[1]]=(counts[s[1]]||0)+1; });
-    var opts=[['all','All 45'],['top10','⭐ Top 10'],['todo','To do']].concat(TOWNS.map(function(t){ return [t,t+' ('+(counts[t]||0)+')']; }));
+    var igCount=SHOPS.filter(function(s){ return !!s[3]; }).length;
+    var opts=[['all','All '+SHOPS.length],['top10','⭐ Top 10'],['todo','To do'],['ig','📸 DM run ('+igCount+')']]
+      .concat(TOWNS.map(function(t){ return [t,t+' ('+(counts[t]||0)+')']; }));
     el('filters').innerHTML=opts.map(function(o){
       return '<button class="f'+(FILTER===o[0]?' on':'')+'" data-f="'+esc(o[0])+'">'+esc(o[1])+'</button>';
     }).join('');
@@ -194,7 +197,9 @@
       +'<div class="acts">'
         +'<a href="'+map+'" target="_blank" rel="noopener">🗺 Map</a>'
         +(ph?'<a href="tel:'+ph+'">📞 '+esc(s[4])+'</a>':'')
-        +(ig?'<a href="https://instagram.com/'+encodeURIComponent(ig)+'" target="_blank" rel="noopener">📸 @'+esc(ig)+'</a>':'')
+        // Tapping Instagram copies that shop's DM on the way out, so the profile
+        // opens with the message already on the clipboard — one tap, then paste.
+        +(ig?'<a href="https://instagram.com/'+encodeURIComponent(ig)+'" target="_blank" rel="noopener" data-igdm="'+esc(sl)+'">📸 @'+esc(ig)+'</a>':'')
         +'<a href="/rewards/?c=demo&biz='+encodeURIComponent(s[0])+(REF?('&ref='+encodeURIComponent(REF)):'')+'" target="_blank" rel="noopener">💈 Demo as them</a>'
         +'<button data-dm="'+esc(sl)+'">💬 Copy DM</button>'
       +'</div></div>';
@@ -229,6 +234,13 @@
       if(next==='todo') delete ST[sl]; else ST[sl]=next;
       save(); render();
       if(next==='signed') toast('Signed 🎉 nice work');
+      return;
+    }
+    // Don't preventDefault — the profile still opens, the DM just rides along.
+    var ig=e.target.closest('[data-igdm]');
+    if(ig){
+      var s2=SHOPS.filter(function(s){ return slug(s[0])===ig.getAttribute('data-igdm'); })[0];
+      if(s2 && navigator.clipboard){ navigator.clipboard.writeText(dmFor(s2)).then(function(){ toast('DM copied — paste it in Instagram 📋'); },function(){}); }
       return;
     }
     var d=e.target.closest('[data-dm]');
