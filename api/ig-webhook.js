@@ -48,10 +48,14 @@ function rpc(fn, args) {
 function rawBody(req) {
   return new Promise((resolve) => {
     if (!req.readable) return resolve(null);
-    let buf = '';
+    let buf = '', settled = false;
+    const done = (v) => { if (!settled) { settled = true; clearTimeout(timer); resolve(v); } };
+    // If the body was already drained upstream this stream may never emit 'end'.
+    // Give up rather than hold the function open until Meta times out and retries.
+    const timer = setTimeout(() => done(null), 2000);
     req.on('data', (c) => { buf += c; });
-    req.on('end', () => resolve(buf));
-    req.on('error', () => resolve(null));
+    req.on('end', () => done(buf));
+    req.on('error', () => done(null));
   });
 }
 
