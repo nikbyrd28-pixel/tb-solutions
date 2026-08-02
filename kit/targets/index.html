@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Loop — Chester County walk list</title>
+<meta name="description" content="All 45 independent barbershops in Chester County, in walking order, with the angle for each one." />
+<meta name="theme-color" content="#05060d" />
+<meta name="robots" content="noindex" />
+<link rel="icon" href="/brand/icon.svg" />
+<style>
+  :root{--text:#f2f4ff;--muted:#8f97b8;--line:rgba(122,162,255,.3);--acc:#7aa2ff;--acc2:#5ad0f0;--vio:#b98bff;--good:#43f0b0;--gold:#ffcf5a;--bad:#ff8a9d}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.55;
+    background:radial-gradient(circle at 12% -8%,rgba(122,162,255,.18),transparent 44%),linear-gradient(180deg,#070811,#04050a);
+    min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:18px 13px 70px;-webkit-tap-highlight-color:transparent}
+  .wrap{width:min(680px,100%)}
+  .top{text-align:center;margin-bottom:16px}
+  h1{font-size:clamp(23px,6vw,30px);margin:0 0 4px;letter-spacing:-.02em}
+  h1 span{background:linear-gradient(90deg,var(--acc2),var(--acc),var(--vio));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);font-size:13.5px;margin:0}
+  .back{display:inline-block;color:var(--acc);text-decoration:none;font-size:12.5px;font-weight:700;margin-bottom:10px}
+  .prog{border:1px solid var(--line);background:rgba(122,162,255,.06);border-radius:15px;padding:13px 15px;margin-bottom:14px}
+  .prog b{font-size:15px}
+  .bar{display:flex;height:9px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.07);margin:9px 0 6px}
+  .bar div{min-width:0}
+  .prog .leg{display:flex;gap:13px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+  .prog .leg i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;font-style:normal}
+  .filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+  .f{border:1px solid var(--line);background:rgba(122,162,255,.06);color:var(--muted);border-radius:999px;
+    padding:7px 12px;font:inherit;font-weight:800;font-size:12.5px;cursor:pointer}
+  .f.on{background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d;border-color:transparent}
+  .town{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc2);font-weight:800;margin:18px 0 8px}
+  .town span{color:var(--muted);letter-spacing:0;text-transform:none;font-weight:600}
+  .shop{border:1px solid rgba(122,162,255,.2);background:rgba(4,6,14,.5);border-radius:15px;padding:13px;margin-bottom:9px}
+  .shop.s-visited{border-color:rgba(255,207,90,.45)}
+  .shop.s-signed{border-color:rgba(67,240,176,.5);background:rgba(67,240,176,.06)}
+  .shop.s-no{opacity:.5}
+  .shd{display:flex;align-items:flex-start;gap:9px}
+  .shd .nm{flex:1;min-width:0}
+  .shd .nm b{font-size:15px;display:block}
+  .shd .nm .ad{color:var(--muted);font-size:12.5px}
+  .rank{flex:0 0 auto;font-size:10.5px;font-weight:900;background:rgba(185,139,255,.2);color:var(--vio);
+    border-radius:7px;padding:3px 7px;margin-top:2px}
+  .st{flex:0 0 auto;border:1px solid var(--line);background:rgba(122,162,255,.08);color:var(--muted);
+    border-radius:999px;padding:6px 11px;font:inherit;font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap}
+  .st.visited{background:rgba(255,207,90,.16);color:var(--gold);border-color:rgba(255,207,90,.4)}
+  .st.signed{background:rgba(67,240,176,.18);color:var(--good);border-color:rgba(67,240,176,.45)}
+  .st.no{background:rgba(255,138,157,.14);color:var(--bad);border-color:rgba(255,138,157,.35)}
+  .why{font-size:13.5px;margin:9px 0 0;color:#cdd4f0}
+  .acts{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+  .acts a,.acts button{border:1px solid var(--line);background:rgba(122,162,255,.07);color:var(--text);
+    border-radius:10px;padding:7px 11px;font:inherit;font-weight:700;font-size:12.5px;text-decoration:none;cursor:pointer}
+  .toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:linear-gradient(135deg,var(--acc2),var(--acc));
+    color:#05060d;font-weight:800;font-size:13px;border-radius:999px;padding:9px 18px;z-index:60;box-shadow:0 10px 30px rgba(122,162,255,.4)}
+  .note{color:var(--muted);font-size:12.5px;margin:16px 0 0;border-top:1px solid rgba(122,162,255,.15);padding-top:13px}
+  .foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:14px}
+  .foot a{color:var(--acc)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/kit/">← Back to the kit</a>
+  <div class="top">
+    <h1>💈 <span>Walk list</span></h1>
+    <p class="sub">45 independent shops in Chester County. Tap a shop's chip as you go — it saves on this phone.</p>
+  </div>
+
+  <div class="prog" id="prog"></div>
+  <div class="filters" id="filters"></div>
+  <div id="list"></div>
+
+  <p class="note"><b style="color:var(--text)">Start in Coatesville.</b> Ten urban-style independents, most of them within a few blocks of Lincoln Hwy and 1st–3rd Aves — one afternoon covers them all on foot. A dash under Instagram or phone means it didn't surface in public search, not that it doesn't exist; a 30-second IG search before you walk in is worth it. Chains are excluded on purpose.</p>
+  <div class="foot">💈 <b>Loop</b> walk list · <a href="/kit/">Scripts &amp; DMs</a> · by <a href="https://tbsol.net">TB Solutions</a></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  // name, town, address, instagram, phone, angle, top-10 rank (0 = not in the top 10)
+  var SHOPS=[
+    ["Expensive Styles","Coatesville","237 MLK Dr, 19320","expensive.styles","","Urban-style shop, active IG with tagged barbers. The arcade + free-cuts angle fits its young clientele.",2],
+    ["Roots Barbershop","Coatesville","9 N 2nd Ave, 19320","","","Books through Booksy and pays per-booking fees. Pitch Loop as $0-to-start retention that rides on top of Booksy instead of competing with it.",3],
+    ["The Best Kept Secret","Coatesville","725 E Lincoln Hwy, 19320","","","Walk-in-friendly fade shop with no loyalty program. Loop gives walk-ins a reason to come back to this shop specifically.",4],
+    ["Coatesville Cuts (Kev the Barber)","Coatesville","7 N 2nd Ave, 19320","","(484) 467-0857","Owner-operator, 30+ years, active Facebook. The whole business is loyal regulars — that's the pitch.",0],
+    ["Bookman's Barber & Beauty","Coatesville","708 E Lincoln Hwy, 19320","","","Long-standing Black-owned barber + beauty shop. Multi-service upsell.",0],
+    ["Peoples Barber Shop","Coatesville","10 S 3rd Ave, 19320","","(610) 384-3884","Open 7am–7pm, high-volume walk-ins. The punch mechanic fits.",0],
+    ["Life Cutz","Coatesville","567 S 1st Ave, 19320","","","Independent urban shop, books via Fresha, no visible loyalty program.",0],
+    ["Relax Barbershop","Coatesville","768 Lincoln Hwy E, 19320","relax__barbershop","","On Fresha + IG with a small following — hungry for retention tools.",0],
+    ["Chester County Hair Company","Coatesville","Coatesville (Booksy listing)","","","Independent on Booksy. Retention app is an easy add-on pitch.",0],
+    ["Givler's Barber Shop","Coatesville","Coatesville (active FB page)","","","Old-school independent. Low-tech today means the biggest jump in perceived value.",0],
+    ["Champions Premier Barber Shop","West Chester","133 N Church St, 19380 (+ 2nd on N High St)","champions_premierbarbers","","Black-owned, two locations, very active IG, community-first branding. Pitch Loop as the digital version of the community loyalty they already live.",1],
+    ["Maple Alley Barbershop","West Chester","537 Maple Alley, 19380","maplealleybarbershop","(484) 887-8475","Waves, fades and shaves, 4.9 on Booksy, active IG. Ideal repeat-cut clientele for free-cut rewards.",5],
+    ["VIC-TORY Barbershop","West Chester","11 N 5 Points Rd, 19380","11n.victorybarbershop","(610) 679-0885","Independent fade/lineup specialist with its own site. Turn their strong review flow into repeat visits.",6],
+    ["The Shop on Market Street","West Chester","134 E Market St, 19382","theshoponmarketstreet","(610) 545-3732","Woman-owned (\"Girl Barbers Rule\"), Reader's Choice Best Barber Shop, active social.",0],
+    ["Charlie & Co. Barbershop","West Chester","130 N Church St, 19380","charlieandcobarbershop","(484) 266-0781","\"Modern meets old school,\" active IG posting client cuts.",0],
+    ["C Mac's Barbershop","West Chester","133 E Market St, 19382","","(610) 696-9336","Rock-and-roll-themed, woman-owned. Fun brand — the arcade fits.",0],
+    ["Cruisin' Style Barber Shop","West Chester","135 W Gay St, 19380","sailorandy_thebarber","","Garage-deco themed, \"voted best in WC.\" Strong brand, no loyalty app.",0],
+    ["Mark Jos. Barbers","West Chester","133 N Church St Ste 103B, 19380","","","Independent full-service barber with its own site. Borough foot traffic.",0],
+    ["Simply Men's Barber Shop","West Chester","105 Westtown Rd Ste C, 19382","","(484) 887-0635","Traditional businessmen's shop, steady repeat clientele, no loyalty program.",0],
+    ["Rik's Barbershop","Exton","63 Marchwood Rd, 19341","riksbarbershops","","5.0 stars over 227 reviews, mission-driven owner-operator brand. Loop is the retention layer matching his \"transformational grooming\" positioning.",7],
+    ["The Cut Gallery Barbershop","Exton","582 Wharton Blvd (Eagleview Town Ctr), 19341","thecutgallerybarbershop","","\"Art meets grooming\" concept shop. A branded arcade web app fits their creative identity.",9],
+    ["Ficca's Barber Shop","Exton","140 Eagleview Blvd, 19341","","","Family independent, active FB, multi-chair, no loyalty program.",0],
+    ["Sal's Barbershop Chester Springs & Exton","Exton / Chester Springs","491 E Uwchlan Ave, Chester Springs 19425","","","Award-winning local multi-shop group — one yes is multiple locations.",0],
+    ["Catracho Cuts","Malvern","446 Lancaster Ave STE 1, 19355","catracho_cuts","","Bilingual premium independent on Booksy. The game/rewards app is a differentiator no nearby Main Line shop has.",8],
+    ["Gentlemen's Cut","Malvern","12 General Warren Blvd Ste 350, 19355","","(610) 640-9844","Multi-chair men's shop, strong reviews, no visible loyalty program.",0],
+    ["Maurizio Barber Shop","Malvern","Malvern (directory-verified)","","","Walk-in-friendly independent. Thin web footprint — verify it's still operating before driving out.",0],
+    ["The Breakroom Barbershop","Phoenixville","166 Bridge St, 19460","breakroombarbershop","(215) 913-4617","Brand-new two-founder shop in a renovated historic building. New shops need retention from day one and have zero legacy program.",10],
+    ["Blue Label Men's Grooming","Phoenixville","321 Bridge St, 19460","bluelabelmen","(484) 369-9054","Upscale independent on Bridge St, active IG, premium clientele.",0],
+    ["Sal's Barbershop Phoenixville","Phoenixville","390 Schuylkill Rd Ste 200, 19460","","(484) 924-9330","5.0 stars over 168 reviews, part of a local 5-shop group — multi-location potential.",0],
+    ["Bridge Street Barber","Phoenixville","1098 W Bridge St, 19460","","","Newly taken over by owner-operator Rick Ferko. New owners buy new tools.",0],
+    ["Eddie The Barber","Phoenixville","119 Main St Ste 4, 19460","","(484) 630-7506","Appointment-only solo barber. Loop keeps his book full between visits.",0],
+    ["Blue 52 Barber Shop","Kennett Square","331 E State St, 19348","blue52barbershop","(610) 612-9361","Family-friendly downtown independent, active IG, books on Vagaro.",0],
+    ["KSQ Barber Lounge","Kennett Square","106 Sycamore Alley, 19348","ksqbarberlounge","","Modern lounge in the heart of KSQ, active IG + Vagaro.",0],
+    ["Burton's Barber Shop","Kennett Square","105 W State St, 19348","","(610) 444-9964","In business since 1892, third-generation owner. Heritage story, zero digital loyalty.",0],
+    ["B & B Barber Lounge","Kennett Square","116 S Union St, 19348","","","Independent lounge-style shop, active FB, urban clientele.",0],
+    ["Fragale Brothers Barber Shop","Kennett Square","Kennett Square (active FB page)","","","Small independent with a loyal base. Simple free-cuts pitch.",0],
+    ["Dazio's Barber Shop","Downingtown","135 W Lancaster Ave, 19335","","","Independent razor-shave traditionalist, no loyalty program visible.",0],
+    ["Eddie's Barber Shop","Downingtown","21 Brandywine Ave, 19335","","(610) 269-4288","Established walk-in shop in the borough center, regulars-driven.",0],
+    ["JB's Barber Shop","Downingtown","3933 Lincoln Hwy (Caln Village Ctr), 19335","jbsbarbershop2020","(484) 364-4933","Active IG, \"old school feel, modern twist\" — open to tech.",0],
+    ["Popjoy's Barber Shop","Downingtown","886 Horseshoe Pike, 19335","","(484) 459-6369","Appointment-only owner-operator with its own website. Upsell repeat-visit rewards.",0],
+    ["Flip's Barber Shop","Oxford","10 S 3rd St, 19363","","(610) 467-1670","4.6 stars over 95 reviews, Main Street independent, books via Fresha.",0],
+    ["3rd Street Parlor (Jesus Garcia)","Oxford","3 S 3rd St, 19363","","(484) 756-0891","Independent, Latino-owned. The bilingual-friendly free-cuts hook lands here.",0],
+    ["Charlie's Barber Shop","Paoli","16 Lancaster Ave, 19301","","(610) 296-8287","Old-school independent on the main drag, regulars-based.",0],
+    ["Gentlemen's Choice Barber Shop","Paoli","11 Paoli Shopping Center, 19301","","","Shopping-center multi-chair shop with steady commuter clientele.",0],
+    ["Jerry's Barber Shop","Paoli","16 W Lancaster Ave, 19301","","","Long-standing independent, well reviewed, no digital loyalty presence.",0]
+  ];
+  // Coatesville first — it's the densest walkable cluster.
+  var TOWNS=['Coatesville','West Chester','Exton','Exton / Chester Springs','Malvern','Phoenixville','Kennett Square','Downingtown','Oxford','Paoli'];
+  var CYCLE=['todo','visited','signed','no'];
+  var LABEL={todo:'○ To do',visited:'👋 Visited',signed:'✅ Signed',no:'✕ Not now'};
+
+  var el=function(id){return document.getElementById(id);};
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function slug(n){ return n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+  function toast(m){ var t=document.createElement('div'); t.className='toast'; t.textContent=m; document.body.appendChild(t); setTimeout(function(){t.remove();},1600); }
+
+  var ST={};
+  try{ ST=JSON.parse(localStorage.getItem('loop_walklist')||'{}')||{}; }catch(e){ ST={}; }
+  function save(){ try{ localStorage.setItem('loop_walklist',JSON.stringify(ST)); }catch(e){} }
+  function stat(s){ return ST[slug(s[0])]||'todo'; }
+
+  var FILTER='all';
+  function match(s){
+    if(FILTER==='all') return true;
+    if(FILTER==='top10') return s[6]>0;
+    if(FILTER==='todo') return stat(s)==='todo';
+    return s[1]===FILTER;
+  }
+
+  function renderProg(){
+    var n=SHOPS.length, c={todo:0,visited:0,signed:0,no:0};
+    SHOPS.forEach(function(s){ c[stat(s)]++; });
+    var pct=function(k){ return (c[k]/n*100); };
+    el('prog').innerHTML='<b>'+(n-c.todo)+' of '+n+' worked</b> · <span style="color:var(--good);font-weight:800">'+c.signed+' signed</span>'
+      +'<div class="bar">'
+        +(c.signed?'<div style="width:'+pct('signed')+'%;background:var(--good)"></div>':'')
+        +(c.visited?'<div style="width:'+pct('visited')+'%;background:var(--gold)"></div>':'')
+        +(c.no?'<div style="width:'+pct('no')+'%;background:var(--bad)"></div>':'')
+        +(c.todo?'<div style="width:'+pct('todo')+'%;background:rgba(255,255,255,.09)"></div>':'')
+      +'</div><div class="leg">'
+        +'<span><i style="background:var(--good)"></i>Signed '+c.signed+'</span>'
+        +'<span><i style="background:var(--gold)"></i>Visited '+c.visited+'</span>'
+        +'<span><i style="background:var(--bad)"></i>Not now '+c.no+'</span>'
+        +'<span><i style="background:rgba(255,255,255,.2)"></i>To do '+c.todo+'</span>'
+      +'</div>';
+  }
+
+  function renderFilters(){
+    var counts={}; SHOPS.forEach(function(s){ counts[s[1]]=(counts[s[1]]||0)+1; });
+    var opts=[['all','All 45'],['top10','⭐ Top 10'],['todo','To do']].concat(TOWNS.map(function(t){ return [t,t+' ('+(counts[t]||0)+')']; }));
+    el('filters').innerHTML=opts.map(function(o){
+      return '<button class="f'+(FILTER===o[0]?' on':'')+'" data-f="'+esc(o[0])+'">'+esc(o[1])+'</button>';
+    }).join('');
+  }
+
+  function card(s){
+    var sl=slug(s[0]), st=stat(s), ig=s[3], ph=s[4].replace(/[^0-9+]/g,'');
+    var map='https://maps.google.com/?q='+encodeURIComponent(s[0]+', '+s[2].replace(/\s*\(.*?\)\s*/g,'')+', PA');
+    return '<div class="shop s-'+st+'" data-s="'+esc(sl)+'">'
+      +'<div class="shd">'
+        +(s[6]?'<span class="rank">#'+s[6]+'</span>':'')
+        +'<div class="nm"><b>'+esc(s[0])+'</b><div class="ad">'+esc(s[2])+'</div></div>'
+        +'<button class="st '+st+'" data-cycle="'+esc(sl)+'">'+LABEL[st]+'</button>'
+      +'</div>'
+      +'<p class="why">'+esc(s[5])+'</p>'
+      +'<div class="acts">'
+        +'<a href="'+map+'" target="_blank" rel="noopener">🗺 Map</a>'
+        +(ph?'<a href="tel:'+ph+'">📞 '+esc(s[4])+'</a>':'')
+        +(ig?'<a href="https://instagram.com/'+encodeURIComponent(ig)+'" target="_blank" rel="noopener">📸 @'+esc(ig)+'</a>':'')
+        +'<button data-dm="'+esc(sl)+'">💬 Copy DM</button>'
+      +'</div></div>';
+  }
+
+  function render(){
+    renderProg(); renderFilters();
+    var shown=SHOPS.filter(match), html='';
+    TOWNS.forEach(function(t){
+      var inTown=shown.filter(function(s){ return s[1]===t; });
+      if(!inTown.length) return;
+      html+='<div class="town">'+esc(t)+' <span>· '+inTown.length+'</span></div>'+inTown.map(card).join('');
+    });
+    el('list').innerHTML=html||'<p class="sub" style="padding:22px 0;text-align:center">Nothing in this filter — every shop here is worked. 💈</p>';
+  }
+
+  // The comment-to-DM opener from the kit, aimed at one named shop.
+  function dmFor(s){
+    return "Yo "+s[0]+" — your fades are clean. I'm local and I build a rewards app for barbershops: "
+      +"customers scan a QR at your chair, every cut earns points toward a free one, and they play games while they wait. "
+      +"I can also set your page up so anyone who comments a word like BOOK on your posts gets your booking link in their DMs automatically. "
+      +"Free to start, live in 30 seconds. Want me to send you the 60-second demo?";
+  }
+
+  document.addEventListener('click',function(e){
+    var f=e.target.closest('.f');
+    if(f){ FILTER=f.getAttribute('data-f'); render(); window.scrollTo(0,0); return; }
+    var c=e.target.closest('[data-cycle]');
+    if(c){
+      var sl=c.getAttribute('data-cycle');
+      var cur=ST[sl]||'todo', next=CYCLE[(CYCLE.indexOf(cur)+1)%CYCLE.length];
+      if(next==='todo') delete ST[sl]; else ST[sl]=next;
+      save(); render();
+      if(next==='signed') toast('Signed 🎉 nice work');
+      return;
+    }
+    var d=e.target.closest('[data-dm]');
+    if(d){
+      var shop=SHOPS.filter(function(s){ return slug(s[0])===d.getAttribute('data-dm'); })[0];
+      if(!shop) return;
+      var txt=dmFor(shop);
+      if(navigator.clipboard) navigator.clipboard.writeText(txt).then(function(){ toast('DM copied 📋'); },function(){ toast('Copy failed'); });
+      else toast('Copy not supported');
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
