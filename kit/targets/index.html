@@ -56,6 +56,18 @@
   .note{color:var(--muted);font-size:12.5px;margin:16px 0 0;border-top:1px solid rgba(122,162,255,.15);padding-top:13px}
   .foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:14px}
   .foot a{color:var(--acc)}
+  .addbox{border:1px dashed rgba(122,162,255,.4);background:rgba(122,162,255,.04);border-radius:15px;padding:15px;margin-top:18px}
+  .addbox b{font-size:15px;display:block;margin-bottom:3px}
+  .addbox p{color:var(--muted);font-size:12.5px;margin:0 0 11px}
+  .addbox input{width:100%;padding:11px 13px;border-radius:11px;background:rgba(0,0,0,.25);
+    border:1px solid var(--line);color:var(--text);font:inherit;font-size:14px;margin-bottom:8px}
+  .arow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  @media(max-width:460px){.arow{grid-template-columns:1fr}}
+  .abtn{width:100%;border:0;border-radius:11px;padding:12px;font:inherit;font-weight:900;font-size:14px;
+    cursor:pointer;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#05060d;margin-top:2px}
+  .aerr{color:var(--bad);font-size:12.5px;font-weight:700;min-height:15px;margin-top:7px}
+  .mine{font-size:10.5px;font-weight:900;background:rgba(93,242,224,.16);color:var(--acc2);
+    border-radius:7px;padding:3px 7px;margin-top:2px;flex:0 0 auto}
 </style>
 </head>
 <body>
@@ -63,12 +75,25 @@
   <a class="back" href="/kit/">← Back to the kit</a>
   <div class="top">
     <h1>💈 <span>Walk list</span></h1>
-    <p class="sub">45 independent shops in Chester County. Tap a shop's chip as you go — it saves on this phone.</p>
+    <p class="sub"><span id="nShops">45</span> independent shops in Chester County. Tap a shop's chip as you go — it saves on this phone.</p>
   </div>
 
   <div class="prog" id="prog"></div>
   <div class="filters" id="filters"></div>
   <div id="list"></div>
+
+  <div class="addbox">
+    <b>➕ Spotted a shop that isn't here?</b>
+    <p>Add it before you forget. It saves on this phone and gets the same demo and DM buttons.</p>
+    <input id="aName" placeholder="Shop name" autocomplete="off">
+    <div class="arow">
+      <input id="aTown" placeholder="Town (optional)" autocomplete="off">
+      <input id="aIg" placeholder="Instagram (optional)" autocomplete="off">
+    </div>
+    <input id="aNote" placeholder="Note — where it is, who you spoke to (optional)" autocomplete="off">
+    <button class="abtn" id="aBtn">Add to my list</button>
+    <div class="aerr" id="aErr"></div>
+  </div>
 
   <p class="note"><b style="color:var(--text)">Start in Coatesville.</b> Ten urban-style independents, most of them within a few blocks of Lincoln Hwy and 1st–3rd Aves — one afternoon covers them all on foot. A dash under Instagram or phone means it didn't surface in public search, not that it doesn't exist; a 30-second IG search before you walk in is worth it. Chains are excluded on purpose.</p>
   <div class="foot">💈 <b>Loop</b> walk list · <a href="/kit/">Scripts &amp; DMs</a> · by <a href="https://tbsol.net">TB Solutions</a></div>
@@ -147,6 +172,16 @@
   function save(){ try{ localStorage.setItem('loop_walklist',JSON.stringify(ST)); }catch(e){} }
   function stat(s){ return ST[slug(s[0])]||'todo'; }
 
+  // Shops added in the field — a barbershop spotted on the walk that the research
+  // missed. Same shape as SHOPS with a trailing flag so they can be deleted again.
+  var MINE=[];
+  try{ var _m=JSON.parse(localStorage.getItem('loop_walklist_mine')||'[]'); if(Array.isArray(_m)) MINE=_m; }catch(e){}
+  function saveMine(){ try{ localStorage.setItem('loop_walklist_mine',JSON.stringify(MINE)); }catch(e){} }
+  var ADDED='Added by me';
+  var ALL=[];
+  function rebuild(){ ALL=SHOPS.concat(MINE); }
+  rebuild();
+
   var FILTER='all';
   function match(s){
     if(FILTER==='all') return true;
@@ -157,8 +192,8 @@
   }
 
   function renderProg(){
-    var n=SHOPS.length, c={todo:0,visited:0,signed:0,no:0};
-    SHOPS.forEach(function(s){ c[stat(s)]++; });
+    var n=ALL.length, c={todo:0,visited:0,signed:0,no:0};
+    ALL.forEach(function(s){ c[stat(s)]++; });
     var pct=function(k){ return (c[k]/n*100); };
     el('prog').innerHTML='<b>'+(n-c.todo)+' of '+n+' worked</b> · <span style="color:var(--good);font-weight:800">'+c.signed+' signed</span>'
       +'<div class="bar">'
@@ -175,10 +210,11 @@
   }
 
   function renderFilters(){
-    var counts={}; SHOPS.forEach(function(s){ counts[s[1]]=(counts[s[1]]||0)+1; });
-    var igCount=SHOPS.filter(function(s){ return !!s[3]; }).length;
-    var opts=[['all','All '+SHOPS.length],['top10','⭐ Top 10'],['todo','To do'],['ig','📸 DM run ('+igCount+')']]
-      .concat(TOWNS.map(function(t){ return [t,t+' ('+(counts[t]||0)+')']; }));
+    var counts={}; ALL.forEach(function(s){ counts[s[1]]=(counts[s[1]]||0)+1; });
+    var igCount=ALL.filter(function(s){ return !!s[3]; }).length;
+    var towns=TOWNS.concat(MINE.length?[ADDED]:[]);
+    var opts=[['all','All '+ALL.length],['top10','⭐ Top 10'],['todo','To do'],['ig','📸 DM run ('+igCount+')']]
+      .concat(towns.map(function(t){ return [t,t+' ('+(counts[t]||0)+')']; }));
     el('filters').innerHTML=opts.map(function(o){
       return '<button class="f'+(FILTER===o[0]?' on':'')+'" data-f="'+esc(o[0])+'">'+esc(o[1])+'</button>';
     }).join('');
@@ -190,6 +226,7 @@
     return '<div class="shop s-'+st+'" data-s="'+esc(sl)+'">'
       +'<div class="shd">'
         +(s[6]?'<span class="rank">#'+s[6]+'</span>':'')
+        +(s[7]?'<span class="mine">MINE</span>':'')
         +'<div class="nm"><b>'+esc(s[0])+'</b><div class="ad">'+esc(s[2])+'</div></div>'
         +'<button class="st '+st+'" data-cycle="'+esc(sl)+'">'+LABEL[st]+'</button>'
       +'</div>'
@@ -202,13 +239,15 @@
         +(ig?'<a href="https://instagram.com/'+encodeURIComponent(ig)+'" target="_blank" rel="noopener" data-igdm="'+esc(sl)+'">📸 @'+esc(ig)+'</a>':'')
         +'<a href="/rewards/?c=demo&biz='+encodeURIComponent(s[0])+(REF?('&ref='+encodeURIComponent(REF)):'')+'" target="_blank" rel="noopener">💈 Demo as them</a>'
         +'<button data-dm="'+esc(sl)+'">💬 Copy DM</button>'
+        +(s[7]?'<button data-drop="'+esc(sl)+'">🗑 Remove</button>':'')
       +'</div></div>';
   }
 
   function render(){
     renderProg(); renderFilters();
-    var shown=SHOPS.filter(match), html='';
-    TOWNS.forEach(function(t){
+    var nEl=el('nShops'); if(nEl) nEl.textContent=String(ALL.length);
+    var shown=ALL.filter(match), html='';
+    TOWNS.concat(MINE.length?[ADDED]:[]).forEach(function(t){
       var inTown=shown.filter(function(s){ return s[1]===t; });
       if(!inTown.length) return;
       html+='<div class="town">'+esc(t)+' <span>· '+inTown.length+'</span></div>'+inTown.map(card).join('');
@@ -239,19 +278,45 @@
     // Don't preventDefault — the profile still opens, the DM just rides along.
     var ig=e.target.closest('[data-igdm]');
     if(ig){
-      var s2=SHOPS.filter(function(s){ return slug(s[0])===ig.getAttribute('data-igdm'); })[0];
+      var s2=ALL.filter(function(s){ return slug(s[0])===ig.getAttribute('data-igdm'); })[0];
       if(s2 && navigator.clipboard){ navigator.clipboard.writeText(dmFor(s2)).then(function(){ toast('DM copied — paste it in Instagram 📋'); },function(){}); }
+      return;
+    }
+    var dr=e.target.closest('[data-drop]');
+    if(dr){
+      var k=dr.getAttribute('data-drop');
+      if(!confirm('Remove this shop from your list?')) return;
+      MINE=MINE.filter(function(m){ return slug(m[0])!==k; });
+      delete ST[k]; saveMine(); save(); rebuild(); render(); toast('Removed');
       return;
     }
     var d=e.target.closest('[data-dm]');
     if(d){
-      var shop=SHOPS.filter(function(s){ return slug(s[0])===d.getAttribute('data-dm'); })[0];
+      var shop=ALL.filter(function(s){ return slug(s[0])===d.getAttribute('data-dm'); })[0];
       if(!shop) return;
       var txt=dmFor(shop);
       if(navigator.clipboard) navigator.clipboard.writeText(txt).then(function(){ toast('DM copied 📋'); },function(){ toast('Copy failed'); });
       else toast('Copy not supported');
     }
   });
+
+  window.addShop=function(){
+    var name=(el('aName').value||'').trim().slice(0,60);
+    var town=(el('aTown').value||'').trim().slice(0,40)||ADDED;
+    var ig=(el('aIg').value||'').trim().replace(/^@/,'').replace(/[^A-Za-z0-9._]/g,'').slice(0,30);
+    var note=(el('aNote').value||'').trim().slice(0,200);
+    if(name.length<2){ el('aErr').textContent='Give the shop a name.'; return; }
+    if(ALL.some(function(s){ return slug(s[0])===slug(name); })){ el('aErr').textContent='That shop is already on the list.'; return; }
+    el('aErr').textContent='';
+    // [name, town, address, instagram, phone, angle, rank, mine]
+    MINE.push([name, town, note||'Added on the walk', ig, '',
+               note||'Spotted in the field — no research on this one yet.', 0, 1]);
+    saveMine(); rebuild();
+    el('aName').value=''; el('aTown').value=''; el('aIg').value=''; el('aNote').value='';
+    render(); toast('Added to your list ✓');
+  };
+  el('aBtn').addEventListener('click',window.addShop);
+  el('aName').addEventListener('keydown',function(e){ if(e.key==='Enter') window.addShop(); });
 
   render();
 })();
