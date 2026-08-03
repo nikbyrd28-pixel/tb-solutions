@@ -252,9 +252,23 @@ function done(m,msg){
   showMember(m);
   el('aOk').textContent=msg; el('aOk').classList.remove('hide');
 }
-function addVisit(){ var old=member?member.points:0; rpc('add_visit',{p_code:member.code,p_pin:cfg().pin}).then(function(m){ if(!m.error){ celebrate(m, m.points-old); } done(m,'✅ Point added'); }); }
-function redeem(){ rpc('redeem_reward',{p_code:member.code,p_pin:cfg().pin}).then(function(m){ if(!m.error) pointBurst('🏆','Reward redeemed — enjoy!'); done(m,'🏆 Redeemed — enjoy!'); }); }
-function claim(i){ rpc('claim_prize',{p_code:member.code,p_pin:cfg().pin,p_index:i}).then(function(m){ if(!m.error) pointBurst('🎁','Prize handed over!'); done(m,'🎁 Prize handed over'); }); }
+/* A barber on a slow phone taps twice. Without a guard that punches the card twice —
+   two points for one haircut, and the shop gives a free cut away early. Every write
+   from this card goes through writeOnce: one in flight at a time, buttons locked. */
+var busyWrite=false;
+function lockCard(on){
+  busyWrite=on;
+  [].forEach.call(document.querySelectorAll('#memberCard button'),function(b){ b.disabled=on; });
+}
+function writeOnce(fn,args,after){
+  if(busyWrite) return;
+  lockCard(true);
+  rpc(fn,args).then(function(m){ lockCard(false); after(m); },
+                    function(){ lockCard(false); });
+}
+function addVisit(){ var old=member?member.points:0; writeOnce('add_visit',{p_code:member.code,p_pin:cfg().pin},function(m){ if(!m.error){ celebrate(m, m.points-old); } done(m,'✅ Point added'); }); }
+function redeem(){ writeOnce('redeem_reward',{p_code:member.code,p_pin:cfg().pin},function(m){ if(!m.error) pointBurst('🏆','Reward redeemed — enjoy!'); done(m,'🏆 Redeemed — enjoy!'); }); }
+function claim(i){ writeOnce('claim_prize',{p_code:member.code,p_pin:cfg().pin,p_index:i},function(m){ if(!m.error) pointBurst('🎁','Prize handed over!'); done(m,'🎁 Prize handed over'); }); }
 function clearMember(){ member=null; el('memberCard').classList.add('hide'); el('codeIn').value=''; window.scrollTo({top:0,behavior:'smooth'}); }
 
 window.addEventListener('error',function(e){try{
