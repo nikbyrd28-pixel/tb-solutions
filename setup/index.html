@@ -83,7 +83,8 @@
   .warn{border-left:3px solid var(--gold);padding:2px 0 2px 14px;margin:14px 0;color:var(--muted);font-size:13.5px}
   .good{border-left:3px solid var(--green);padding:2px 0 2px 14px;margin:14px 0;color:var(--muted);font-size:13.5px}
 
-  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px}
+  /* wide reference tables scroll inside themselves instead of pushing the page */
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px;display:block;overflow-x:auto}
   th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
   th{color:var(--text);font-size:11px;text-transform:uppercase;letter-spacing:.07em;font-weight:800}
   .divider{height:1px;background:var(--line);margin:38px 0 0;border:0}

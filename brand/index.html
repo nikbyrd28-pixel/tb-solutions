@@ -24,6 +24,8 @@
   .card h2{font-size:16px;margin:0 0 4px}
   .card p.note{color:var(--muted);font-size:13px;margin:0 0 14px}
   .stage{border-radius:16px;display:grid;place-items:center;padding:26px 16px;min-height:190px}
+  /* the logo SVGs carry fixed width attributes; let them scale on a phone */
+  .stage svg{max-width:100%;height:auto}
   .stage.dark{background:#0a0d18;border:1px solid rgba(255,255,255,.07)}
   .stage.light{background:#f4f6fd;border:1px solid rgba(0,0,0,.06)}
   .duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
