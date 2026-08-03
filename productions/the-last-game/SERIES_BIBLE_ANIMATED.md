@@ -1,5 +1,27 @@
-# THE LAST GAME — Animated Series Bible (Boondocks-style)
-*Locked foundation for the animated adaptation. Style: 2000s adult anime (Madhouse/Boondocks-influenced) applied to 1980s Compton.*
+# THE LAST GAME — Animated Series Bible
+*Locked foundation for the animated adaptation.*
+
+## ⭐ HOUSE STYLE (LOCKED): "HUB CITY"
+The signature, original look of the channel — designed to go viral like the top faceless
+cartoon accounts (Dimpey Studios, StickTales) while staying unmistakably *ours*.
+
+- **Line & color:** thick confident uniform black ink outlines + flat punchy saturated
+  color (thumbnail-readable), with a **gritty halftone texture + cinematic noir lighting**.
+- **Characters:** large half-lidded, attitude-filled eyes; simple but characterful.
+- **Signature palette:** warm amber/sepia base + bold pops of **Blood-red & Crip-blue** +
+  deep shadow (the Compton/flag motif).
+- **Format (every video):** persistent **top caption "POV/hook" bar** + one **huge bold
+  outlined WORD payoff**; fast cuts; ends on "…follow for the story / The Last Game."
+- **Locked CHICO (HUB CITY) reference:** `https://d8j0ntlcm91z4.cloudfront.net/user_3FIUdxi6utIjHcKqlglbncXFd5Q/hf_20260803_231047_f35149fa-f305-4b59-8c26-8e9d3deb4df7.png` — job `f35149fa-f305-4b59-8c26-8e9d3deb4df7`
+- **Style prompt token (paste into every generation):** *"original 'HUB CITY' signature style — bold graphic-novel cartoon, thick black ink outlines, flat punchy saturated color, gritty halftone texture, cinematic noir lighting, warm-amber base with Blood-red & Crip-blue pops, large half-lidded attitude eyes, mobile-first high-contrast, NOT photoreal, NOT 3D."*
+
+> The earlier Boondocks-anime pass (below) is archived as an alternate; **HUB CITY is the
+> production style going forward.**
+
+---
+
+## (Archived alt) Boondocks-style anime
+*Style: 2000s adult anime (Madhouse/Boondocks-influenced) applied to 1980s Compton.*
 
 ## House style
 Clean cel shading, thick black linework, expressive angular character designs, cinematic anime lighting, muted warm urban palette. Hand-drawn anime look — never photoreal, never 3D. Vertical 9:16 for the short-form series. Two-world grade: warm Compton amber for the streets, cold blue for loss/power.
