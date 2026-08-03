@@ -109,3 +109,60 @@ grant execute on function public.coin_spin(text)                  to anon, authe
 -- key (fixes runner/slicer/stacker scores clobbering flyer's), and grants a
 -- first-play-of-the-day bonus (+8/+5/+3 by difficulty) outside the daily cap,
 -- returned as 'daily_bonus' and included in 'coins_earned'.
+
+-- ----------------------------------------------------------------------------
+-- Coin store redemption. Prices come from the shop's coin_store server-side by
+-- item_id — the client never sends a price. Stock, per_customer and barber
+-- scope are all enforced here.
+--
+-- v2 (applied via migration coin_redeem_atomic_balance_check): the balance was
+-- read in one statement and deducted in another, so two concurrent calls could
+-- both pass the check and spend the same coins twice. The deduct now carries
+-- its own `coins >= price` predicate, so the losing call updates zero rows and
+-- is refused. Behaviour for a single call is unchanged.
+-- ----------------------------------------------------------------------------
+create or replace function public.coin_redeem(p_code text, p_item_id text)
+returns jsonb language plpgsql security definer set search_path='public','pg_temp' as $$
+declare m public.reward_members; s public.reward_settings; item jsonb; found jsonb := null;
+  price int; stk int; pc int; sold int; mine int; ibarber text; lbl text; icon text;
+begin
+  select * into m from public.reward_members where code=p_code limit 1;
+  if m.id is null then return jsonb_build_object('error','not found'); end if;
+  select * into s from public.reward_settings where client=m.client;
+  for item in select * from jsonb_array_elements(coalesce(s.coin_store,'[]'::jsonb)) loop
+    if coalesce(item->>'id','')=p_item_id then found:=item; exit; end if;
+  end loop;
+  if found is null then return jsonb_build_object('error','That reward is no longer available.'); end if;
+  ibarber := coalesce(found->>'barber','');
+  if ibarber<>'' and ibarber<>coalesce(m.barber,'') then return jsonb_build_object('error','That reward is for a different chair.'); end if;
+  price := coalesce(nullif(found->>'sale','')::int, (found->>'cost')::int);
+  stk := nullif(found->>'stock','')::int;
+  if stk is not null then
+    sold := (select count(*) from public.store_redemptions where client=m.client and item_id=p_item_id);
+    if sold >= stk then return jsonb_build_object('error','Sold out — check back soon!'); end if;
+  end if;
+  pc := nullif(found->>'per_customer','')::int;
+  if pc is not null then
+    mine := (select count(*) from public.store_redemptions where client=m.client and item_id=p_item_id and code=p_code);
+    if mine >= pc then return jsonb_build_object('error','You already claimed this one.'); end if;
+  end if;
+  if coalesce(m.coins,0) < price then return jsonb_build_object('error','Not enough coins yet — keep playing!'); end if;
+  lbl := found->>'label'; icon := coalesce(nullif(found->>'icon',''),'🎁');
+  update public.reward_members
+    set coins = coins - price,
+        prizes = coalesce(prizes,'[]'::jsonb) || jsonb_build_array(jsonb_build_object('label',lbl,'icon',icon,'won_at',now(),'coins',price))
+    where id=m.id and coalesce(coins,0) >= price   -- atomic: the racing second call fails here
+    returning * into m;
+  if m.id is null then return jsonb_build_object('error','Not enough coins yet — keep playing!'); end if;
+  insert into public.store_redemptions(client,item_id,code) values (m.client, p_item_id, p_code);
+  return (to_jsonb(m) - 'phone') || jsonb_build_object('redeemed_label', lbl,
+    'reward_at', s.reward_at, 'reward_text', s.reward_text, 'spin_cost', coalesce(s.spin_cost,2),
+    'wheel', (select coalesce(jsonb_agg(p->>'label'),'[]'::jsonb) from jsonb_array_elements(coalesce(s.spin_prizes,'[]'::jsonb)) p));
+end $$;
+
+grant execute on function public.coin_redeem(text, text) to anon, authenticated;
+
+-- KNOWN, NOT YET FIXED: coin_spin above has the same read-then-deduct gap on
+-- spin_cost. It was left alone deliberately — it has follow-on updates (spins,
+-- prizes, lottery_wins) that make the same rewrite riskier than it's worth
+-- without a way to reproduce the race first.
