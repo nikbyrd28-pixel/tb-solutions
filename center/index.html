@@ -359,13 +359,19 @@
     autoQ[k]++;
     var btn=document.querySelector('.auto[data-k="'+k+'"] .btn.sm'); if(btn) btn.textContent = autoQ[k]<a.members.length ? ('📲 Next ('+(autoQ[k]+1)+'/'+a.members.length+')') : '📲 All opened';
   };
+  // Writes a row per member into the automation ledger, so a double-tap on a laggy
+  // phone duplicates the batch. Same in-flight guard as every other write.
+  var markBusy={};
   window.markAuto=function(k){
-    var a=AUTOS.kinds[k]; if(!a||!a.members.length) return;
+    var a=AUTOS.kinds[k]; if(!a||!a.members.length||markBusy[k]) return;
     var codes=a.members.map(function(m){return m.code;}).filter(Boolean);
+    markBusy[k]=1;
+    var btn=document.querySelector('.auto[data-k="'+k+'"] .btn.ghost.sm'); if(btn) btn.disabled=true;
     rpc('automation_mark',{p_client:CODE,p_pin:PIN,p_kind:k,p_codes:codes}).then(function(d){
+      markBusy[k]=0;
       if(d&&d.ok!==false){ toast('Marked '+(d.marked||codes.length)+' sent ✓'); autoQ[k]=0; loadAutos(); }
-      else toast((d&&d.error)||'Could not mark.');
-    }).catch(function(){ toast('Network error.'); });
+      else { if(btn) btn.disabled=false; toast((d&&d.error)||'Could not mark.'); }
+    }).catch(function(){ markBusy[k]=0; if(btn) btn.disabled=false; toast('Network error.'); });
   };
 
   /* ---------- comment → DM ---------- */
