@@ -268,18 +268,26 @@ function writeOnce(fn,args,after){
 }
 /* The in-flight lock stops a double-tap, but not a barber who punches, gets pulled
    away, and punches the same card again a minute later — the server adds a point
-   every time it's asked. Remember the last punch made ON THIS DEVICE (not the
-   member's last_visit_at, which is already set when they join) and ask first. */
+   every time it's asked.
+   Two sources, because a busy shop has two barbers with two phones: this device's
+   own punch log, AND the member's last_visit_at, which every phone sees. Joining
+   leaves last_visit_at null (verified), so only a real punch sets it — the second
+   barber gets warned even though his device has no local record. */
 var PUNCH_WINDOW_MS=3*60*1000;
 function lastPunch(code){ try{ return +localStorage.getItem('rw_punch_'+code)||0; }catch(e){ return 0; } }
 function notePunch(code){ try{ localStorage.setItem('rw_punch_'+code, String(Date.now())); }catch(e){} }
+function sinceLastPunch(m){
+  var best=lastPunch(m.code);
+  if(m.last_visit_at){ var t=Date.parse(m.last_visit_at); if(t && t>best) best=t; }
+  return best?(Date.now()-best):Infinity;
+}
 function addVisit(){
   var old=member?member.points:0, code=member.code;
-  var since=Date.now()-lastPunch(code);
+  var since=sinceLastPunch(member);
   if(since<PUNCH_WINDOW_MS){
     var secs=Math.max(1,Math.round(since/1000));
     var ago=secs<60?(secs+' seconds ago'):(Math.round(secs/60)+' minute'+(secs<90?'':'s')+' ago');
-    if(!confirm('You already added a point for '+(member.name||'this customer')+' '+ago+'.\n\nAdd another one?')) return;
+    if(!confirm((member.name||'This customer')+' was already given a point '+ago+'.\n\nAdd another one?')) return;
   }
   writeOnce('add_visit',{p_code:code,p_pin:cfg().pin},function(m){
     if(!m.error){ notePunch(code); celebrate(m, m.points-old); }
