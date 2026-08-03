@@ -35,6 +35,21 @@
   .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
   @media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}}
   .stat{background:rgba(0,0,0,.26);border:1px solid var(--line);border-radius:16px;padding:15px 12px}
+  .stp{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-top:1px solid rgba(122,162,255,.14)}
+  .stp:first-child{border-top:0}
+  .stp .tick{flex:0 0 auto;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;
+    font-size:13px;font-weight:900;background:rgba(255,255,255,.07);color:var(--muted);border:1px solid var(--line)}
+  .stp.on .tick{background:linear-gradient(135deg,#43f0b0,#2fd39a);color:#04150d;border-color:transparent}
+  .stp .txt{flex:1;min-width:0}
+  .stp .txt b{font-size:14.5px;display:block}
+  .stp.on .txt b{text-decoration:line-through;opacity:.6}
+  .stp .txt span{color:var(--muted);font-size:12.5px}
+  .stp .go{flex:0 0 auto;align-self:center}
+  /* On a phone an inline button squeezes the text to two words a line — drop it under. */
+  @media(max-width:520px){
+    .stp{flex-wrap:wrap}
+    .stp .go{flex:0 0 auto;width:calc(100% - 35px);margin:9px 0 0 35px;text-align:center}
+  }
   .stat .n{font-size:30px;font-weight:900;line-height:1;background:linear-gradient(135deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
   .stat .l{font-size:11.5px;color:var(--muted);margin-top:6px;letter-spacing:.03em}
   .stat.alt .n{background:linear-gradient(135deg,var(--good),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -98,10 +113,13 @@
   @media(max-width:520px){.appt{grid-template-columns:52px 1fr;grid-auto-rows:auto}.appt-a{grid-column:1/-1;justify-content:flex-start}}
   .svcrow{display:grid;grid-template-columns:1fr 68px 68px 34px;gap:8px;align-items:center;margin-top:8px}
   .barbrow{display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin-top:8px}
-  .hrow{display:grid;grid-template-columns:52px 78px 1fr 1fr;gap:8px;align-items:center;margin-top:8px}
+  /* minmax(0,…): a bare 1fr can't shrink below a time input's intrinsic width, which
+     pushed the hours editor off the side of a phone screen. */
+  .hrow{display:grid;grid-template-columns:46px 62px minmax(0,1fr) minmax(0,1fr);gap:6px;align-items:center;margin-top:8px}
   .hrow .hd{font-weight:800;font-size:13px}
   .hrow .cl{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);cursor:pointer}
   .svcrow input,.barbrow input,.hrow input{padding:10px 10px;font-size:14px}
+  .hrow input[type=time]{min-width:0;width:100%;padding:10px 6px}
   .svcrow .rm,.barbrow .rm{background:rgba(255,138,157,.12);border:1px solid rgba(255,138,157,.4);color:#ff8a9d;border-radius:10px;padding:9px 0;font-weight:800;cursor:pointer}
 </style>
 </head>
@@ -134,6 +152,12 @@
 
     <div class="card">
       <div class="stats" id="stats"></div>
+    </div>
+
+    <div class="card hide" id="startCard">
+      <h2>🚀 <b>Your first week</b> <span class="muted" id="startCount" style="font-weight:600;font-size:14px"></span></h2>
+      <p class="muted" style="margin:2px 0 12px;font-size:13px">Four things get a shop from empty to running on its own. This card disappears once they're done.</p>
+      <div id="startList"></div>
     </div>
 
     <div class="card" id="qrCard">
@@ -384,6 +408,43 @@ function load(isRefresh){
 }
 function showErr(m){ el('err').textContent=m; el('err').classList.remove('hide'); }
 
+/* First-week checklist. Ticks itself off real numbers; the poster step is the one
+   thing we can't detect, so opening the poster marks it (remembered per shop).
+   The whole card hides once a shop is running. */
+function startDone(code){ try{ return localStorage.getItem('loop_start_'+code)==='1'; }catch(e){ return false; } }
+function markPoster(code){ try{ localStorage.setItem('loop_start_'+code,'1'); }catch(e){} }
+function renderStart(d){
+  var box=el('startCard'); if(!box) return;
+  var base=location.origin, code=d.client;
+  var steps=[
+    { on:startDone(code), b:'Print your counter poster',
+      s:'Stick it by the register — it is where nearly every first sign-up comes from.',
+      go:'🖨️ Open poster', href:base+'/rewards/poster/?c='+code, poster:true },
+    { on:(d.members||0)>0, b:'Get your first member',
+      s:'Scan a customer at the chair, or scan the QR yourself to see exactly what they see.',
+      go:'📷 Staff scanner', href:base+'/rewards/staff/' },
+    { on:(d.bookings||0)>0, b:'Take your first booking',
+      s:'Set your services, chairs and hours so customers can book from their card.',
+      go:'📅 Booking setup', href:'#booking' },
+    { on:(d.members||0)>=5, b:'Reach 5 members',
+      s:'Five regulars on the card is the point where it starts pulling people back on its own.' }
+  ];
+  var done=steps.filter(function(x){ return x.on; }).length;
+  if(done===steps.length){ box.classList.add('hide'); return; }
+  box.classList.remove('hide');
+  el('startCount').textContent='· '+done+' of '+steps.length+' done';
+  el('startList').innerHTML=steps.map(function(x){
+    return '<div class="stp'+(x.on?' on':'')+'">'
+      +'<span class="tick">'+(x.on?'✓':'')+'</span>'
+      +'<span class="txt"><b>'+esc(x.b)+'</b><span>'+esc(x.s)+'</span></span>'
+      +(x.on||!x.go?'':'<a class="btn ghost go" href="'+esc(x.href)+'"'
+         +(x.poster?' data-poster="1" target="_blank" rel="noopener"':'')+'>'+esc(x.go)+'</a>')
+      +'</div>';
+  }).join('');
+  var pb=el('startList').querySelector('[data-poster]');
+  if(pb) pb.addEventListener('click',function(){ markPoster(code); setTimeout(function(){ renderStart(d); },400); });
+}
+
 function render(d){
   el('login').classList.add('hide'); el('dash').classList.remove('hide');
   (function(){
@@ -411,6 +472,7 @@ function render(d){
     return '<div class="stat '+t.c+'"><div class="n" data-to="'+(t.n||0)+'">0</div><div class="l">'+t.l+'</div></div>';
   }).join('');
   animCounts();
+  renderStart(d);
   // tiers
   var tr=d.tiers||{bronze:0,silver:0,gold:0,vip:0};
   var seg=[['Bronze',tr.bronze,'#c58b5a'],['Silver',tr.silver,'#c9d2e6'],['Gold',tr.gold,'#ffd34d'],['VIP',tr.vip,'#b98bff']];
