@@ -176,7 +176,12 @@ var LSKEY='tb_amb_code_'+SLUG;
 function rpc(fn,body){
   return fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',
     headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
-    body:JSON.stringify(body||{})}).then(function(r){return r.json();});
+    body:JSON.stringify(body||{})}).then(function(r){ if(r.ok) return r.json();
+    /* PostgREST errors are JSON with no ok/error key, so an unchecked r.json()
+       reads as success — a shop or customer then sees an empty card, not a fault. */
+    return r.json().catch(function(){ return {}; }).then(function(j){
+      return { ok:false, error:(j&&(j.message||j.error))||('Service unavailable ('+r.status+')') };
+    }); });
 }
 function toast(msg,cls){ var t=document.createElement('div'); t.className='toast '+(cls||''); t.innerHTML=msg; el('toasts').appendChild(t);
   setTimeout(function(){ t.style.transition='opacity .4s,transform .4s'; t.style.opacity='0'; t.style.transform='translateY(8px)'; setTimeout(function(){t.remove();},400); },2400); }

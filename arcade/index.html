@@ -236,7 +236,12 @@ refreshBests();
   try{
     fetch('https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/rpc/get_arcade_status',{method:'POST',
       headers:{apikey:AKEY,Authorization:'Bearer '+AKEY,'Content-Type':'application/json'},body:JSON.stringify({p_client:client})})
-      .then(function(r){return r.json();}).then(function(d){
+      .then(function(r){ if(r.ok) return r.json();
+    /* PostgREST errors are JSON with no ok/error key, so an unchecked r.json()
+       reads as success — a shop or customer then sees an empty card, not a fault. */
+    return r.json().catch(function(){ return {}; }).then(function(j){
+      return { ok:false, error:(j&&(j.message||j.error))||('Service unavailable ('+r.status+')') };
+    }); }).then(function(d){
         if(d && d.casino_on===false){ [bj,pk].forEach(function(c){ if(c) c.style.display='none'; }); }
       }).catch(function(){});
   }catch(e){}

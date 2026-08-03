@@ -134,7 +134,12 @@ function win(){
   if(client&&code){
     var sc=(7-tries)*6; // 3 tries -> 24
     fetch(SUPA+'/rest/v1/rpc/game_reward',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify({p_code:code,p_game:'words',p_score:sc})})
-    .then(function(r){return r.json();}).then(function(d){ if(d&&!d.error&&d.coins_earned!=null){ var o=el('ovCoins'); o.textContent='🪙 +'+d.coins_earned+' coins earned'+(d.daily_bonus>0?' (🎁 daily bonus!)':'')+' — spin the slot to win a free cut!'; o.classList.remove('hide'); } }).catch(function(){});
+    .then(function(r){ if(r.ok) return r.json();
+    /* PostgREST errors are JSON with no ok/error key, so an unchecked r.json()
+       reads as success — a shop or customer then sees an empty card, not a fault. */
+    return r.json().catch(function(){ return {}; }).then(function(j){
+      return { ok:false, error:(j&&(j.message||j.error))||('Service unavailable ('+r.status+')') };
+    }); }).then(function(d){ if(d&&!d.error&&d.coins_earned!=null){ var o=el('ovCoins'); o.textContent='🪙 +'+d.coins_earned+' coins earned'+(d.daily_bonus>0?' (🎁 daily bonus!)':'')+' — spin the slot to win a free cut!'; o.classList.remove('hide'); } }).catch(function(){});
   }
 }
 function lose(){

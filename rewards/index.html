@@ -537,7 +537,12 @@ if(slug){ document.title=display+' Rewards'; document.getElementById('brand').in
 
 function el(id){return document.getElementById(id)}
 function rpc(fn,args){
-  return fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(args)}).then(function(r){return r.json()});
+  return fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(args)}).then(function(r){ if(r.ok) return r.json();
+    /* PostgREST errors are JSON with no ok/error key, so an unchecked r.json()
+       reads as success — a shop or customer then sees an empty card, not a fault. */
+    return r.json().catch(function(){ return {}; }).then(function(j){
+      return { ok:false, error:(j&&(j.message||j.error))||('Service unavailable ('+r.status+')') };
+    }); });
 }
 function qrUrl(data,size){ return 'https://api.qrserver.com/v1/create-qr-code/?size='+size+'x'+size+'&ecc=H&color=11-16-36&data='+encodeURIComponent(data); }
 

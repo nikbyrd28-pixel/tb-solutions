@@ -112,7 +112,12 @@
     el('err').classList.add('hide');
     var btn=el('loginBtn'); btn.disabled=true; btn.textContent='Loading…';
     fetch(SUPA+'/rest/v1/rpc/loyalty_contacts',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify({p_client:code,p_pin:pin})})
-    .then(function(r){return r.json();}).then(function(d){
+    .then(function(r){ if(r.ok) return r.json();
+    /* PostgREST errors are JSON with no ok/error key, so an unchecked r.json()
+       reads as success — a shop or customer then sees an empty card, not a fault. */
+    return r.json().catch(function(){ return {}; }).then(function(j){
+      return { ok:false, error:(j&&(j.message||j.error))||('Service unavailable ('+r.status+')') };
+    }); }).then(function(d){
       if(!d || d.ok===false){ showErr((d&&d.error)||'Could not sign in.'); btn.disabled=false; btn.textContent='Open my list →'; return; }
       CODE=code; BIZ=d.biz_name||d.client; REWARD=d.reward_text||'a reward'; ALL=d.members||[];
       start();
