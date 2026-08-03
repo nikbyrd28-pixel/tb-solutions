@@ -172,7 +172,12 @@ function joinRep(){
   fetch(SUPA+'/rest/v1/rpc/affiliate_join',{method:'POST',
     headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},
     body:JSON.stringify({p_name:name,p_email:email||null,p_phone:phone||null})})
-  .then(function(r){return r.json()})
+  .then(function(r){ if(r.ok) return r.json();
+    /* PostgREST errors are JSON with no ok/error key, so an unchecked r.json()
+       reads as success — a shop or customer then sees an empty card, not a fault. */
+    return r.json().catch(function(){ return {}; }).then(function(j){
+      return { ok:false, error:(j&&(j.message||j.error))||('Service unavailable ('+r.status+')') };
+    }); })
   .then(function(d){
     if(!d || d.ok===false || !d.code){ b.disabled=false; b.textContent='Get my link — free →'; return showErr((d&&d.error)||'Could not sign you up — try again.'); }
     showDone(d, name);

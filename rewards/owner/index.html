@@ -399,7 +399,12 @@ function load(isRefresh){
   fetch(SUPA_URL+'/rest/v1/rpc/loyalty_owner_dashboard',{method:'POST',
     headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
     body:JSON.stringify({p_client:code,p_pin:pin})})
-  .then(function(r){return r.json()})
+  .then(function(r){ if(r.ok) return r.json();
+    /* PostgREST errors are JSON with no ok/error key, so an unchecked r.json()
+       reads as success — a shop or customer then sees an empty card, not a fault. */
+    return r.json().catch(function(){ return {}; }).then(function(j){
+      return { ok:false, error:(j&&(j.message||j.error))||('Service unavailable ('+r.status+')') };
+    }); })
   .then(function(d){
     if(!d || d.ok===false){ showErr((d&&d.error)||'Could not sign in.'); btn.disabled=false; btn.textContent='Open my dashboard →'; return; }
     CODE=code; PIN=pin; try{ localStorage.setItem('loop_owner', JSON.stringify({c:code,p:pin})); }catch(e){} render(d);
@@ -633,7 +638,12 @@ function setAppt(id,status){
 }
 
 /* ============ Rewards & game difficulty editor ============ */
-function rpc(fn,args){ return fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(args)}).then(function(r){return r.json();}); }
+function rpc(fn,args){ return fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(args)}).then(function(r){ if(r.ok) return r.json();
+    /* PostgREST errors are JSON with no ok/error key, so an unchecked r.json()
+       reads as success — a shop or customer then sees an empty card, not a fault. */
+    return r.json().catch(function(){ return {}; }).then(function(j){
+      return { ok:false, error:(j&&(j.message||j.error))||('Service unavailable ('+r.status+')') };
+    }); }); }
 var PRIZES=[], curDiff=null;
 var PRIZE_TYPES=[['points','⭐ Points'],['discount','🏷️ Discount'],['prize','🎁 Free item'],['grand','🏆 Grand prize'],['nothing','🍋 Try again']];
 var DIFF_W={ easy:{grand:6,prize:10,discount:14,points:20,nothing:25}, normal:{grand:3,prize:6,discount:10,points:18,nothing:45}, hard:{grand:1,prize:3,discount:6,points:14,nothing:75} };
