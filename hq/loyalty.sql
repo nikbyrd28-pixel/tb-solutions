@@ -4,9 +4,10 @@
 -- The visit-points backbone (points -> the real reward) as opposed to coins,
 -- which are the arcade currency and live in hq/economy.sql.
 --
--- SCOPE OF THIS FILE: it records the two redemption RPCs, not the whole
--- loyalty schema. add_visit, join_rewards, spin_wheel and the reward_members /
--- reward_settings tables still live only in the database and in migrations.
+-- SCOPE OF THIS FILE: it records the two redemption RPCs and the owner
+-- dashboard (at the bottom), not the whole loyalty schema. add_visit,
+-- join_rewards, spin_wheel and the reward_members / reward_settings tables
+-- still live only in the database and in migrations.
 --
 -- WHY THESE TWO ARE HERE (migration redeem_paths_atomic_balance_check):
 -- both read a balance in one statement and spent it in another, with nothing
@@ -90,3 +91,98 @@ grant execute on function public.claim_milestone(text)     to anon, authenticate
 -- call. What these predicates close is genuine concurrency — two devices on
 -- one card, or a replayed request — which nothing else was guarding.
 -- ----------------------------------------------------------------------------
+
+-- ============================================================================
+-- Owner dashboard
+-- ----------------------------------------------------------------------------
+-- Was not recorded anywhere in the repo before; this is the live definition.
+--
+-- v2 (migration owner_dashboard_bookings_from_source_of_truth): the Bookings
+-- tile and the recent-bookings list both read client_leads, which is only a
+-- best-effort MIRROR of reward_appointments — the insert in book_appointment is
+-- wrapped in `exception when others then null`, so any failure silently drops a
+-- booking from the owner's count, and appointments created by any other path
+-- never appeared at all. Demo showed it plainly: 7 real appointments, all
+-- confirmed, reported to the owner as 5.
+--
+-- It also counted the wrong things. A kind='booking' lead can be a booking
+-- REQUEST from the older lead form ('Rewards member wants to book: Tuesday 3')
+-- rather than an actual appointment, so the tile mixed enquiries in while
+-- missing real bookings.
+--
+-- Both now read reward_appointments, so the tile agrees with the agenda in
+-- booking_admin. recent_bookings keeps its shape (who / message / status /
+-- created_at) but builds the message from the real service, barber and start
+-- time, and reports the real appointment status. Added bookings_upcoming, which
+-- is the number an owner actually acts on.
+--
+-- The paired client fix is in rewards/owner/: the page stripped the message
+-- with /^📅[^:]*:\s*/, which runs to the FIRST colon — and in a real booking
+-- that colon is inside the time, so "📅 Haircut with Marco — Fri Jul 24,
+-- 11:45 AM" reached the owner as "45 AM". Every booking made through the card
+-- was unreadable on the dashboard.
+--
+-- STILL IMPERFECT, needs a schema change rather than a patch: 'reviews' counts
+-- by matching lower(business) against the shop's biz_name, because the reviews
+-- table has no client column. Rename the business and the review count drops to
+-- zero. Worth giving reviews a client column when someone is next in there.
+-- ============================================================================
+create or replace function public.loyalty_owner_dashboard(p_client text, p_pin text)
+returns json language plpgsql security definer set search_path to 'public','pg_temp' as $$
+declare s public.reward_settings; v json; tz text;
+begin
+  select * into s from public.reward_settings where client = lower(coalesce(p_client,'')) limit 1;
+  if s.client is null then return json_build_object('ok', false, 'error', 'No loyalty program with that code.'); end if;
+  perform public.pin_gate(p_client, p_pin, s.pin);
+  if coalesce(s.pin,'') = '' or coalesce(p_pin,'') <> s.pin then
+    return json_build_object('ok', false, 'error', 'Wrong PIN — that''s your staff PIN.');
+  end if;
+  tz := coalesce(s.book_tz,'America/New_York');
+  select json_build_object(
+    'ok', true, 'client', s.client, 'biz_name', nullif(btrim(coalesce(s.biz_name,'')),''),
+    'reward_text', coalesce(s.reward_text,'a reward'), 'reward_at', coalesce(s.reward_at,5),
+    'members', (select count(*) from reward_members where client=s.client),
+    'active30', (select count(*) from reward_members where client=s.client and last_visit_at > now()-interval '30 days'),
+    'new7', (select count(*) from reward_members where client=s.client and created_at > now()-interval '7 days'),
+    'points_out', (select coalesce(sum(points),0) from reward_members where client=s.client),
+    'lifetime_out', (select coalesce(sum(lifetime),0) from reward_members where client=s.client),
+    'redeemed', (select coalesce(sum(redeemed),0) from reward_members where client=s.client),
+    'spins', (select coalesce(sum(spins),0) from reward_members where client=s.client),
+    'prizes', (select coalesce(sum(jsonb_array_length(coalesce(prizes,'[]'::jsonb))),0) from reward_members where client=s.client),
+    -- from reward_appointments, not the client_leads mirror
+    'bookings', (select count(*) from reward_appointments where client=s.client),
+    'bookings_upcoming', (select count(*) from reward_appointments
+                           where client=s.client and status='confirmed' and start_at > now()),
+    'reviews', (select count(*) from reviews where lower(business)=lower(coalesce(s.biz_name,s.client))),
+    'tiers', json_build_object(
+       'bronze', (select count(*) from reward_members where client=s.client and lifetime < 25),
+       'silver', (select count(*) from reward_members where client=s.client and lifetime >= 25 and lifetime < 75),
+       'gold',   (select count(*) from reward_members where client=s.client and lifetime >= 75 and lifetime < 200),
+       'vip',    (select count(*) from reward_members where client=s.client and lifetime >= 200)),
+    'top', (select coalesce(json_agg(t),'[]'::json) from (
+       select name, lifetime, points, coalesce(streak,0) as streak, (1+floor(lifetime/10.0))::int as level
+       from reward_members where client=s.client order by lifetime desc nulls last, points desc limit 10) t),
+    'recent_bookings', (select coalesce(json_agg(b),'[]'::json) from (
+       select coalesce(nullif(a.name,''),'A member') as who,
+              '📅 ' || coalesce(nullif(a.service->>'name',''),'Appointment')
+                    || coalesce(' with '||nullif(a.staff_name,''),'')
+                    || ' — ' || to_char(a.start_at at time zone tz, 'Dy Mon DD, HH12:MI AM') as message,
+              case a.status when 'confirmed' then 'Confirmed' when 'cancelled' then 'Cancelled'
+                            when 'done' then 'Done' when 'noshow' then 'No-show'
+                            else initcap(coalesce(a.status,'')) end as status,
+              a.created_at
+       from reward_appointments a where a.client=s.client
+       order by a.created_at desc limit 15) b),
+    'recent_feedback', (select coalesce(json_agg(fb),'[]'::json) from (
+       select coalesce(nullif(name,''),'A customer') as who, rating, text, created_at
+       from review_feedback where client=s.client order by created_at desc limit 15) fb)
+  ) into v;
+  return v;
+end $$;
+
+grant execute on function public.loyalty_owner_dashboard(text,text) to anon, authenticated;
+
+-- The tier thresholds above (25 / 75 / 200) must stay in step with crm_members'
+-- tier label and with RANKS in rewards/index.html, and the level formula
+-- (1+floor(lifetime/10)) with XP_PER_LEVEL there. Checked in step as of this
+-- commit — if you move one, move all three.
