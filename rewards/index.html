@@ -1251,22 +1251,11 @@ function loadByCode(code){
     if(el('jErr')){ el('jErr').textContent='Tap Join to load your card.'; el('jErr').classList.remove('hide'); }
   });
 }
-function staffAdd(){
-  var pin=prompt('Staff PIN:'); if(!pin) return;
-  el('sErr').classList.add('hide');
-  rpc('add_visit',{p_code:member.code,p_pin:pin}).then(function(m){
-    if(m.error){ el('sErr').textContent=m.error; el('sErr').classList.remove('hide'); return; }
-    showCard(m);
-  });
-}
-function staffRedeem(){
-  var pin=prompt('Staff PIN to redeem:'); if(!pin) return;
-  rpc('redeem_reward',{p_code:member.code,p_pin:pin}).then(function(m){
-    if(m.error){ el('sErr').textContent=m.error; el('sErr').classList.remove('hide'); return; }
-    toast('🎉 Redeemed! Enjoy '+(m.reward_text||'your reward'));
-    showCard(m);
-  });
-}
+// staffAdd / staffRedeem used to live here, from before the scanner was split
+// out into /rewards/staff/. Nothing called them and the #sErr element they
+// wrote to only exists in the staff app, so staffAdd threw a TypeError on its
+// first line — a trap for anyone who wired a button to it. Removed; the live
+// punch and redeem paths are in /rewards/staff/, which guards them.
 function shareRef(){
   var link=location.origin+'/rewards/?c='+slug+'&ref='+member.code;
   if(navigator.share){ navigator.share({title:display+' — come check them out',url:link}).catch(function(){}); }
