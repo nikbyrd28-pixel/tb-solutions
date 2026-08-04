@@ -128,7 +128,8 @@ declare
   s public.reward_settings; tz text; mins int; cap int; c int;
   slot_start timestamptz; slot_end timestamptz;
   chosen_id text; chosen_name text; st jsonb; svc_name text; svc jsonb;
-  new_id bigint; when_txt text;
+  new_id bigint; when_txt text; coins_award int := 0;
+  leadm int; horizon int; d date; win jsonb; open_min int; close_min int; start_min int;
 begin
   select * into s from public.reward_settings where client = lower(p_client);
   if not found then return jsonb_build_object('ok', false, 'error', 'Shop not found.'); end if;
@@ -146,6 +147,41 @@ begin
   end;
   slot_end := slot_start + make_interval(mins => mins);
   if slot_start < now() then return jsonb_build_object('ok', false, 'error', 'That time is already in the past.'); end if;
+
+  -- The shop's own rules (migration book_appointment_enforces_the_shops_rules).
+  -- booking_slots above refuses closed days, hours, horizon and lead time; this
+  -- write path checked none of them. The slot list is only advisory — the RPC is
+  -- public and anon-callable — so a stale page or a direct POST could book 3am
+  -- on a closed Sunday, a year out, or two minutes from now inside the owner's
+  -- lead time, and the barber gets an appointment they cannot honour.
+  -- These mirror booking_slots exactly, defaults included, so the read and write
+  -- paths cannot drift apart. Keep them in step if either side changes.
+  leadm   := greatest(0, coalesce(s.lead_mins, 90));
+  horizon := coalesce(s.horizon_days, 30);
+  d       := (slot_start at time zone tz)::date;
+
+  if d > ((now() at time zone tz)::date + horizon) then
+    return jsonb_build_object('ok', false, 'error', 'That date is further ahead than this shop books — pick a nearer day.');
+  end if;
+
+  -- Lead time gets ten minutes of slack: booking_slots computed the earliest
+  -- slot when the page loaded, and a customer who takes a moment to tap Confirm
+  -- must not be bounced off the slot they were just offered.
+  if slot_start < now() + make_interval(mins => greatest(0, leadm - 10)) then
+    return jsonb_build_object('ok', false, 'error', 'That slot is too soon now — pick another time.');
+  end if;
+
+  win := coalesce(s.hours, '{}'::jsonb) -> (extract(isodow from d))::int::text;
+  if win is null or jsonb_array_length(win) < 2 then
+    return jsonb_build_object('ok', false, 'error', 'The shop is closed that day — pick another.');
+  end if;
+  open_min  := (split_part(win->>0,':',1))::int * 60 + (split_part(win->>0,':',2))::int;
+  close_min := (split_part(win->>1,':',1))::int * 60 + (split_part(win->>1,':',2))::int;
+  start_min := extract(hour from (slot_start at time zone tz))::int * 60
+             + extract(minute from (slot_start at time zone tz))::int;
+  if start_min < open_min or start_min + mins > close_min then
+    return jsonb_build_object('ok', false, 'error', 'That time is outside the shop''s hours — pick another.');
+  end if;
 
   -- serialize bookings per shop so two people cannot grab the same slot
   perform pg_advisory_xact_lock(hashtext('loopbk:' || lower(p_client)));
@@ -185,6 +221,16 @@ begin
 
   when_txt := to_char(slot_start at time zone tz, 'Dy Mon DD, HH12:MI AM');
 
+  -- coin reward for booking, added by migration loop_coin_awards_book_refer and
+  -- never recorded here. Scoped to the shop, so a member code from another shop
+  -- books but earns nothing.
+  if nullif(p_member_code,'') is not null then
+    coins_award := case coalesce(s.game_difficulty,'normal') when 'easy' then 12 when 'hard' then 5 else 8 end;
+    update public.reward_members set coins = coalesce(coins,0) + coins_award
+      where code = p_member_code and client = lower(p_client);
+    if not found then coins_award := 0; end if;
+  end if;
+
   -- mirror into client_leads so it also shows in the existing CRM / owner dashboard
   begin
     insert into public.client_leads (client, kind, name, phone, service, ride_date, message, status)
@@ -194,8 +240,8 @@ begin
   exception when others then null; end;
 
   return jsonb_build_object('ok', true, 'id', new_id, 'when', when_txt,
-    'staff_name', chosen_name, 'service', svc_name,
-    'start_at', slot_start, 'mins', mins);
+    'staff_name', chosen_name, 'service', svc_name, 'start_at', slot_start, 'mins', mins,
+    'coins_awarded', coins_award);
 end $$;
 
 -- 6) booking_admin — owner day/range agenda (PIN protected) --------------------
