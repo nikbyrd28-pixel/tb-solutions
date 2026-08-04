@@ -4,10 +4,10 @@
 -- The visit-points backbone (points -> the real reward) as opposed to coins,
 -- which are the arcade currency and live in hq/economy.sql.
 --
--- SCOPE OF THIS FILE: it records the two redemption RPCs and the owner
--- dashboard (at the bottom), not the whole loyalty schema. add_visit,
--- join_rewards, spin_wheel and the reward_members / reward_settings tables
--- still live only in the database and in migrations.
+-- SCOPE OF THIS FILE: it records the two redemption RPCs, plus the owner
+-- dashboard and crm_members at the bottom — not the whole loyalty schema.
+-- add_visit, join_rewards, spin_wheel and the reward_members /
+-- reward_settings tables still live only in the database and in migrations.
 --
 -- WHY THESE TWO ARE HERE (migration redeem_paths_atomic_balance_check):
 -- both read a balance in one statement and spent it in another, with nothing
@@ -189,3 +189,76 @@ grant execute on function public.loyalty_owner_dashboard(text,text) to anon, aut
 -- tier label and with RANKS in rewards/index.html, and the level formula
 -- (1+floor(lifetime/10)) with XP_PER_LEVEL there. Checked in step as of this
 -- commit — if you move one, move all three.
+
+-- ============================================================================
+-- crm_members — the owner's customer list (/center/ CRM tab)
+-- ----------------------------------------------------------------------------
+-- Was not recorded anywhere in the repo before; this is the live definition.
+--
+-- v2 (migration crm_members_sort_before_limit): the LIMIT was applied with no
+-- ORDER BY inside the subquery, so Postgres returned an arbitrary N rows and
+-- the outer jsonb_agg sorted those. Under the 300-member default nobody
+-- notices; past it the owner gets an essentially random slice of their
+-- customers, neatly sorted, which looks correct and is not — and the segment
+-- chips keep reporting the true total, so nothing looks wrong.
+--
+-- Proven on demo before the fix: seeded 60 members with known visit dates,
+-- asked for the five most recent, and got none of them — the 60-days-ago
+-- member came back while yesterday's did not.
+--
+-- loyalty_winback and the dashboard's top-10 above both already sorted before
+-- limiting, which is what marked this out as a slip rather than a choice. The
+-- outer agg ordering is kept because jsonb_agg has no guaranteed order without
+-- it. If you add another paged list here, sort inside the subquery.
+-- ============================================================================
+create or replace function public.crm_members(p_client text, p_pin text, p_search text DEFAULT ''::text, p_segment text DEFAULT 'all'::text, p_limit integer DEFAULT 300)
+returns jsonb language plpgsql security definer set search_path to 'public','pg_temp' as $function$
+declare s public.reward_settings; tz text; nowd timestamptz; seg text; q text; rows jsonb; counts jsonb;
+begin
+  select * into s from public.reward_settings where client=lower(coalesce(p_client,''));
+  if not found then return jsonb_build_object('ok',false,'error','No program with that code.'); end if;
+  perform public.pin_gate(p_client, p_pin, s.pin);
+  if coalesce(s.pin,'')='' or coalesce(p_pin,'')<>s.pin then return jsonb_build_object('ok',false,'error','Wrong PIN.'); end if;
+  tz := coalesce(s.book_tz,'America/New_York'); nowd := now();
+  seg := lower(coalesce(p_segment,'all')); q := '%'||lower(btrim(coalesce(p_search,'')))||'%';
+
+  select coalesce(jsonb_agg(x order by lv desc nulls last, lt desc), '[]'::jsonb) into rows from (
+    select jsonb_build_object(
+      'id', id, 'name', coalesce(nullif(name,''),'Guest'), 'phone', phone, 'code', code,
+      'points', coalesce(points,0), 'coins', coalesce(coins,0), 'lifetime', coalesce(lifetime,0),
+      'redeemed', coalesce(redeemed,0), 'spins', coalesce(spins,0), 'streak', coalesce(streak,0),
+      'barber', barber, 'last_visit', last_visit_at, 'created_at', created_at,
+      'tier', case when coalesce(lifetime,0)>=200 then 'VIP' when coalesce(lifetime,0)>=75 then 'Gold' when coalesce(lifetime,0)>=25 then 'Silver' else 'Bronze' end
+    ) as x, last_visit_at as lv, coalesce(lifetime,0) as lt
+    from public.reward_members m
+    where client=lower(p_client)
+      and ( btrim(coalesce(p_search,''))='' or lower(coalesce(name,'')) like q or coalesce(phone,'') like q )
+      and case seg
+        when 'vip'    then coalesce(lifetime,0)>=200
+        when 'active' then last_visit_at is not null and last_visit_at >= nowd - interval '30 days'
+        when 'lapsed' then last_visit_at is not null and last_visit_at <  nowd - interval '30 days'
+        when 'new'    then created_at >= nowd - interval '7 days'
+        else true end
+    order by last_visit_at desc nulls last, coalesce(lifetime,0) desc   -- must precede the LIMIT
+    limit greatest(1, least(1000, p_limit))
+  ) t;
+
+  select jsonb_build_object(
+    'all',    count(*),
+    'vip',    count(*) filter (where coalesce(lifetime,0)>=200),
+    'active', count(*) filter (where last_visit_at is not null and last_visit_at >= nowd - interval '30 days'),
+    'lapsed', count(*) filter (where last_visit_at is not null and last_visit_at <  nowd - interval '30 days'),
+    'new',    count(*) filter (where created_at >= nowd - interval '7 days')
+  ) into counts from public.reward_members where client=lower(p_client);
+
+  return jsonb_build_object('ok',true,'biz_name',s.biz_name,'client',s.client,'members',rows,'counts',counts,
+    'reward_text',coalesce(s.reward_text,'a reward'),'reward_at',coalesce(s.reward_at,5));
+end $function$;
+
+grant execute on function public.crm_members(text,text,text,text,integer) to anon, authenticated;
+
+-- CHECKED CLEAN this pass, so nobody re-treads them: loyalty_winback's "lapsed"
+-- (last_visit_at older than 30 days, non-null) matches crm_members' lapsed
+-- segment exactly; booking_admin reads reward_appointments, the same source the
+-- dashboard's Bookings tile now uses, so the agenda and the tile agree;
+-- loyalty_contacts correctly excludes both null AND empty phones.
