@@ -84,6 +84,23 @@ begin
 end $$;
 
 -- ---- Dashboard: an ambassador's real stats from client_leads ---------------
+-- A rep's share link is /capture/?c=<program slug>&ref=<code>, and capture
+-- normalises the slug with .replace(/[^a-z0-9]/g,'') before writing the lead.
+-- So a link for 'demo-barbers' files its lead under 'demobarbers', while these
+-- readers matched client=v_prog.slug — the hyphenated original. Every referral
+-- arriving through the rep's own link was invisible and unpaid, for any program
+-- whose slug contains a hyphen or other stripped character. The demo program is
+-- 'demo-barbers', so this was every real referral it ever took.
+--
+-- Fixed on the read side with norm_client(), the same normalisation the capture
+-- page applies, so BOTH spellings count: leads already filed under the
+-- hyphenated slug and everything arriving through the live link from now on.
+-- No data migration, so nothing already credited can be lost.
+--
+-- Caveat: two programs whose slugs differ only by punctuation would now be
+-- conflated. Nothing prevents that at signup; if programs multiply, give
+-- ambassador_programs a stored normalised slug with a unique index instead of
+-- normalising at read time.
 create or replace function amb_dashboard(p_slug text, p_code text)
 returns json language plpgsql security definer set search_path=public as $$
 declare v_prog ambassador_programs%rowtype; v_rep ambassador_reps%rowtype; v_total int; v_booked int; v_recent json;
@@ -93,9 +110,9 @@ begin
   select * into v_rep from ambassador_reps where program_slug=v_prog.slug and upper(code)=upper(btrim(p_code)) limit 1;
   if not found then return json_build_object('ok',false,'error','Code not found. Check it and try again.'); end if;
   select count(*) into v_total from client_leads
-    where client=v_prog.slug and ref is not null and upper(ref)=upper(v_rep.code);
+    where public.norm_client(client)=public.norm_client(v_prog.slug) and ref is not null and upper(ref)=upper(v_rep.code);
   select count(*) into v_booked from client_leads
-    where client=v_prog.slug and ref is not null and upper(ref)=upper(v_rep.code)
+    where public.norm_client(client)=public.norm_client(v_prog.slug) and ref is not null and upper(ref)=upper(v_rep.code)
       and status in ('Booked','Won','Converted','Client','Closed','Complete');
   select coalesce(json_agg(json_build_object(
       'who', case when name is null or btrim(name)='' then 'A friend'
@@ -106,7 +123,7 @@ begin
       'at', created_at) order by created_at desc), '[]'::json)
     into v_recent from (
       select name,status,created_at from client_leads
-      where client=v_prog.slug and ref is not null and upper(ref)=upper(v_rep.code)
+      where public.norm_client(client)=public.norm_client(v_prog.slug) and ref is not null and upper(ref)=upper(v_rep.code)
       order by created_at desc limit 10) t;
   return json_build_object('ok',true,'name',v_rep.name,'code',v_rep.code,'business',v_prog.business,
     'total',v_total,'booked',v_booked,'reward_text',v_prog.reward_text,'per',coalesce(v_prog.per_referrals,3),
@@ -125,8 +142,10 @@ begin
    ) order by (total*10 + booked*25) desc, total desc), '[]'::json) into v
   from (
     select r.name, r.code,
-      (select count(*) from client_leads l where l.client=p_slug and l.ref is not null and upper(l.ref)=upper(r.code))::int as total,
-      (select count(*) from client_leads l where l.client=p_slug and l.ref is not null and upper(l.ref)=upper(r.code)
+      (select count(*) from client_leads l where public.norm_client(l.client)=public.norm_client(p_slug)
+         and l.ref is not null and upper(l.ref)=upper(r.code))::int as total,
+      (select count(*) from client_leads l where public.norm_client(l.client)=public.norm_client(p_slug)
+         and l.ref is not null and upper(l.ref)=upper(r.code)
          and l.status in ('Booked','Won','Converted','Client','Closed','Complete'))::int as booked
     from ambassador_reps r where r.program_slug=p_slug
   ) t;
