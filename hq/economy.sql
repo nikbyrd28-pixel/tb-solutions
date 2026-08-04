@@ -51,15 +51,24 @@ end $$;
 
 -- Slot machine spends COINS (not visit-points). Same weighted-odds logic as
 -- spin_wheel; grand/discount/prize wins all become claimable prizes.
+--
+-- v2 (applied via migration arcade_spend_atomic_balance_check): the charge had
+-- no predicate, so a racing second spin deducted twice AND — because the prize
+-- is awarded by a separate update further down — awarded twice, leaving the
+-- balance negative. The charge now carries `coins >= cost` and bails out if it
+-- updates no rows. Nothing is written before that point, so bailing just
+-- discards the draw. The follow-on updates key off v_id rather than m.id,
+-- which the guarded RETURNING would leave null on the losing call.
 create or replace function public.coin_spin(p_code text)
 returns jsonb language plpgsql security definer set search_path to 'public','pg_temp' as $$
 declare
-  m public.reward_members; s public.reward_settings;
+  m public.reward_members; s public.reward_settings; v_id public.reward_members.id%type;
   total int; r numeric; acc int := 0; pick jsonb; idx int := -1; i int := 0;
   won_label text; won_type text; won_val text; cost int; pts int;
 begin
   select * into m from public.reward_members where code = p_code limit 1;
   if m.id is null then return jsonb_build_object('error','not found'); end if;
+  v_id := m.id;
   select * into s from public.reward_settings where client = m.client;
   cost := coalesce(s.spin_cost,2);
   if coalesce(m.coins,0) < cost then
@@ -75,10 +84,20 @@ begin
   end loop;
   if idx = -1 then idx := 0; select p into pick from jsonb_array_elements(s.spin_prizes) p limit 1; end if;
   won_label := pick->>'label'; won_type := pick->>'type'; won_val := pick->>'value';
-  update public.reward_members set coins = coins - cost, spins = coalesce(spins,0) + 1 where id = m.id;
+  -- Charge first, atomically. The prize is awarded by a SEPARATE update below,
+  -- so a racing second call that got past the check above must be stopped HERE
+  -- or it deducts twice and awards twice. Nothing has been written yet at this
+  -- point, so bailing out just discards the draw.
+  update public.reward_members
+    set coins = coalesce(coins,0) - cost, spins = coalesce(spins,0) + 1
+    where id = v_id and coalesce(coins,0) >= cost
+    returning * into m;
+  if m.id is null then
+    return jsonb_build_object('error','Not enough coins — play a game, book, or refer a friend to earn coins.');
+  end if;
   if won_type = 'points' then
     pts := coalesce(nullif(won_val,'')::int, nullif(regexp_replace(coalesce(won_label,''),'[^0-9]','','g'),'')::int, 1);
-    update public.reward_members set points = points + pts, lifetime = lifetime + pts where id = m.id;
+    update public.reward_members set points = points + pts, lifetime = lifetime + pts where id = v_id;
   elsif won_type in ('prize','grand','discount') then
     update public.reward_members
       set prizes = coalesce(prizes,'[]'::jsonb) || jsonb_build_array(jsonb_build_object(
@@ -86,17 +105,49 @@ begin
                       when won_type='grand' and coalesce(won_label,'')='' then s.reward_text
                       else won_label end,
         'won_at', now()))
-      where id = m.id;
+      where id = v_id;
   end if;
-  select * into m from public.reward_members where id = m.id;
+  select * into m from public.reward_members where id = v_id;
   return (to_jsonb(m) - 'phone') || jsonb_build_object(
     'reward_at', s.reward_at, 'reward_text', s.reward_text, 'spin_cost', cost,
     'wheel', (select coalesce(jsonb_agg(p->>'label'),'[]'::jsonb) from jsonb_array_elements(coalesce(s.spin_prizes,'[]'::jsonb)) p),
     'result', jsonb_build_object('label', won_label, 'type', won_type, 'index', idx));
 end $$;
 
+-- ----------------------------------------------------------------------------
+-- Long-odds jackpot ticket. Also spends coins, one statement, win and charge
+-- together. Same v2 fix as coin_spin (migration arcade_spend_atomic_balance_check):
+-- the charge had no predicate, so a racing second ticket went negative.
+-- ----------------------------------------------------------------------------
+create or replace function public.lottery_draw(p_code text)
+returns jsonb language plpgsql security definer set search_path='public','pg_temp' as $$
+declare m public.reward_members; s public.reward_settings; lot jsonb; cost int; odds int; won boolean;
+begin
+  select * into m from public.reward_members where code=p_code limit 1;
+  if m.id is null then return jsonb_build_object('error','not found'); end if;
+  select * into s from public.reward_settings where client=m.client;
+  lot := s.lottery;
+  if lot is null or coalesce((lot->>'on')::boolean,false)=false then return jsonb_build_object('error','Lottery is off.'); end if;
+  cost := greatest(1, coalesce((lot->>'cost')::int,10));
+  odds := greatest(2, coalesce((lot->>'odds')::int,100));
+  if coalesce(m.coins,0) < cost then return jsonb_build_object('error','Not enough coins — play the arcade to earn tickets!'); end if;
+  won := random() < (1.0/odds);
+  update public.reward_members set coins = coalesce(coins,0) - cost,
+     lottery_wins = coalesce(lottery_wins,0) + (case when won then 1 else 0 end),
+     prizes = case when won then coalesce(prizes,'[]'::jsonb) || jsonb_build_array(jsonb_build_object(
+        'label', coalesce(lot->>'jackpot','Jackpot!'), 'icon', coalesce(nullif(lot->>'icon',''),'🎰'), 'won_at', now(), 'lottery', true)) else coalesce(prizes,'[]'::jsonb) end
+     where id=m.id and coalesce(coins,0) >= cost   -- atomic: the racing second ticket fails here
+     returning * into m;
+  if m.id is null then return jsonb_build_object('error','Not enough coins — play the arcade to earn tickets!'); end if;
+  return (to_jsonb(m) - 'phone') || jsonb_build_object('lottery_result', (case when won then 'win' else 'lose' end),
+     'jackpot', lot->>'jackpot', 'odds', odds, 'cost', cost,
+     'reward_at', s.reward_at, 'reward_text', s.reward_text, 'spin_cost', coalesce(s.spin_cost,2),
+     'wheel', (select coalesce(jsonb_agg(p->>'label'),'[]'::jsonb) from jsonb_array_elements(coalesce(s.spin_prizes,'[]'::jsonb)) p));
+end $$;
+
 grant execute on function public.game_reward(text, text, integer) to anon, authenticated;
 grant execute on function public.coin_spin(text)                  to anon, authenticated;
+grant execute on function public.lottery_draw(text)               to anon, authenticated;
 
 -- NOTE: book_appointment (awards booking coins) and join_rewards (credits a
 -- referrer with coins when their friend joins) are defined in hq/booking.sql /
@@ -162,7 +213,7 @@ end $$;
 
 grant execute on function public.coin_redeem(text, text) to anon, authenticated;
 
--- KNOWN, NOT YET FIXED: coin_spin above has the same read-then-deduct gap on
--- spin_cost. It was left alone deliberately — it has follow-on updates (spins,
--- prizes, lottery_wins) that make the same rewrite riskier than it's worth
--- without a way to reproduce the race first.
+-- Every coin spend in the arcade (coin_redeem, coin_spin, lottery_draw) now
+-- charges under its own balance predicate. The visit-points equivalents are in
+-- hq/loyalty.sql. Earning is capped in game_reward above; book_appointment and
+-- join_rewards award coins and have not been reviewed for this.
