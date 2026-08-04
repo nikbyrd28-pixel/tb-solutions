@@ -176,7 +176,10 @@
   el('hSend').addEventListener('click',function(){
     if(sent) return; sent=true; this.disabled=true; this.textContent='Sending…';
     var name=el('hName').value.trim()||mName, text=el('hText').value.trim();
-    post('reviews',{name:name,business:bizName||slug||'',rating:rating,text:text,source:'smart-review'})
+    // `client` is the key both readers match on — business is a display name
+    // that can come from a stale ?b= link or change when the shop is renamed,
+    // and reviews filed only under it get orphaned.
+    post('reviews',{client:slug||'',name:name,business:bizName||slug||'',rating:rating,text:text,source:'smart-review'})
       .then(function(){ done('🎉','Thank you!','That means a lot — we may feature it. See you soon!'); confetti(); })
       .catch(function(){ done('🎉','Thank you!','That means a lot!'); });
   });

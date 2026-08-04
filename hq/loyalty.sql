@@ -129,7 +129,7 @@ grant execute on function public.claim_milestone(text)     to anon, authenticate
 -- ============================================================================
 create or replace function public.loyalty_owner_dashboard(p_client text, p_pin text)
 returns json language plpgsql security definer set search_path to 'public','pg_temp' as $$
-declare s public.reward_settings; v json; tz text;
+declare s public.reward_settings; v json; tz text; bname text;
 begin
   select * into s from public.reward_settings where client = lower(coalesce(p_client,'')) limit 1;
   if s.client is null then return json_build_object('ok', false, 'error', 'No loyalty program with that code.'); end if;
@@ -138,6 +138,7 @@ begin
     return json_build_object('ok', false, 'error', 'Wrong PIN — that''s your staff PIN.');
   end if;
   tz := coalesce(s.book_tz,'America/New_York');
+  bname := coalesce(nullif(s.biz_name,''), s.client);
   select json_build_object(
     'ok', true, 'client', s.client, 'biz_name', nullif(btrim(coalesce(s.biz_name,'')),''),
     'reward_text', coalesce(s.reward_text,'a reward'), 'reward_at', coalesce(s.reward_at,5),
@@ -153,7 +154,9 @@ begin
     'bookings', (select count(*) from reward_appointments where client=s.client),
     'bookings_upcoming', (select count(*) from reward_appointments
                            where client=s.client and status='confirmed' and start_at > now()),
-    'reviews', (select count(*) from reviews where lower(business)=lower(coalesce(s.biz_name,s.client))),
+    -- by slug, with the old name match kept for legacy rows that have no client
+    'reviews', (select count(*) from reviews
+                 where (client = s.client or (client is null and lower(business)=lower(bname)))),
     'tiers', json_build_object(
        'bronze', (select count(*) from reward_members where client=s.client and lifetime < 25),
        'silver', (select count(*) from reward_members where client=s.client and lifetime >= 25 and lifetime < 75),

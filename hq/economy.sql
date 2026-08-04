@@ -301,10 +301,6 @@ end $$;
 
 grant execute on function public.daily_spin(text) to anon, authenticated;
 
--- FOUND, NOT FIXED HERE (different function, its own change): submit_survey
--- files its review as `business = m.client` — the SLUG — while
--- loyalty_owner_dashboard counts reviews with
--- lower(business)=lower(coalesce(biz_name, client)). Demo has a live row with
--- business='demo' against biz_name='Maple Street Barbers', so every survey
--- review an owner collects is invisible on their own dashboard. submit_survey
--- also has the same read-then-write gap on its once-a-week guard.
+-- (The submit_survey review-key mismatch noted here has since been fixed —
+--  see hq/reviews.sql. Reviews are keyed on the shop slug now, not the
+--  free-text business name.)
