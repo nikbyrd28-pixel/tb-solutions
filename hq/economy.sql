@@ -217,3 +217,94 @@ grant execute on function public.coin_redeem(text, text) to anon, authenticated;
 -- charges under its own balance predicate. The visit-points equivalents are in
 -- hq/loyalty.sql. Earning is capped in game_reward above; book_appointment and
 -- join_rewards award coins and have not been reviewed for this.
+
+-- ----------------------------------------------------------------------------
+-- Free daily spin. Costs nothing — the once-a-day limit is the whole economy.
+-- Was not recorded anywhere in the repo before; this is the live definition.
+--
+-- v2 (migration daily_spin_points_parse_and_atomic_claim). Three faults:
+--
+-- 1. IT CRASHED. The owner UI writes a points prize as
+--    {"type":"points","label":"+2 points","weight":18} with NO value key, and
+--    all nine live shops have one. This did `points = points + (won_val)::int`
+--    with won_val NULL, so points went NULL and violated the NOT NULL column,
+--    aborting the call. On demo that wedge is weight 18 of 107 — about one free
+--    spin in six died with a database error. coin_spin above has always parsed
+--    this correctly (explicit value, else digits in the label, else 1); this
+--    one never did, and now matches it.
+-- 2. IT COULD BE RE-ROLLED. The crash aborted the transaction, so
+--    last_daily_spin rolled back with it and the customer could just spin
+--    again — and keep spinning until they missed the points wedge, quietly
+--    skewing the wheel toward the real prizes. Fixing the crash removes that,
+--    and the claim is atomic now too, so two concurrent calls cannot both take
+--    the day's spin.
+-- 3. THE DAY ENDED AT THE WRONG TIME. current_date is the server's UTC date,
+--    which rolls over at 8pm in America/New_York — "come back tomorrow for a
+--    free spin" actually meant "come back this evening", every evening. Keyed
+--    to the shop's own timezone now.
+--
+-- Anyone touching the wheel: the value key is optional and usually absent.
+-- Parse it the way coin_spin and daily_spin do, never with a bare cast.
+-- ----------------------------------------------------------------------------
+create or replace function public.daily_spin(p_code text)
+returns jsonb language plpgsql security definer set search_path to 'public','pg_temp' as $$
+declare m public.reward_members; s public.reward_settings; v_id public.reward_members.id%type;
+        total int; r numeric; acc int := 0; pick jsonb; idx int := -1; i int := 0;
+        won_label text; won_type text; won_val text; pts int; today_local date;
+begin
+  select * into m from public.reward_members where code = p_code limit 1;
+  if m.id is null then return jsonb_build_object('error','not found'); end if;
+  v_id := m.id;
+  select * into s from public.reward_settings where client = m.client;
+  today_local := (now() at time zone coalesce(s.book_tz,'America/New_York'))::date;
+  if m.last_daily_spin = today_local then
+    return jsonb_build_object('already', true, 'error','Already claimed today — come back tomorrow for a free spin!');
+  end if;
+  select coalesce(sum((p->>'weight')::int),0) into total from jsonb_array_elements(coalesce(s.spin_prizes,'[]'::jsonb)) p;
+  if total <= 0 then return jsonb_build_object('error','wheel not configured'); end if;
+  r := random() * total;
+  for pick in select * from jsonb_array_elements(s.spin_prizes) loop
+    acc := acc + (pick->>'weight')::int;
+    if r < acc then idx := i; exit; end if;
+    i := i + 1;
+  end loop;
+  if idx = -1 then idx := 0; select p into pick from jsonb_array_elements(s.spin_prizes) p limit 1; end if;
+  won_label := pick->>'label'; won_type := pick->>'type'; won_val := pick->>'value';
+
+  -- Claim the day atomically. Nothing has been written yet, so a racing second
+  -- call that loses here simply discards its draw.
+  update public.reward_members
+     set last_daily_spin = today_local, spins = coalesce(spins,0) + 1
+   where id = v_id and last_daily_spin is distinct from today_local
+  returning * into m;
+  if m.id is null then
+    return jsonb_build_object('already', true, 'error','Already claimed today — come back tomorrow for a free spin!');
+  end if;
+
+  if won_type = 'points' then
+    -- same parse as coin_spin: explicit value, else the digits in the label, else 1
+    pts := coalesce(nullif(won_val,'')::int,
+                    nullif(regexp_replace(coalesce(won_label,''),'[^0-9]','','g'),'')::int, 1);
+    update public.reward_members set points = points + pts, lifetime = lifetime + pts where id = v_id;
+  elsif won_type = 'prize' then
+    update public.reward_members
+      set prizes = coalesce(prizes,'[]'::jsonb) || jsonb_build_array(jsonb_build_object(
+            'label', case when coalesce(won_val,'')='' then s.reward_text else won_val end, 'won_at', now()))
+      where id = v_id;
+  end if;
+  select * into m from public.reward_members where id = v_id;
+  return (to_jsonb(m) - 'phone') || jsonb_build_object(
+    'reward_at', s.reward_at, 'reward_text', s.reward_text, 'spin_cost', s.spin_cost, 'daily', true,
+    'wheel', (select coalesce(jsonb_agg(p->>'label'),'[]'::jsonb) from jsonb_array_elements(coalesce(s.spin_prizes,'[]'::jsonb)) p),
+    'result', jsonb_build_object('label', won_label, 'type', won_type, 'index', idx));
+end $$;
+
+grant execute on function public.daily_spin(text) to anon, authenticated;
+
+-- FOUND, NOT FIXED HERE (different function, its own change): submit_survey
+-- files its review as `business = m.client` — the SLUG — while
+-- loyalty_owner_dashboard counts reviews with
+-- lower(business)=lower(coalesce(biz_name, client)). Demo has a live row with
+-- business='demo' against biz_name='Maple Street Barbers', so every survey
+-- review an owner collects is invisible on their own dashboard. submit_survey
+-- also has the same read-then-write gap on its once-a-week guard.
