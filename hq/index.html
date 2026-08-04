@@ -253,68 +253,84 @@ function dueToday(d){ return d===todayISO(); }
 function render(){ document.getElementById('view').innerHTML = ({dashboard:vDash,links:vLinks,leads:vLeads,clients:vClients,tasks:vTasks,prospects:vProspects,intakes:vIntakes,requests:vRequests,clientleads:vClientLeads,analytics:vAnalytics,social:vSocial,tools:vTools,data:vData,pipelines:vPipelines,emailsms:vEmailSms,aianswer:vAiAnswer,aioutbound:vAiOutbound,reviews:vReviews,everyone:vEveryone,finder:vFinder,loyalty:vLoyalty,sites:vSites,affiliates:vAffiliates}[cur])(); if(cur==='tools') initTools(); if(cur==='requests') loadRequests(); if(cur==='analytics') loadAnalytics(); if(cur==='intakes') loadIntakes(); if(cur==='prospects') loadProspects(); if(cur==='clientleads') loadClientLeads(); if(cur==='pipelines') loadPipelines(); if(cur==='reviews') loadReviews(); if(cur==='analytics') setTimeout(loadFunnel,300); if(cur==='everyone') loadEveryone(); if(cur==='loyalty') loadLoyalty(); if(cur==='affiliates') loadAffiliates(); }
 
 /* ---- Sites: every page of the platform, one tap away ---- */
+/* Ordered by what you actually DO, not by what exists. The first group is the
+   pitch, in the order you would run it standing in a shop. Everything else sits
+   below it, and the systems that nothing is running through are parked in a
+   collapsed section at the bottom — still one tap away, just not on screen
+   while a barber is looking over your shoulder. */
 var SITES=[
-  {g:'Your business', items:[
-    ['🌐','Main site','https://tbsol.net','Marketing site + ARIA chat'],
-    ['⚡','Marketing Studio','https://tbsol.net/marketing-engine','AI copy + video in one — plans, ads, scripts, reels'],
-    ['📊','All-clients CRM','https://tbsol.net/crm/','Every client\'s leads (your admin view)'],
-    ['🖥️','Live CRM demo','https://tbsol.net/crm/demo/','No-login sales demo — send to prospects or embed in ads'],
-    ['🧭','Setup &amp; How-To Guide','https://tbsol.net/setup','Set up &amp; run everything — storage, ads, Studio, University, Loop'],
-    ['📲','Share QR codes','https://tbsol.net/share/','Save-to-phone QR codes to show barbers (works offline)']
+  {g:'💈 Pitch a barbershop', note:'In order — this is the walk-in', items:[
+    ['📄','Demo page','https://tbsol.net/demo/','Open this first — live card, all 10 games, QR, signup'],
+    ['🎰','Rewards card (demo)','https://tbsol.net/rewards/?c=demo','What their customers see — card, arcade, coins, booking'],
+    ['🖨️','Counter poster (demo)','https://tbsol.net/rewards/poster/?c=demo','The thing that goes on their counter'],
+    ['🆕','Sign them up + QR','https://tbsol.net/rewards/signup/','Live shop in 30 seconds, they walk out with their QR'],
+    ['📊','Their owner dashboard','https://tbsol.net/rewards/owner/','What the shop gets — rewards, schedule, booking (demo/1234, test/4242)'],
+    ['📷','Their staff console','https://tbsol.net/rewards/staff/','Scan · punch · redeem — show the barber this bit'],
+    ['🔁','Loop sales site','https://tbsol.net/loyalty/','Send it after the visit — standalone loyalty landing page'],
+    ['🎮','Loop Arcade','https://tbsol.net/arcade/','Public games page, no login — good hook on social']
   ]},
-  {g:'Products', items:[
+  {g:'🤝 Recruit &amp; pay reps', items:[
+    ['🧑','Recruit reps','https://tbsol.net/reps/','Public recruiting page — barber students, apprentices, supply reps'],
+    ['🧰','Selling kit','https://tbsol.net/kit/','Walk-in script, objection handlers, DM templates, printable flyer'],
+    ['💸','Rep portal','https://tbsol.net/affiliate/','Where reps sign in — their code, links and what they have earned'],
+    ['🧾','Rep payouts','https://tbsol.net/affiliate/admin/','Who referred what &amp; what you owe (owner login)']
+  ]},
+  {g:'🛰️ Sell the bigger package', items:[
     ['💈','Barbershop System','https://tbsol.net/barbers/','All-in-one for barbers — booking + rewards + referrals + content'],
     ['🛰️','TB Command','https://tbsol.net/command/','The sellable SaaS — Studio + Loop + HQ as one product'],
-    ['💈','Chair (booking)','https://tbsol.net/booking/','Booking for barbers/salons — the Booksy alternative'],
-    ['💈','Chair demo','https://tbsol.net/booking/demo/','Live no-login booking flow — send to shops'],
-    ['🗓️','Chair — real booking','https://tbsol.net/booking/book/?c=maple-demo','Live booking page (demo shop)'],
-    ['🛠️','Chair — shop setup','https://tbsol.net/booking/owner/','Owner login — services, staff, hours, deposit link'],
     ['🎓','TB University','https://tbsol.net/university/','Your course — start an AI marketing business'],
     ['🎁','University free lesson','https://tbsol.net/university/start/','Free lead-magnet lesson + email opt-in'],
     ['🎬','Content Studio','https://tbsol.net/content-studio/','Free AI content tool — reels · thumbnails · posts'],
-    ['🧑\u200d\U0001f91d\u200d\U0001f9d1','Recruit reps','https://tbsol.net/reps/','Public recruiting page — send it to barber students, apprentices and supply reps'],
-    ['💸','My affiliates (Rep Portal)','https://tbsol.net/affiliate/','Where reps sign in — their code, links, selling kit and what they have earned'],
-    ['🧰','My selling kit','https://tbsol.net/kit/','Walk-in script, objection handlers, DM templates, social hooks, printable flyer'],
-    ['🎨','Creative maker','https://tbsol.net/creatives/','Make post-ready IG graphics — pick a line, pick a look, download the PNG'],
-    ['📄','Demo page','https://tbsol.net/demo/','Send this to a shop — live card, all 10 games, QR, signup'],
-    ['🧾','Affiliate payouts','https://tbsol.net/affiliate/admin/','Every rep, who they referred &amp; what you owe (owner login)'],
-    ['🤝','Ambassadors','https://tbsol.net/ambassadors/','Referral program product — sell it like Loop'],
-    ['🖥️','Ambassadors demo','https://tbsol.net/ambassadors/demo/','No-login sales demo — send to prospects'],
-    ['🛠️','Ambassadors setup','https://tbsol.net/ambassadors/owner/','Owner login — create a program, get the join link'],
-    ['🤝','Ambassador portal','https://tbsol.net/ambassadors/portal/?c=demo-barbers','The live customer portal (demo program)']
+    ['🖥️','Live CRM demo','https://tbsol.net/crm/demo/','No-login sales demo — send to prospects or embed in ads']
   ]},
-  {g:'Client-facing', items:[
+  {g:'🧰 Run your business', items:[
+    ['🌐','Main site','https://tbsol.net','Marketing site + ARIA chat'],
+    ['📊','All-clients CRM','https://tbsol.net/crm/','Every client\'s leads (your admin view)'],
+    ['⚡','Marketing Studio','https://tbsol.net/marketing-engine','AI copy + video in one — plans, ads, scripts, reels'],
+    ['🎨','Creative maker','https://tbsol.net/creatives/','Post-ready IG graphics — pick a line, pick a look, download'],
+    ['🧭','Setup &amp; How-To Guide','https://tbsol.net/setup','Set up &amp; run everything — storage, ads, Studio, University, Loop'],
+    ['📲','Share QR codes','https://tbsol.net/share/','Save-to-phone QR codes to show barbers (works offline)']
+  ]},
+  {g:'📥 Client-facing', items:[
     ['📥','Capture template','https://tbsol.net/capture/?c=demo&name=Demo','Add ?c=slug for any client'],
     ['🔑','Client portal','https://tbsol.net/portal/','Where clients log in'],
     ['🛟','Support','https://tbsol.net/support/','Tickets → your Requests tab'],
     ['📝','Intake form','https://tbsol.net/start/','New-client intake'],
     ['⭐','Review collector','https://tbsol.net/review/','?b=Business to prefill'],
-    ['📖','CRM guide','https://tbsol.net/crm/guide/','Client how-to']
-  ]},
-  {g:'Rewards product', items:[
-    ['🔁','Loop sales site','https://tbsol.net/loyalty/','Standalone loyalty SaaS landing — send to prospects'],
-    ['🆕','Free signup + QR','https://tbsol.net/rewards/signup/','Self-serve — barber creates a live shop in 30s, gets their QR'],
-    ['🎮','Loop Arcade (games)','https://tbsol.net/arcade/','Public games page — Loop Flyer & Chair Hopper, no login'],
-    ['📊','Loop owner dashboard','https://tbsol.net/rewards/owner/','Owner: rewards, difficulty, schedule + booking setup (demo/1234, test/4242)'],
-    ['🎰','Rewards card (demo)','https://tbsol.net/rewards/?c=demo','What customers see — card, arcade, coins, real booking'],
-    ['📷','Staff console','https://tbsol.net/rewards/staff/','Scan · punch · redeem'],
-    ['🖨️','Poster (demo)','https://tbsol.net/rewards/poster/?c=demo','Print for the counter']
-  ]},
-  {g:'Legal', items:[
+    ['📖','CRM guide','https://tbsol.net/crm/guide/','Client how-to'],
     ['🔒','Privacy','https://tbsol.net/privacy/',''],
     ['📄','Terms','https://tbsol.net/terms/','']
+  ]},
+  {g:'🗄️ Parked — not in the pitch', parked:true,
+   note:'Built and working, but nothing real is running through either one. Chair duplicates the booking already inside Loop; Ambassadors duplicates the member-refers-a-friend already inside Loop. Kept here, one tap away, in case you decide to sell either on its own.', items:[
+    ['💈','Chair (booking)','https://tbsol.net/booking/','Standalone booking — the Booksy alternative'],
+    ['💈','Chair demo','https://tbsol.net/booking/demo/','No-login booking flow'],
+    ['🗓️','Chair — real booking','https://tbsol.net/booking/book/?c=maple-demo','Live booking page (demo shop)'],
+    ['🛠️','Chair — shop setup','https://tbsol.net/booking/owner/','Owner login — services, staff, hours, deposit'],
+    ['🤝','Ambassadors','https://tbsol.net/ambassadors/','Referral program product'],
+    ['🖥️','Ambassadors demo','https://tbsol.net/ambassadors/demo/','No-login sales demo'],
+    ['🛠️','Ambassadors setup','https://tbsol.net/ambassadors/owner/','Owner login — create a program'],
+    ['🤝','Ambassador portal','https://tbsol.net/ambassadors/portal/?c=demo-barbers','Live customer portal (demo program)']
   ]}
 ];
 function vSites(){
-  return '<div class="topbar"><div><h1>🌐 Sites</h1><p class="sub">Every page of your platform — tap to open, tap 📋 to copy the link</p></div></div>'
+  function row(s){
+    return '<div class="card" style="padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px">'
+      +'<div style="min-width:0"><b>'+s[0]+' '+s[1]+'</b>'+(s[3]?'<div style="font-size:12px;color:var(--muted)">'+s[3]+'</div>':'')+'</div>'
+      +'<div style="flex-shrink:0"><button class="btn sm ghost" onclick="navigator.clipboard.writeText(\''+s[2]+'\')">📋</button> '
+      +'<a class="btn sm primary" style="text-decoration:none" target="_blank" href="'+s[2]+'">Open</a></div></div>';
+  }
+  return '<div class="topbar"><div><h1>🌐 Sites</h1><p class="sub">Grouped by what you do with them — tap to open, tap 📋 to copy the link</p></div></div>'
     + SITES.map(function(sec){
-        return '<h2 style="margin:14px 0 8px">'+sec.g+'</h2>'
-          + sec.items.map(function(s){
-              return '<div class="card" style="padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px">'
-                +'<div style="min-width:0"><b>'+s[0]+' '+s[1]+'</b>'+(s[3]?'<div style="font-size:12px;color:var(--muted)">'+s[3]+'</div>':'')+'</div>'
-                +'<div style="flex-shrink:0"><button class="btn sm ghost" onclick="navigator.clipboard.writeText(\''+s[2]+'\')">📋</button> '
-                +'<a class="btn sm primary" style="text-decoration:none" target="_blank" href="'+s[2]+'">Open</a></div></div>';
-            }).join('');
+        var body = sec.items.map(row).join('');
+        var note = sec.note ? '<p style="font-size:12px;color:var(--muted);margin:0 0 10px">'+sec.note+'</p>' : '';
+        // the parked group stays shut so it is not on screen during a pitch
+        if(sec.parked){
+          return '<details style="margin:18px 0 8px"><summary style="cursor:pointer;font-weight:700;font-size:15px;padding:6px 0;color:var(--muted)">'
+            + sec.g + ' (' + sec.items.length + ')</summary>'
+            + '<div style="padding-top:8px">' + note + body + '</div></details>';
+        }
+        return '<h2 style="margin:14px 0 4px">'+sec.g+'</h2>' + note + body;
       }).join('');
 }
 
