@@ -364,6 +364,27 @@ begin
   return jsonb_build_object('ok', true, 'appts', rows);
 end $$;
 
+-- A cancellation also has to be reflected in the mirrored client_leads row, or
+-- the owner's CRM still shows the booking as live. That mirror block was added
+-- by a later migration and never recorded here, so this copy had drifted.
+--
+-- v2 (migration member_cancel_mirrors_the_right_lead): the mirror picked the
+-- shop's most recent lead rather than the one belonging to this appointment, so
+-- cancelling marked SOMEONE ELSE's booking as Cancelled while the canceller's
+-- own stayed Booked. The owner then frees the wrong slot, or calls the wrong
+-- customer and no-shows the one who is still coming.
+--
+-- There is no appointment id on client_leads to join through, so the
+-- correlation is the phone, which book_appointment writes into both rows in the
+-- same call and so matches byte-for-byte. A blank phone matches nothing — one
+-- live appointment has phone='' rather than null, and leaving a mirror stale is
+-- strictly better than cancelling a stranger's booking.
+--
+-- RESIDUAL, deliberately accepted: if one customer holds two open bookings at
+-- the same shop and cancels the older, the newer of THEIR OWN leads is marked.
+-- Same-customer imprecision, not cross-customer corruption. Fixing it properly
+-- means carrying the appointment id on client_leads, which means touching the
+-- booking write path — worth doing, not worth doing blind.
 create or replace function public.member_cancel_appointment(p_code text, p_id bigint)
 returns jsonb language plpgsql security definer set search_path to 'public','pg_temp' as $$
 declare n int;
@@ -372,6 +393,20 @@ begin
     where id = p_id and member_code = p_code and status = 'confirmed' and start_at > now();
   get diagnostics n = row_count;
   if n = 0 then return jsonb_build_object('ok', false, 'error', 'Could not cancel — it may have already passed.'); end if;
+  -- reflect in the mirrored lead if present
+  begin
+    update public.client_leads set status = 'Cancelled'
+      where id = (select l.id
+                    from public.client_leads l
+                    join public.reward_appointments a on a.id = p_id
+                   where l.client = a.client
+                     and l.kind   = 'booking'
+                     and l.status = 'Booked'
+                     and coalesce(a.phone,'') <> ''
+                     and l.phone = a.phone
+                   order by l.created_at desc
+                   limit 1);
+  exception when others then null; end;
   return jsonb_build_object('ok', true);
 end $$;
 
