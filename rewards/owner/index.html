@@ -501,8 +501,15 @@ function render(d){
   if(!bk.length){ el('bookings').innerHTML='<p class="muted">No bookings yet. Members can book from their card — they\'ll show here for you to confirm.</p>'; }
   else{
     el('bookings').innerHTML=bk.map(function(b){
-      var when=(b.message||'').replace(/^📅[^:]*:\s*/,'');
-      var win=['Won','Booked','Converted'].indexOf(b.status)>=0;
+      // Strip the 📅, then a leading "label:" if there is one. The old pattern
+      // was /^📅[^:]*:\s*/, which ran to the FIRST colon — and in a real
+      // booking that colon is inside the time, so "📅 Haircut with Marco —
+      // Fri Jul 24, 11:45 AM" reached the owner as "45 AM". Requiring
+      // whitespace after the colon, and not letting the label cross the em
+      // dash, leaves real bookings intact while still trimming the older
+      // "Rewards member wants to book: Tuesday 3" lead-form phrasing.
+      var when=(b.message||'').replace(/^📅\s*/,'').replace(/^[^:—]*:\s+/,'');
+      var win=['Confirmed','Done','Won','Booked','Converted'].indexOf(b.status)>=0;
       return '<div class="bk"><div><b>'+esc(b.who||'A member')+'</b><div class="muted">'+esc(when||'wants to book')+' · '+new Date(b.created_at).toLocaleDateString()+'</div></div>'
         +'<span class="st"'+(win?' style="color:var(--good);border-color:rgba(67,240,176,.5)"':'')+'>'+esc(b.status||'New')+'</span></div>';
     }).join('');
