@@ -42,9 +42,8 @@
 -- for a reminder. Both spellings are excluded now in case any historical row
 -- used the hyphen.
 --
--- STILL UNREVIEWED: automations_set (saves the per-shop config), and the
--- send_owner_daily / send_owner_digest / send_test_sms group — all dormant
--- until Twilio and Resend keys exist.
+-- STILL UNREVIEWED: the send_owner_daily / send_owner_digest / send_test_sms
+-- group — dormant until Twilio and Resend keys exist.
 -- ============================================================================
 
 create table if not exists public.automation_log(
@@ -114,3 +113,78 @@ begin
     raise exception 'ABORT: changed beyond the two intended edits';
   end if;
 end $mig$;
+
+-- ----------------------------------------------------------------------------
+-- SECOND FIX (migration automations_deep_merge_saved_config).
+--
+-- automations_due layered the shop's saved config over the defaults with a
+-- plain `def || s.automations`, which is a SHALLOW top-level merge: whatever a
+-- shop stored for a kind REPLACED that kind's whole default object instead of
+-- layering onto it. Save {"welcome":{"on":false}} and the welcome message text
+-- is gone — demonstrated, the template came back empty.
+--
+-- /center/ does not trigger this: saveAutoCfg() always writes complete
+-- {on,template} objects for all six kinds (plus days for winback), and that
+-- round-trip was verified clean before and after. The reason to fix it anyway
+-- is second-order — any field added to a kind's defaults later would be
+-- permanently invisible to every shop that had already saved a config, because
+-- their stored object shadows the entire default. That is close to
+-- undiagnosable once shops exist.
+--
+-- Each kind is now merged individually onto its default, so a partial save only
+-- overrides the keys it names. Also hardens two garbage cases: a non-object
+-- automations value (an array or scalar would otherwise CONCATENATE with the
+-- defaults into an array and silently blank every template), and a non-object
+-- value for a single kind, which is skipped rather than corrupting that kind.
+--
+-- Re-runnable: no-ops if the deep merge is already in place.
+-- ----------------------------------------------------------------------------
+do $mig$
+declare def text; src_before text; src_after text; o oid; n int;
+  old_line text := 'cfg := def || coalesce(s.automations,''{}''::jsonb);';
+  new_block text;
+begin
+  select p.oid into o from pg_proc p join pg_namespace n2 on n2.oid=p.pronamespace
+   where n2.nspname='public' and p.proname='automations_due';
+  if o is null then raise notice 'automations_due not present'; return; end if;
+  select prosrc into src_before from pg_proc where oid=o;
+
+  if src_before ~ 'jsonb_each\(s\.automations\)' then raise notice 'already deep-merged'; return; end if;
+
+  n := (select count(*) from regexp_matches(src_before, 'cfg := def \|\| coalesce\(s\.automations', 'g'));
+  if n <> 1 then raise exception 'ABORT: expected 1 merge line, found %', n; end if;
+
+  new_block :=
+    'cfg := def;' || chr(10) ||
+    '  if jsonb_typeof(coalesce(s.automations,''null''::jsonb)) = ''object'' then' || chr(10) ||
+    '    select def || coalesce(jsonb_object_agg(e.k, coalesce(def->e.k,''{}''::jsonb) || e.v), ''{}''::jsonb)' || chr(10) ||
+    '      into cfg from jsonb_each(s.automations) as e(k,v) where jsonb_typeof(e.v) = ''object'';' || chr(10) ||
+    '  end if;';
+
+  def := pg_get_functiondef(o);
+  def := replace(def, old_line, new_block);
+  execute def;
+
+  select prosrc into src_after from pg_proc where oid=o;
+  if src_after !~ 'jsonb_each\(s\.automations\)' then raise exception 'ABORT: merge not applied'; end if;
+  if replace(src_after, new_block, old_line) <> src_before then
+    raise exception 'ABORT: changed beyond the intended merge line';
+  end if;
+end $mig$;
+
+-- automations_set is a plain store — it validates the PIN and writes p_config
+-- verbatim (coalescing to the existing value when null). No shape validation,
+-- which is fine now that the reader merges defensively.
+create or replace function public.automations_set(p_client text, p_pin text, p_config jsonb)
+returns jsonb language plpgsql security definer set search_path to 'public','pg_temp' as $$
+declare s public.reward_settings;
+begin
+  select * into s from public.reward_settings where client=lower(coalesce(p_client,''));
+  if not found then return jsonb_build_object('ok',false,'error','No program.'); end if;
+  perform public.pin_gate(p_client, p_pin, s.pin);
+  if coalesce(s.pin,'')='' or coalesce(p_pin,'')<>s.pin then return jsonb_build_object('ok',false,'error','Wrong PIN.'); end if;
+  update public.reward_settings set automations = coalesce(p_config, automations) where client=lower(p_client);
+  return jsonb_build_object('ok',true);
+end $$;
+
+grant execute on function public.automations_set(text,text,jsonb) to anon, authenticated;
