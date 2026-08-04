@@ -167,6 +167,80 @@ begin
     'deposit_link',v.deposit_link,'deposit_note',v.deposit_note,'business',v.business);
 end $$;
 
+-- ----------------------------------------------------------------------------
+-- book_staff_set, v2 (migration book_staff_set_preserve_identity).
+--
+-- It used to delete every barber and re-insert them with fresh UUIDs. Both
+-- book_slots and book_create decide availability with `a.staff_id = s.id`, so
+-- every appointment already on the books kept pointing at a now-dead id and
+-- stopped blocking anything. An owner renaming a barber, adding one, or just
+-- reordering the list silently freed every existing appointment's slot, the
+-- calendar offered those times again, and the barber was double-booked. There
+-- is no FK on booking_appointments.staff_id, so nothing complained — and this
+-- walked straight past the advisory lock in book_create: that serialises the
+-- check, but the check itself was looking at the wrong id.
+--
+-- Barbers are now matched by name and updated IN PLACE so their id survives an
+-- edit. A dropped barber is deleted only when nothing references them; if they
+-- have appointments they are retired (active=false), which removes them from
+-- book_slots and book_create's auto-pick while their existing appointments keep
+-- holding their old slots.
+--
+-- Known and deliberate: a genuine RENAME reads as "one removed, one added", so
+-- the old name is retired with its appointments still blocking and the new name
+-- starts empty. Conservative, never a double-book. Fixing that properly needs
+-- /booking/owner/ to send stable ids, which it does not — it posts {name,blurb}.
+--
+-- book_services_set still deletes and re-inserts, and that is fine: appointments
+-- store service_name as text and reference no service id, so there is nothing to
+-- orphan.
+-- ----------------------------------------------------------------------------
+create or replace function public.book_staff_set(p_slug text, p_items jsonb)
+returns json language plpgsql security definer set search_path to 'public' as $$
+declare v_email text; it jsonb; i int:=0; v_slug text := btrim(p_slug);
+        keep text[] := '{}'; nm text; existing_id uuid; deact int := 0; del int := 0;
+begin
+  v_email:=auth.jwt()->>'email';
+  if v_email is null then return json_build_object('ok',false,'error','Sign in required'); end if;
+  if not exists(select 1 from booking_shops where slug=v_slug and (owner_email=v_email or v_email='nikbyrd28@gmail.com')) then
+    return json_build_object('ok',false,'error','Not your shop'); end if;
+
+  for it in select * from jsonb_array_elements(coalesce(p_items,'[]'::jsonb)) loop
+    nm := btrim(coalesce(it->>'name',''));
+    if nm = '' or nm = any(keep) then continue; end if;   -- skip blanks and duplicates
+    keep := keep || nm;
+    select id into existing_id from booking_staff where shop_slug=v_slug and name=nm limit 1;
+    if existing_id is not null then
+      update booking_staff
+         set blurb = nullif(btrim(coalesce(it->>'blurb','')),''), sort = i, active = true
+       where id = existing_id;                            -- id preserved
+    else
+      insert into booking_staff(shop_slug,name,blurb,sort,active)
+        values(v_slug, nm, nullif(btrim(coalesce(it->>'blurb','')),''), i, true);
+    end if;
+    i := i + 1;
+  end loop;
+
+  -- dropped barbers: remove only the ones nothing points at
+  delete from booking_staff s
+   where s.shop_slug = v_slug and not (s.name = any(keep))
+     and not exists(select 1 from booking_appointments a where a.staff_id = s.id);
+  get diagnostics del = row_count;
+  -- the rest are retired, so their appointments keep holding their slots
+  update booking_staff s set active = false
+   where s.shop_slug = v_slug and not (s.name = any(keep)) and s.active;
+  get diagnostics deact = row_count;
+
+  return json_build_object('ok',true,'count',i,'retired',deact,'removed',del);
+end $$;
+
+-- NOT CHANGED, but worth knowing: book_shop_upsert only refuses a takeover when
+-- the existing row's owner_email IS NOT NULL. A booking_shops row with a null
+-- owner_email can be claimed by whoever calls it first, which is presumably
+-- deliberate so a pre-seeded shop can be adopted. No live row has a null
+-- owner_email today, so nothing is exposed — but if shops are ever bulk-seeded
+-- without one, seeding them is the same as publishing them.
+
 -- Grants: anon can read + book; management is authenticated + owner-scoped.
 grant execute on function book_shop(text)                                        to anon, authenticated;
 grant execute on function book_slots(text,uuid,text,int)                         to anon, authenticated;
