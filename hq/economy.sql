@@ -304,3 +304,77 @@ grant execute on function public.daily_spin(text) to anon, authenticated;
 -- (The submit_survey review-key mismatch noted here has since been fixed —
 --  see hq/reviews.sql. Reviews are keyed on the shop slug now, not the
 --  free-text business name.)
+
+-- ----------------------------------------------------------------------------
+-- spin_wheel — the ORIGINAL points wheel, superseded by coin_spin above.
+-- Was not recorded anywhere in the repo before; this is the live definition.
+--
+-- Nothing in the repo calls it and no other function does, so it is effectively
+-- retired — but it is still granted to anon, which means it remains a live API
+-- endpoint any member code can POST to. It is kept and fixed rather than
+-- revoked because "nothing in the repo calls it" is not the same as "nothing
+-- calls it" (a cached page or a saved link would break), and because leaving it
+-- as the one unfixed sibling is how these bugs come back if the points wheel is
+-- ever switched on again.
+--
+-- v2 (migration spin_wheel_match_coin_spin_safety) fixed both defects its
+-- siblings had already had fixed:
+--   1. `points + (won_val)::int` bare-cast the prize's OPTIONAL value key,
+--      which is absent on every shop's points wedge, so points went NULL and
+--      the NOT NULL column aborted the call — the daily_spin crash exactly.
+--   2. It checked the balance and then charged in a separate unguarded
+--      statement, so a racing second spin could drive points negative — the
+--      read-then-charge gap closed in coin_spin, coin_redeem, redeem_reward,
+--      claim_milestone and lottery_draw.
+-- ----------------------------------------------------------------------------
+create or replace function public.spin_wheel(p_code text)
+returns jsonb language plpgsql security definer set search_path to 'public','pg_temp' as $$
+declare m public.reward_members; s public.reward_settings;
+        total int; r numeric; acc int := 0; pick jsonb; idx int := -1; i int := 0;
+        won_label text; won_type text; won_val text; pts int; v_id public.reward_members.id%type;
+begin
+  select * into m from public.reward_members where code = p_code limit 1;
+  if m.id is null then return jsonb_build_object('error','not found'); end if;
+  select * into s from public.reward_settings where client = m.client;
+  if m.points < s.spin_cost then return jsonb_build_object('error','Not enough points — you need '||s.spin_cost||' to spin'); end if;
+
+  select coalesce(sum((p->>'weight')::int),0) into total from jsonb_array_elements(s.spin_prizes) p;
+  if total <= 0 then return jsonb_build_object('error','wheel not configured'); end if;
+  r := random() * total;
+  for pick in select * from jsonb_array_elements(s.spin_prizes) loop
+    acc := acc + (pick->>'weight')::int;
+    if r < acc then idx := i; exit; end if;
+    i := i + 1;
+  end loop;
+  if idx = -1 then idx := 0; select p into pick from jsonb_array_elements(s.spin_prizes) p limit 1; end if;
+
+  won_label := pick->>'label'; won_type := pick->>'type'; won_val := pick->>'value';
+  v_id := m.id;
+  -- charge atomically: the prize is awarded by a SEPARATE update below, so a
+  -- racing second spin must be stopped here or it charges twice and awards twice
+  update public.reward_members set points = points - coalesce(s.spin_cost,2), spins = coalesce(spins,0) + 1
+    where id = v_id and points >= coalesce(s.spin_cost,2)
+    returning * into m;
+  if m.id is null then return jsonb_build_object('error','Not enough points — you need '||coalesce(s.spin_cost,2)||' to spin'); end if;
+  if won_type = 'points' then
+    -- same parse as coin_spin: explicit value, else the digits in the label, else 1
+    pts := coalesce(nullif(won_val,'')::int, nullif(regexp_replace(coalesce(won_label,''),'[^0-9]','','g'),'')::int, 1);
+    update public.reward_members set points = points + pts, lifetime = lifetime + pts where id = v_id;
+  elsif won_type = 'prize' then
+    update public.reward_members
+      set prizes = coalesce(prizes,'[]'::jsonb) || jsonb_build_array(jsonb_build_object('label', case when coalesce(won_val,'')='' then s.reward_text else won_val end, 'won_at', now()))
+      where id = v_id;
+  end if;
+  select * into m from public.reward_members where id = v_id;
+  return (to_jsonb(m) - 'phone') || jsonb_build_object(
+    'reward_at', s.reward_at, 'reward_text', s.reward_text, 'spin_cost', s.spin_cost,
+    'wheel', (select coalesce(jsonb_agg(p->>'label'),'[]'::jsonb) from jsonb_array_elements(s.spin_prizes) p),
+    'result', jsonb_build_object('label', won_label, 'type', won_type, 'index', idx));
+end $$;
+
+grant execute on function public.spin_wheel(text) to anon, authenticated;
+
+-- Every wheel in the system now parses the points value the same way and
+-- charges under its own predicate: coin_spin, daily_spin, spin_wheel,
+-- lottery_draw. The `value` key is OPTIONAL and usually ABSENT — never cast it
+-- bare.
