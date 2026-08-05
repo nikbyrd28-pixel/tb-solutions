@@ -378,3 +378,94 @@ grant execute on function public.spin_wheel(text) to anon, authenticated;
 -- charges under its own predicate: coin_spin, daily_spin, spin_wheel,
 -- lottery_draw. The `value` key is OPTIONAL and usually ABSENT — never cast it
 -- bare.
+
+-- ============================================================================
+-- Casino — blackjack (/arcade/blackjack/) and video poker (/arcade/poker/)
+-- ----------------------------------------------------------------------------
+-- Not previously recorded anywhere. Both are live, anon-callable, and both take
+-- a COIN BET and pay coins back, which makes them the only places in the
+-- product other than game_reward where coins are CREATED.
+--
+-- Tables: bj_games (status 'playing' -> 'done'), vp_games ('dealt' -> 'done').
+-- Flow: bj_deal / vp_deal charge the bet and store the shuffled deck server
+-- side; bj_hit draws; bj_stand / vp_draw settle and pay.
+--
+-- THE BUG (migration casino_payout_claim_hand_before_paying)
+-- bj_stand and vp_draw credited the payout and THEN marked the hand done, with
+-- nothing serialising the two and no predicate on the status update. Two
+-- concurrent calls both found the same hand still open, both computed the same
+-- payout from the STORED deck (so the result is identical, not a re-roll), and
+-- both credited it. Coins minted straight out of one hand. Demonstrated by
+-- replaying the interleaving: 100 coins became 140 on a single 10-coin win.
+--
+-- The order is now reversed — claim the hand by transitioning its status under
+-- a predicate, and pay only if that claim actually took the row. The losing
+-- call takes nothing and pays nothing. Same shape as every other fix in this
+-- economy, just on the CREDIT side rather than the charge side.
+--
+-- CHECKED CLEAN in the same pass: bj_deal and vp_deal both clamp the bet with
+-- greatest(...least(...p_bet,1)), so a negative or absurd bet cannot mint coins
+-- at deal time, and both refuse when the balance is short.
+--
+-- KNOWN, NOT FIXED: bj_hit has no such guard, but it only draws a card and can
+-- bust — it never credits, so the worst a race does there is deal the same card
+-- twice. Worth tidying if anyone is in the file, not worth a migration on its
+-- own.
+--
+-- ANYONE ADDING A GAME: the payout is the guarded step. Claim the hand first,
+-- pay second, and never credit before the status transition.
+-- ============================================================================
+
+-- The two payout paths, as fixed. Re-runnable: no-ops if already guarded.
+do $mig$
+declare def text; src_before text; src_after text; o oid; changed int := 0;
+  bj_old text; bj_new text; vp_old text; vp_new text;
+begin
+  bj_old :=
+    '  if payout > 0 then update public.reward_members set coins = coins + payout where id = m.id; end if;' || chr(10) ||
+    '  update public.bj_games set dealer = dl, deck = dk, status = ''done'', result = res where id = gme.id;';
+  bj_new :=
+    '  -- claim the hand FIRST: a racing second call finds no ''playing'' row, so it' || chr(10) ||
+    '  -- takes nothing and pays nothing' || chr(10) ||
+    '  update public.bj_games set dealer = dl, deck = dk, status = ''done'', result = res' || chr(10) ||
+    '    where id = gme.id and status = ''playing'';' || chr(10) ||
+    '  if not found then return jsonb_build_object(''error'',''That hand is already finished.''); end if;' || chr(10) ||
+    '  if payout > 0 then update public.reward_members set coins = coins + payout where id = m.id; end if;';
+
+  vp_old :=
+    '  if payout > 0 then update public.reward_members set coins = coins + payout where id = m.id; end if;' || chr(10) ||
+    '  update public.vp_games set hand = nh, status = ''done'', result = rk where id = gme.id;';
+  vp_new :=
+    '  -- claim the hand FIRST: a racing second call finds no ''dealt'' row, so it' || chr(10) ||
+    '  -- takes nothing and pays nothing' || chr(10) ||
+    '  update public.vp_games set hand = nh, status = ''done'', result = rk' || chr(10) ||
+    '    where id = gme.id and status = ''dealt'';' || chr(10) ||
+    '  if not found then return jsonb_build_object(''error'',''That hand is already finished.''); end if;' || chr(10) ||
+    '  if payout > 0 then update public.reward_members set coins = coins + payout where id = m.id; end if;';
+
+  select p.oid into o from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+   where n.nspname='public' and p.proname='bj_stand';
+  select prosrc into src_before from pg_proc where oid=o;
+  if src_before !~ 'already finished' then
+    if position(bj_old in src_before) = 0 then raise exception 'ABORT: bj_stand payout block not found verbatim'; end if;
+    def := replace(pg_get_functiondef(o), bj_old, bj_new);
+    execute def;
+    select prosrc into src_after from pg_proc where oid=o;
+    if replace(src_after, bj_new, bj_old) <> src_before then raise exception 'ABORT: bj_stand changed beyond the payout block'; end if;
+    changed := changed + 1;
+  end if;
+
+  select p.oid into o from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+   where n.nspname='public' and p.proname='vp_draw';
+  select prosrc into src_before from pg_proc where oid=o;
+  if src_before !~ 'already finished' then
+    if position(vp_old in src_before) = 0 then raise exception 'ABORT: vp_draw payout block not found verbatim'; end if;
+    def := replace(pg_get_functiondef(o), vp_old, vp_new);
+    execute def;
+    select prosrc into src_after from pg_proc where oid=o;
+    if replace(src_after, vp_new, vp_old) <> src_before then raise exception 'ABORT: vp_draw changed beyond the payout block'; end if;
+    changed := changed + 1;
+  end if;
+
+  raise notice 'guarded % payout paths', changed;
+end $mig$;
