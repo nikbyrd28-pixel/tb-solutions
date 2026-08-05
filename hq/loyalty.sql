@@ -6,8 +6,9 @@
 --
 -- SCOPE OF THIS FILE: it records the two redemption RPCs, plus claim_prize,
 -- the owner dashboard and crm_members below — not the whole loyalty schema.
--- add_visit, join_rewards, spin_wheel and the reward_members /
--- reward_settings tables still live only in the database and in migrations.
+-- add_visit, join_rewards and the reward_members / reward_settings tables
+-- still live only in the database and in migrations (spin_wheel is recorded in
+-- hq/economy.sql with the rest of the wheel family).
 --
 -- WHY THESE TWO ARE HERE (migration redeem_paths_atomic_balance_check):
 -- both read a balance in one statement and spent it in another, with nothing
@@ -76,11 +77,10 @@ grant execute on function public.redeem_reward(text, text) to anon, authenticate
 grant execute on function public.claim_milestone(text)     to anon, authenticated;
 
 -- ----------------------------------------------------------------------------
--- STILL OPEN, deliberately not fixed here:
---   coin_spin (hq/economy.sql) has the same read-then-deduct gap on spin_cost.
---   It has follow-on updates to spins / prizes / lottery_wins that make the
---   rewrite riskier, so it wants doing on its own with its own probe.
---   lottery_draw has not been reviewed for this yet.
+-- SINCE CLOSED (this note used to list coin_spin and lottery_draw as open):
+--   every spend in the system now charges under its own balance predicate —
+--   coin_redeem, coin_spin, lottery_draw, daily_spin and spin_wheel in
+--   hq/economy.sql, redeem_reward and claim_milestone here.
 -- add_visit is additive and PIN-gated, so there is no balance to race; its
 -- double-tap exposure is handled client-side in rewards/staff/, which has both
 -- an in-flight guard and a 3-minute repeat-punch confirm.
