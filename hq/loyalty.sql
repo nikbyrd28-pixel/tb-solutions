@@ -4,8 +4,8 @@
 -- The visit-points backbone (points -> the real reward) as opposed to coins,
 -- which are the arcade currency and live in hq/economy.sql.
 --
--- SCOPE OF THIS FILE: it records the two redemption RPCs, plus the owner
--- dashboard and crm_members at the bottom — not the whole loyalty schema.
+-- SCOPE OF THIS FILE: it records the two redemption RPCs, plus claim_prize,
+-- the owner dashboard and crm_members below — not the whole loyalty schema.
 -- add_visit, join_rewards, spin_wheel and the reward_members /
 -- reward_settings tables still live only in the database and in migrations.
 --
@@ -91,6 +91,62 @@ grant execute on function public.claim_milestone(text)     to anon, authenticate
 -- call. What these predicates close is genuine concurrency — two devices on
 -- one card, or a replayed request — which nothing else was guarding.
 -- ----------------------------------------------------------------------------
+
+-- ============================================================================
+-- claim_prize — staff hands over a prize the customer already won
+-- ----------------------------------------------------------------------------
+-- Was not recorded anywhere in the repo before. Called from the staff console
+-- and from the customer card behind a staff-PIN prompt, identifying the prize
+-- by its INDEX in reward_members.prizes.
+--
+-- v2 (migration claim_prize_no_lost_update): it read the member into m and then
+-- wrote `prizes = (m.prizes - p_index)` — the SNAPSHOT taken at the start of the
+-- call, not the current column. Anything appended to the customer's prizes
+-- between that read and the write was silently destroyed by the claim.
+--
+-- The window is ordinary, not exotic: the barber taps Claim on the staff console
+-- while the customer is spinning the wheel on their own phone. Demonstrated by
+-- replaying the interleaving — staff sees 2 prizes, the customer wins a third,
+-- the claim writes back the stale two-minus-one and the just-won prize is gone.
+-- Two concurrent claims lost one the same way.
+--
+-- Now the index is removed from the CURRENT array inside the UPDATE. That keeps
+-- index-based identification safe because every other writer only ever APPENDS
+-- (coin_spin, daily_spin, coin_redeem, lottery_draw, spin_wheel and
+-- claim_milestone all do `prizes || ...`) and appending never shifts an existing
+-- index — claim_prize is the only function that removes one. The predicate on
+-- the UPDATE means a second concurrent claim whose index no longer exists is
+-- refused rather than taking the wrong prize off the card.
+--
+-- If a future feature ever removes or reorders prizes anywhere else, index
+-- identification stops being safe and this needs to key on the prize itself.
+-- ============================================================================
+create or replace function public.claim_prize(p_code text, p_pin text, p_index integer)
+returns jsonb language plpgsql security definer set search_path to 'public','pg_temp' as $$
+declare m public.reward_members; s public.reward_settings;
+begin
+  select * into m from public.reward_members where code = p_code limit 1;
+  if m.id is null then return jsonb_build_object('error','not found'); end if;
+  select * into s from public.reward_settings where client = m.client;
+  perform public.pin_gate(m.client, p_pin, s.pin);
+  if s.pin is distinct from p_pin then return jsonb_build_object('error','wrong PIN'); end if;
+  if p_index < 0 or p_index >= jsonb_array_length(m.prizes) then return jsonb_build_object('error','no such prize'); end if;
+  update public.reward_members set prizes = coalesce(prizes,'[]'::jsonb) - p_index
+    where id = m.id and p_index < jsonb_array_length(coalesce(prizes,'[]'::jsonb))
+    returning * into m;
+  if m.id is null then return jsonb_build_object('error','no such prize'); end if;
+  return (to_jsonb(m) - 'phone') || jsonb_build_object('reward_at', s.reward_at, 'reward_text', s.reward_text, 'spin_cost', s.spin_cost,
+    'wheel', (select coalesce(jsonb_agg(p->>'label'),'[]'::jsonb) from jsonb_array_elements(s.spin_prizes) p));
+end $$;
+
+grant execute on function public.claim_prize(text,text,integer) to anon, authenticated;
+
+-- CHECKED CLEAN alongside it, so nobody re-treads: get_member returns the
+-- member minus phone and honours is_active; member_appointments is scoped to
+-- member_code and future confirmed rows only. set_member_barber takes no PIN
+-- and does not validate the barber against the shop's staff list, but a
+-- customer picks their own barber through the UI anyway, so an unvalidated
+-- value only ever matches fewer barber-scoped store items, never more.
 
 -- ============================================================================
 -- Owner dashboard
