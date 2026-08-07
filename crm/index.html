@@ -160,6 +160,7 @@ async function show(){
   }
   renderStatusChips();
   loadLeads();
+  if(isAdmin) loadHbMarketing();
 }
 
 function renderStatusChips(){
@@ -245,6 +246,21 @@ function exportCSV(){
   a.download='leads-'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
   setTimeout(function(){URL.revokeObjectURL(a.href);},2000);
 }
+var hbMarketing=null;
+async function loadHbMarketing(){
+  if(!isAdmin){return}
+  try{
+    var r=await supa.from('hb_marketing_contacts').select('id,email_opt_in,sms_opt_in,sms_opted_out_at,email_opted_out_at');
+    if(r.error||!r.data){return}
+    var c=r.data;
+    hbMarketing={
+      total:c.length,
+      sms:c.filter(function(x){return x.sms_opt_in&&!x.sms_opted_out_at}).length,
+      email:c.filter(function(x){return x.email_opt_in&&!x.email_opted_out_at}).length
+    };
+    renderHbCard();
+  }catch(e){}
+}
 function renderHbCard(){
   var hbEl=el('hbStats');
   if(!hbEl) return;
@@ -256,17 +272,29 @@ function renderHbCard(){
   var shipped=hbRows.filter(function(x){return x.status==='shipped'||x.status==='delivered'}).length;
   var pending=hbRows.filter(function(x){return !x.status||x.status==='packed'||x.status==='pickup_ready'}).length;
   var orders=hbRows.filter(function(x){return x.service&&x.service!=='newsletter'&&x.service!=='email'}).length;
-  var subs=hbRows.length-orders;
   hbEl.innerHTML='<div class="card" style="border-color:rgba(201,162,75,.45);background:rgba(201,162,75,.05);margin-bottom:12px">'
     +'<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">'
     +'<b style="color:#C9A24B">🛍 Hubs &amp; Babydoll store</b>'
     +'<a href="https://hubsandbabydoll.com/admin" target="_blank" rel="noopener" style="font-size:12px;color:#C9A24B;text-decoration:none;border:1px solid rgba(201,162,75,.4);border-radius:999px;padding:5px 12px">Open store admin ↗</a>'
     +'</div>'
-    +'<div class="stats" style="margin-bottom:0">'
+    +'<div class="stats" style="margin-bottom:12px">'
     +'<div class="stat" style="border-color:rgba(201,162,75,.3)"><div class="n" style="color:#C9A24B">'+hbRows.length+'</div><div class="l">All submissions</div></div>'
     +'<div class="stat" style="border-color:rgba(201,162,75,.3)"><div class="n" style="color:#C9A24B">'+orders+'</div><div class="l">Orders</div></div>'
     +'<div class="stat" style="border-color:rgba(201,162,75,.3)"><div class="n" style="color:#C9A24B">'+shipped+'</div><div class="l">Shipped / delivered</div></div>'
     +'<div class="stat" style="border-color:rgba(201,162,75,.3)"><div class="n" style="color:#C9A24B">'+pending+'</div><div class="l">Awaiting shipment</div></div>'
+    +'</div>'
+    +'<div style="border-top:1px solid rgba(201,162,75,.25);padding-top:12px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">'
+    +'<b style="font-size:13px;color:#C9A24B">📱 Marketing contacts</b>'
+    +'<a href="https://hubsandbabydoll.com/admin" target="_blank" rel="noopener" style="font-size:12px;color:#C9A24B;text-decoration:none;border:1px solid rgba(201,162,75,.4);border-radius:999px;padding:4px 10px">Manage in store admin ↗</a>'
+    +'</div>'
+    +(hbMarketing
+      ? '<div class="stats" style="margin-bottom:0">'
+        +'<div class="stat" style="border-color:rgba(201,162,75,.3)"><div class="n" style="color:#C9A24B">'+hbMarketing.total+'</div><div class="l">Total contacts</div></div>'
+        +'<div class="stat" style="border-color:rgba(201,162,75,.3)"><div class="n" style="color:#C9A24B">'+hbMarketing.sms+'</div><div class="l">SMS opted-in</div></div>'
+        +'<div class="stat" style="border-color:rgba(201,162,75,.3)"><div class="n" style="color:#C9A24B">'+hbMarketing.email+'</div><div class="l">Email opted-in</div></div>'
+        +'</div>'
+      : '<p style="color:rgba(201,162,75,.5);font-size:13px;margin:0">Loading marketing data…</p>')
     +'</div>'
     +'</div>';
 }
