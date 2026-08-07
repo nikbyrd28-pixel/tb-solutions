@@ -99,6 +99,7 @@
       <div class="badges" id="badges"></div>
     </div>
     <div class="stats" id="stats"></div>
+    <div id="hbStats" class="hide"></div>
     <div class="card">
       <div class="top"><b>📥 Leads</b><button class="btn ghost small" onclick="loadLeads()">Refresh</button></div>
       <div class="chips" id="statusChips"></div>
@@ -244,9 +245,36 @@ function exportCSV(){
   a.download='leads-'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
   setTimeout(function(){URL.revokeObjectURL(a.href);},2000);
 }
+function renderHbCard(){
+  var hbEl=el('hbStats');
+  if(!hbEl) return;
+  var norm=function(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'')};
+  var isHb=isAdmin && filterClient!=='All' && norm(filterClient)==='hubsandbabydoll';
+  if(!isHb){hbEl.classList.add('hide');return}
+  hbEl.classList.remove('hide');
+  var hbRows=rows.filter(function(x){return (x.client||'?')===filterClient});
+  var shipped=hbRows.filter(function(x){return x.status==='shipped'||x.status==='delivered'}).length;
+  var pending=hbRows.filter(function(x){return !x.status||x.status==='packed'||x.status==='pickup_ready'}).length;
+  var orders=hbRows.filter(function(x){return x.service&&x.service!=='newsletter'&&x.service!=='email'}).length;
+  var subs=hbRows.length-orders;
+  hbEl.innerHTML='<div class="card" style="border-color:rgba(201,162,75,.45);background:rgba(201,162,75,.05);margin-bottom:12px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">'
+    +'<b style="color:#C9A24B">🛍 Hubs &amp; Babydoll store</b>'
+    +'<a href="https://hubsandbabydoll.com/admin" target="_blank" rel="noopener" style="font-size:12px;color:#C9A24B;text-decoration:none;border:1px solid rgba(201,162,75,.4);border-radius:999px;padding:5px 12px">Open store admin ↗</a>'
+    +'</div>'
+    +'<div class="stats" style="margin-bottom:0">'
+    +'<div class="stat" style="border-color:rgba(201,162,75,.3)"><div class="n" style="color:#C9A24B">'+hbRows.length+'</div><div class="l">All submissions</div></div>'
+    +'<div class="stat" style="border-color:rgba(201,162,75,.3)"><div class="n" style="color:#C9A24B">'+orders+'</div><div class="l">Orders</div></div>'
+    +'<div class="stat" style="border-color:rgba(201,162,75,.3)"><div class="n" style="color:#C9A24B">'+shipped+'</div><div class="l">Shipped / delivered</div></div>'
+    +'<div class="stat" style="border-color:rgba(201,162,75,.3)"><div class="n" style="color:#C9A24B">'+pending+'</div><div class="l">Awaiting shipment</div></div>'
+    +'</div>'
+    +'</div>';
+}
+
 function render(){
   var vis=sortVis(computeVis());
   renderGame();
+  renderHbCard();
   var counts={};
   STATUSES.forEach(function(s){counts[s]=0});
   rows.forEach(function(x){ if(counts[x.status]!==undefined) counts[x.status]++ });

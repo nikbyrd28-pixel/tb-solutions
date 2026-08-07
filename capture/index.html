@@ -73,8 +73,11 @@ var slug=(q.get('c')||'').toLowerCase().replace(/[^a-z0-9]/g,'');
 
 /* Brand themes: auto-applied per client, or via ?ac=HEX&ac2=HEX for any client */
 var THEMES={
-  voomlux:{acc:'#d8b96a',acc2:'#f0d79a',bg:'#0a0a0a',line:'rgba(216,185,106,.3)',text:'#f5f2ea',muted:'#9a958a'}
+  voomlux:{acc:'#d8b96a',acc2:'#f0d79a',bg:'#0a0a0a',line:'rgba(216,185,106,.3)',text:'#f5f2ea',muted:'#9a958a'},
+  hubsandbabydoll:{acc:'#c9a24b',acc2:'#e8cd82',bg:'#0b0a08',line:'rgba(201,162,75,.3)',text:'#f4ece0',muted:'#a99a80'}
 };
+/* Friendly aliases so ?c=hubby or ?c=babydoll resolve to the Hubs & Babydoll brand */
+if(THEMES[slug]===undefined){ if(slug==='hubby'||slug==='babydoll'){ slug='hubsandbabydoll'; } }
 (function(){
   var th=THEMES[slug]||null;
   var hex=/^[0-9a-fA-F]{6}$/;
@@ -90,7 +93,8 @@ var THEMES={
   if(th.text) r.setProperty('--text',th.text);
   if(th.muted) r.setProperty('--muted',th.muted);
 })();
-var display=q.get('name')||slug.charAt(0).toUpperCase()+slug.slice(1);
+var NAMES={ hubsandbabydoll:'Hubs & Babydoll' };
+var display=q.get('name')||NAMES[slug]||slug.charAt(0).toUpperCase()+slug.slice(1);
 if(slug){
   document.title='Get a quote — '+display;
   document.getElementById('brand').innerHTML=display.replace(/[<>&]/g,'')+' <span>quotes</span>';

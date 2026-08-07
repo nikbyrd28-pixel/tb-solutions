@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Hubs &amp; Babydoll — Handcrafted Self-Care, Made to Be Felt</title>
+<meta name="description" content="Hubs & Babydoll — a small, home-based brand of handcrafted body oils, butters, washes and gift boxes. Rooted in one belief: everyone deserves to feel SEEN and HEARD." />
+<meta name="theme-color" content="#0b0a08" />
+<meta property="og:title" content="Hubs & Babydoll — Handcrafted Self-Care" />
+<meta property="og:description" content="Body oils, butters & gift boxes handmade with intention. Because the people who pour into others deserve to be poured into, too." />
+<meta property="og:type" content="website" />
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0a08'/%3E%3Ctext x='50%25' y='57%25' text-anchor='middle' dominant-baseline='middle' font-family='Georgia,serif' font-size='26' fill='%23d8b45a'%3EH%26amp;B%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{
+    --bg:#0b0a08;--bg2:#141009;--panel:#17120b;--ink:#0a0805;
+    --gold:#c9a24b;--gold2:#e8cd82;--gold3:#f2e2ab;--goldDeep:#9a7526;
+    --cream:#f4ece0;--muted:#a99a80;--faint:#7c7059;
+    --line:rgba(201,162,75,.24);--line2:rgba(201,162,75,.14);
+    --serif:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+    --sans:"Inter",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  html,body{margin:0}
+  body{font-family:var(--sans);color:var(--cream);line-height:1.6;background:var(--bg);overflow-x:hidden;
+    background-image:radial-gradient(ellipse 60% 40% at 50% -5%,rgba(201,162,75,.12),transparent 60%);background-repeat:no-repeat}
+  a{color:var(--gold2);text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{width:min(1120px,100%);margin:0 auto;padding:0 22px}
+  .gold{background:linear-gradient(96deg,var(--gold3),var(--gold) 45%,var(--goldDeep));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .serif{font-family:var(--serif)}
+  .eyebrow{font-size:12px;font-weight:700;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);margin:0}
+  .btn{display:inline-flex;align-items:center;gap:9px;border:0;border-radius:2px;padding:15px 28px;font:inherit;font-weight:700;font-size:13.5px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;
+    background:linear-gradient(180deg,var(--gold2),var(--gold) 60%,var(--goldDeep));color:#1c1405;transition:transform .18s,box-shadow .18s;box-shadow:0 12px 34px rgba(201,162,75,.22)}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(201,162,75,.32)}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--cream);box-shadow:none;font-weight:600}
+  .btn.ghost:hover{border-color:var(--gold);color:var(--gold2)}
+  .btn.wide{width:100%;justify-content:center;padding:16px}
+  .btn:disabled{opacity:.55;cursor:default;transform:none}
+
+  /* seal */
+  .seal{width:var(--s,46px);height:var(--s,46px);border-radius:50%;flex:0 0 auto;display:grid;place-items:center;position:relative;
+    background:radial-gradient(circle at 32% 28%,#20180c,#0c0906);border:1px solid var(--gold);box-shadow:inset 0 0 0 3px rgba(201,162,75,.18)}
+  .seal::before{content:"";position:absolute;inset:5px;border-radius:50%;border:1px dotted rgba(201,162,75,.5)}
+  .seal b{font-family:var(--serif);font-weight:600;font-size:calc(var(--s,46px)*.4);letter-spacing:.02em;
+    background:linear-gradient(180deg,var(--gold3),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* nav */
+  header.nav{position:sticky;top:0;z-index:40;backdrop-filter:blur(10px);background:rgba(11,10,8,.78);border-bottom:1px solid var(--line2)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .logo{display:flex;align-items:center;gap:12px}
+  .logo .wm{font-family:var(--serif);font-size:23px;font-weight:600;letter-spacing:.02em;line-height:1}
+  .logo .wm i{font-style:italic;font-weight:500}
+  .navlinks{display:flex;align-items:center;gap:30px}
+  .navlinks a{color:var(--muted);font-size:13px;font-weight:600;letter-spacing:.06em;transition:color .15s}
+  .navlinks a:hover{color:var(--gold2)}
+  .nav-cta{border:1px solid var(--line);border-radius:2px;padding:10px 18px;color:var(--cream);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+  .nav-cta:hover{border-color:var(--gold);color:var(--gold2)}
+  @media(max-width:820px){.navlinks a:not(.nav-cta){display:none}}
+
+  /* hero */
+  .hero{position:relative;padding:88px 0 72px}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+  .hero h1{font-family:var(--serif);font-weight:500;font-size:clamp(46px,7.4vw,86px);line-height:1.02;letter-spacing:-.01em;margin:20px 0 20px}
+  .hero h1 em{font-style:italic}
+  .hero .lede{color:var(--muted);font-size:17px;max-width:460px;margin:0 0 30px}
+  .hero .cta{display:flex;gap:14px;flex-wrap:wrap}
+  .hero-art{position:relative;aspect-ratio:4/5;border-radius:4px;overflow:hidden;border:1px solid var(--line);
+    background:linear-gradient(160deg,#171207,#0c0a06);box-shadow:0 40px 90px rgba(0,0,0,.6)}
+  .hero-art::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 70% 20%,rgba(201,162,75,.16),transparent 55%);pointer-events:none}
+  .hero-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%}
+  .hero-tag{position:absolute;left:18px;bottom:18px;z-index:2;background:rgba(10,8,5,.62);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:2px;padding:9px 14px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold2);font-weight:700}
+  .marquee{border-block:1px solid var(--line2);background:linear-gradient(90deg,rgba(201,162,75,.05),transparent 40%,rgba(201,162,75,.05));overflow:hidden}
+  .marquee-in{display:flex;gap:0;white-space:nowrap;animation:slide 34s linear infinite}
+  .marquee span{font-family:var(--serif);font-style:italic;font-size:19px;color:var(--muted);padding:14px 26px}
+  .marquee span b{color:var(--gold2);font-style:normal;font-weight:600}
+  @keyframes slide{to{transform:translateX(-50%)}}
+  @media(prefers-reduced-motion:reduce){.marquee-in{animation:none}}
+  @media(max-width:860px){.hero{padding:52px 0 40px}.hero-grid{grid-template-columns:1fr;gap:34px}.hero-art{max-width:420px;margin:0 auto}}
+
+  /* belief band */
+  .belief{padding:74px 0;text-align:center}
+  .belief p{font-family:var(--serif);font-size:clamp(24px,4vw,34px);line-height:1.34;font-weight:500;max-width:820px;margin:16px auto 0}
+  .belief .small{font-family:var(--sans);font-size:15px;color:var(--muted);max-width:620px;margin:22px auto 0;line-height:1.7}
+
+  /* section */
+  section.block{padding:64px 0;border-top:1px solid var(--line2)}
+  .head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:34px}
+  .head h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.4vw,44px);line-height:1.06;margin:8px 0 0}
+  .head p{color:var(--muted);font-size:14.5px;margin:6px 0 0;max-width:420px}
+  .catnote{color:var(--faint);font-size:12.5px;letter-spacing:.04em}
+
+  /* product grid */
+  .grid{display:grid;gap:22px}
+  .grid.g3{grid-template-columns:repeat(3,1fr)}
+  .grid.g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:960px){.grid.g4{grid-template-columns:repeat(2,1fr)}.grid.g3{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.grid.g4,.grid.g3{grid-template-columns:1fr 1fr}}
+  .card{display:flex;flex-direction:column;border:1px solid var(--line2);border-radius:5px;overflow:hidden;background:linear-gradient(180deg,var(--panel),#0d0a06);transition:transform .2s,border-color .2s,box-shadow .2s}
+  .card:hover{transform:translateY(-4px);border-color:var(--line);box-shadow:0 24px 50px rgba(0,0,0,.5)}
+  .card .ph{position:relative;aspect-ratio:1/1;overflow:hidden;background:radial-gradient(circle at 50% 30%,#1c1509,#0b0805)}
+  .card .ph img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+  .card:hover .ph img{transform:scale(1.05)}
+  .card .ph.noimg{display:grid;place-items:center}
+  .card .tagpill{position:absolute;top:10px;left:10px;background:rgba(10,8,5,.7);border:1px solid var(--line);color:var(--gold2);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:5px 9px;border-radius:2px}
+  .card .body{padding:16px 16px 18px;display:flex;flex-direction:column;flex:1}
+  .card .pname{font-family:var(--serif);font-size:22px;font-weight:600;line-height:1.1;margin:0}
+  .card .pscent{color:var(--gold2);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin:5px 0 0}
+  .card .pblurb{color:var(--muted);font-size:13px;line-height:1.55;margin:10px 0 0}
+  .card .pinc{color:var(--faint);font-size:11.5px;line-height:1.5;margin:10px 0 0;border-top:1px dashed var(--line2);padding-top:10px}
+  .card .foot{margin-top:auto;padding-top:14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .card .price{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--gold3)}
+  .card .price small{font-family:var(--sans);font-size:11px;color:var(--faint);letter-spacing:.06em;display:block;font-weight:600}
+  .card .ask{font-size:12px;color:var(--muted);letter-spacing:.04em}
+  .card .add{border:1px solid var(--gold);background:transparent;color:var(--gold2);border-radius:2px;padding:9px 15px;font:inherit;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:background .15s,color .15s}
+  .card .add:hover{background:linear-gradient(180deg,var(--gold2),var(--gold));color:#1c1405}
+
+  /* story */
+  .story{display:grid;grid-template-columns:1fr 1fr;gap:46px;align-items:center}
+  .story .col p{color:var(--muted);font-size:15px;line-height:1.8;margin:0 0 16px}
+  .story .col p.big{font-family:var(--serif);font-size:22px;line-height:1.45;color:var(--cream)}
+  .story .pull{font-family:var(--serif);font-style:italic;font-size:clamp(22px,3.4vw,30px);line-height:1.4;color:var(--gold3);border-left:2px solid var(--gold);padding:6px 0 6px 22px;margin:6px 0}
+  @media(max-width:860px){.story{grid-template-columns:1fr;gap:26px}}
+
+  /* order */
+  #order{scroll-margin-top:80px}
+  .order-wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:40px;align-items:start}
+  .order-copy .eyebrow{margin-bottom:14px}
+  .order-copy h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.4vw,46px);line-height:1.05;margin:0 0 16px}
+  .order-copy p{color:var(--muted);font-size:15px;line-height:1.75}
+  .steps{margin:22px 0 0;display:grid;gap:14px}
+  .step{display:flex;gap:14px;align-items:flex-start}
+  .step .seal{--s:34px}
+  .step b{font-size:14px}.step span{display:block;color:var(--muted);font-size:13px}
+  .form{border:1px solid var(--line);border-radius:6px;padding:26px;background:linear-gradient(165deg,rgba(201,162,75,.06),rgba(20,16,9,.75));box-shadow:0 30px 60px rgba(0,0,0,.45)}
+  label{display:block;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}
+  input,select,textarea{width:100%;padding:14px 15px;border-radius:3px;background:rgba(0,0,0,.4);border:1px solid var(--line);color:var(--cream);font:inherit;font-size:16px}
+  select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23e8cd82' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center;padding-right:38px}
+  textarea{min-height:80px;resize:vertical}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold)}
+  optgroup{color:var(--gold2)}
+  option:disabled{color:#6a5f48}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:520px){.row{grid-template-columns:1fr}}
+  .quote{background:rgba(0,0,0,.3);border:1px solid var(--line2);border-radius:4px;padding:12px 14px;margin-top:16px;font-size:13.5px;color:var(--muted);min-height:44px}
+  .quote b{color:var(--gold3);font-family:var(--serif);font-size:17px}
+  .err{color:#ff9a8f;font-size:13px;margin-top:10px;min-height:16px;font-weight:600;text-align:center}
+  .fine{color:var(--faint);font-size:11px;text-align:center;margin-top:14px;line-height:1.6}
+  @media(max-width:860px){.order-wrap{grid-template-columns:1fr;gap:28px}}
+
+  /* contact */
+  .contact{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px}
+  .ci{border:1px solid var(--line2);border-radius:5px;padding:20px;background:linear-gradient(180deg,var(--panel),#0d0a06)}
+  .ci .k{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  .ci .v{font-size:16px;margin-top:6px;color:var(--cream)}
+  @media(max-width:640px){.contact{grid-template-columns:1fr}}
+
+  footer.foot{border-top:1px solid var(--line2);padding:40px 0 54px;text-align:center;color:var(--faint)}
+  .foot .wm{font-family:var(--serif);font-size:22px;font-weight:600;color:var(--cream)}
+  .foot .wm i{font-style:italic;font-weight:500}
+  .foot .links{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin:16px 0;font-size:13px}
+  .foot .links a{color:var(--muted)}
+  .foot small{font-size:12px}
+
+  .hide{display:none!important}
+  .done-card{text-align:center;padding:22px 6px}
+  .done-card .seal{--s:60px;margin:0 auto 14px}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="#top">
+      <span class="seal" style="--s:38px"><b>H&amp;B</b></span>
+      <span class="wm">Hubs <i>&amp;</i> Babydoll</span>
+    </a>
+    <nav class="navlinks">
+      <a href="#collections">Collections</a>
+      <a href="#oils">Oils</a>
+      <a href="#butter">Butter</a>
+      <a href="#story">Our Story</a>
+      <a class="nav-cta" href="#order">Order</a>
+    </nav>
+  </div>
+</header>
+
+<a id="top"></a>
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">Handcrafted &nbsp;·&nbsp; Home-made &nbsp;·&nbsp; Made with intention</p>
+      <h1>Care that makes you feel <em class="gold">seen</em> &amp; <em class="gold">heard</em>.</h1>
+      <p class="lede">A small, home-based brand of handmade body oils, butters, washes and gift boxes — created to turn everyday routines into meaningful moments of care.</p>
+      <div class="cta">
+        <a class="btn" href="#collections">Shop the collections</a>
+        <a class="btn ghost" href="#story">Read our story</a>
+      </div>
+    </div>
+    <div class="hero-art">
+      <img src="img/oil-bayrum.png" alt="Hubs & Babydoll Harmony Bay Rum Body Oil, handmade in small batches" loading="eager">
+      <span class="hero-tag">Harmony · Bay Rum Body Oil</span>
+    </div>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-in">
+    <span><b>SEEN</b> · Jasmine &amp; Gardenia</span><span><b>HEARD</b> · Bay Rum</span><span>Body Oils</span><span>Body Butter</span><span>Body Wash</span><span>Beard Care</span><span>Gift Boxes</span><span>Peppermint</span><span>Chocolate</span><span>Lavender Rose</span>
+    <span><b>SEEN</b> · Jasmine &amp; Gardenia</span><span><b>HEARD</b> · Bay Rum</span><span>Body Oils</span><span>Body Butter</span><span>Body Wash</span><span>Beard Care</span><span>Gift Boxes</span><span>Peppermint</span><span>Chocolate</span><span>Lavender Rose</span>
+  </div>
+</div>
+
+<section class="belief">
+  <div class="wrap">
+    <p class="eyebrow" style="text-align:center">Why we exist</p>
+    <p class="serif">The people who love the hardest often care for themselves the least. <span class="gold">Hubs &amp; Babydoll</span> is our answer — softness for the ones who pour into everyone else.</p>
+    <p class="small">Because softness isn't weakness. Care isn't selfish. And the people who spend their lives pouring into others deserve to be poured into, too.</p>
+  </div>
+</section>
+
+<!-- COLLECTIONS -->
+<section class="block" id="collections">
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <p class="eyebrow">Signature Gift Boxes</p>
+        <h2>The Collections</h2>
+      </div>
+      <p>Curated rituals built around a single idea — that the person receiving it is <em>seen, heard,</em> and worthy of care.</p>
+    </div>
+    <div class="grid g3" id="grid-collections"></div>
+  </div>
+</section>
+
+<!-- OILS -->
+<section class="block" id="oils">
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <p class="eyebrow">Harmony Line</p>
+        <h2>Body Oils</h2>
+      </div>
+      <p>Lightweight jojoba, sweet almond, flaxseed &amp; castor oils with Vitamin E — nourishes skin and conditions beards, never greasy.</p>
+    </div>
+    <div class="grid g3" id="grid-oils"></div>
+  </div>
+</section>
+
+<!-- BUTTER -->
+<section class="block" id="butter">
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <p class="eyebrow">Moment &amp; SEEN Line</p>
+        <h2>Body Butter</h2>
+      </div>
+      <p>Shea, mango &amp; cocoa butters whipped with nourishing oils — rich hydration with a balanced, non-greasy finish.</p>
+    </div>
+    <div class="grid g4" id="grid-butter"></div>
+  </div>
+</section>
+
+<!-- WASH & BEARD -->
+<section class="block" id="more">
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <p class="eyebrow">The Full Range</p>
+        <h2>Body Wash &amp; Beard Care</h2>
+      </div>
+      <p class="catnote">Prices confirmed with your order — just send a request below.</p>
+    </div>
+    <div class="grid g3" id="grid-more"></div>
+  </div>
+</section>
+
+<!-- STORY -->
+<section class="block" id="story">
+  <div class="wrap story">
+    <div class="col">
+      <p class="eyebrow">Our Story</p>
+      <p class="big" style="margin-top:14px">Hubs &amp; Babydoll began with a simple observation: the people who love the hardest often care for themselves the least.</p>
+      <p>The husband who keeps saying “I'm good,” while carrying the weight of providing. The mother who remembers everyone's appointments but forgets her own. The woman holding it all together while quietly running on empty. We've met them all — across our vendor tables, where “I'm just looking” so often turns into real conversation.</p>
+      <p>We're a small, home-based brand creating handcrafted self-care essentials and gift experiences designed to transform everyday routines into meaningful wellness rituals — one intentional moment at a time.</p>
+    </div>
+    <div class="col">
+      <p class="pull">“Some of our favorite moments haven't been the sales — they've been the conversations.”</p>
+      <p>Whether it's a body butter that nourishes without the greasy feel, an oil that reminds someone they're appreciated, or a gift box that says “I see all that you do,” our hope is that each product becomes more than skincare. A pause. A breath. A reminder that your needs matter, too.</p>
+      <p>If you see us at a vending event, please stop by and say hello. Thank you for supporting our dream and letting Hubs &amp; Babydoll become part of your rituals.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ORDER -->
+<section class="block" id="order">
+  <div class="wrap order-wrap">
+    <div class="order-copy">
+      <p class="eyebrow">Place an Order</p>
+      <h2>Order or pre-order — we confirm every detail.</h2>
+      <p>Pick your product, scent and size. It's a request, not a checkout — we'll reach out to confirm price, availability and the best way to get it to you (pickup, local delivery, or your next event).</p>
+      <div class="steps">
+        <div class="step"><span class="seal"><b>1</b></span><div><b>Choose your ritual</b><span>Product, scent &amp; size — or tap “Order” on any product above.</span></div></div>
+        <div class="step"><span class="seal"><b>2</b></span><div><b>Send your request</b><span>Your details go straight to us — no payment yet.</span></div></div>
+        <div class="step"><span class="seal"><b>3</b></span><div><b>We confirm &amp; deliver</b><span>We text you to finalize and arrange delivery or pickup.</span></div></div>
+      </div>
+    </div>
+
+    <div class="form">
+      <div id="formInner">
+        <label for="inProduct">Product</label>
+        <select id="inProduct"><option value="">Select a product…</option></select>
+
+        <div class="row">
+          <div>
+            <label for="inScent">Scent</label>
+            <select id="inScent"><option value="">Choose a product first…</option></select>
+          </div>
+          <div>
+            <label for="inSize">Size</label>
+            <select id="inSize"><option value="">—</option></select>
+          </div>
+        </div>
+
+        <div class="quote" id="quote">Your selection &amp; estimated price will appear here.</div>
+
+        <div class="row">
+          <div>
+            <label for="inQty">Quantity</label>
+            <input id="inQty" type="number" inputmode="numeric" min="1" max="99" value="1">
+          </div>
+          <div>
+            <label for="inName">Full name</label>
+            <input id="inName" autocomplete="name" placeholder="Your name">
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="inPhone">Mobile number</label>
+            <input id="inPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(555) 123-4567">
+          </div>
+          <div>
+            <label for="inEmail">Email <span style="color:var(--faint)">(optional)</span></label>
+            <input id="inEmail" type="email" autocomplete="email" placeholder="you@email.com">
+          </div>
+        </div>
+        <label for="inNotes">Notes <span style="color:var(--faint)">(gift note, add-ons, event, delivery)</span></label>
+        <textarea id="inNotes" placeholder="Anything we should know…"></textarea>
+        <input type="text" id="inHoney" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+        <button class="btn wide" id="orderBtn" style="margin-top:18px" onclick="placeOrder()">Send my order request</button>
+        <div class="err" id="err"></div>
+        <p class="fine">By submitting you agree to receive order &amp; delivery text messages at the number provided. Consent is not a condition of purchase. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help. <a href="/sms-terms/">SMS Terms</a> · <a href="/privacy/">Privacy</a>.</p>
+      </div>
+      <div id="done" class="hide done-card">
+        <span class="seal"><b>H&amp;B</b></span>
+        <h3 class="serif" style="font-size:26px;margin:0 0 6px">Thank you <span class="gold">— request received</span></h3>
+        <p id="doneMsg" style="color:var(--muted)">We've got your details and will confirm shortly.</p>
+        <button class="btn ghost" style="margin-top:16px" onclick="resetForm()">Place another</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="block" id="contact">
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <p class="eyebrow">Say Hello</p>
+        <h2>Let's connect</h2>
+      </div>
+      <p>Questions, custom gift boxes, wholesale or vending events — we'd love to hear from you.</p>
+    </div>
+    <div class="contact">
+      <a class="ci" href="mailto:hubsbabydoll@gmail.com"><div class="k">Email</div><div class="v">hubsbabydoll@gmail.com</div></a>
+      <a class="ci" href="https://www.instagram.com/hubs_babydoll" target="_blank" rel="noopener noreferrer"><div class="k">Instagram</div><div class="v">@hubs_babydoll</div></a>
+      <a class="ci" href="https://www.tiktok.com/@hubs_babydoll" target="_blank" rel="noopener noreferrer"><div class="k">TikTok</div><div class="v">@hubs_babydoll</div></a>
+    </div>
+    <p style="margin-top:18px"><a class="btn ghost" href="https://statstudiollc.pixieset.com/hubsandbbdoll/" target="_blank" rel="noopener noreferrer">View the full product gallery →</a></p>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="wm">Hubs <i>&amp;</i> Babydoll</div>
+    <div class="links">
+      <a href="#collections">Collections</a><a href="#story">Our Story</a><a href="#order">Order</a>
+      <a href="mailto:hubsbabydoll@gmail.com">Email</a><a href="https://www.instagram.com/hubs_babydoll" target="_blank" rel="noopener noreferrer">Instagram</a>
+    </div>
+    <small>Handcrafted self-care, made in small batches with intention.<br>© Hubs &amp; Babydoll. Site &amp; ordering by <a href="https://tbsol.net">TB Solutions</a>.</small>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var SUPA='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+  var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+  var CLIENT='hubsandbabydoll';
+  var el=function(id){return document.getElementById(id);};
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+  var q=new URLSearchParams(location.search), ref=(q.get('ref')||'').slice(0,16)||null;
+
+  /* Catalog — names, scents, ingredient copy & documented pricing from the
+     Hubs & Babydoll product sheet. price:null => confirmed on order. */
+  var P=[
+    {id:'box-heard', cat:'Collections', name:'HEARD Gift Box', scent:'Bay Rum', tag:'For Him', img:'img/oil-bayrum.png',
+      blurb:'For the man who carries a lot and rarely asks for anything in return — a grooming ritual that says, “I see you. You deserve care, too.”',
+      inc:'8 oz Bay Rum Body Oil · 8 oz Moment Body Butter · HEARD Body Bar · 2 Soft Touch Cloths',
+      sizes:[{l:'Large box',p:50}]},
+    {id:'box-seen-jg', cat:'Collections', name:'SEEN Gift Box', scent:'Jasmine & Gardenia', tag:'For Her', img:'img/oil-jasminegardenia.jpg',
+      blurb:'For the woman who deserves to feel SEEN — nourishing botanical oils that soften, illuminate and delicately scent the skin.',
+      inc:'8 oz J&G Body Oil · 8 oz Moment Body Butter · SEEN Body Bar · 2 Soft Touch Cloths',
+      sizes:[{l:'Large box',p:50}]},
+    {id:'box-seen-lav', cat:'Collections', name:'SEEN Lavender Box', scent:'Lavender', tag:'Small Box', img:'img/butter-lavenderrose.jpg',
+      blurb:'A gentle reminder to slow down, breathe deeply, and pour a little of that love back into herself.',
+      inc:'4 oz Body Oil · 4 oz Moment Body Butter · 2 SEEN Body Bars · 2 Cloths · 4 ml Lavender Essential Oil',
+      sizes:[{l:'Small box',p:40}]},
+
+    {id:'oil-bayrum', cat:'Body Oils', name:'Harmony Body Oil', scent:'Bay Rum', img:'img/oil-bayrum.png',
+      blurb:'Nourishes skin and conditions beards without a greasy finish. Notes of Bay Rum. A moment of intentional care in an everyday routine.',
+      sizes:[{l:'4 oz',p:15},{l:'8 oz',p:25}]},
+    {id:'oil-jg', cat:'Body Oils', name:'Harmony Body Oil', scent:'Jasmine & Gardenia', img:'img/oil-jasminegardenia.jpg',
+      blurb:'The timeless elegance of Jasmine & Gardenia — melts in to nourish, soften and reveal a luminous glow.',
+      sizes:[{l:'4 oz',p:15},{l:'8 oz',p:25}]},
+    {id:'oil-choc', cat:'Body Oils', name:'Harmony Body Oil', scent:'Chocolate', img:'img/oil-chocolate.jpg',
+      blurb:'Jojoba, sweet almond, flaxseed & castor oils with Vitamin E and rich, cozy notes of Chocolate.',
+      sizes:[{l:'4 oz',p:15},{l:'8 oz',p:25}]},
+
+    {id:'butter-moment', cat:'Body Butter', name:'Moment Body Butter', scent:'Unscented', img:null,
+      blurb:'Pure nourishment — no fragrance, no fuss. Shea, mango & cocoa butters with jojoba, sweet almond & castor oils. Rich, non-greasy, gentle for scent-sensitive skin.',
+      sizes:[{l:'4 oz',p:10},{l:'8 oz',p:20}]},
+    {id:'butter-lav', cat:'Body Butter', name:'SEEN Body Butter', scent:'Lavender Rose', img:'img/butter-lavenderrose.jpg',
+      blurb:'Curated shea, mango & coco butters with jojoba, sweet almond, flaxseed & castor oils, Vitamin E, and notes of Lavender & Rose.',
+      sizes:[{l:'4 oz',p:10},{l:'8 oz',p:20}]},
+    {id:'butter-jg', cat:'Body Butter', name:'SEEN Body Butter', scent:'Jasmine & Gardenia', img:'img/butter-jasminegardenia.jpg',
+      blurb:'Curated shea, mango & coco butters with jojoba, sweet almond, flaxseed & castor oils, Vitamin E, and notes of Jasmine & Gardenia.',
+      sizes:[{l:'4 oz',p:10},{l:'8 oz',p:20}]},
+    {id:'butter-choc', cat:'Body Butter', name:'Body Butter', scent:'Chocolate', img:'img/butter-chocolate.jpg',
+      blurb:'Shea, mango & coco butters, jojoba, sweet almond & apricot oils with Vitamin E and a warm chocolate fragrance.',
+      sizes:[{l:'4 oz',p:10},{l:'8 oz',p:20}]},
+    {id:'butter-pep', cat:'Body Butter', name:'Body Butter', scent:'Peppermint', img:'img/butter-peppermint.jpg',
+      blurb:'Shea, mango & coco butters, jojoba, sweet almond & apricot oils with peppermint and Vitamin E — cool, clean, awake.',
+      sizes:[{l:'4 oz',p:10},{l:'8 oz',p:20}]},
+
+    {id:'wash-jg', cat:'Body Wash & Beard', name:'SEEN Body Wash', scent:'Jasmine & Gardenia', img:'img/wash-jasminegardenia.jpg',
+      blurb:'Jojoba, sweet almond, flax seed & castor oils with Vitamin E and notes of Jasmine & Gardenia.',
+      sizes:[{l:'8 oz',p:null}]},
+    {id:'wash-lav', cat:'Body Wash & Beard', name:'SEEN Body Wash', scent:'Lavender Rose', img:'img/wash-lavenderrose.jpg',
+      blurb:'Jojoba, sweet almond, flax seed & castor oils with Vitamin E and notes of Lavender & Rose.',
+      sizes:[{l:'8 oz',p:null}]},
+    {id:'beard-cond', cat:'Body Wash & Beard', name:'Beard Conditioner', scent:'Bay Rum', img:'img/beard-conditioner-bayrum.jpg',
+      blurb:'Conditioner base with Moroccan argan, jojoba, sweet almond, flax seed, pumpkin seed & castor oils, Vitamin E, and notes of Bay Rum.',
+      sizes:[{l:'4 oz',p:null}]},
+
+    {id:'custom', cat:'Something else', name:'Something else / custom', scent:'', img:null,
+      blurb:'', sizes:[{l:'Tell us in notes',p:null}]}
+  ];
+  var byId={}; P.forEach(function(p){byId[p.id]=p;});
+
+  function priceLine(p){
+    var have=p.sizes.filter(function(s){return s.p!=null;});
+    if(!have.length) return {big:'By request', sm:'we confirm price'};
+    if(have.length===1) return {big:'$'+have[0].p, sm:(p.sizes[0].l.indexOf('box')>-1?'per box':'')};
+    return {big:'$'+have[0].p+'–$'+have[have.length-1].p, sm:have.map(function(s){return s.l;}).join(' · ')};
+  }
+
+  /* ---- render product cards ---- */
+  function cardHTML(p){
+    var pr=priceLine(p);
+    var ph = p.img
+      ? '<div class="ph"><img src="'+p.img+'" alt="'+esc(p.name+' — '+p.scent)+'" loading="lazy">'+(p.tag?'<span class="tagpill">'+esc(p.tag)+'</span>':'')+'</div>'
+      : '<div class="ph noimg"><span class="seal" style="--s:66px"><b>H&amp;B</b></span>'+(p.tag?'<span class="tagpill">'+esc(p.tag)+'</span>':'')+'</div>';
+    var priced = p.sizes.some(function(s){return s.p!=null;});
+    var foot = priced
+      ? '<div class="price">'+pr.big+'<small>'+esc(pr.sm)+'</small></div>'
+      : '<div class="ask">Price on request</div>';
+    return ph+
+      '<div class="body">'+
+        '<h3 class="pname">'+esc(p.name)+'</h3>'+
+        (p.scent?'<p class="pscent">'+esc(p.scent)+'</p>':'')+
+        (p.blurb?'<p class="pblurb">'+esc(p.blurb)+'</p>':'')+
+        (p.inc?'<p class="pinc"><b>Includes:</b> '+esc(p.inc)+'</p>':'')+
+        '<div class="foot">'+foot+'<button class="add" data-id="'+p.id+'">Order</button></div>'+
+      '</div>';
+  }
+  function fill(gridId, cat){
+    var g=el(gridId); if(!g) return;
+    P.filter(function(p){return p.cat===cat;}).forEach(function(p){
+      var c=document.createElement('article'); c.className='card'; c.innerHTML=cardHTML(p); g.appendChild(c);
+    });
+  }
+  fill('grid-collections','Collections');
+  fill('grid-oils','Body Oils');
+  fill('grid-butter','Body Butter');
+  fill('grid-more','Body Wash & Beard');
+
+  /* ---- order form ---- */
+  var groups=['Collections','Body Oils','Body Butter','Body Wash & Beard','Something else'];
+  (function(){
+    var sel=el('inProduct');
+    groups.forEach(function(g){
+      var items=P.filter(function(p){return p.cat===g;}); if(!items.length) return;
+      var og=document.createElement('optgroup'); og.label=g;
+      items.forEach(function(p){
+        var o=document.createElement('option'); o.value=p.id;
+        o.textContent=p.name+(p.scent?(' — '+p.scent):'');
+        og.appendChild(o);
+      });
+      sel.appendChild(og);
+    });
+  })();
+
+  function refreshChild(){
+    var p=byId[el('inProduct').value], sc=el('inScent'), sz=el('inSize');
+    sc.innerHTML=''; sz.innerHTML='';
+    if(!p){ sc.innerHTML='<option value="">Choose a product first…</option>'; sz.innerHTML='<option value="">—</option>'; updateQuote(); return; }
+    if(p.scent){ sc.innerHTML='<option value="'+esc(p.scent)+'">'+esc(p.scent)+'</option>'; }
+    else { sc.innerHTML='<option value="">Any / specify in notes</option>'; }
+    p.sizes.forEach(function(s,i){ var o=document.createElement('option'); o.value=String(i); o.textContent=s.l+(s.p!=null?(' — $'+s.p):''); sz.appendChild(o); });
+    updateQuote();
+  }
+  function currentSel(){
+    var p=byId[el('inProduct').value]; if(!p) return null;
+    var si=parseInt(el('inSize').value,10); if(isNaN(si)) si=0;
+    var s=p.sizes[si]||p.sizes[0];
+    var qty=Math.max(1,Math.min(99,parseInt(el('inQty').value,10)||1));
+    return {p:p,s:s,qty:qty,scent:el('inScent').value};
+  }
+  function updateQuote(){
+    var c=currentSel(), box=el('quote');
+    if(!c){ box.innerHTML='Your selection &amp; estimated price will appear here.'; return; }
+    var line=c.p.name+(c.scent?(' · '+c.scent):'')+' · '+c.s.l+' × '+c.qty;
+    if(c.s.p!=null){ box.innerHTML=esc(line)+'<br><b>Est. $'+(c.s.p*c.qty)+'</b> <span style="color:var(--faint)">— confirmed with your order</span>'; }
+    else { box.innerHTML=esc(line)+'<br><b>Price by request</b> <span style="color:var(--faint)">— we’ll confirm before anything’s charged</span>'; }
+  }
+  el('inProduct').addEventListener('change',refreshChild);
+  el('inSize').addEventListener('change',updateQuote);
+  el('inScent').addEventListener('change',updateQuote);
+  el('inQty').addEventListener('input',updateQuote);
+
+  /* card "Order" buttons -> prefill + scroll */
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('.add'); if(!b) return;
+    var id=b.getAttribute('data-id');
+    el('inProduct').value=id; refreshChild();
+    document.getElementById('order').scrollIntoView({behavior:'smooth'});
+    setTimeout(function(){ el('inName').focus({preventScroll:true}); },500);
+  });
+
+  window.resetForm=function(){ el('done').classList.add('hide'); el('formInner').classList.remove('hide'); };
+
+  window.placeOrder=function(){
+    if(el('inHoney').value) return;
+    var c=currentSel(), e=el('err'); e.textContent='';
+    var name=(el('inName').value||'').trim();
+    var phone=(el('inPhone').value||'').replace(/[^0-9+]/g,'');
+    var email=(el('inEmail').value||'').trim();
+    var notes=(el('inNotes').value||'').trim();
+    if(!c){ e.textContent='Please choose a product.'; el('inProduct').focus(); return; }
+    if(name.length<2){ e.textContent='Please enter your name.'; el('inName').focus(); return; }
+    if(phone.replace(/\D/g,'').length<10){ e.textContent='Enter a valid mobile number.'; el('inPhone').focus(); return; }
+
+    var svc=c.p.name+(c.scent?(' — '+c.scent):'')+' · '+c.s.l;
+    var priceTxt=(c.s.p!=null)?('$'+c.s.p+' ea · est. $'+(c.s.p*c.qty)):'by request';
+    var msg='Order request\nItem: '+c.p.name+(c.scent?(' — '+c.scent):'')+'\nSize: '+c.s.l+'\nQty: '+c.qty+'\nPrice: '+priceTxt+(notes?('\nNotes: '+notes):'');
+
+    var b=el('orderBtn'); b.disabled=true; b.textContent='Sending…';
+    fetch(SUPA+'/rest/v1/client_leads',{method:'POST',
+      headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+      body:JSON.stringify({client:CLIENT,kind:'order',name:name,phone:phone,email:email,service:svc,message:msg,ref:ref})
+    }).then(function(r){
+      if(!r.ok) throw new Error('http '+r.status);
+      el('formInner').classList.add('hide'); el('done').classList.remove('hide');
+      el('doneMsg').textContent=name.split(/\s+/)[0]+', we’ve got your '+c.p.name+' request — we’ll text you to confirm price & delivery shortly.';
+      document.getElementById('order').scrollIntoView({behavior:'smooth'});
+    }).catch(function(){
+      b.disabled=false; b.textContent='Send my order request';
+      e.textContent='Could not send — please try again, or email hubsbabydoll@gmail.com.';
+    });
+  };
+
+  window.addEventListener('error',function(ev){try{
+    fetch(SUPA+'/rest/v1/client_errors',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+      body:JSON.stringify({page:location.pathname,msg:String((ev&&ev.message)||'').slice(0,300),src:String((ev&&ev.filename)||'').slice(0,120),line:(ev&&ev.lineno)||0})}).catch(function(){});
+  }catch(_){}});
+})();
+</script>
+</body>
+</html>
