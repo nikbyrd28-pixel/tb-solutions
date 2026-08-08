@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Your website — Loop</title>
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305070f'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%F0%9F%8C%90%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{
+    --bg:#05070f;--card:rgba(255,255,255,.04);--text:#eef1ff;--muted:#96a0c4;
+    --line:rgba(150,190,255,.17);--acc:#5df2e0;--acc2:#6f9dff;--good:#7CFCC6;--bad:#ff7a8a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);line-height:1.6;
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif}
+  .wrap{max-width:660px;margin:0 auto;padding:0 16px 60px}
+  header{padding:22px 0 8px}
+  h1{font-size:23px;margin:0 0 4px;letter-spacing:-.4px}
+  .sub{color:var(--muted);font-size:14px;margin:0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:16px;margin-top:14px}
+  .card h2{font-size:15px;margin:0 0 4px}
+  .card .hint{color:var(--muted);font-size:13px;margin:0 0 12px}
+  label{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin:12px 0 5px;letter-spacing:.02em}
+  input,textarea,select{width:100%;background:rgba(0,0,0,.28);border:1px solid var(--line);color:var(--text);
+    border-radius:10px;padding:11px 12px;font:inherit;font-size:15px}
+  textarea{min-height:86px;resize:vertical}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:520px){.two{grid-template-columns:1fr}}
+  .btn{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#05060d;border:0;border-radius:11px;
+    padding:13px 20px;font:inherit;font-weight:800;font-size:15px;cursor:pointer;width:100%}
+  .btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+  .btn.sm{width:auto;padding:9px 14px;font-size:13.5px}
+  .btn:disabled{opacity:.5;cursor:default}
+  .themes{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:6px}
+  .th{border:1px solid var(--line);border-radius:11px;padding:9px 4px;text-align:center;cursor:pointer;
+    font-size:12px;font-weight:800;background:transparent;color:var(--muted);font-family:inherit}
+  .th .sw{height:22px;border-radius:6px;margin-bottom:6px;border:1px solid rgba(255,255,255,.12)}
+  .th.on{border-color:var(--acc);color:var(--text);box-shadow:0 0 0 1px var(--acc) inset}
+  .tog{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .tog:last-child{border-bottom:0}
+  .tog span{font-size:14.5px;font-weight:600}
+  .tog small{display:block;color:var(--muted);font-weight:400;font-size:12.5px}
+  .tog input{width:44px;height:26px;flex:0 0 44px;appearance:none;background:rgba(255,255,255,.12);
+    border-radius:99px;position:relative;cursor:pointer;border:0;transition:background .15s}
+  .tog input:checked{background:var(--acc)}
+  .tog input::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;
+    background:#fff;transition:transform .15s}
+  .tog input:checked::after{transform:translateX(18px)}
+  .msg{font-size:13.5px;margin-top:10px;min-height:19px}
+  .msg.ok{color:var(--good)} .msg.err{color:var(--bad)}
+  .linkbox{display:flex;gap:8px;margin-top:6px}
+  .linkbox input{font-size:13px}
+  pre{background:rgba(0,0,0,.32);border:1px solid var(--line);border-radius:10px;padding:12px;
+    white-space:pre-wrap;word-break:break-word;font-size:13px;margin:6px 0 0;font-family:ui-monospace,Menlo,Consolas,monospace}
+  ol{padding-left:20px;color:var(--muted);font-size:14px} ol li{margin:7px 0} ol li b{color:var(--text)}
+  .hide{display:none !important}
+  iframe{width:100%;height:640px;border:1px solid var(--line);border-radius:14px;background:#fff;margin-top:10px}
+  .foot{color:var(--muted);font-size:12.5px;text-align:center;margin-top:26px}
+  .foot a{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>🌐 Your shop website</h1>
+    <p class="sub">One page with your prices, hours, booking link and rewards card. Put the link in your Instagram bio and on your Google listing.</p>
+  </header>
+
+  <!-- sign in -->
+  <div class="card" id="gate">
+    <h2>Sign in</h2>
+    <p class="hint">Same shop code and PIN you use for the Command Center.</p>
+    <label for="inCode">Shop code</label>
+    <input id="inCode" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="e.g. maplestreet">
+    <label for="inPin">PIN</label>
+    <input id="inPin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="••••">
+    <div style="margin-top:14px"><button class="btn" id="signBtn">Sign in</button></div>
+    <div class="msg" id="gateMsg"></div>
+  </div>
+
+  <!-- editor -->
+  <div id="editor" class="hide">
+
+    <div class="card">
+      <div class="tog">
+        <span>Publish my website<small id="liveNote">Off — nobody can see it yet.</small></span>
+        <input type="checkbox" id="fOn">
+      </div>
+      <div id="liveLink" class="hide" style="margin-top:10px">
+        <label style="margin-top:0">Your link — put this in your IG bio</label>
+        <div class="linkbox"><input id="siteUrl" readonly><button class="btn ghost sm" onclick="copyF('siteUrl')">Copy</button></div>
+        <div style="margin-top:8px"><a id="openSite" class="btn ghost sm" style="display:inline-block;text-decoration:none;text-align:center" target="_blank" rel="noopener">Open it →</a></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Look</h2>
+      <p class="hint">Same page, four looks. Tap one and the preview updates.</p>
+      <div class="themes" id="themes"></div>
+    </div>
+
+    <div class="card">
+      <h2>Words</h2>
+      <p class="hint">Your prices, hours and rewards come across from Loop automatically — you only fill in what Loop never asked for.</p>
+      <label for="fTagline">One-line tagline</label>
+      <input id="fTagline" maxlength="90" placeholder="Sharp fades in West Chester since 2016">
+      <label for="fAbout">About the shop</label>
+      <textarea id="fAbout" maxlength="600" placeholder="Walk-ins welcome. Skin fades, beard work, kids' cuts. Two chairs, no rush."></textarea>
+    </div>
+
+    <div class="card">
+      <h2>Find us</h2>
+      <p class="hint">The address and phone must match your Google listing exactly — same abbreviations, same suite number. That match is what Google rewards.</p>
+      <div class="two">
+        <div><label for="fPhone">Phone</label><input id="fPhone" inputmode="tel" placeholder="(610) 555-0134"></div>
+        <div><label for="fIg">Instagram handle</label><input id="fIg" autocapitalize="none" placeholder="maplestbarbers"></div>
+      </div>
+      <label for="fAddress">Street address</label>
+      <input id="fAddress" maxlength="160" placeholder="12 W Gay St, West Chester, PA 19380">
+      <div class="two">
+        <div><label for="fTiktok">TikTok handle</label><input id="fTiktok" autocapitalize="none" placeholder="optional"></div>
+        <div><label for="fMaps">Google Maps link</label><input id="fMaps" placeholder="optional — built from your address if blank"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Pictures</h2>
+      <p class="hint">Paste image links. Post the photo to Instagram first, or drop it in Google Photos and copy the share link.</p>
+      <label for="fHero">Big photo at the top</label>
+      <input id="fHero" placeholder="https://…">
+      <label for="fPhotos">Your work — one link per line, up to 6</label>
+      <textarea id="fPhotos" placeholder="https://…&#10;https://…"></textarea>
+    </div>
+
+    <div class="card">
+      <h2>Show or hide</h2>
+      <div class="tog"><span>Prices<small>Your service list with prices.</small></span><input type="checkbox" id="fPrices"></div>
+      <div class="tog"><span>Barber names<small>The team you set up in Loop. Names only, never phone numbers.</small></span><input type="checkbox" id="fTeam"></div>
+    </div>
+
+    <div class="card">
+      <button class="btn" id="saveBtn">Save &amp; publish</button>
+      <div class="msg" id="saveMsg"></div>
+    </div>
+
+    <div class="card">
+      <h2>👁 Preview</h2>
+      <p class="hint">This is exactly what a customer sees. It updates as you type.</p>
+      <iframe id="prev" title="Website preview"></iframe>
+    </div>
+
+    <!-- ── Google Business Profile ────────────────────────────────────────
+         We cannot edit anybody's Google listing for them — that needs the
+         owner signed into their own Google account. What we CAN do is hand
+         them every field pre-written and in the right order, which is the
+         part that actually stops barbers from finishing it. -->
+    <div class="card">
+      <h2>📍 Your Google listing</h2>
+      <p class="hint">Google is where people search "barber near me". Do this once — it takes about ten minutes and it is free.</p>
+      <ol>
+        <li>Open <b><a href="https://business.google.com/" target="_blank" rel="noopener" style="color:var(--acc)">business.google.com</a></b> and claim your shop (or sign in if it is already yours).</li>
+        <li>Paste the <b>Website</b> field below. Most shops leave this empty — that is the single biggest thing you are fixing today.</li>
+        <li>Paste the <b>description</b>.</li>
+        <li>Set your <b>hours</b> to match the ones below.</li>
+        <li>Add your services and prices.</li>
+        <li>Upload 5+ photos. Google shows shops with photos first.</li>
+        <li>Post the <b>first update</b> below so the listing does not look dormant.</li>
+      </ol>
+      <label>Website field</label>
+      <div class="linkbox"><input id="gmbUrl" readonly><button class="btn ghost sm" onclick="copyF('gmbUrl')">Copy</button></div>
+      <label>Business description</label>
+      <pre id="gmbDesc"></pre>
+      <button class="btn ghost sm" style="margin-top:8px" onclick="copyT('gmbDesc')">Copy description</button>
+      <label>Hours to enter</label>
+      <pre id="gmbHours"></pre>
+      <label>Services to add</label>
+      <pre id="gmbSvc"></pre>
+      <label>First post</label>
+      <pre id="gmbPost"></pre>
+      <button class="btn ghost sm" style="margin-top:8px" onclick="copyT('gmbPost')">Copy post</button>
+    </div>
+
+    <div class="card">
+      <h2>📸 Instagram</h2>
+      <p class="hint">Set your bio link to the one page that holds everything — booking, prices, directions, rewards. One link, not five.</p>
+      <label>Bio link</label>
+      <div class="linkbox"><input id="igUrl" readonly><button class="btn ghost sm" onclick="copyF('igUrl')">Copy</button></div>
+      <label>Bio wording</label>
+      <pre id="igBio"></pre>
+      <button class="btn ghost sm" style="margin-top:8px" onclick="copyT('igBio')">Copy bio</button>
+    </div>
+  </div>
+
+  <div class="foot">🔁 <b>Loop</b> · <a href="https://tbsol.net">TB Solutions</a></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+  var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+  var HEAD={apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'};
+
+  var THEMES=[
+    ['classic','Classic','#f6f1e7','#8c1d1d'],
+    ['fade','Fade','#11141b','#5df2e0'],
+    ['luxe','Luxe','#0a0a0a','#d4af37'],
+    ['bold','Bold','#ffffff','#e11d48']
+  ];
+  var DAYNM=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+  var CODE='', PIN='', DATA=null, THEME='classic', prevReady=false, pendingPreview=null;
+
+  function el(id){ return document.getElementById(id); }
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function rpc(fn,body){
+    return fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:HEAD,body:JSON.stringify(body)})
+      .then(function(r){ return r.json().catch(function(){ return null; }); });
+  }
+  function say(id,txt,cls){ var n=el(id); n.textContent=txt; n.className='msg'+(cls?' '+cls:''); }
+
+  window.copyF=function(id){ var i=el(id); i.select(); i.setSelectionRange(0,9999);
+    if(navigator.clipboard) navigator.clipboard.writeText(i.value); else document.execCommand('copy'); flash(); };
+  window.copyT=function(id){ var t=el(id).textContent;
+    if(navigator.clipboard) navigator.clipboard.writeText(t); flash(); };
+  function flash(){ say('saveMsg','Copied 📋','ok'); setTimeout(function(){ say('saveMsg',''); },1600); }
+
+  /* ── sign in ───────────────────────────────────────────────────────── */
+  el('signBtn').onclick=function(){
+    var c=(el('inCode').value||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+    var p=(el('inPin').value||'').trim();
+    if(!c||!p){ say('gateMsg','Enter your shop code and PIN.','err'); return; }
+    this.disabled=true; say('gateMsg','Checking…');
+    var btn=this;
+    rpc('shop_site_admin',{p_client:c,p_pin:p}).then(function(r){
+      btn.disabled=false;
+      if(!r){ say('gateMsg','Could not reach the server. Try again.','err'); return; }
+      // pin_gate raises during a lockout, which arrives as a PostgREST error
+      if(r.message||r.hint){ say('gateMsg',String(r.message||r.hint),'err'); return; }
+      if(!r.ok){ say('gateMsg',r.error||'Wrong PIN.','err'); return; }
+      CODE=c; PIN=p; DATA=r.data;
+      try{ localStorage.setItem('tb_shop_code',c); }catch(e){}   // code only, never the PIN
+      say('gateMsg','');
+      el('gate').classList.add('hide');
+      el('editor').classList.remove('hide');
+      fill(); paint();
+    });
+  };
+  el('inPin').addEventListener('keydown',function(e){ if(e.key==='Enter') el('signBtn').click(); });
+  try{ el('inCode').value=localStorage.getItem('tb_shop_code')||''; }catch(e){}
+
+  /* ── form <-> blob ─────────────────────────────────────────────────── */
+  function fill(){
+    var s=(DATA&&DATA.site)||{};
+    THEME=s.theme||'classic';
+    el('fOn').checked=!!s.on;
+    el('fTagline').value=s.tagline||'';
+    el('fAbout').value=s.about||'';
+    el('fAddress').value=DATA.address||s.address||'';
+    el('fPhone').value=DATA.phone||s.phone||'';
+    el('fIg').value=s.ig||'';
+    el('fTiktok').value=s.tiktok||'';
+    el('fMaps').value=s.maps||'';
+    el('fHero').value=s.hero||'';
+    el('fPhotos').value=(s.photos||[]).join('\n');
+    el('fPrices').checked=s.prices!==false;
+    el('fTeam').checked=!!s.team;
+
+    el('themes').innerHTML=THEMES.map(function(t){
+      return '<button type="button" class="th'+(t[0]===THEME?' on':'')+'" data-th="'+t[0]+'">'
+        +'<div class="sw" style="background:'+t[2]+';box-shadow:inset 0 -7px 0 '+t[3]+'"></div>'+esc(t[1])+'</button>';
+    }).join('');
+    [].forEach.call(el('themes').children,function(b){
+      b.onclick=function(){ THEME=b.getAttribute('data-th');
+        [].forEach.call(el('themes').children,function(x){ x.classList.toggle('on',x===b); });
+        paint(); };
+    });
+
+    bind();
+  }
+
+  // fill() runs again after every save, so the listeners are bound once and
+  // never re-bound — otherwise each save doubles the number of paint() calls
+  // per keystroke.
+  var bound=false;
+  function bind(){
+    if(bound) return; bound=true;
+    ['fOn','fTagline','fAbout','fAddress','fPhone','fIg','fTiktok','fMaps','fHero','fPhotos','fPrices','fTeam']
+      .forEach(function(id){ el(id).addEventListener('input',paint); el(id).addEventListener('change',paint); });
+  }
+
+  function blob(){
+    return {
+      on: el('fOn').checked, theme: THEME, cta:'book',
+      tagline: el('fTagline').value.trim(),
+      about: el('fAbout').value.trim(),
+      address: el('fAddress').value.trim(),
+      phone: el('fPhone').value.trim(),
+      ig: el('fIg').value.trim().replace(/^@/,''),
+      tiktok: el('fTiktok').value.trim().replace(/^@/,''),
+      maps: el('fMaps').value.trim(),
+      hero: el('fHero').value.trim(),
+      photos: el('fPhotos').value.split('\n').map(function(x){ return x.trim(); }).filter(Boolean).slice(0,6),
+      prices: el('fPrices').checked,
+      team: el('fTeam').checked
+    };
+  }
+
+  /* What the live page would receive if we saved right now. The preview is
+     driven off this so it can never disagree with the form. */
+  function payload(){
+    var s=blob();
+    var d=JSON.parse(JSON.stringify(DATA));
+    d.published=true;
+    d.site=s;
+    d.address=s.address||DATA.address||null;
+    d.phone=s.phone||DATA.phone||null;
+    if(!s.prices) d.services=[];
+    if(!s.team) d.team=[];
+    return d;
+  }
+
+  /* ── preview + generated copy ──────────────────────────────────────── */
+  window.addEventListener('message',function(ev){
+    if(ev.origin!==location.origin) return;
+    if(ev.data&&ev.data.tbShopPreviewReady){ prevReady=true; if(pendingPreview) push(pendingPreview); }
+  });
+  function push(d){
+    var f=el('prev');
+    if(!prevReady||!f.contentWindow){ pendingPreview=d; return; }
+    f.contentWindow.postMessage({tbShopPreview:true,data:d},location.origin);
+  }
+
+  function paint(){
+    var s=blob(), d=payload();
+    var live=location.origin+'/shop/?c='+encodeURIComponent(CODE);
+    el('siteUrl').value=live; el('gmbUrl').value=live; el('igUrl').value=live;
+    el('openSite').href=live;
+    el('liveLink').classList.toggle('hide',!s.on);
+    el('liveNote').textContent = s.on
+      ? 'On — anyone with the link can see it.'
+      : 'Off — nobody can see it yet.';
+
+    if(!el('prev').src) el('prev').src='/shop/?c='+encodeURIComponent(CODE)+'#preview';
+    push(d);
+    copyPack(d,s);
+  }
+
+  function pretty(hm){
+    var m=/^(\d{1,2}):(\d{2})$/.exec(String(hm||'')); if(!m) return '';
+    var h=+m[1], mn=+m[2], ap=h<12?'AM':'PM', h12=h%12||12;
+    return h12+(mn?':'+String(mn).padStart(2,'0'):'')+' '+ap;
+  }
+
+  function copyPack(d,s){
+    var name=d.biz_name||'the shop';
+    var svc=(d.services||[]).filter(function(x){ return x&&x.name; });
+
+    // Google caps the description at 750 characters and silently truncates.
+    var bits=[];
+    bits.push(name+' is a barbershop'+(s.address?' in '+s.address.split(',').slice(1,2).join('').trim():'')+'.');
+    if(s.about) bits.push(s.about);
+    else if(s.tagline) bits.push(s.tagline+'.');
+    if(svc.length) bits.push('Services include '+svc.map(function(x){ return x.name.toLowerCase(); }).join(', ')+'.');
+    if(d.booking_on||d.book_url) bits.push('Book online any time — walk-ins welcome when a chair is free.');
+    if(d.reward_text) bits.push('Ask about the free rewards card: collect a point every visit and earn '+d.reward_text+'.');
+    el('gmbDesc').textContent=bits.join(' ').replace(/\s+/g,' ').trim().slice(0,750);
+
+    var hrs=[];
+    for(var i=1;i<=7;i++){ var k=String(i%7), t=d.hours&&d.hours[k];
+      hrs.push(DAYNM[i%7]+': '+(t&&t.length?pretty(t[0])+' – '+pretty(t[1]):'Closed')); }
+    el('gmbHours').textContent=hrs.join('\n');
+
+    el('gmbSvc').textContent = svc.length
+      ? svc.map(function(x){ return x.name+(x.price?' — '+x.price:'')+(x.mins?' ('+x.mins+' min)':''); }).join('\n')
+      : 'Add your services in Loop first and they will appear here.';
+
+    el('gmbPost').textContent =
+      'Booking is open at '+name+'. Prices, hours and online booking are all on one page — tap the link. '
+      +(d.reward_text?'New: a free rewards card. Every cut earns a point toward '+d.reward_text+'. ':'')
+      +(s.address?'Find us at '+s.address+'.':'');
+
+    el('igBio').textContent =
+      '💈 '+name+'\n'
+      +(s.tagline?s.tagline+'\n':'')
+      +(s.address?'📍 '+s.address+'\n':'')
+      +'📅 Book + prices + rewards 👇';
+  }
+
+  /* ── save ──────────────────────────────────────────────────────────── */
+  el('saveBtn').onclick=function(){
+    var btn=this; btn.disabled=true; say('saveMsg','Saving…');
+    rpc('shop_site_set',{p_client:CODE,p_pin:PIN,p_site:blob()}).then(function(r){
+      btn.disabled=false;
+      if(!r){ say('saveMsg','Could not reach the server. Try again.','err'); return; }
+      if(r.message||r.hint){ say('saveMsg',String(r.message||r.hint),'err'); return; }
+      if(!r.ok){ say('saveMsg',r.error||'Could not save.','err'); return; }
+      // Re-read so the form shows exactly what the SERVER kept, not what we
+      // sent — site_sanitize() drops bad URLs and trims long text, and the
+      // owner needs to see that happen rather than believe a value stuck.
+      rpc('shop_site_admin',{p_client:CODE,p_pin:PIN}).then(function(a){
+        var live=!!(r.site&&r.site.on);
+        if(a&&a.ok){ DATA=a.data; live=!!(a.data&&a.data.site&&a.data.site.on); fill(); paint(); }
+        say('saveMsg', live ? 'Saved. Your site is live ✅' : 'Saved. Still unpublished.', 'ok');
+      });
+    });
+  };
+})();
+</script>
+</body>
+</html>

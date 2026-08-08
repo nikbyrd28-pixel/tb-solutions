@@ -616,7 +616,8 @@
 
   function buildTools(){
     var base=location.origin;
-    var links=[['⚙️ Rewards & settings',base+'/rewards/owner/?c='+CODE],['📣 Loop Blast (bulk SMS)',base+'/rewards/blast/?c='+CODE],
+    var links=[['🌐 Your website + Google listing',base+'/shop/edit/'],
+      ['⚙️ Rewards & settings',base+'/rewards/owner/?c='+CODE],['📣 Loop Blast (bulk SMS)',base+'/rewards/blast/?c='+CODE],
       ['💔 Win back lapsed',base+'/rewards/winback/?c='+CODE],['⭐ Reviews wall',base+'/rewards/wall/?c='+CODE],
       ['🖨️ Counter poster',base+'/rewards/poster/?c='+CODE],['🎮 Arcade',base+'/arcade/?c='+CODE]];
     el('toolLinks').innerHTML=links.map(function(l){ return '<a class="cust" style="text-decoration:none" href="'+l[1]+'" target="_blank" rel="noopener"><div class="info"><b>'+esc(l[0])+'</b></div><span class="iconb">↗</span></a>'; }).join('');
