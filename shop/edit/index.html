@@ -15,7 +15,7 @@
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--text);line-height:1.6;
     font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif}
-  .wrap{max-width:660px;margin:0 auto;padding:0 16px 60px}
+  .wrap{max-width:660px;margin:0 auto;padding:0 16px 90px}
   header{padding:22px 0 8px}
   h1{font-size:23px;margin:0 0 4px;letter-spacing:-.4px}
   .sub{color:var(--muted);font-size:14px;margin:0}
@@ -60,6 +60,39 @@
   iframe{width:100%;height:640px;border:1px solid var(--line);border-radius:14px;background:#fff;margin-top:10px}
   .foot{color:var(--muted);font-size:12.5px;text-align:center;margin-top:26px}
   .foot a{color:var(--muted)}
+
+  /* ── photo tiles ── tap opens the camera roll; no URLs anywhere ───────── */
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:8px}
+  .tile{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;border:1px dashed var(--line);
+    background:rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;
+    cursor:pointer;color:var(--muted);font-size:12px;font-weight:700;text-align:center;padding:6px}
+  .tile.has{border-style:solid;border-color:var(--line)}
+  .tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .tile .x{position:absolute;top:5px;right:5px;z-index:2;width:24px;height:24px;border-radius:50%;
+    background:rgba(0,0,0,.7);color:#fff;border:0;font-size:14px;line-height:1;cursor:pointer;padding:0}
+  .tile .busy{position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;
+    justify-content:center;font-size:11px;z-index:3}
+  .logorow{display:flex;align-items:center;gap:14px;margin-top:8px}
+  .logotile{width:78px;height:78px;flex:0 0 78px;border-radius:16px}
+  .swatches{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+  .sw2{width:34px;height:34px;border-radius:9px;border:2px solid transparent;cursor:pointer;padding:0}
+  .sw2.on{border-color:#fff}
+  .sw2.none{background:repeating-linear-gradient(45deg,#333 0 6px,#555 6px 12px);
+    color:#fff;font-size:10px;font-weight:800}
+  input[type=color]{width:46px;height:34px;padding:2px;border-radius:9px;background:transparent}
+  .btnrow{display:grid;grid-template-columns:1fr 1.4fr auto;gap:8px;margin-top:8px;align-items:center}
+  .btnrow input{font-size:14px}
+  .btnrow button{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:9px;
+    height:42px;width:42px;font-size:16px;cursor:pointer}
+
+  /* the save bar follows you down the page — the editor is long */
+  .savebar{position:fixed;left:0;right:0;bottom:0;z-index:30;
+    padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+    background:rgba(5,7,15,.92);backdrop-filter:blur(12px);border-top:1px solid var(--line)}
+  .savebar .in{max-width:660px;margin:0 auto;display:flex;gap:10px;align-items:center}
+  .savebar .st{flex:1;font-size:12.5px;color:var(--muted);min-height:18px}
+  .savebar .st.ok{color:var(--good)} .savebar .st.err{color:var(--bad)}
+  .savebar .btn{width:auto;padding:12px 22px}
 </style>
 </head>
 <body>
@@ -101,11 +134,31 @@
       <h2>Look</h2>
       <p class="hint">Same page, four looks. Tap one and the preview updates.</p>
       <div class="themes" id="themes"></div>
+      <label>Your own colour <span style="font-weight:400;text-transform:none">— optional, overrides the look above</span></label>
+      <div class="swatches" id="swatches"></div>
+    </div>
+
+    <div class="card">
+      <h2>Logo</h2>
+      <p class="hint">Tap the square to upload from your phone. Skip it if you don't have one — the page looks fine without.</p>
+      <div class="logorow">
+        <div class="tile logotile" id="logoTile" data-slot="logo">Tap to add</div>
+        <div style="color:var(--muted);font-size:13px">Square works best. JPG or PNG, up to 6&nbsp;MB.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Photos</h2>
+      <p class="hint">Tap a square to upload straight from your camera roll. The big one sits behind your shop name; the rest fill the gallery. Until you add any, the page shows barbershop artwork in your colour — it never looks empty.</p>
+      <label>Big photo behind your name</label>
+      <div class="tiles" style="grid-template-columns:1fr"><div class="tile" id="heroTile" data-slot="hero" style="aspect-ratio:16/7">Tap to add</div></div>
+      <label>Your work — up to 6</label>
+      <div class="tiles" id="photoTiles"></div>
     </div>
 
     <div class="card">
       <h2>Words</h2>
-      <p class="hint">Your prices, hours and rewards come across from Loop automatically — you only fill in what Loop never asked for.</p>
+      <p class="hint">Your prices, hours, rewards and reviews come across from Loop automatically — you only fill in what Loop never asked for.</p>
       <label for="fTagline">One-line tagline</label>
       <input id="fTagline" maxlength="90" placeholder="Sharp fades in West Chester since 2016">
       <label for="fAbout">About the shop</label>
@@ -128,23 +181,17 @@
     </div>
 
     <div class="card">
-      <h2>Pictures</h2>
-      <p class="hint">Paste image links. Post the photo to Instagram first, or drop it in Google Photos and copy the share link.</p>
-      <label for="fHero">Big photo at the top</label>
-      <input id="fHero" placeholder="https://…">
-      <label for="fPhotos">Your work — one link per line, up to 6</label>
-      <textarea id="fPhotos" placeholder="https://…&#10;https://…"></textarea>
+      <h2>Extra buttons</h2>
+      <p class="hint">Anything else you want people to tap — gift cards, a product you sell, a second location. Up to three.</p>
+      <div id="btnRows"></div>
     </div>
 
     <div class="card">
       <h2>Show or hide</h2>
       <div class="tog"><span>Prices<small>Your service list with prices.</small></span><input type="checkbox" id="fPrices"></div>
+      <div class="tog"><span>Reviews<small>Your best reviews from Loop, with your star rating up top.</small></span><input type="checkbox" id="fReviews"></div>
+      <div class="tog"><span>Text the shop<small>A tap-to-text button next to the phone number.</small></span><input type="checkbox" id="fSms"></div>
       <div class="tog"><span>Barber names<small>The team you set up in Loop. Names only, never phone numbers.</small></span><input type="checkbox" id="fTeam"></div>
-    </div>
-
-    <div class="card">
-      <button class="btn" id="saveBtn">Save &amp; publish</button>
-      <div class="msg" id="saveMsg"></div>
     </div>
 
     <div class="card">
@@ -198,12 +245,21 @@
   <div class="foot">🔁 <b>Loop</b> · <a href="https://tbsol.net">TB Solutions</a></div>
 </div>
 
+<div class="savebar hide" id="savebar"><div class="in">
+  <div class="st" id="saveMsg"></div>
+  <button class="btn" id="saveBtn">Save &amp; publish</button>
+</div></div>
+
+<!-- one shared picker, re-pointed at whichever tile was tapped -->
+<input type="file" id="picker" accept="image/*" class="hide">
+
 <script>
 (function(){
   "use strict";
   var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
   var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
   var HEAD={apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'};
+  var BUCKET='shop-sites', MAXB=6*1024*1024;
 
   var THEMES=[
     ['classic','Classic','#f6f1e7','#8c1d1d'],
@@ -211,52 +267,176 @@
     ['luxe','Luxe','#0a0a0a','#d4af37'],
     ['bold','Bold','#ffffff','#e11d48']
   ];
+  var SWATCH=['#8C1D1D','#D4AF37','#5DF2E0','#E11D48','#2563EB','#16A34A','#F97316','#111111'];
   var DAYNM=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
-  var CODE='', PIN='', DATA=null, THEME='classic', prevReady=false, pendingPreview=null;
+  var CODE='', PIN='', DATA=null, THEME='classic', ACCENT='';
+  var HERO='', LOGO='', PHOTOS=[], BUTTONS=[];
+  var prevReady=false, pendingPreview=null, dirty=false;
 
   function el(id){ return document.getElementById(id); }
-  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function rpc(fn,body){
     return fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:HEAD,body:JSON.stringify(body)})
       .then(function(r){ return r.json().catch(function(){ return null; }); });
   }
-  function say(id,txt,cls){ var n=el(id); n.textContent=txt; n.className='msg'+(cls?' '+cls:''); }
+  function say(txt,cls){ var n=el('saveMsg'); n.textContent=txt; n.className='st'+(cls?' '+cls:''); }
+  function gsay(txt,cls){ var n=el('gateMsg'); n.textContent=txt; n.className='msg'+(cls?' '+cls:''); }
 
   window.copyF=function(id){ var i=el(id); i.select(); i.setSelectionRange(0,9999);
     if(navigator.clipboard) navigator.clipboard.writeText(i.value); else document.execCommand('copy'); flash(); };
   window.copyT=function(id){ var t=el(id).textContent;
     if(navigator.clipboard) navigator.clipboard.writeText(t); flash(); };
-  function flash(){ say('saveMsg','Copied 📋','ok'); setTimeout(function(){ say('saveMsg',''); },1600); }
+  function flash(){ say('Copied 📋','ok'); setTimeout(function(){ mark(); },1600); }
+  function mark(){ say(dirty?'Unsaved changes':''); }
 
   /* ── sign in ───────────────────────────────────────────────────────── */
   el('signBtn').onclick=function(){
     var c=(el('inCode').value||'').toLowerCase().replace(/[^a-z0-9]/g,'');
     var p=(el('inPin').value||'').trim();
-    if(!c||!p){ say('gateMsg','Enter your shop code and PIN.','err'); return; }
-    this.disabled=true; say('gateMsg','Checking…');
+    if(!c||!p){ gsay('Enter your shop code and PIN.','err'); return; }
+    this.disabled=true; gsay('Checking…');
     var btn=this;
     rpc('shop_site_admin',{p_client:c,p_pin:p}).then(function(r){
       btn.disabled=false;
-      if(!r){ say('gateMsg','Could not reach the server. Try again.','err'); return; }
+      if(!r){ gsay('Could not reach the server. Try again.','err'); return; }
       // pin_gate raises during a lockout, which arrives as a PostgREST error
-      if(r.message||r.hint){ say('gateMsg',String(r.message||r.hint),'err'); return; }
-      if(!r.ok){ say('gateMsg',r.error||'Wrong PIN.','err'); return; }
+      if(r.message||r.hint){ gsay(String(r.message||r.hint),'err'); return; }
+      if(!r.ok){ gsay(r.error||'Wrong PIN.','err'); return; }
       CODE=c; PIN=p; DATA=r.data;
       try{ localStorage.setItem('tb_shop_code',c); }catch(e){}   // code only, never the PIN
-      say('gateMsg','');
+      gsay('');
       el('gate').classList.add('hide');
       el('editor').classList.remove('hide');
+      el('savebar').classList.remove('hide');
       fill(); paint();
     });
   };
   el('inPin').addEventListener('keydown',function(e){ if(e.key==='Enter') el('signBtn').click(); });
   try{ el('inCode').value=localStorage.getItem('tb_shop_code')||''; }catch(e){}
 
+  /* ── uploads ───────────────────────────────────────────────────────────
+     Straight from the camera roll to Supabase Storage. Pasting image URLs is
+     the step that stops a barber finishing their page, so there is nowhere in
+     this editor to paste one. Names are randomised under the shop's own
+     prefix so two shops can never collide and a re-upload never overwrites a
+     photo that is still on a live page. */
+  var slotEl={};
+  var picker=el('picker'), activeSlot=null;
+
+  function up(file){
+    if(!/^image\//.test(file.type||'')) return Promise.reject(new Error('That is not an image.'));
+    if(file.size>MAXB) return Promise.reject(new Error('That photo is over 6 MB — try a smaller one.'));
+    var ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,4)||'jpg';
+    var rnd=Math.random().toString(36).slice(2,10)+Date.now().toString(36);
+    var path=encodeURIComponent(CODE)+'/'+rnd+'.'+ext;
+    return fetch(SUPA_URL+'/storage/v1/object/'+BUCKET+'/'+path,{
+      method:'POST',
+      headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':file.type,'x-upsert':'false'},
+      body:file
+    }).then(function(r){
+      if(!r.ok) return r.text().then(function(t){ throw new Error('Upload failed. '+t.slice(0,90)); });
+      return SUPA_URL+'/storage/v1/object/public/'+BUCKET+'/'+path;
+    });
+  }
+
+  picker.addEventListener('change',function(){
+    var f=picker.files&&picker.files[0], slot=activeSlot;
+    picker.value=''; activeSlot=null;
+    if(!f||!slot) return;
+    setBusy(slot,true); say('Uploading…');
+    up(f).then(function(u){
+      if(slot==='hero') HERO=u;
+      else if(slot==='logo') LOGO=u;
+      else { var i=parseInt(slot,10); if(i>=PHOTOS.length) PHOTOS.push(u); else PHOTOS[i]=u; }
+      tiles(); touch();
+    }).catch(function(e){
+      setBusy(slot,false);
+      say(e.message||'Upload failed.','err');
+    });
+  });
+
+  function setBusy(slot,on){
+    var n=slotEl[slot]; if(!n) return;
+    var b=n.querySelector('.busy');
+    if(on&&!b){ b=document.createElement('div'); b.className='busy'; b.textContent='Uploading…'; n.appendChild(b); }
+    else if(!on&&b) b.remove();
+  }
+
+  function tileHtml(u,label){
+    return u ? '<img src="'+esc(u)+'" alt=""><button class="x" type="button" aria-label="Remove">✕</button>'
+             : esc(label);
+  }
+  function wire(node,slot){
+    slotEl[slot]=node;
+    node.onclick=function(ev){
+      if(ev.target.classList&&ev.target.classList.contains('x')){
+        ev.stopPropagation();
+        if(slot==='hero') HERO='';
+        else if(slot==='logo') LOGO='';
+        else PHOTOS.splice(parseInt(slot,10),1);
+        tiles(); touch(); return;
+      }
+      activeSlot=slot; picker.click();
+    };
+  }
+  function tiles(){
+    slotEl={};
+    var lt=el('logoTile'); lt.className='tile logotile'+(LOGO?' has':'');
+    lt.innerHTML=tileHtml(LOGO,'Tap to add'); wire(lt,'logo');
+
+    var ht=el('heroTile'); ht.className='tile'+(HERO?' has':'');
+    ht.style.aspectRatio='16/7';
+    ht.innerHTML=tileHtml(HERO,'Tap to add'); wire(ht,'hero');
+
+    var host=el('photoTiles'); host.innerHTML='';
+    // every filled slot, plus one empty slot to grow into (capped at 6)
+    var n=Math.min(6, PHOTOS.length+1);
+    for(var i=0;i<n;i++){
+      var d=document.createElement('div');
+      d.className='tile'+(PHOTOS[i]?' has':'');
+      d.innerHTML=tileHtml(PHOTOS[i]||'', PHOTOS.length?'Add another':'Tap to add');
+      host.appendChild(d); wire(d,String(i));
+    }
+  }
+
+  /* ── extra buttons ─────────────────────────────────────────────────── */
+  function btnRows(){
+    var host=el('btnRows'); host.innerHTML='';
+    var n=Math.min(3, BUTTONS.length+1);
+    for(var i=0;i<n;i++){
+      var b=BUTTONS[i]||{label:'',url:''};
+      var row=document.createElement('div');
+      row.className='btnrow';
+      row.innerHTML='<input placeholder="Gift cards" maxlength="28" value="'+esc(b.label)+'">'
+        +'<input placeholder="https://…" value="'+esc(b.url)+'">'
+        +'<button type="button" aria-label="Remove button">✕</button>';
+      (function(idx,row){
+        var ins=row.querySelectorAll('input');
+        function sync(){
+          var l=ins[0].value.trim(), u=ins[1].value.trim();
+          if(!l&&!u){ if(BUTTONS[idx]) BUTTONS.splice(idx,1); }
+          else BUTTONS[idx]={label:l,url:u};
+          touch();
+        }
+        ins[0].addEventListener('input',sync); ins[1].addEventListener('input',sync);
+        row.querySelector('button').onclick=function(){
+          if(BUTTONS[idx]) BUTTONS.splice(idx,1);
+          btnRows(); touch();
+        };
+      })(i,row);
+      host.appendChild(row);
+    }
+  }
+
   /* ── form <-> blob ─────────────────────────────────────────────────── */
   function fill(){
     var s=(DATA&&DATA.site)||{};
     THEME=s.theme||'classic';
+    ACCENT=s.accent||'';
+    HERO=s.hero||''; LOGO=s.logo||'';
+    PHOTOS=(s.photos||[]).slice(0,6);
+    BUTTONS=(s.buttons||[]).slice(0,3);
     el('fOn').checked=!!s.on;
     el('fTagline').value=s.tagline||'';
     el('fAbout').value=s.about||'';
@@ -265,9 +445,9 @@
     el('fIg').value=s.ig||'';
     el('fTiktok').value=s.tiktok||'';
     el('fMaps').value=s.maps||'';
-    el('fHero').value=s.hero||'';
-    el('fPhotos').value=(s.photos||[]).join('\n');
     el('fPrices').checked=s.prices!==false;
+    el('fReviews').checked=s.reviews!==false;
+    el('fSms').checked=s.sms!==false;
     el('fTeam').checked=!!s.team;
 
     el('themes').innerHTML=THEMES.map(function(t){
@@ -277,10 +457,23 @@
     [].forEach.call(el('themes').children,function(b){
       b.onclick=function(){ THEME=b.getAttribute('data-th');
         [].forEach.call(el('themes').children,function(x){ x.classList.toggle('on',x===b); });
-        paint(); };
+        touch(); };
     });
 
-    bind();
+    swatches(); tiles(); btnRows(); bind();
+  }
+
+  function swatches(){
+    var host=el('swatches');
+    host.innerHTML='<button type="button" class="sw2 none'+(ACCENT?'':' on')+'" data-c="">off</button>'
+      +SWATCH.map(function(c){
+        return '<button type="button" class="sw2'+(ACCENT===c?' on':'')+'" data-c="'+c+'" style="background:'+c+'"></button>';
+      }).join('')
+      +'<input type="color" id="cPick" value="'+(ACCENT||'#5DF2E0')+'" aria-label="Pick any colour">';
+    [].forEach.call(host.querySelectorAll('.sw2'),function(b){
+      b.onclick=function(){ ACCENT=b.getAttribute('data-c'); swatches(); touch(); };
+    });
+    el('cPick').oninput=function(){ ACCENT=this.value.toUpperCase(); swatches(); touch(); };
   }
 
   // fill() runs again after every save, so the listeners are bound once and
@@ -289,13 +482,15 @@
   var bound=false;
   function bind(){
     if(bound) return; bound=true;
-    ['fOn','fTagline','fAbout','fAddress','fPhone','fIg','fTiktok','fMaps','fHero','fPhotos','fPrices','fTeam']
-      .forEach(function(id){ el(id).addEventListener('input',paint); el(id).addEventListener('change',paint); });
+    ['fOn','fTagline','fAbout','fAddress','fPhone','fIg','fTiktok','fMaps',
+     'fPrices','fReviews','fSms','fTeam']
+      .forEach(function(id){ el(id).addEventListener('input',touch); el(id).addEventListener('change',touch); });
   }
+  function touch(){ dirty=true; paint(); mark(); }
 
   function blob(){
     return {
-      on: el('fOn').checked, theme: THEME, cta:'book',
+      on: el('fOn').checked, theme: THEME, accent: ACCENT, cta:'book',
       tagline: el('fTagline').value.trim(),
       about: el('fAbout').value.trim(),
       address: el('fAddress').value.trim(),
@@ -303,9 +498,12 @@
       ig: el('fIg').value.trim().replace(/^@/,''),
       tiktok: el('fTiktok').value.trim().replace(/^@/,''),
       maps: el('fMaps').value.trim(),
-      hero: el('fHero').value.trim(),
-      photos: el('fPhotos').value.split('\n').map(function(x){ return x.trim(); }).filter(Boolean).slice(0,6),
+      hero: HERO, logo: LOGO,
+      photos: PHOTOS.filter(Boolean).slice(0,6),
+      buttons: BUTTONS.filter(function(b){ return b&&b.label&&b.url; }).slice(0,3),
       prices: el('fPrices').checked,
+      reviews: el('fReviews').checked,
+      sms: el('fSms').checked,
       team: el('fTeam').checked
     };
   }
@@ -321,6 +519,7 @@
     d.phone=s.phone||DATA.phone||null;
     if(!s.prices) d.services=[];
     if(!s.team) d.team=[];
+    if(!s.reviews){ d.reviews=[]; d.reviews_n=0; d.rating=0; }
     return d;
   }
 
@@ -393,22 +592,28 @@
 
   /* ── save ──────────────────────────────────────────────────────────── */
   el('saveBtn').onclick=function(){
-    var btn=this; btn.disabled=true; say('saveMsg','Saving…');
+    var btn=this; btn.disabled=true; say('Saving…');
     rpc('shop_site_set',{p_client:CODE,p_pin:PIN,p_site:blob()}).then(function(r){
       btn.disabled=false;
-      if(!r){ say('saveMsg','Could not reach the server. Try again.','err'); return; }
-      if(r.message||r.hint){ say('saveMsg',String(r.message||r.hint),'err'); return; }
-      if(!r.ok){ say('saveMsg',r.error||'Could not save.','err'); return; }
+      if(!r){ say('Could not reach the server. Try again.','err'); return; }
+      if(r.message||r.hint){ say(String(r.message||r.hint),'err'); return; }
+      if(!r.ok){ say(r.error||'Could not save.','err'); return; }
       // Re-read so the form shows exactly what the SERVER kept, not what we
       // sent — site_sanitize() drops bad URLs and trims long text, and the
       // owner needs to see that happen rather than believe a value stuck.
       rpc('shop_site_admin',{p_client:CODE,p_pin:PIN}).then(function(a){
-        var live=!!(r.site&&r.site.on);
-        if(a&&a.ok){ DATA=a.data; live=!!(a.data&&a.data.site&&a.data.site.on); fill(); paint(); }
-        say('saveMsg', live ? 'Saved. Your site is live ✅' : 'Saved. Still unpublished.', 'ok');
+        var on=!!(r.site&&r.site.on);
+        if(a&&a.ok){ DATA=a.data; on=!!(a.data&&a.data.site&&a.data.site.on); fill(); paint(); }
+        dirty=false;
+        say(on ? 'Saved. Your site is live ✅' : 'Saved. Still unpublished.', 'ok');
       });
     });
   };
+
+  window.addEventListener('beforeunload',function(e){
+    if(!dirty) return;
+    e.preventDefault(); e.returnValue='';
+  });
 })();
 </script>
 </body>

@@ -10,7 +10,8 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23111014'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%F0%9F%92%88%3C/text%3E%3C/svg%3E" />
 <style>
   /* ── Four themes, one template. Every theme sets the same eight tokens, so a
-       new look is a token block and nothing else. ────────────────────────── */
+       new look is a token block and nothing else. A shop can override --acc
+       alone with its own colour without touching the rest. ──────────────── */
   :root,[data-theme="classic"]{
     --bg:#f6f1e7; --bg2:#efe7d8; --ink:#17161a; --muted:#6a6558;
     --card:#fffdf8; --line:rgba(23,22,26,.14);
@@ -39,23 +40,33 @@
   img{max-width:100%;display:block}
   a{color:inherit}
   .wrap{max-width:620px;margin:0 auto;padding:0 16px}
+  /* room for the sticky bar so the footer is never trapped under it */
+  .pad{height:86px}
 
-  /* hero */
-  .hero{background:var(--hero);color:var(--hero-ink);padding:34px 0 30px;position:relative;overflow:hidden}
-  .hero.haspic{padding:0}
+  /* ── hero ─────────────────────────────────────────────────────────────
+     With no photo the header still has to look designed rather than blank,
+     so it gets a barber-pole stripe in the shop's own accent. */
+  .hero{background:var(--hero);color:var(--hero-ink);position:relative;overflow:hidden}
+  .hero .inner{padding:32px 0 28px;position:relative;z-index:1}
+  .hero.plain::before{content:'';position:absolute;inset:0;opacity:.14;
+    background:repeating-linear-gradient(135deg,var(--acc) 0 14px,transparent 14px 40px)}
   .heropic{position:relative}
-  .heropic img{width:100%;height:230px;object-fit:cover;opacity:.5}
+  .heropic img{width:100%;height:250px;object-fit:cover;opacity:.45}
   .heropic .over{position:absolute;inset:0;display:flex;align-items:flex-end;
-    background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.72))}
-  .heropic .over .wrap{width:100%;padding-bottom:20px}
-  h1{font-size:30px;line-height:1.18;margin:0 0 6px;letter-spacing:-.5px;font-weight:900}
+    background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.78))}
+  .heropic .over .wrap{width:100%}
+  .heropic .inner{padding-bottom:20px}
+  .logo{width:66px;height:66px;border-radius:16px;object-fit:cover;margin-bottom:12px;
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18)}
+  h1{font-size:30px;line-height:1.16;margin:0 0 6px;letter-spacing:-.5px;font-weight:900}
   .tag{color:var(--hero-ink);opacity:.78;margin:0;font-size:15px}
-  .openpill{display:inline-block;margin-top:12px;font-size:12.5px;font-weight:800;
-    border-radius:999px;padding:5px 12px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2)}
-  .openpill.open{background:#16a34a;border-color:transparent;color:#fff}
-  .openpill.shut{background:rgba(255,255,255,.1)}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
+  .pill{font-size:12.5px;font-weight:800;border-radius:999px;padding:5px 12px;
+    background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2)}
+  .pill.open{background:#16a34a;border-color:transparent;color:#fff}
+  .pill.stars{background:rgba(255,255,255,.14)}
 
-  /* the funnel: one tall stack of taps, thumb-height, no hunting */
+  /* ── the funnel: one tall stack of taps, thumb-height, no hunting ───── */
   .acts{display:grid;gap:10px;margin:18px 0 4px}
   .act{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:800;font-size:16px;
     background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px;color:var(--ink)}
@@ -63,7 +74,7 @@
   .act .sub{display:block;font-weight:500;font-size:12.5px;color:var(--muted);margin-top:1px}
   .act .arw{margin-left:auto;color:var(--muted);font-weight:700}
   .act.primary{background:var(--acc);border-color:transparent;color:var(--acc-ink)}
-  .act.primary .sub{color:var(--acc-ink);opacity:.8}
+  .act.primary .sub{color:var(--acc-ink);opacity:.82}
   .act.primary .arw{color:var(--acc-ink)}
 
   section{padding:26px 0 4px}
@@ -81,27 +92,56 @@
   .about{color:var(--muted);font-size:15px;margin:0}
   .team{display:flex;flex-wrap:wrap;gap:8px}
   .chip{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-weight:700;font-size:14px}
+
   .gal{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .gal img{border-radius:12px;height:150px;object-fit:cover;width:100%;background:var(--bg2)}
-  .gal img:first-child:nth-last-child(odd){grid-column:span 2;height:190px}
+  .gal>*{border-radius:12px;height:150px;width:100%;background:var(--bg2);overflow:hidden}
+  .gal img{object-fit:cover;height:150px}
+  .gal>*:first-child:nth-last-child(odd){grid-column:span 2;height:190px}
+  /* stand-in art for a shop that has not uploaded photos yet: line drawings in
+     the shop's own accent, so the page reads as designed instead of unfinished.
+     One real photo and every placeholder disappears. */
+  .ph{display:flex;align-items:center;justify-content:center;color:var(--acc);
+    border:1px solid var(--line);background:
+      linear-gradient(160deg,color-mix(in srgb,var(--acc) 9%,transparent),transparent 70%),var(--card)}
+  .ph svg{width:52%;height:52%;opacity:.62}
+
+  .rev{display:grid;gap:10px}
+  .rq{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+  .rq .st{color:var(--acc);font-size:13px;letter-spacing:2px}
+  .rq p{margin:6px 0 8px;font-size:14.5px}
+  .rq .who{color:var(--muted);font-size:12.5px;font-weight:700}
 
   .perk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 16px;text-align:center}
   .perk .big{font-size:19px;font-weight:900;margin:2px 0 4px}
   .perk p{color:var(--muted);font-size:14px;margin:0 0 14px}
   .btn{display:inline-block;background:var(--acc);color:var(--acc-ink);text-decoration:none;
     font-weight:800;border-radius:12px;padding:13px 22px;font-size:15px}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
 
-  footer{margin-top:34px;padding:24px 0 30px;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px}
+  footer{margin-top:30px;padding:24px 0;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px}
   footer b{color:var(--ink)}
   footer a{color:var(--muted)}
   .powered{margin-top:16px;font-size:12px;opacity:.75}
+
+  /* ── sticky book bar ──────────────────────────────────────────────────
+     The single biggest lift on a page like this: booking is never more than
+     one tap away, no matter how far down they have scrolled. Hidden until
+     the hero's own book button has gone off screen, so it never doubles up. */
+  .stick{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+    background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);
+    border-top:1px solid var(--line);display:flex;gap:9px;
+    transform:translateY(120%);transition:transform .22s ease}
+  .stick.show{transform:none}
+  .stick a{flex:1;text-align:center;text-decoration:none;font-weight:800;font-size:15.5px;
+    border-radius:12px;padding:14px 10px;background:var(--acc);color:var(--acc-ink)}
+  .stick a.sec{flex:0 0 56px;background:transparent;color:var(--ink);border:1px solid var(--line);font-size:19px;padding:12px 0}
 
   .state{max-width:520px;margin:0 auto;padding:70px 22px;text-align:center}
   .state .em{font-size:44px}
   .state h1{font-size:22px;margin:12px 0 8px}
   .state p{color:var(--muted);margin:0}
-  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  @media(min-width:560px){ h1{font-size:36px} .heropic img{height:280px} }
+  @media(min-width:560px){ h1{font-size:36px} .heropic img{height:300px} }
+  @media(prefers-reduced-motion:reduce){ .stick{transition:none} }
 </style>
 </head>
 <body>
@@ -117,10 +157,26 @@
   var q=new URLSearchParams(location.search);
   var slug=(q.get('c')||'').toLowerCase().replace(/[^a-z0-9]/g,'');
 
-  // Declared up here, not down beside the hours code that uses it: every path
+  // Declared up here, not down beside the code that uses them: every path
   // below can return early, and a `var` assignment that is skipped leaves the
-  // hoisted binding undefined — which is exactly how the preview path broke.
+  // hoisted binding undefined.
   var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+  /* Line-art stand-ins for a shop with no photos yet. Inline SVG rather than
+     stock photography: nothing to license, and another shop's interior on a
+     barber's own page would read as a lie. They take currentColor, so they
+     recolour with the theme. */
+  var ART=[
+    // barber pole
+    '<svg viewBox="0 0 100 100" fill="none" aria-hidden="true"><rect x="37" y="16" width="26" height="68" rx="13" stroke="currentColor" stroke-width="3.5"/><path d="M41 38 58 26M41 54 58 42M41 70 58 58" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><rect x="31" y="8" width="38" height="9" rx="4.5" fill="currentColor"/><rect x="31" y="83" width="38" height="9" rx="4.5" fill="currentColor"/></svg>',
+    // scissors
+    '<svg viewBox="0 0 100 100" fill="none" aria-hidden="true"><circle cx="31" cy="76" r="11" stroke="currentColor" stroke-width="4"/><circle cx="69" cy="76" r="11" stroke="currentColor" stroke-width="4"/><path d="M37 67 73 15M63 67 27 15" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>',
+    // clippers — the toothed blade is what makes these readable at tile size,
+    // so it is drawn wider than the body and given real teeth
+    '<svg viewBox="0 0 100 100" fill="none" aria-hidden="true"><rect x="35" y="20" width="30" height="48" rx="8" stroke="currentColor" stroke-width="4"/><path d="M43 33h14M43 43h14" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity=".55"/><path d="M31 68h38v9H31z" fill="currentColor"/><path d="M35 77v8M42 77v8M49 77v8M56 77v8M63 77v8" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><path d="M44 20v-9M56 20v-9" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg>',
+    // comb
+    '<svg viewBox="0 0 100 100" fill="none" aria-hidden="true"><rect x="16" y="29" width="68" height="14" rx="7" fill="currentColor"/><path d="M23 43v27M32 43v27M41 43v27M50 43v27M59 43v27M68 43v27M77 43v27" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>'
+  ];
 
   /* Everything below renders into innerHTML, so nothing reaches the page
      unescaped. esc() covers text and quoted attributes; url() is a second
@@ -131,6 +187,7 @@
     .replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
   function url(u){ u=String(u==null?'':u).trim(); return /^https?:\/\//i.test(u)?esc(u):''; }
   function tel(p){ return String(p==null?'':p).replace(/[^0-9+]/g,''); }
+  function hex(h){ return /^#[0-9A-Fa-f]{6}$/.test(String(h||'')) ? String(h) : ''; }
 
   function state(em,title,msg){
     app.innerHTML='<div class="state"><div class="em">'+em+'</div><h1>'+esc(title)+'</h1><p>'+esc(msg)+'</p></div>';
@@ -176,7 +233,6 @@
      shop's timezone is authoritative — a customer browsing from another
      timezone must still see the SHOP as open or closed, so "now" is read
      back out of Intl rather than off the local clock. */
-
   function shopNow(tz){
     var f;
     try{
@@ -209,10 +265,26 @@
     var open = b>a ? (n.mins>=a&&n.mins<b) : (n.mins>=a||n.mins<b);
     return {open:open,day:n.day,close:t[1]};
   }
+  function stars(n){
+    var r=Math.round(Number(n)||0), s='';
+    for(var i=0;i<5;i++) s+= i<r ? '★' : '☆';
+    return s;
+  }
 
   function render(d){
     var s=d.site||{}, name=d.biz_name||'', tz=d.tz||'America/New_York';
-    document.documentElement.setAttribute('data-theme', s.theme||'classic');
+    var root=document.documentElement;
+    root.setAttribute('data-theme', s.theme||'classic');
+    // the shop's own colour, if it set one, overrides only the accent token
+    var acc=hex(s.accent);
+    if(acc){
+      root.style.setProperty('--acc',acc);
+      // keep label text readable on whatever they picked
+      var r=parseInt(acc.substr(1,2),16), g=parseInt(acc.substr(3,2),16), b2=parseInt(acc.substr(5,2),16);
+      root.style.setProperty('--acc-ink',(r*299+g*587+b2*114)/1000 > 150 ? '#101114' : '#ffffff');
+    } else {
+      root.style.removeProperty('--acc'); root.style.removeProperty('--acc-ink');
+    }
 
     document.title=name+(s.tagline?' — '+s.tagline:' — Book online');
     var md=document.querySelector('meta[name=description]');
@@ -231,31 +303,32 @@
     var maps = s.maps || (d.address ? 'https://www.google.com/maps/search/?api=1&query='
       +encodeURIComponent(name+' '+d.address) : '');
     var op=isOpen(d.hours,tz);
+    var hasHours=!!(d.hours&&Object.keys(d.hours).length);
+    var nrev=Number(d.reviews_n||0);
 
     var h='';
 
     /* hero */
-    var heroInner=
-      '<div class="wrap">'
+    var heroInner='<div class="wrap"><div class="inner">'
+      +(url(s.logo)?'<img class="logo" src="'+url(s.logo)+'" alt="'+esc(name)+' logo">':'')
       +'<h1>'+esc(name)+'</h1>'
       +(s.tagline?'<p class="tag">'+esc(s.tagline)+'</p>':'')
-      +(d.hours&&Object.keys(d.hours).length
-        ? '<div class="openpill '+(op.open?'open':'shut')+'">'
-          +(op.open?'Open now'+(op.close?' · until '+esc(pretty(op.close)):'')
-                   :'Closed right now')+'</div>'
-        : '')
-      +'</div>';
+      +'<div class="badges">'
+      +(hasHours?'<span class="pill '+(op.open?'open':'')+'">'
+        +(op.open?'Open now'+(op.close?' · until '+esc(pretty(op.close)):''):'Closed right now')+'</span>':'')
+      +(nrev?'<span class="pill stars">'+stars(d.rating)+' '+esc(d.rating)+' ('+nrev+')</span>':'')
+      +'</div></div></div>';
     h += url(s.hero)
-      ? '<header class="hero haspic"><div class="heropic"><img src="'+url(s.hero)+'" alt="">'
+      ? '<header class="hero"><div class="heropic"><img src="'+url(s.hero)+'" alt="">'
         +'<div class="over">'+heroInner+'</div></div></header>'
-      : '<header class="hero">'+heroInner+'</header>';
+      : '<header class="hero plain">'+heroInner+'</header>';
 
     h+='<div class="wrap">';
 
     /* the tap stack — this is the funnel */
     h+='<nav class="acts" aria-label="Quick actions">';
     if(bookHref){
-      h+='<a class="act primary" href="'+esc(bookHref)+'"'+(bookExt?' target="_blank" rel="noopener"':'')+'>'
+      h+='<a class="act primary" id="bookTop" href="'+esc(bookHref)+'"'+(bookExt?' target="_blank" rel="noopener"':'')+'>'
         +'<span class="ico" aria-hidden="true">📅</span><span>Book an appointment'
         +'<span class="sub">Pick your time in a few taps</span></span><span class="arw" aria-hidden="true">→</span></a>';
     }
@@ -263,6 +336,12 @@
       h+='<a class="act'+(bookHref?'':' primary')+'" href="tel:'+esc(ph)+'">'
         +'<span class="ico" aria-hidden="true">📞</span><span>Call the shop'
         +'<span class="sub">'+esc(d.phone)+'</span></span><span class="arw" aria-hidden="true">→</span></a>';
+      // barbers and their customers run on text, not email
+      if(s.sms!==false){
+        h+='<a class="act" href="sms:'+esc(ph)+'">'
+          +'<span class="ico" aria-hidden="true">💬</span><span>Text the shop'
+          +'<span class="sub">Quick question? Send a text</span></span><span class="arw" aria-hidden="true">→</span></a>';
+      }
     }
     if(maps&&url(maps)){
       h+='<a class="act" href="'+url(maps)+'" target="_blank" rel="noopener">'
@@ -280,6 +359,13 @@
         +'<span class="ico" aria-hidden="true">🎵</span><span>TikTok'
         +'<span class="sub">@'+esc(s.tiktok)+'</span></span><span class="arw" aria-hidden="true">→</span></a>';
     }
+    // whatever else the shop sells — gift cards, product, a second location
+    (Array.isArray(s.buttons)?s.buttons:[]).forEach(function(bn){
+      if(!bn||!bn.label||!url(bn.url)) return;
+      h+='<a class="act" href="'+url(bn.url)+'" target="_blank" rel="noopener">'
+        +'<span class="ico" aria-hidden="true">🔗</span><span>'+esc(bn.label)
+        +'</span><span class="arw" aria-hidden="true">→</span></a>';
+    });
     h+='</nav>';
 
     if(s.about) h+='<section><h2>About</h2><p class="about">'+esc(s.about)+'</p></section>';
@@ -296,8 +382,16 @@
       h+='</div></section>';
     }
 
+    /* photos, or the stand-in art until there are some */
+    var pics=(Array.isArray(s.photos)?s.photos:[]).map(url).filter(Boolean);
+    h+='<section><h2>'+(pics.length?'Work':'Inside the shop')+'</h2><div class="gal">'
+      +(pics.length
+        ? pics.map(function(p){ return '<img src="'+p+'" alt="" loading="lazy">'; }).join('')
+        : ART.slice(0,4).map(function(a){ return '<div class="ph">'+a+'</div>'; }).join(''))
+      +'</div></section>';
+
     /* hours */
-    if(d.hours&&Object.keys(d.hours).length){
+    if(hasHours){
       h+='<section><h2>Hours</h2><div class="card">';
       for(var i=0;i<7;i++){
         var t=d.hours[String(i)];
@@ -314,11 +408,25 @@
         +'</div></section>';
     }
 
-    /* gallery */
-    var pics=(Array.isArray(s.photos)?s.photos:[]).map(url).filter(Boolean);
-    if(pics.length){
-      h+='<section><h2>Work</h2><div class="gal">'
-        +pics.map(function(p){ return '<img src="'+p+'" alt="" loading="lazy">'; }).join('')
+    /* what real customers said — Loop already collects and approves these */
+    var revs=Array.isArray(d.reviews)?d.reviews:[];
+    if(revs.length){
+      h+='<section><h2>What people say</h2><div class="rev">'
+        +revs.map(function(r){
+          return '<div class="rq"><div class="st" aria-label="'+esc(r.rating)+' out of 5">'+stars(r.rating)+'</div>'
+            +'<p>'+esc(r.text)+'</p>'
+            +(r.name?'<div class="who">— '+esc(r.name)+'</div>':'')+'</div>';
+        }).join('')
+        +'</div>'
+        +(url(d.google_review_url)
+          ? '<div style="margin-top:12px;text-align:center"><a class="btn ghost" href="'+url(d.google_review_url)
+            +'" target="_blank" rel="noopener">Leave a review</a></div>' : '')
+        +'</section>';
+    } else if(url(d.google_review_url)){
+      h+='<section><h2>Reviews</h2><div class="perk">'
+        +'<div class="big">⭐ Been in already?</div>'
+        +'<p>A quick review helps other people find the shop.</p>'
+        +'<a class="btn" href="'+url(d.google_review_url)+'" target="_blank" rel="noopener">Leave a review</a>'
         +'</div></section>';
     }
 
@@ -335,23 +443,41 @@
         +'</div></section>';
     }
 
-    /* leave a review — feeds the Google profile */
-    if(url(d.google_review_url)){
-      h+='<section><h2>Reviews</h2><div class="perk">'
-        +'<div class="big">⭐ Been in already?</div>'
-        +'<p>A quick review helps other people find the shop.</p>'
-        +'<a class="btn" href="'+url(d.google_review_url)+'" target="_blank" rel="noopener">Leave a review</a>'
-        +'</div></section>';
-    }
-
     h+='<footer><b>'+esc(name)+'</b>'
       +(d.address?'<br>'+esc(d.address):'')
       +(d.phone?'<br><a href="tel:'+esc(ph)+'">'+esc(d.phone)+'</a>':'')
       +'<div class="powered">Site by <a href="https://tbsol.net/barbers/" target="_blank" rel="noopener">Loop</a></div>'
-      +'</footer></div>';
+      +'</footer>'
+      +(bookHref?'<div class="pad"></div>':'')
+      +'</div>';
+
+    /* sticky bar */
+    if(bookHref){
+      h+='<div class="stick" id="stick">'
+        +'<a href="'+esc(bookHref)+'"'+(bookExt?' target="_blank" rel="noopener"':'')+'>📅 Book now</a>'
+        +(ph?'<a class="sec" href="tel:'+esc(ph)+'" aria-label="Call the shop">📞</a>':'')
+        +(maps&&url(maps)?'<a class="sec" href="'+url(maps)+'" target="_blank" rel="noopener" aria-label="Get directions">📍</a>':'')
+        +'</div>';
+    }
 
     app.innerHTML=h;
+    stick();
     jsonld(d,s,name,tz,maps);
+  }
+
+  /* Show the sticky bar only once the hero's own book button has scrolled
+     away, so the two never sit on screen together. IntersectionObserver where
+     it exists; a scroll fallback everywhere else. */
+  function stick(){
+    var bar=document.getElementById('stick'), top=document.getElementById('bookTop');
+    if(!bar||!top) return;
+    function set(on){ bar.classList.toggle('show',on); }
+    if(window.IntersectionObserver){
+      new IntersectionObserver(function(es){ set(!es[0].isIntersecting); },{threshold:0}).observe(top);
+    } else {
+      var f=function(){ set(top.getBoundingClientRect().bottom < 0); };
+      window.addEventListener('scroll',f,{passive:true}); f();
+    }
   }
 
   /* ── LocalBusiness structured data ──────────────────────────────────────
@@ -379,7 +505,13 @@
     if(d.address) o.address={'@type':'PostalAddress',streetAddress:d.address};
     if(/^https?:\/\//i.test(String(maps||''))) o.hasMap=maps;
     if(/^https?:\/\//i.test(String(s.hero||''))) o.image=s.hero;
+    if(/^https?:\/\//i.test(String(s.logo||''))) o.logo=s.logo;
     if(spec.length) o.openingHoursSpecification=spec;
+    // only claim an aggregate rating when there really is one to claim
+    if(Number(d.reviews_n)>0 && Number(d.rating)>0){
+      o.aggregateRating={'@type':'AggregateRating',
+        ratingValue:String(d.rating), reviewCount:String(d.reviews_n)};
+    }
     var same=[];
     if(s.ig) same.push('https://instagram.com/'+s.ig);
     if(s.tiktok) same.push('https://tiktok.com/@'+s.tiktok);
