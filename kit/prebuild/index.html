@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Pre-build a shop — Loop</title>
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<link rel="preconnect" href="https://api.qrserver.com">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305070f'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%F0%9F%8F%97%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{
+    --bg:#05070f;--card:rgba(255,255,255,.04);--text:#eef1ff;--muted:#96a0c4;
+    --line:rgba(150,190,255,.17);--acc:#5df2e0;--acc2:#6f9dff;--good:#7CFCC6;--bad:#ff7a8a;--warn:#f5c04a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);line-height:1.6;
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif}
+  .wrap{max-width:660px;margin:0 auto;padding:0 16px 60px}
+  header{padding:22px 0 8px}
+  h1{font-size:23px;margin:0 0 4px;letter-spacing:-.4px}
+  .sub{color:var(--muted);font-size:14px;margin:0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:16px;margin-top:14px}
+  .card h2{font-size:15px;margin:0 0 4px}
+  .card .hint{color:var(--muted);font-size:13px;margin:0 0 12px}
+  label{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin:12px 0 5px;letter-spacing:.02em}
+  input,select,textarea{width:100%;background:rgba(0,0,0,.28);border:1px solid var(--line);color:var(--text);
+    border-radius:10px;padding:11px 12px;font:inherit;font-size:15px}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:520px){.two{grid-template-columns:1fr}}
+  .btn{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#05060d;border:0;border-radius:11px;
+    padding:13px 20px;font:inherit;font-weight:800;font-size:15px;cursor:pointer;width:100%}
+  .btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+  .btn.sm{width:auto;padding:9px 14px;font-size:13.5px}
+  .btn:disabled{opacity:.5;cursor:default}
+  .themes{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:6px}
+  .th{border:1px solid var(--line);border-radius:11px;padding:9px 4px;text-align:center;cursor:pointer;
+    font-size:12px;font-weight:800;background:transparent;color:var(--muted);font-family:inherit}
+  .th .sw{height:22px;border-radius:6px;margin-bottom:6px;border:1px solid rgba(255,255,255,.12)}
+  .th.on{border-color:var(--acc);color:var(--text);box-shadow:0 0 0 1px var(--acc) inset}
+
+  /* hours grid */
+  .hrow{display:grid;grid-template-columns:5.2em 1fr 1fr 4.6em;gap:8px;align-items:center;margin-top:8px}
+  .hrow .d{font-size:13.5px;font-weight:700}
+  .hrow select{padding:8px 6px;font-size:14px}
+  .hrow .closed{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);cursor:pointer;user-select:none}
+  .hrow.off select{opacity:.3;pointer-events:none}
+
+  /* services */
+  .srow{display:grid;grid-template-columns:1.6fr .7fr .7fr auto;gap:8px;margin-top:8px;align-items:center}
+  .srow input{padding:9px 10px;font-size:14px}
+  .srow button{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:9px;
+    height:40px;width:40px;font-size:15px;cursor:pointer}
+
+  .msg{font-size:13.5px;margin-top:10px;min-height:19px}
+  .msg.ok{color:var(--good)} .msg.err{color:var(--bad)}
+  .hide{display:none !important}
+
+  /* build progress */
+  .steps{display:flex;flex-direction:column;gap:7px;margin-top:12px;font-size:14px}
+  .steps div{color:var(--muted)}
+  .steps div.on{color:var(--text)} .steps div.ok{color:var(--good)} .steps div.bad{color:var(--bad)}
+
+  /* result */
+  .live{border-color:rgba(124,252,198,.4)}
+  .qr{width:186px;height:186px;border-radius:14px;background:#fff;padding:10px;display:block;margin:14px auto}
+  .linkbox{display:flex;gap:8px;margin-top:6px}
+  .linkbox input{font-size:13px}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin-top:10px;font-size:14.5px}
+  .kv b{color:var(--muted);font-weight:700;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;padding-top:2px}
+  .kv code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:16px;letter-spacing:.06em}
+  pre{background:rgba(0,0,0,.32);border:1px solid var(--line);border-radius:10px;padding:12px;
+    white-space:pre-wrap;word-break:break-word;font-size:13.5px;margin:6px 0 0;font-family:inherit}
+  .rowbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .rowbtns .btn{width:auto;flex:1;min-width:120px;text-align:center;text-decoration:none;display:block;font-size:13.5px;padding:11px 8px}
+
+  /* recent list */
+  .re{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+  .re:last-child{border-bottom:0}
+  .re small{display:block;color:var(--muted);font-size:12px}
+  .re button{background:transparent;border:1px solid var(--line);color:var(--text);border-radius:9px;padding:7px 12px;font:inherit;font-size:12.5px;cursor:pointer}
+  .foot{color:var(--muted);font-size:12.5px;text-align:center;margin-top:26px}
+  .foot a{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>🏗️ Pre-build a shop</h1>
+    <p class="sub">Fill this in from their Google listing <b>before</b> you walk in. You knock on the door with their website already live — they touch nothing, there's nothing left to think about.</p>
+  </header>
+
+  <!-- the form -->
+  <div id="form">
+    <div class="card">
+      <h2>From their Google listing</h2>
+      <p class="hint">Search the shop on Google Maps. Everything below is on that listing — copy it exactly, same abbreviations. The closer it matches, the more real it feels when they see it.</p>
+      <label for="fName">Shop name <span style="color:var(--acc)">*</span></label>
+      <input id="fName" placeholder="Fade Factory Barbershop" autocapitalize="words">
+      <label for="fAddress">Street address</label>
+      <input id="fAddress" maxlength="160" placeholder="243 E Market St, West Chester, PA 19380">
+      <div class="two">
+        <div><label for="fPhone">Phone</label><input id="fPhone" inputmode="tel" placeholder="(610) 555-0134"></div>
+        <div><label for="fIg">Instagram handle</label><input id="fIg" autocapitalize="none" placeholder="fadefactorywc"></div>
+      </div>
+      <div class="two">
+        <div><label for="fBooksy">Their Booksy / Square link</label><input id="fBooksy" autocapitalize="none" placeholder="only if they already use one"></div>
+        <div><label for="fReview">Google review link</label><input id="fReview" autocapitalize="none" placeholder="optional"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Hours</h2>
+      <p class="hint">Off the same listing. If Google doesn't show them, leave the defaults — the barber corrects them in one tap later.</p>
+      <div id="hours"></div>
+    </div>
+
+    <div class="card">
+      <h2>Services &amp; prices</h2>
+      <p class="hint">If prices are on their listing or Booksy, use those. Otherwise these are safe Chester County numbers.</p>
+      <div id="svcs"></div>
+      <button class="btn ghost sm" style="margin-top:10px" id="addSvc" type="button">+ Add a service</button>
+    </div>
+
+    <div class="card">
+      <h2>Look</h2>
+      <p class="hint">Pick whichever fits the shop. Dark shop → Fade. Old-school → Classic. They can change it and add their own colour later.</p>
+      <div class="themes" id="themes"></div>
+      <label for="fTagline">Tagline</label>
+      <input id="fTagline" maxlength="90" placeholder="auto-written from the address if you leave it">
+    </div>
+
+    <div class="card">
+      <button class="btn" id="buildBtn">Build their site</button>
+      <div class="steps hide" id="steps">
+        <div id="st1">1. Creating their Loop shop…</div>
+        <div id="st2">2. Setting hours &amp; services…</div>
+        <div id="st3">3. Wiring links…</div>
+        <div id="st4">4. Publishing the website…</div>
+      </div>
+      <div class="msg" id="buildMsg"></div>
+    </div>
+  </div>
+
+  <!-- the result -->
+  <div id="done" class="hide">
+    <div class="card live">
+      <h2>✅ <span id="doneName"></span> is live</h2>
+      <p class="hint">Open it once now so it's loaded before you walk in.</p>
+      <img class="qr" id="qr" alt="QR code to the shop's new website">
+      <div class="linkbox"><input id="liveUrl" readonly><button class="btn ghost sm" onclick="copyF('liveUrl')">Copy</button></div>
+      <div class="rowbtns">
+        <a class="btn" id="openLive" target="_blank" rel="noopener">Open the site →</a>
+        <a class="btn ghost" id="openPoster" target="_blank" rel="noopener">Counter poster</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🔑 If they say yes, hand them this</h2>
+      <p class="hint">Their keys. Also saved on this phone under "Recent" below — you won't lose them.</p>
+      <div class="kv">
+        <b>Shop code</b><code id="kCode"></code>
+        <b>PIN</b><code id="kPin"></code>
+        <b>Owner app</b><span>tbsol.net/center/</span>
+        <b>Site editor</b><span>tbsol.net/shop/edit/</span>
+      </div>
+      <label>Text to send them on the spot</label>
+      <pre id="smsBody"></pre>
+      <div class="rowbtns">
+        <a class="btn" id="smsBtn">Text it to them</a>
+        <button class="btn ghost" onclick="copyT('smsBody')">Copy</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🗣️ The 15 seconds at the door</h2>
+      <pre id="script"></pre>
+      <p class="hint" style="margin:10px 0 0">Then hand them your phone and stop talking. The site does the pitch. If they nod, the ask is: "It's yours — free. I'll leave it up either way. Want me to text you the keys?"</p>
+    </div>
+
+    <button class="btn ghost" style="margin-top:14px" id="another">Pre-build another shop</button>
+  </div>
+
+  <div class="card" id="recentCard">
+    <h2>Recent pre-builds</h2>
+    <p class="hint">Saved on this phone only, keys included.</p>
+    <div id="recent"><p class="hint" style="margin:0">None yet.</p></div>
+  </div>
+
+  <div class="foot">🔁 <b>Loop</b> · <a href="/kit/">back to the selling kit</a></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+  var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+
+  var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var THEMES=[['classic','Classic','#f6f1e7','#8c1d1d'],['fade','Fade','#11141b','#5df2e0'],
+              ['luxe','Luxe','#0a0a0a','#d4af37'],['bold','Bold','#ffffff','#e11d48']];
+  // must match what create_loop_shop writes — save_booking_config does NOT
+  // coalesce deposit_note, so we hand the default straight back to it
+  var DEPOSIT='Free to book — please give 24h notice to cancel.';
+  var THEME='fade';
+
+  function el(id){ return document.getElementById(id); }
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function rpc(fn,body){
+    return fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',
+      headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify(body)}).then(function(r){ return r.json().catch(function(){ return null; }); });
+  }
+  window.copyF=function(id){ var i=el(id); i.select(); i.setSelectionRange(0,9999);
+    if(navigator.clipboard) navigator.clipboard.writeText(i.value); else document.execCommand('copy'); };
+  window.copyT=function(id){ if(navigator.clipboard) navigator.clipboard.writeText(el(id).textContent); };
+
+  /* ── hours grid ──────────────────────────────────────────────────────
+     Monday first — that is how Google lists them, and this form is filled
+     while reading a Google listing. Keys stay 0..6 (JS day numbers). */
+  var ORDER=[1,2,3,4,5,6,0];
+  var DEFAULTS={1:['09:00','18:00'],2:['09:00','18:00'],3:['09:00','18:00'],
+                4:['09:00','19:00'],5:['09:00','19:00'],6:['09:00','17:00']};
+  function timeOpts(sel){
+    var o='';
+    for(var h=6;h<=23;h++) for(var m=0;m<60;m+=30){
+      var v=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+      var ap=h<12?'AM':'PM', h12=h%12||12;
+      o+='<option value="'+v+'"'+(v===sel?' selected':'')+'>'+h12+(m?':30':'')+' '+ap+'</option>';
+    }
+    return o;
+  }
+  function hoursGrid(){
+    el('hours').innerHTML=ORDER.map(function(d){
+      var t=DEFAULTS[d], off=!t;
+      return '<div class="hrow'+(off?' off':'')+'" data-d="'+d+'">'
+        +'<span class="d">'+DAYS[d].slice(0,3)+'</span>'
+        +'<select data-k="a">'+timeOpts(t?t[0]:'09:00')+'</select>'
+        +'<select data-k="b">'+timeOpts(t?t[1]:'18:00')+'</select>'
+        +'<label class="closed"><input type="checkbox"'+(off?' checked':'')+'> closed</label>'
+        +'</div>';
+    }).join('');
+    [].forEach.call(el('hours').querySelectorAll('.hrow input'),function(c){
+      c.addEventListener('change',function(){ c.closest('.hrow').classList.toggle('off',c.checked); });
+    });
+  }
+  function hoursJson(){
+    var out={};
+    [].forEach.call(el('hours').querySelectorAll('.hrow'),function(r){
+      if(r.querySelector('.closed input').checked) return;
+      out[r.getAttribute('data-d')]=[r.querySelector('[data-k=a]').value, r.querySelector('[data-k=b]').value];
+    });
+    return out;
+  }
+
+  /* ── services ──────────────────────────────────────────────────────── */
+  var SVC=[{name:'Haircut',mins:30,price:'$30'},{name:'Skin Fade',mins:40,price:'$35'},
+           {name:'Beard Trim',mins:20,price:'$20'},{name:'Cut + Beard',mins:45,price:'$45'}];
+  function svcGrid(){
+    el('svcs').innerHTML=SVC.map(function(s,i){
+      return '<div class="srow" data-i="'+i+'">'
+        +'<input data-k="name" value="'+esc(s.name)+'" placeholder="Service">'
+        +'<input data-k="mins" value="'+esc(s.mins)+'" inputmode="numeric" placeholder="min">'
+        +'<input data-k="price" value="'+esc(s.price)+'" placeholder="$">'
+        +'<button type="button" aria-label="Remove">✕</button></div>';
+    }).join('');
+    [].forEach.call(el('svcs').querySelectorAll('.srow'),function(r){
+      var i=+r.getAttribute('data-i');
+      [].forEach.call(r.querySelectorAll('input'),function(inp){
+        inp.addEventListener('input',function(){ SVC[i][inp.getAttribute('data-k')]=inp.value; });
+      });
+      r.querySelector('button').onclick=function(){ SVC.splice(i,1); svcGrid(); };
+    });
+  }
+  el('addSvc').onclick=function(){ if(SVC.length<8){ SVC.push({name:'',mins:30,price:''}); svcGrid(); } };
+  function svcJson(){
+    return SVC.filter(function(s){ return (s.name||'').trim(); }).map(function(s,i){
+      return { id:'s'+i, name:s.name.trim(), mins:Math.max(5,parseInt(s.mins,10)||30), price:String(s.price||'').trim() };
+    });
+  }
+
+  /* ── theme chips ───────────────────────────────────────────────────── */
+  el('themes').innerHTML=THEMES.map(function(t){
+    return '<button type="button" class="th'+(t[0]===THEME?' on':'')+'" data-th="'+t[0]+'">'
+      +'<div class="sw" style="background:'+t[2]+';box-shadow:inset 0 -7px 0 '+t[3]+'"></div>'+t[1]+'</button>';
+  }).join('');
+  [].forEach.call(el('themes').children,function(b){
+    b.onclick=function(){ THEME=b.getAttribute('data-th');
+      [].forEach.call(el('themes').children,function(x){ x.classList.toggle('on',x===b); }); };
+  });
+
+  /* ── PIN: random 4 digits, none of the ones a stranger tries first ── */
+  function makePin(){
+    var bad={'0000':1,'1111':1,'2222':1,'3333':1,'4444':1,'5555':1,'6666':1,'7777':1,
+             '8888':1,'9999':1,'1234':1,'4321':1,'2580':1,'0852':1,'1122':1,'6969':1};
+    var p;
+    do{ p=String(Math.floor(1000+Math.random()*9000)); }while(bad[p]);
+    return p;
+  }
+
+  function town(addr){
+    // "243 E Market St, West Chester, PA 19380" -> "West Chester"
+    var parts=String(addr||'').split(',');
+    return parts.length>=2 ? parts[1].trim() : '';
+  }
+
+  /* ── the build chain ───────────────────────────────────────────────── */
+  function step(id,cls){ el(id).className=cls; }
+  function fail(id,msg){
+    step(id,'bad');
+    el('buildMsg').textContent=msg;
+    el('buildMsg').className='msg err';
+    el('buildBtn').disabled=false;
+  }
+
+  el('buildBtn').onclick=function(){
+    var name=(el('fName').value||'').trim();
+    if(name.length<2){ el('buildMsg').textContent='Shop name first — it’s on their Google listing.'; el('buildMsg').className='msg err'; return; }
+    if(!svcJson().length){ el('buildMsg').textContent='Keep at least one service.'; el('buildMsg').className='msg err'; return; }
+
+    var pin=makePin();
+    var addr=(el('fAddress').value||'').trim();
+    var tag=(el('fTagline').value||'').trim()
+      || ('Sharp cuts'+(town(addr)?' in '+town(addr):'')+'. Walk in or book ahead.');
+    var booksy=(el('fBooksy').value||'').trim();
+    var review=(el('fReview').value||'').trim();
+
+    el('buildBtn').disabled=true;
+    el('steps').classList.remove('hide');
+    el('buildMsg').textContent=''; el('buildMsg').className='msg';
+    ['st1','st2','st3','st4'].forEach(function(s){ step(s,''); });
+    step('st1','on');
+
+    var shop=null;
+
+    rpc('create_loop_shop',{p_name:name,p_pin:pin,p_email:null,p_kind:'shop',p_ref:null})
+    .then(function(r){
+      if(!r||!r.ok) throw {at:'st1',msg:(r&&r.error)||'Could not create the shop. Check the connection and try again.'};
+      shop=r; step('st1','ok'); step('st2','on');
+      // deposit_note is NOT coalesced server-side — pass the default back or it wipes
+      return rpc('save_booking_config',{p_client:shop.slug,p_pin:pin,
+        p_services:svcJson(),p_staff:null,p_hours:hoursJson(),
+        p_slot_every:null,p_lead_mins:null,p_horizon_days:null,
+        p_book_tz:'America/New_York',p_deposit_note:DEPOSIT,p_booking_on:true});
+    })
+    .then(function(r){
+      if(!r||!r.ok) throw {at:'st2',msg:'Shop created, but hours/services didn’t save: '+((r&&r.error)||'no response')};
+      step('st2','ok'); step('st3','on');
+      var chain=Promise.resolve();
+      if(review){
+        chain=chain.then(function(){
+          // full named signature so PostgREST picks exactly one overload
+          return rpc('save_reward_settings',{p_client:shop.slug,p_pin:pin,
+            p_reward_text:null,p_reward_at:null,p_points_per_visit:null,p_spin_cost:null,
+            p_survey_points:null,p_spin_prizes:null,p_booking_on:null,p_biz_name:null,
+            p_google_review_url:review,p_game_difficulty:null,p_casino_on:null,
+            p_coin_store:null,p_tournament_prize:null,p_membership:null,
+            p_milestone:null,p_lottery:null,p_pay_link:null,p_pay_label:null});
+        });
+      }
+      if(booksy){
+        chain=chain.then(function(){ return rpc('set_book_url',{p_client:shop.slug,p_pin:pin,p_url:booksy}); });
+      }
+      return chain;
+    })
+    .then(function(){
+      step('st3','ok'); step('st4','on');
+      return rpc('shop_site_set',{p_client:shop.slug,p_pin:pin,p_site:{
+        on:true, theme:THEME, cta:'book',
+        tagline:tag, about:'',
+        address:addr, phone:(el('fPhone').value||'').trim(),
+        ig:(el('fIg').value||'').trim().replace(/^@/,''), tiktok:'',
+        maps:'', hero:'', logo:'', photos:[], buttons:[],
+        team:false, prices:true, reviews:true, sms:true
+      }});
+    })
+    .then(function(r){
+      if(!r||!r.ok) throw {at:'st4',msg:'Everything saved but publishing failed: '+((r&&r.error)||'no response')+'. Code '+shop.slug+' / PIN '+pin+' — you can publish from /shop/edit/.'};
+      step('st4','ok');
+      remember({slug:shop.slug,name:name,pin:pin,at:Date.now()});
+      show({slug:shop.slug,name:name,pin:pin});
+    })
+    .catch(function(e){
+      // If the shop exists, the keys must survive the error — otherwise the
+      // slug is burned and the PIN is gone.
+      if(shop&&shop.slug) remember({slug:shop.slug,name:name,pin:pin,at:Date.now(),partial:true});
+      fail(e.at||'st1', e.msg||'Something went wrong. '+(shop?('Code '+shop.slug+' / PIN '+pin+' saved under Recent.'):''));
+    });
+  };
+
+  /* ── result ────────────────────────────────────────────────────────── */
+  function show(s){
+    var live='https://tbsol.net/shop/?c='+encodeURIComponent(s.slug);
+    el('form').classList.add('hide');
+    el('done').classList.remove('hide');
+    el('doneName').textContent=s.name;
+    el('liveUrl').value=live;
+    el('openLive').href=live;
+    el('openPoster').href='/rewards/poster/?c='+encodeURIComponent(s.slug);
+    el('qr').src='https://api.qrserver.com/v1/create-qr-code/?size=372x372&ecc=H&margin=0&data='+encodeURIComponent(live);
+    el('kCode').textContent=s.slug;
+    el('kPin').textContent=s.pin;
+    var sms='Your shop’s website: '+live+' — I built it for you, it’s live now. Your prices and hours are already on it. It’s yours, free. Sign in to change anything: tbsol.net/shop/edit/ — code '+s.slug+', PIN '+s.pin+'. – Nick, TB Solutions';
+    el('smsBody').textContent=sms;
+    el('smsBtn').href='sms:?&body='+encodeURIComponent(sms);
+    el('script').textContent='"Looked your shop up on Google — you’ve got no website on your listing, so people searching ‘barber near me’ are finding everyone but you. So I built you one. That’s it — it’s live right now."';
+    window.scrollTo(0,0);
+  }
+  el('another').onclick=function(){ location.reload(); };
+
+  /* ── recent, on this phone only ────────────────────────────────────── */
+  function load(){ try{ return JSON.parse(localStorage.getItem('tb_prebuilds')||'[]'); }catch(e){ return []; } }
+  function remember(x){
+    var a=load().filter(function(y){ return y.slug!==x.slug; });
+    a.unshift(x); try{ localStorage.setItem('tb_prebuilds',JSON.stringify(a.slice(0,40))); }catch(e){}
+    recent();
+  }
+  function recent(){
+    var a=load();
+    el('recent').innerHTML = a.length ? a.map(function(x,i){
+      return '<div class="re"><span>'+esc(x.name)+(x.partial?' <span style="color:var(--warn)">⚠ unfinished</span>':'')
+        +'<small>'+esc(x.slug)+' · PIN '+esc(x.pin)+'</small></span>'
+        +'<button data-i="'+i+'">Open</button></div>';
+    }).join('') : '<p class="hint" style="margin:0">None yet.</p>';
+    [].forEach.call(el('recent').querySelectorAll('button'),function(b){
+      b.onclick=function(){ var x=load()[+b.getAttribute('data-i')]; if(x) show(x); };
+    });
+  }
+
+  hoursGrid(); svcGrid(); recent();
+})();
+</script>
+</body>
+</html>
