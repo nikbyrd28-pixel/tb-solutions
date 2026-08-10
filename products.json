@@ -1,0 +1,109 @@
+{
+  "_readme": [
+    "The domain map. ONE source of truth for which product lives on which domain.",
+    "",
+    "HOW TO USE IT: buy a domain, paste it into that product's `domain` field, run",
+    "`node tools/domains.mjs`, commit. The script regenerates the host rewrites in",
+    "vercel.json, rewrites the canonical and og:url tags on that product's pages,",
+    "and builds a per-host robots.txt and sitemap. Point the domain's DNS at the",
+    "host and it is live.",
+    "",
+    "Leave `domain` empty for anything not bought yet. Empty products are skipped",
+    "and keep serving from the apex exactly as they do today. The script is a",
+    "total function of this file: clearing a domain puts everything back on the",
+    "apex, and running it twice changes nothing the second time.",
+    "",
+    "WHY A GENERATOR AND NOT 40 HAND-EDITS: every product page hardcodes",
+    "https://tbsol.net/... in its canonical and og:url. Move a product to its own",
+    "domain without updating those and Google keeps indexing the tbsol.net copy —",
+    "the new domain never ranks and the two compete with each other. That is the",
+    "one mistake that makes this whole exercise backfire, and it is exactly the",
+    "kind of thing that rots when done by hand across dozens of files.",
+    "",
+    "ONE CODEBASE, MANY DOMAINS. Nothing here forks the repo or the hosting",
+    "project. Every domain is served by the same deploy and the same files; only",
+    "what sits at `/` changes per host. A fix to booking or rewards lands on all",
+    "of them at once — which is the opposite of what happens if each product",
+    "becomes its own copy of the site."
+  ],
+
+  "_sitemap_exclude": [
+    "/shop/"
+  ],
+  "_sitemap_exclude_why": "/shop/ with no ?c= says \"no shop selected\". The useful URLs are /shop/?c=<slug>, one per shop, and those belong in each shop's own Google listing — not in TB's sitemap.",
+
+  "apex": "tbsol.net",
+
+  "products": [
+    {
+      "id": "loop",
+      "name": "Loop",
+      "buyer": "barbershop owners",
+      "domain": "",
+      "home": "/barbers/",
+      "status": "BUY THIS ONE. Nick's stated main focus and the only thing being actively pitched. A barber landing on a page that also sells a course, a CRM and a video studio does not know what he is being sold.",
+      "owns": [
+        "/barbers/", "/loyalty/", "/demo/", "/arcade/", "/reps/", "/shop/", "/play/"
+      ]
+    },
+    {
+      "id": "university",
+      "name": "TB University",
+      "buyer": "people who want to start a marketing business — a different audience to Loop",
+      "domain": "",
+      "status": "WAIT. Buy when the course is actually for sale.",
+      "home": "/university/",
+      "owns": ["/university/"]
+    },
+    {
+      "id": "studio",
+      "name": "TB Studio",
+      "buyer": "small businesses wanting free content — a lead magnet, not a paid product",
+      "domain": "",
+      "status": "WAIT. Only worth a domain if it gets pushed as a standalone free tool.",
+      "home": "/content-studio/",
+      "owns": ["/content-studio/"]
+    },
+    {
+      "id": "command",
+      "name": "TB Command",
+      "buyer": "local businesses buying the whole bundle",
+      "domain": "",
+      "status": "WAIT. Overlaps Loop and has no customers.",
+      "home": "/command/",
+      "owns": ["/command/", "/suite/"]
+    }
+  ],
+
+  "_clients": {
+    "_why": "Client brands. They own their own domains — Nick does not buy these, and their canonical tags must never be pointed at tbsol.net or their own SEO gets absorbed into his.",
+    "hubsandbabydoll": {
+      "domain": "hubsandbabydoll.com",
+      "owned_by": "the client",
+      "hosted_here": false,
+      "depends_on_tbsol": [
+        "/capture/?c=hubsandbabydoll  — their inquiry form. Served from tbsol.net.",
+        "?c=hubby and ?c=babydoll resolve to the same client slug."
+      ],
+      "_risk": "Their lead form lives on Nick's hosting. When tbsol.net went dark on 2026-08-09/10, their inquiries had nowhere to land. Leads submitted during an outage are not queued — they are lost. Worth either moving the form onto their own domain or accepting that their lead flow is only as reliable as this account's billing."
+    },
+    "voomlux": { "domain": "", "owned_by": "the client", "hosted_here": true, "path": "/voomlux/" }
+  },
+
+  "_stays_on_the_apex": {
+    "_why": "Not products with their own buyer. A domain each costs money every year and splits what little SEO exists across sites nobody searches for.",
+    "/booking/": "Chair. The Sites tab already lists it as parked — it duplicates the booking inside Loop.",
+    "/ambassadors/": "Parked, and duplicates Loop's refer-a-friend.",
+    "/crm/": "Part of Command, not a separate thing to sell.",
+    "/learn/": "Local SEO content for TB Solutions itself. It should stay on the apex where it already ranks.",
+    "/privacy/": "One legal entity, one privacy policy. Reachable from every domain at the apex path.",
+    "/terms/": "Same.",
+    "/sms-terms/": "Same — and Twilio's campaign registration points at this exact URL. Moving it breaks that registration."
+  },
+
+  "_never_public": [
+    "/hq/", "/admin/", "/setup/", "/support/", "/portal/", "/start/",
+    "/capture/", "/share/", "/kit/", "/brand/", "/center/", "/affiliate/",
+    "/creatives/", "/marketing-engine/", "/studio/", "/review/", "/rewards/"
+  ]
+}

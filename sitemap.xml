@@ -168,4 +168,6 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url><loc>https://tbsol.net/demo/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://tbsol.net/play/</loc><changefreq>weekly</changefreq></url>
 </urlset>
