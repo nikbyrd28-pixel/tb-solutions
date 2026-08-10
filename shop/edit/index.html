@@ -4,51 +4,69 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
-<title>Your website — Loop</title>
+<title>Shop backend — Loop</title>
 <link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305070f'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-size='30'%3E%F0%9F%8C%90%3C/text%3E%3C/svg%3E" />
 <style>
   :root{
     --bg:#05070f;--card:rgba(255,255,255,.04);--text:#eef1ff;--muted:#96a0c4;
-    --line:rgba(150,190,255,.17);--acc:#5df2e0;--acc2:#6f9dff;--good:#7CFCC6;--bad:#ff7a8a;
+    --line:rgba(150,190,255,.17);--acc:#5df2e0;--acc2:#6f9dff;--good:#7CFCC6;--bad:#ff7a8a;--warn:#f5c04a;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--text);line-height:1.6;
     font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif}
-  .wrap{max-width:660px;margin:0 auto;padding:0 16px 90px}
-  header{padding:22px 0 8px}
-  h1{font-size:23px;margin:0 0 4px;letter-spacing:-.4px}
-  .sub{color:var(--muted);font-size:14px;margin:0}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:16px;margin-top:14px}
-  .card h2{font-size:15px;margin:0 0 4px}
-  .card .hint{color:var(--muted);font-size:13px;margin:0 0 12px}
-  label{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin:12px 0 5px;letter-spacing:.02em}
+
+  /* ── full-screen shell, same bones as the Command Center ──────────── */
+  .top{position:sticky;top:0;z-index:40;background:rgba(5,7,15,.92);backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line)}
+  .top .in{max-width:1500px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .brand{font-weight:900;font-size:16.5px;letter-spacing:-.2px;white-space:nowrap}
+  .brand span{color:var(--acc)}
+  .codechip{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--muted);
+    border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+  .tabs{display:flex;gap:6px;margin-left:auto;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tab{background:transparent;border:1px solid transparent;color:var(--muted);border-radius:10px;
+    padding:9px 15px;font:inherit;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap}
+  .tab.on{background:var(--card);border-color:var(--line);color:var(--text)}
+
+  .shell{max-width:1500px;margin:0 auto;padding:0 18px 110px;display:grid;grid-template-columns:1fr;gap:22px}
+  @media(min-width:1020px){
+    .shell{grid-template-columns:minmax(0,1fr) 430px}
+    .prevcol{position:sticky;top:66px;align-self:start;height:calc(100vh - 82px);display:flex;flex-direction:column}
+    .prevcol iframe{flex:1;min-height:0}
+  }
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:18px;margin-top:16px}
+  .card h2{font-size:16px;margin:0 0 4px}
+  .card .hint{color:var(--muted);font-size:13.5px;margin:0 0 12px}
+  label{display:block;font-size:13px;font-weight:700;color:var(--muted);margin:13px 0 5px;letter-spacing:.02em}
   input,textarea,select{width:100%;background:rgba(0,0,0,.28);border:1px solid var(--line);color:var(--text);
-    border-radius:10px;padding:11px 12px;font:inherit;font-size:15px}
-  textarea{min-height:86px;resize:vertical}
+    border-radius:10px;padding:12px 13px;font:inherit;font-size:15.5px}
+  textarea{min-height:90px;resize:vertical}
   input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc)}
-  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media(max-width:520px){.two{grid-template-columns:1fr}}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  @media(max-width:560px){.two,.three{grid-template-columns:1fr}}
   .btn{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#05060d;border:0;border-radius:11px;
-    padding:13px 20px;font:inherit;font-weight:800;font-size:15px;cursor:pointer;width:100%}
+    padding:14px 22px;font:inherit;font-weight:800;font-size:15.5px;cursor:pointer;width:100%}
   .btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
   .btn.sm{width:auto;padding:9px 14px;font-size:13.5px}
   .btn:disabled{opacity:.5;cursor:default}
-  .themes{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:6px}
-  .th{border:1px solid var(--line);border-radius:11px;padding:9px 4px;text-align:center;cursor:pointer;
-    font-size:12px;font-weight:800;background:transparent;color:var(--muted);font-family:inherit}
-  .th .sw{height:22px;border-radius:6px;margin-bottom:6px;border:1px solid rgba(255,255,255,.12)}
+  .themes{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:6px}
+  .th{border:1px solid var(--line);border-radius:11px;padding:10px 4px;text-align:center;cursor:pointer;
+    font-size:12.5px;font-weight:800;background:transparent;color:var(--muted);font-family:inherit}
+  .th .sw{height:24px;border-radius:6px;margin-bottom:6px;border:1px solid rgba(255,255,255,.12)}
   .th.on{border-color:var(--acc);color:var(--text);box-shadow:0 0 0 1px var(--acc) inset}
-  .tog{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .tog{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
   .tog:last-child{border-bottom:0}
-  .tog span{font-size:14.5px;font-weight:600}
+  .tog span{font-size:15px;font-weight:600}
   .tog small{display:block;color:var(--muted);font-weight:400;font-size:12.5px}
-  .tog input{width:44px;height:26px;flex:0 0 44px;appearance:none;background:rgba(255,255,255,.12);
+  .tog input{width:46px;height:27px;flex:0 0 46px;appearance:none;background:rgba(255,255,255,.12);
     border-radius:99px;position:relative;cursor:pointer;border:0;transition:background .15s}
   .tog input:checked{background:var(--acc)}
-  .tog input::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;
+  .tog input::after{content:'';position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;
     background:#fff;transition:transform .15s}
-  .tog input:checked::after{transform:translateX(18px)}
+  .tog input:checked::after{transform:translateX(19px)}
   .msg{font-size:13.5px;margin-top:10px;min-height:19px}
   .msg.ok{color:var(--good)} .msg.err{color:var(--bad)}
   .linkbox{display:flex;gap:8px;margin-top:6px}
@@ -57,56 +75,76 @@
     white-space:pre-wrap;word-break:break-word;font-size:13px;margin:6px 0 0;font-family:ui-monospace,Menlo,Consolas,monospace}
   ol{padding-left:20px;color:var(--muted);font-size:14px} ol li{margin:7px 0} ol li b{color:var(--text)}
   .hide{display:none !important}
-  iframe{width:100%;height:640px;border:1px solid var(--line);border-radius:14px;background:#fff;margin-top:10px}
-  .foot{color:var(--muted);font-size:12.5px;text-align:center;margin-top:26px}
-  .foot a{color:var(--muted)}
 
-  /* ── photo tiles ── tap opens the camera roll; no URLs anywhere ───────── */
-  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:8px}
+  /* preview column */
+  .prevcol .card{margin-top:16px;display:flex;flex-direction:column;flex:1;min-height:0}
+  iframe{width:100%;height:640px;border:1px solid var(--line);border-radius:14px;background:#fff;margin-top:10px}
+
+  /* photo tiles */
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
   .tile{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;border:1px dashed var(--line);
     background:rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;
-    cursor:pointer;color:var(--muted);font-size:12px;font-weight:700;text-align:center;padding:6px}
+    cursor:pointer;color:var(--muted);font-size:12.5px;font-weight:700;text-align:center;padding:6px}
   .tile.has{border-style:solid;border-color:var(--line)}
   .tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-  .tile .x{position:absolute;top:5px;right:5px;z-index:2;width:24px;height:24px;border-radius:50%;
+  .tile .x{position:absolute;top:5px;right:5px;z-index:2;width:25px;height:25px;border-radius:50%;
     background:rgba(0,0,0,.7);color:#fff;border:0;font-size:14px;line-height:1;cursor:pointer;padding:0}
   .tile .busy{position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;
     justify-content:center;font-size:11px;z-index:3}
   .logorow{display:flex;align-items:center;gap:14px;margin-top:8px}
-  .logotile{width:78px;height:78px;flex:0 0 78px;border-radius:16px}
+  .logotile{width:84px;height:84px;flex:0 0 84px;border-radius:16px}
   .swatches{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
-  .sw2{width:34px;height:34px;border-radius:9px;border:2px solid transparent;cursor:pointer;padding:0}
+  .sw2{width:36px;height:36px;border-radius:9px;border:2px solid transparent;cursor:pointer;padding:0}
   .sw2.on{border-color:#fff}
-  .sw2.none{background:repeating-linear-gradient(45deg,#333 0 6px,#555 6px 12px);
-    color:#fff;font-size:10px;font-weight:800}
-  input[type=color]{width:46px;height:34px;padding:2px;border-radius:9px;background:transparent}
+  .sw2.none{background:repeating-linear-gradient(45deg,#333 0 6px,#555 6px 12px);color:#fff;font-size:10px;font-weight:800}
+  input[type=color]{width:48px;height:36px;padding:2px;border-radius:9px;background:transparent}
   .btnrow{display:grid;grid-template-columns:1fr 1.4fr auto;gap:8px;margin-top:8px;align-items:center}
   .btnrow input{font-size:14px}
   .btnrow button{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:9px;
-    height:42px;width:42px;font-size:16px;cursor:pointer}
+    height:44px;width:44px;font-size:16px;cursor:pointer}
 
-  /* the save bar follows you down the page — the editor is long */
+  /* number steppers on the rewards tab — thumb-sized, no keyboard needed */
+  .step3{display:flex;align-items:center;gap:10px;margin-top:4px}
+  .step3 button{width:46px;height:46px;flex:0 0 46px;border-radius:11px;background:transparent;
+    border:1px solid var(--line);color:var(--text);font-size:20px;font-weight:800;cursor:pointer}
+  .step3 output{flex:1;text-align:center;font-size:22px;font-weight:900;font-variant-numeric:tabular-nums}
+  .step3 output small{display:block;font-size:11.5px;color:var(--muted);font-weight:600;letter-spacing:.04em}
+
   .savebar{position:fixed;left:0;right:0;bottom:0;z-index:30;
-    padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+    padding:10px 18px calc(10px + env(safe-area-inset-bottom));
     background:rgba(5,7,15,.92);backdrop-filter:blur(12px);border-top:1px solid var(--line)}
-  .savebar .in{max-width:660px;margin:0 auto;display:flex;gap:10px;align-items:center}
-  .savebar .st{flex:1;font-size:12.5px;color:var(--muted);min-height:18px}
+  .savebar .in{max-width:1500px;margin:0 auto;display:flex;gap:10px;align-items:center}
+  .savebar .st{flex:1;font-size:13px;color:var(--muted);min-height:18px}
   .savebar .st.ok{color:var(--good)} .savebar .st.err{color:var(--bad)}
-  .savebar .btn{width:auto;padding:12px 22px}
+  .savebar .btn{width:auto;padding:13px 26px}
+
+  .gatewrap{max-width:520px;margin:0 auto;padding:0 16px}
+  .toolgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:560px){.toolgrid{grid-template-columns:1fr}}
+  .toolgrid a{display:block;background:var(--card);border:1px solid var(--line);border-radius:13px;
+    padding:15px;text-decoration:none;color:var(--text);font-weight:700;font-size:15px}
+  .toolgrid a small{display:block;color:var(--muted);font-weight:400;font-size:12.5px;margin-top:2px}
+  .foot{color:var(--muted);font-size:12.5px;text-align:center;margin:26px 0}
+  .foot a{color:var(--muted)}
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <header>
-    <h1>🌐 Your shop website</h1>
-    <p class="sub">One page with your prices, hours, booking link and rewards card. Put the link in your Instagram bio and on your Google listing.</p>
-  </header>
+<div class="top"><div class="in">
+  <div class="brand">🔁 <span>Loop</span> backend</div>
+  <span class="codechip hide" id="chipCode"></span>
+  <nav class="tabs hide" id="tabs">
+    <button class="tab on" data-p="site">🌐 Website</button>
+    <button class="tab" data-p="card">🎁 Rewards card</button>
+    <button class="tab" data-p="tools">🛠️ More</button>
+  </nav>
+</div></div>
 
-  <!-- sign in -->
+<!-- sign in -->
+<div class="gatewrap">
   <div class="card" id="gate">
     <h2>Sign in</h2>
-    <p class="hint">Same shop code and PIN you use for the Command Center.</p>
+    <p class="hint">Same shop code and PIN you use everywhere in Loop.</p>
     <label for="inCode">Shop code</label>
     <input id="inCode" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="e.g. maplestreet">
     <label for="inPin">PIN</label>
@@ -114,10 +152,14 @@
     <div style="margin-top:14px"><button class="btn" id="signBtn">Sign in</button></div>
     <div class="msg" id="gateMsg"></div>
   </div>
+</div>
 
-  <!-- editor -->
-  <div id="editor" class="hide">
+<!-- editor -->
+<div id="editor" class="shell hide">
+<div class="col">
 
+  <!-- ═══ WEBSITE panel ═══ -->
+  <div id="p-site">
     <div class="card">
       <div class="tog">
         <span>Publish my website<small id="liveNote">Off — nobody can see it yet.</small></span>
@@ -195,17 +237,6 @@
     </div>
 
     <div class="card">
-      <h2>👁 Preview</h2>
-      <p class="hint">This is exactly what a customer sees. It updates as you type.</p>
-      <iframe id="prev" title="Website preview"></iframe>
-    </div>
-
-    <!-- ── Google Business Profile ────────────────────────────────────────
-         We cannot edit anybody's Google listing for them — that needs the
-         owner signed into their own Google account. What we CAN do is hand
-         them every field pre-written and in the right order, which is the
-         part that actually stops barbers from finishing it. -->
-    <div class="card">
       <h2>📍 Your Google listing</h2>
       <p class="hint">Google is where people search "barber near me". Do this once — it takes about ten minutes and it is free.</p>
       <ol>
@@ -242,7 +273,108 @@
     </div>
   </div>
 
+  <!-- ═══ REWARDS CARD panel ═══ -->
+  <div id="p-card" class="hide">
+    <div class="card">
+      <h2>🎁 The headline reward</h2>
+      <p class="hint">What a full card earns, and how many visits fill it. This is the first thing a customer reads.</p>
+      <label for="rwText">The reward</label>
+      <input id="rwText" maxlength="60" placeholder="a free haircut">
+      <p class="hint" style="margin:6px 0 0">Written mid-sentence — "a free haircut", "a free beard trim" — because the card says "6 visits gets you <i>a free haircut</i>".</p>
+      <label>Visits to earn it</label>
+      <div class="step3">
+        <button type="button" data-t="rwAt" data-d="-1" aria-label="Fewer visits">−</button>
+        <output id="rwAt">6<small>visits</small></output>
+        <button type="button" data-t="rwAt" data-d="1" aria-label="More visits">+</button>
+      </div>
+      <div class="two" style="margin-top:14px">
+        <div>
+          <label>Points per visit</label>
+          <div class="step3">
+            <button type="button" data-t="rwPPV" data-d="-1" aria-label="Fewer points">−</button>
+            <output id="rwPPV">1<small>points</small></output>
+            <button type="button" data-t="rwPPV" data-d="1" aria-label="More points">+</button>
+          </div>
+        </div>
+        <div>
+          <label>Spin cost</label>
+          <div class="step3">
+            <button type="button" data-t="rwSpin" data-d="-1" aria-label="Cheaper spin">−</button>
+            <output id="rwSpin">2<small>points</small></output>
+            <button type="button" data-t="rwSpin" data-d="1" aria-label="Dearer spin">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>✂️ Milestone</h2>
+      <p class="hint">A second reward on lifetime cuts — "every 10th cut is on us". Runs alongside the points card.</p>
+      <div class="tog"><span>Milestone on<small>Customers claim it themselves from their card.</small></span><input type="checkbox" id="rwMileOn"></div>
+      <div class="two" style="margin-top:8px">
+        <div>
+          <label>Every how many cuts</label>
+          <div class="step3">
+            <button type="button" data-t="rwMileCuts" data-d="-1" aria-label="Fewer cuts">−</button>
+            <output id="rwMileCuts">10<small>cuts</small></output>
+            <button type="button" data-t="rwMileCuts" data-d="1" aria-label="More cuts">+</button>
+          </div>
+        </div>
+        <div><label for="rwMileLabel">What it says</label><input id="rwMileLabel" maxlength="60" placeholder="Every 10th cut is on us"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🕹️ The arcade</h2>
+      <p class="hint">The games your customers play while they wait. Coins are play-money — they never touch the points card unless you put coin prizes in the store.</p>
+      <div class="tog"><span>Card games (blackjack &amp; poker)<small>Some shops keep these off. Your call.</small></span><input type="checkbox" id="rwCasino"></div>
+      <label for="rwDiff">How generous the games feel</label>
+      <select id="rwDiff">
+        <option value="easy">Generous — coins come easy</option>
+        <option value="normal">Normal</option>
+        <option value="hard">Tight — coins take work</option>
+      </select>
+      <label for="rwTourney">Weekly leaderboard prize</label>
+      <input id="rwTourney" maxlength="80" placeholder="Free haircut for this week's #1 player">
+    </div>
+
+    <div class="card">
+      <h2>Advanced</h2>
+      <p class="hint">Spin-wheel prizes, the coin store, memberships and the lottery live in the full owner dashboard.</p>
+      <a class="btn ghost" style="display:block;text-align:center;text-decoration:none" id="ownerLink" target="_blank" rel="noopener">Open owner dashboard →</a>
+    </div>
+
+    <div class="card">
+      <button class="btn" id="rwSave">Save rewards card</button>
+      <div class="msg" id="rwMsg"></div>
+    </div>
+  </div>
+
+  <!-- ═══ MORE panel ═══ -->
+  <div id="p-tools" class="hide">
+    <div class="card">
+      <h2>🛠️ The rest of your shop</h2>
+      <p class="hint">Everything opens signed in with the same code and PIN.</p>
+      <div class="toolgrid" id="toolGrid"></div>
+    </div>
+  </div>
+
   <div class="foot">🔁 <b>Loop</b> · <a href="https://tbsol.net">TB Solutions</a></div>
+</div>
+
+<!-- ═══ PREVIEW column ═══ -->
+<div class="prevcol" id="prevcol">
+  <div class="card" id="prevSiteCard">
+    <h2>👁 Your website, live preview</h2>
+    <p class="hint">Exactly what a customer sees. Updates as you type.</p>
+    <iframe id="prev" title="Website preview"></iframe>
+  </div>
+  <div class="card hide" id="prevCardCard">
+    <h2>👁 Your customers' card</h2>
+    <p class="hint">The real thing. Refreshes when you save.</p>
+    <iframe id="prevCard" title="Rewards card preview"></iframe>
+  </div>
+</div>
 </div>
 
 <div class="savebar hide" id="savebar"><div class="in">
@@ -250,7 +382,6 @@
   <button class="btn" id="saveBtn">Save &amp; publish</button>
 </div></div>
 
-<!-- one shared picker, re-pointed at whichever tile was tapped -->
 <input type="file" id="picker" accept="image/*" class="hide">
 
 <script>
@@ -261,18 +392,15 @@
   var HEAD={apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'};
   var BUCKET='shop-sites', MAXB=6*1024*1024;
 
-  var THEMES=[
-    ['classic','Classic','#f6f1e7','#8c1d1d'],
-    ['fade','Fade','#11141b','#5df2e0'],
-    ['luxe','Luxe','#0a0a0a','#d4af37'],
-    ['bold','Bold','#ffffff','#e11d48']
-  ];
+  var THEMES=[['classic','Classic','#f6f1e7','#8c1d1d'],['fade','Fade','#11141b','#5df2e0'],
+              ['luxe','Luxe','#0a0a0a','#d4af37'],['bold','Bold','#ffffff','#e11d48']];
   var SWATCH=['#8C1D1D','#D4AF37','#5DF2E0','#E11D48','#2563EB','#16A34A','#F97316','#111111'];
   var DAYNM=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
   var CODE='', PIN='', DATA=null, THEME='classic', ACCENT='';
   var HERO='', LOGO='', PHOTOS=[], BUTTONS=[];
   var prevReady=false, pendingPreview=null, dirty=false;
+  var RW=null, rwDirty=false, rwLoading=false;   // rewards tab state
 
   function el(id){ return document.getElementById(id); }
   function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -282,6 +410,7 @@
   }
   function say(txt,cls){ var n=el('saveMsg'); n.textContent=txt; n.className='st'+(cls?' '+cls:''); }
   function gsay(txt,cls){ var n=el('gateMsg'); n.textContent=txt; n.className='msg'+(cls?' '+cls:''); }
+  function rsay(txt,cls){ var n=el('rwMsg'); n.textContent=txt; n.className='msg'+(cls?' '+cls:''); }
 
   window.copyF=function(id){ var i=el(id); i.select(); i.setSelectionRange(0,9999);
     if(navigator.clipboard) navigator.clipboard.writeText(i.value); else document.execCommand('copy'); flash(); };
@@ -289,6 +418,24 @@
     if(navigator.clipboard) navigator.clipboard.writeText(t); flash(); };
   function flash(){ say('Copied 📋','ok'); setTimeout(function(){ mark(); },1600); }
   function mark(){ say(dirty?'Unsaved changes':''); }
+
+  /* ── tabs ──────────────────────────────────────────────────────────── */
+  var PANE='site';
+  function pane(p){
+    PANE=p;
+    [].forEach.call(el('tabs').children,function(b){ b.classList.toggle('on',b.getAttribute('data-p')===p); });
+    el('p-site').classList.toggle('hide',p!=='site');
+    el('p-card').classList.toggle('hide',p!=='card');
+    el('p-tools').classList.toggle('hide',p!=='tools');
+    // the save bar belongs to the website tab; the card tab saves in-panel
+    el('savebar').classList.toggle('hide',p!=='site');
+    el('prevSiteCard').classList.toggle('hide',p==='card');
+    el('prevCardCard').classList.toggle('hide',p!=='card');
+    if(p==='card') rwOpen();
+  }
+  [].forEach.call(el('tabs').children,function(b){
+    b.addEventListener('click',function(){ pane(b.getAttribute('data-p')); });
+  });
 
   /* ── sign in ───────────────────────────────────────────────────────── */
   el('signBtn').onclick=function(){
@@ -300,7 +447,6 @@
     rpc('shop_site_admin',{p_client:c,p_pin:p}).then(function(r){
       btn.disabled=false;
       if(!r){ gsay('Could not reach the server. Try again.','err'); return; }
-      // pin_gate raises during a lockout, which arrives as a PostgREST error
       if(r.message||r.hint){ gsay(String(r.message||r.hint),'err'); return; }
       if(!r.ok){ gsay(r.error||'Wrong PIN.','err'); return; }
       CODE=c; PIN=p; DATA=r.data;
@@ -309,18 +455,31 @@
       el('gate').classList.add('hide');
       el('editor').classList.remove('hide');
       el('savebar').classList.remove('hide');
+      el('tabs').classList.remove('hide');
+      el('chipCode').textContent=c; el('chipCode').classList.remove('hide');
+      el('ownerLink').href='/rewards/owner/?c='+encodeURIComponent(c);
+      tools();
       fill(); paint();
     });
   };
   el('inPin').addEventListener('keydown',function(e){ if(e.key==='Enter') el('signBtn').click(); });
   try{ el('inCode').value=localStorage.getItem('tb_shop_code')||''; }catch(e){}
 
-  /* ── uploads ───────────────────────────────────────────────────────────
-     Straight from the camera roll to Supabase Storage. Pasting image URLs is
-     the step that stops a barber finishing their page, so there is nowhere in
-     this editor to paste one. Names are randomised under the shop's own
-     prefix so two shops can never collide and a re-upload never overwrites a
-     photo that is still on a live page. */
+  function tools(){
+    var t=[
+      ['📊 Command Center','Members, calendar, texts, automations','/center/'],
+      ['📷 Staff scanner','Scan · punch · redeem','/rewards/staff/'],
+      ['⚙️ Owner dashboard','Every setting, bookings, spin prizes','/rewards/owner/?c='+CODE],
+      ['🖨️ Counter poster','Print the QR for the counter','/rewards/poster/?c='+CODE],
+      ['📣 Loop Blast','Text all your customers at once','/rewards/blast/?c='+CODE],
+      ['⭐ Reviews wall','Approve what shows on your site','/rewards/wall/?c='+CODE]
+    ];
+    el('toolGrid').innerHTML=t.map(function(x){
+      return '<a href="'+x[2]+'" target="_blank" rel="noopener">'+x[0]+'<small>'+esc(x[1])+'</small></a>';
+    }).join('');
+  }
+
+  /* ── uploads (unchanged mechanics) ─────────────────────────────────── */
   var slotEl={};
   var picker=el('picker'), activeSlot=null;
 
@@ -390,7 +549,6 @@
     ht.innerHTML=tileHtml(HERO,'Tap to add'); wire(ht,'hero');
 
     var host=el('photoTiles'); host.innerHTML='';
-    // every filled slot, plus one empty slot to grow into (capped at 6)
     var n=Math.min(6, PHOTOS.length+1);
     for(var i=0;i<n;i++){
       var d=document.createElement('div');
@@ -429,7 +587,7 @@
     }
   }
 
-  /* ── form <-> blob ─────────────────────────────────────────────────── */
+  /* ── website form <-> blob ─────────────────────────────────────────── */
   function fill(){
     var s=(DATA&&DATA.site)||{};
     THEME=s.theme||'classic';
@@ -476,9 +634,7 @@
     el('cPick').oninput=function(){ ACCENT=this.value.toUpperCase(); swatches(); touch(); };
   }
 
-  // fill() runs again after every save, so the listeners are bound once and
-  // never re-bound — otherwise each save doubles the number of paint() calls
-  // per keystroke.
+  // fill() re-runs after every save; listeners bind once
   var bound=false;
   function bind(){
     if(bound) return; bound=true;
@@ -508,8 +664,6 @@
     };
   }
 
-  /* What the live page would receive if we saved right now. The preview is
-     driven off this so it can never disagree with the form. */
   function payload(){
     var s=blob();
     var d=JSON.parse(JSON.stringify(DATA));
@@ -559,7 +713,6 @@
     var name=d.biz_name||'the shop';
     var svc=(d.services||[]).filter(function(x){ return x&&x.name; });
 
-    // Google caps the description at 750 characters and silently truncates.
     var bits=[];
     bits.push(name+' is a barbershop'+(s.address?' in '+s.address.split(',').slice(1,2).join('').trim():'')+'.');
     if(s.about) bits.push(s.about);
@@ -590,7 +743,7 @@
       +'📅 Book + prices + rewards 👇';
   }
 
-  /* ── save ──────────────────────────────────────────────────────────── */
+  /* ── website save ──────────────────────────────────────────────────── */
   el('saveBtn').onclick=function(){
     var btn=this; btn.disabled=true; say('Saving…');
     rpc('shop_site_set',{p_client:CODE,p_pin:PIN,p_site:blob()}).then(function(r){
@@ -598,9 +751,6 @@
       if(!r){ say('Could not reach the server. Try again.','err'); return; }
       if(r.message||r.hint){ say(String(r.message||r.hint),'err'); return; }
       if(!r.ok){ say(r.error||'Could not save.','err'); return; }
-      // Re-read so the form shows exactly what the SERVER kept, not what we
-      // sent — site_sanitize() drops bad URLs and trims long text, and the
-      // owner needs to see that happen rather than believe a value stuck.
       rpc('shop_site_admin',{p_client:CODE,p_pin:PIN}).then(function(a){
         var on=!!(r.site&&r.site.on);
         if(a&&a.ok){ DATA=a.data; on=!!(a.data&&a.data.site&&a.data.site.on); fill(); paint(); }
@@ -610,8 +760,99 @@
     });
   };
 
+  /* ── rewards card tab ──────────────────────────────────────────────── */
+  var STEP={rwAt:{min:1,max:20,unit:'visits'},rwPPV:{min:1,max:10,unit:'points'},
+            rwSpin:{min:1,max:20,unit:'points'},rwMileCuts:{min:2,max:50,unit:'cuts'}};
+  var NUM={rwAt:6,rwPPV:1,rwSpin:2,rwMileCuts:10};
+  function setNum(id,v){
+    var c=STEP[id];
+    NUM[id]=Math.min(c.max,Math.max(c.min,v));
+    el(id).innerHTML=NUM[id]+'<small>'+c.unit+'</small>';
+  }
+  [].forEach.call(document.querySelectorAll('.step3 button'),function(b){
+    b.addEventListener('click',function(){
+      var t=b.getAttribute('data-t');
+      setNum(t, NUM[t]+parseInt(b.getAttribute('data-d'),10));
+      rwDirty=true;
+    });
+  });
+  ['rwText','rwMileLabel','rwTourney'].forEach(function(id){
+    el(id).addEventListener('input',function(){ rwDirty=true; });
+  });
+  ['rwMileOn','rwCasino'].forEach(function(id){
+    el(id).addEventListener('change',function(){ rwDirty=true; });
+  });
+  el('rwDiff').addEventListener('change',function(){ rwDirty=true; });
+
+  function rwOpen(quiet){
+    // live card preview — the real page, refreshed after each save
+    var f=el('prevCard');
+    if(!f.src) f.src='/rewards/?c='+encodeURIComponent(CODE);
+    if(RW||rwLoading) return;
+    rwLoading=true;
+    // quiet = the re-read after a save; it must not stamp over "Saved ✅"
+    if(!quiet) rsay('Loading your card…');
+    rpc('loyalty_settings_get',{p_client:CODE,p_pin:PIN}).then(function(r){
+      rwLoading=false;
+      if(!r||!r.ok){ rsay((r&&(r.error||r.message))||'Could not load. Try again.','err'); return; }
+      RW=r; if(!quiet) rsay('');
+      el('rwText').value=r.reward_text||'';
+      setNum('rwAt', r.reward_at||6);
+      setNum('rwPPV', r.points_per_visit||1);
+      setNum('rwSpin', r.spin_cost||2);
+      var m=r.milestone||{};
+      el('rwMileOn').checked=!!m.on;
+      setNum('rwMileCuts', m.cuts||10);
+      el('rwMileLabel').value=m.label||'';
+      el('rwCasino').checked=r.casino_on!==false;
+      el('rwDiff').value=r.game_difficulty||'normal';
+      el('rwTourney').value=r.tournament_prize||'';
+      rwDirty=false;
+    });
+  }
+
+  el('rwSave').onclick=function(){
+    var btn=this; btn.disabled=true; rsay('Saving…');
+    var mile={ on: el('rwMileOn').checked, cuts: NUM.rwMileCuts,
+               icon: (RW&&RW.milestone&&RW.milestone.icon)||'✂️',
+               label: el('rwMileLabel').value.trim()
+                 || ('Every '+NUM.rwMileCuts+'th cut is on us') };
+    // full named signature so PostgREST picks exactly one overload; nulls
+    // coalesce server-side so nothing else moves
+    rpc('save_reward_settings',{p_client:CODE,p_pin:PIN,
+      p_reward_text:el('rwText').value.trim()||null,
+      p_reward_at:NUM.rwAt,
+      p_points_per_visit:NUM.rwPPV,
+      p_spin_cost:NUM.rwSpin,
+      p_survey_points:null,
+      p_spin_prizes:null,
+      p_booking_on:null,
+      p_biz_name:null,
+      p_google_review_url:null,
+      p_game_difficulty:el('rwDiff').value,
+      p_casino_on:el('rwCasino').checked,
+      p_coin_store:null,
+      p_tournament_prize:el('rwTourney').value.trim()||null,
+      p_membership:null,
+      p_milestone:mile,
+      p_lottery:null,
+      p_pay_link:null,p_pay_label:null
+    }).then(function(r){
+      btn.disabled=false;
+      if(!r){ rsay('Could not reach the server. Try again.','err'); return; }
+      if(r.message||r.hint){ rsay(String(r.message||r.hint),'err'); return; }
+      if(!r.ok){ rsay(r.error||'Could not save.','err'); return; }
+      rwDirty=false;
+      rsay('Saved ✅ — the card below just refreshed.','ok');
+      // re-read so the form shows what the server kept
+      RW=null; rwOpen(true);
+      var f=el('prevCard');
+      f.src='/rewards/?c='+encodeURIComponent(CODE)+'&r='+Date.now();
+    });
+  };
+
   window.addEventListener('beforeunload',function(e){
-    if(!dirty) return;
+    if(!dirty&&!rwDirty) return;
     e.preventDefault(); e.returnValue='';
   });
 })();
