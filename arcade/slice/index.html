@@ -102,7 +102,7 @@
   })();
 
   /* ---------- state ---------- */
-  var objs, parts, blade, running=false, dead=false, t=0, score=0, lives=3, spawnT=0, shake=0, best=0, bestCombo=0, lvl=1;
+  var objs, parts, blade, running=false, dead=false, t=0, score=0, lives=3, spawnT=0, shake=0, best=0, bestCombo=0, lvl=1, stagePend=false, stageT=0;
   var comboCount=0, comboTimer=0, popups=[];
   try{ best=+localStorage.getItem('fc_best_'+client)||0; }catch(e){}
   el('bestHint').textContent = best? ('Best score: '+best):'';
@@ -112,7 +112,7 @@
     {g:'💇',pts:1,col:'#8b6f4e'},{g:'✂️',pts:1,col:'#9fb4ff'},{g:'🧴',pts:1,col:'#5df2e0'},
     {g:'🪮',pts:1,col:'#b98bff'},{g:'💈',pts:2,col:'#ff6a7a'}
   ];
-  function reset(){ objs=[]; parts=[]; blade=[]; popups=[]; score=0; lives=3; t=0; spawnT=0.4; shake=0; flash=0; dead=false; down=false; comboCount=0; comboTimer=0; bestCombo=0; sliceThisSwipe=0; lvl=1; frenzyCd=0; }
+  function reset(){ objs=[]; parts=[]; blade=[]; popups=[]; score=0; lives=3; t=0; spawnT=0.4; shake=0; flash=0; dead=false; down=false; comboCount=0; comboTimer=0; bestCombo=0; sliceThisSwipe=0; lvl=1; frenzyCd=0; stagePend=false; stageT=0; }
 
   /* ---------- spawning ---------- */
   var MAXOBJ=22, GRAV=0.80;   // apex ~56% of the screen, ~2.4s of hang time
@@ -158,7 +158,12 @@
     var mult = sliceThisSwipe>=2 ? Math.min(5,sliceThisSwipe) : 1;
     var gain = pts*mult;
     score += gain;
-    if(1+Math.floor(score/12)>lvl){ lvl++; frenzy(); if(window.LoopFX)LoopFX.levelUp(lvl); }
+    // Stages are BETWEEN waves, never mid-play. Crossing the threshold only
+    // arms the break; spawning stops, the fruit in flight plays out, the
+    // stage banner gets a clear moment, then the next stage opens with a
+    // frenzy. (The old version leveled every 12 points DURING play — a
+    // jingle and a fruit flood every few swipes read as chaos, not stages.)
+    if(1+Math.floor(score/40)>lvl && !stagePend){ stagePend=true; }
     if(comboTimer>0 && sliceThisSwipe>bestCombo) bestCombo=sliceThisSwipe;
     if(o.type==='coin'||o.type==='star') sCoin(); else sSlice(sliceThisSwipe);
     if(o.type==='star'){ burst(o.x,o.y,'#ffd34d',26); shake=Math.max(shake,4); if(window.LoopFX)LoopFX.float(o.x,o.y-40,'⭐ +'+gain,'#ffd34d',22); }
@@ -186,7 +191,14 @@
   function frame(now){ if(!running) return; var dt=Math.min(0.033,(now-last)/1000||0); last=now; if(!dead) update(dt); render(); requestAnimationFrame(frame); }
   function update(dt){
     t+=dt;
-    spawnT-=dt; if(spawnT<=0){ spawn(); spawnT=Math.max(0.62, 1.05 - t/80 - lvl*0.035) + Math.random()*0.3; }
+    if(stagePend){
+      if(!objs.length && stageT<=0){ lvl++; stageT=1.5;
+        popups.push({x:W/2,y:H*0.4,txt:'STAGE '+lvl,life:1.5,col:'#5ad0f0',big:true});
+        popups.push({x:W/2,y:H*0.4+34,txt:'get ready…',life:1.5,col:'#8f97b8'});
+        if(window.LoopFX)LoopFX.levelUp(lvl); }
+      if(stageT>0){ stageT-=dt; if(stageT<=0){ stagePend=false; frenzy(); spawnT=0.9; } }
+    }
+    else { spawnT-=dt; if(spawnT<=0){ spawn(); spawnT=Math.max(0.62, 1.05 - t/80 - lvl*0.035) + Math.random()*0.3; } }
     if(comboTimer>0){ comboTimer-=dt; if(comboTimer<=0){ comboCount=0; } }
     if(frenzyCd>0) frenzyCd-=dt;
     // decay per-swipe combo when blade idle handled on pointer up
