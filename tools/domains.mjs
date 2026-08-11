@@ -168,6 +168,12 @@ for (const p of live) {
     rules.push({ source: '/',            has: has(h), destination: p.home, permanent: false });
     rules.push({ source: '/robots.txt',  has: has(h), destination: '/_hosts/' + p.id + '/robots.txt', permanent: false });
     rules.push({ source: '/sitemap.xml', has: has(h), destination: '/_hosts/' + p.id + '/sitemap.xml', permanent: false });
+    // wall_off: paths that exist in the repo but do not belong on this
+    // product's domain bounce to the product home instead of serving.
+    // Redirects run before the filesystem, so this beats the real files.
+    for (const w of (p.wall_off || [])) {
+      rules.push({ source: w.replace(/\/$/, '') + '/:rest*', has: has(h), destination: p.home, permanent: false });
+    }
   }
 }
 // Only touch the file when the rewrites actually differ. Re-serialising it

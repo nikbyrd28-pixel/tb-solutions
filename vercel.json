@@ -62,6 +62,116 @@
       "permanent": false
     },
     {
+      "source": "/university/:rest*",
+      "has": [
+        {
+          "type": "host",
+          "value": "thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/",
+      "permanent": false
+    },
+    {
+      "source": "/command/:rest*",
+      "has": [
+        {
+          "type": "host",
+          "value": "thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/",
+      "permanent": false
+    },
+    {
+      "source": "/suite/:rest*",
+      "has": [
+        {
+          "type": "host",
+          "value": "thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/",
+      "permanent": false
+    },
+    {
+      "source": "/content-studio/:rest*",
+      "has": [
+        {
+          "type": "host",
+          "value": "thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/",
+      "permanent": false
+    },
+    {
+      "source": "/marketing-engine/:rest*",
+      "has": [
+        {
+          "type": "host",
+          "value": "thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/",
+      "permanent": false
+    },
+    {
+      "source": "/learn/:rest*",
+      "has": [
+        {
+          "type": "host",
+          "value": "thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/",
+      "permanent": false
+    },
+    {
+      "source": "/clients/:rest*",
+      "has": [
+        {
+          "type": "host",
+          "value": "thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/",
+      "permanent": false
+    },
+    {
+      "source": "/voomlux/:rest*",
+      "has": [
+        {
+          "type": "host",
+          "value": "thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/",
+      "permanent": false
+    },
+    {
+      "source": "/creatives/:rest*",
+      "has": [
+        {
+          "type": "host",
+          "value": "thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/",
+      "permanent": false
+    },
+    {
+      "source": "/studio/:rest*",
+      "has": [
+        {
+          "type": "host",
+          "value": "thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/",
+      "permanent": false
+    },
+    {
       "source": "/",
       "has": [
         {
@@ -92,6 +202,116 @@
         }
       ],
       "destination": "/_hosts/loop/sitemap.xml",
+      "permanent": false
+    },
+    {
+      "source": "/university/:rest*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/",
+      "permanent": false
+    },
+    {
+      "source": "/command/:rest*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/",
+      "permanent": false
+    },
+    {
+      "source": "/suite/:rest*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/",
+      "permanent": false
+    },
+    {
+      "source": "/content-studio/:rest*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/",
+      "permanent": false
+    },
+    {
+      "source": "/marketing-engine/:rest*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/",
+      "permanent": false
+    },
+    {
+      "source": "/learn/:rest*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/",
+      "permanent": false
+    },
+    {
+      "source": "/clients/:rest*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/",
+      "permanent": false
+    },
+    {
+      "source": "/voomlux/:rest*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/",
+      "permanent": false
+    },
+    {
+      "source": "/creatives/:rest*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/",
+      "permanent": false
+    },
+    {
+      "source": "/studio/:rest*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/",
       "permanent": false
     }
   ]

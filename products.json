@@ -47,7 +47,20 @@
         "/reps/",
         "/shop/",
         "/play/"
-      ]
+      ],
+      "wall_off": [
+        "/university/",
+        "/command/",
+        "/suite/",
+        "/content-studio/",
+        "/marketing-engine/",
+        "/learn/",
+        "/clients/",
+        "/voomlux/",
+        "/creatives/",
+        "/studio/"
+      ],
+      "_wall_off_why": "Nick: the barber domain should be barber content only. These are TB's other public products/pages — on thebarberloop.com they bounce to the Loop home. NOT walled: /rewards/ /kit/ /booking/ /ambassadors/ /crm/ /center/ /affiliate/ (barber-facing tools linked from the landing page and prebuild), and /privacy/ /terms/ /sms-terms/ (legal must stay reachable on every host)."
     },
     {
       "id": "university",
