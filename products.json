@@ -36,9 +36,9 @@
       "id": "loop",
       "name": "Loop",
       "buyer": "barbershop owners",
-      "domain": "thebarberloop.com",
+      "domain": "www.thebarberloop.com",
       "home": "/barbers/",
-      "status": "LIVE \u2014 bought 2026-08-11, serving the Loop product from its own domain.",
+      "status": "LIVE \u2014 bought 2026-08-11. www is the primary host in Vercel (the apex 308s to it), so the domain is recorded in its www form and canonicals name it that way.",
       "owns": [
         "/barbers/",
         "/loyalty/",

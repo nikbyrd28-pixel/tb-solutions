@@ -157,7 +157,7 @@ function lose(){
 }
 function shareResult(){
   var g=guesses.map(function(x){ return x.r.map(function(c){return c==='g'?'🟩':c==='y'?'🟨':'⬛';}).join(''); }).join('\n');
-  var t='Fresh Words 🔤 '+(done&&guesses.length&&guesses[guesses.length-1].w===answer?guesses.length:'X')+'/6\n'+g+'\nPlay: https://tbsol.net/arcade/words/';
+  var t='Fresh Words 🔤 '+(done&&guesses.length&&guesses[guesses.length-1].w===answer?guesses.length:'X')+'/6\n'+g+'\nPlay: https://thebarberloop.com/arcade/words/';
   if(navigator.share){ navigator.share({text:t}).catch(function(){}); } else { try{ navigator.clipboard.writeText(t); flashMsg('Copied ✓'); }catch(e){} }
 }
 function nextWord(){ daily=false; answer=pickRandom(); guesses=[]; cur=''; rowI=0; done=false; el('over').classList.add('hide'); buildGrid(); buildKb(); }

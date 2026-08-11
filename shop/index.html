@@ -17,6 +17,9 @@
     --card:#fffdf8; --line:rgba(23,22,26,.14);
     --acc:#8c1d1d; --acc-ink:#fff; --hero:#17161a; --hero-ink:#f6f1e7;
   }
+  /* star gold is deliberately NOT the accent: five stars in the shop's brand
+     colour read as decoration, in gold they read as a rating */
+  :root{--gold:#f0b100}
   [data-theme="fade"]{
     --bg:#0c0e13; --bg2:#11141b; --ink:#eef1f7; --muted:#98a0b2;
     --card:rgba(255,255,255,.045); --line:rgba(150,190,255,.18);
@@ -51,13 +54,20 @@
   .hero.plain::before{content:'';position:absolute;inset:0;opacity:.14;
     background:repeating-linear-gradient(135deg,var(--acc) 0 14px,transparent 14px 40px)}
   .heropic{position:relative}
-  .heropic img{width:100%;height:250px;object-fit:cover;opacity:.45}
+  .heropic img{width:100%;height:250px;object-fit:cover;opacity:.92}
   .heropic .over{position:absolute;inset:0;display:flex;align-items:flex-end;
-    background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.78))}
+    background:linear-gradient(180deg,rgba(0,0,0,.12) 30%,rgba(0,0,0,.86))}
   .heropic .over .wrap{width:100%}
   .heropic .inner{padding-bottom:20px}
-  .logo{width:66px;height:66px;border-radius:16px;object-fit:cover;margin-bottom:12px;
-    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18)}
+  .heropic h1,.heropic .tag{text-shadow:0 1px 14px rgba(0,0,0,.5)}
+  .logo{width:70px;height:70px;border-radius:16px;object-fit:cover;margin-bottom:12px;
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22)}
+  /* no logo yet: a monogram badge, so the header still opens with a mark */
+  .mono{width:62px;height:62px;border-radius:16px;margin-bottom:12px;display:flex;
+    align-items:center;justify-content:center;font-weight:900;font-size:24px;letter-spacing:.5px;
+    background:linear-gradient(150deg,color-mix(in srgb,var(--acc) 55%,var(--hero)),color-mix(in srgb,var(--acc) 22%,var(--hero)));
+    border:1px solid rgba(255,255,255,.22);color:#fff}
+  .hbar{width:42px;height:4px;border-radius:2px;background:var(--acc);margin:12px 0 0}
   h1{font-size:30px;line-height:1.16;margin:0 0 6px;letter-spacing:-.5px;font-weight:900}
   .tag{color:var(--hero-ink);opacity:.78;margin:0;font-size:15px}
   .badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
@@ -70,12 +80,20 @@
   .acts{display:grid;gap:10px;margin:18px 0 4px}
   .act{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:800;font-size:16px;
     background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px;color:var(--ink)}
-  .act .ico{font-size:19px;width:24px;text-align:center;flex:0 0 24px}
+  /* real drawn icons in a tinted plate — emoji glyphs at this size look like a
+     default, and the plate gives every row the same visual weight */
+  .act .ico{flex:0 0 40px;width:40px;height:40px;border-radius:12px;display:flex;
+    align-items:center;justify-content:center;
+    background:color-mix(in srgb,var(--acc) 12%,transparent);color:var(--acc)}
+  .act .ico svg{width:19px;height:19px}
   .act .sub{display:block;font-weight:500;font-size:12.5px;color:var(--muted);margin-top:1px}
   .act .arw{margin-left:auto;color:var(--muted);font-weight:700}
   .act.primary{background:var(--acc);border-color:transparent;color:var(--acc-ink)}
   .act.primary .sub{color:var(--acc-ink);opacity:.82}
   .act.primary .arw{color:var(--acc-ink)}
+  .act.primary .ico{background:color-mix(in srgb,var(--acc-ink) 18%,transparent);color:var(--acc-ink)}
+  .act{transition:transform .12s ease,filter .12s ease}
+  .act:active{transform:scale(.98);filter:brightness(.97)}
 
   section{padding:26px 0 4px}
   h2{font-size:13px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);
@@ -86,8 +104,13 @@
   .row .nm{font-weight:700}
   .row .mn{display:block;font-size:12.5px;color:var(--muted);font-weight:500}
   .row .pr{font-weight:800;white-space:nowrap}
+  /* prices are the information — they get the size, not the labels */
+  .svc .row .pr{font-weight:900;font-size:17.5px}
   .row.today{background:color-mix(in srgb,var(--acc) 10%,transparent)}
   .row.today .nm{color:var(--acc)}
+  .pop{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;
+    background:color-mix(in srgb,var(--acc) 14%,transparent);color:var(--acc);
+    border-radius:999px;padding:2.5px 9px;margin-left:8px;vertical-align:2px}
 
   .about{color:var(--muted);font-size:15px;margin:0}
   .team{display:flex;flex-wrap:wrap;gap:8px}
@@ -107,15 +130,26 @@
 
   .rev{display:grid;gap:10px}
   .rq{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
-  .rq .st{color:var(--acc);font-size:13px;letter-spacing:2px}
-  .rq p{margin:6px 0 8px;font-size:14.5px}
-  .rq .who{color:var(--muted);font-size:12.5px;font-weight:700}
+  .rhead{display:flex;align-items:center;gap:11px;margin-bottom:8px}
+  .av{width:37px;height:37px;flex:0 0 37px;border-radius:50%;display:flex;align-items:center;
+    justify-content:center;font-weight:900;font-size:15px;
+    background:color-mix(in srgb,var(--acc) 15%,transparent);color:var(--acc)}
+  .rq .who{font-weight:800;font-size:13.5px}
+  .rq .st{color:var(--gold);font-size:12px;letter-spacing:2.5px;margin-top:1px}
+  .rq p{margin:0;font-size:14.5px}
 
-  .perk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 16px;text-align:center}
+  .perk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 16px 18px;text-align:center}
+  .perk .pico{width:46px;height:46px;margin:0 auto 10px;border-radius:13px;display:flex;
+    align-items:center;justify-content:center;
+    background:color-mix(in srgb,var(--acc) 13%,transparent);color:var(--acc)}
+  .perk .pico svg{width:22px;height:22px}
+  .perk .gst{color:var(--gold);font-size:17px;letter-spacing:4px;margin-bottom:6px}
   .perk .big{font-size:19px;font-weight:900;margin:2px 0 4px}
   .perk p{color:var(--muted);font-size:14px;margin:0 0 14px}
   .btn{display:inline-block;background:var(--acc);color:var(--acc-ink);text-decoration:none;
-    font-weight:800;border-radius:12px;padding:13px 22px;font-size:15px}
+    font-weight:800;border-radius:12px;padding:13px 22px;font-size:15px;
+    transition:transform .12s ease,filter .12s ease}
+  .btn:active{transform:scale(.97);filter:brightness(.96)}
   .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
 
   footer{margin-top:30px;padding:24px 0;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px}
@@ -132,20 +166,46 @@
     border-top:1px solid var(--line);display:flex;gap:9px;
     transform:translateY(120%);transition:transform .22s ease}
   .stick.show{transform:none}
-  .stick a{flex:1;text-align:center;text-decoration:none;font-weight:800;font-size:15.5px;
-    border-radius:12px;padding:14px 10px;background:var(--acc);color:var(--acc-ink)}
-  .stick a.sec{flex:0 0 56px;background:transparent;color:var(--ink);border:1px solid var(--line);font-size:19px;padding:12px 0}
+  .stick a{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
+    text-decoration:none;font-weight:800;font-size:15.5px;
+    border-radius:12px;padding:14px 10px;background:var(--acc);color:var(--acc-ink);
+    box-shadow:0 4px 16px color-mix(in srgb,var(--acc) 35%,transparent);
+    transition:transform .12s ease}
+  .stick a:active{transform:scale(.97)}
+  .stick a svg{width:18px;height:18px}
+  .stick a.sec{flex:0 0 56px;background:transparent;color:var(--ink);border:1px solid var(--line);
+    box-shadow:none;padding:12px 0}
 
   .state{max-width:520px;margin:0 auto;padding:70px 22px;text-align:center}
   .state .em{font-size:44px}
   .state h1{font-size:22px;margin:12px 0 8px}
   .state p{color:var(--muted);margin:0}
+
+  /* ── loading skeleton ─────────────────────────────────────────────────
+     The page is fetch-then-render; without this it is a blank screen for as
+     long as the RPC takes. The skeleton has the same bones as the real page,
+     so the swap reads as the page sharpening, not appearing. */
+  .skel .skhero{height:200px;background:var(--hero);border-radius:0}
+  .sk{position:relative;overflow:hidden;border-radius:14px;background:var(--bg2)}
+  .sk::after{content:'';position:absolute;inset:0;transform:translateX(-100%);
+    background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--ink) 7%,transparent),transparent);
+    animation:shim 1.3s infinite}
+  @keyframes shim{to{transform:translateX(100%)}}
+  .skact{height:62px;margin:10px 0}
+  .skel .wrap .skact:first-child{margin-top:18px}
+  .skline{height:13px;width:38%;margin:26px 0 12px}
+  .skcard{height:168px}
+
   @media(min-width:560px){ h1{font-size:36px} .heropic img{height:300px} }
-  @media(prefers-reduced-motion:reduce){ .stick{transition:none} }
+  @media(prefers-reduced-motion:reduce){
+    .stick,.act,.btn,.stick a{transition:none}
+    .act:active,.btn:active,.stick a:active{transform:none}
+    .sk::after{animation:none}
+  }
 </style>
 </head>
 <body>
-<div id="app"><div class="state"><div class="em">💈</div><p>Loading…</p></div></div>
+<div id="app"><div class="skel" aria-hidden="true"><div class="skhero"></div><div class="wrap"><div class="sk skact"></div><div class="sk skact"></div><div class="sk skact"></div><div class="sk skline"></div><div class="sk skcard"></div></div></div></div>
 
 <script>
 (function(){
@@ -177,6 +237,21 @@
     // comb
     '<svg viewBox="0 0 100 100" fill="none" aria-hidden="true"><rect x="16" y="29" width="68" height="14" rx="7" fill="currentColor"/><path d="M23 43v27M32 43v27M41 43v27M50 43v27M59 43v27M68 43v27M77 43v27" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>'
   ];
+
+  /* Action icons. Drawn, not emoji: emoji render differently on every phone
+     and read as a default. These inherit currentColor from the plate. */
+  var IC_={o:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">',c:'</svg>'};
+  var ICO={
+    cal: IC_.o+'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/>'+IC_.c,
+    phone: IC_.o+'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>'+IC_.c,
+    chat: IC_.o+'<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>'+IC_.c,
+    pin: IC_.o+'<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>'+IC_.c,
+    ig: IC_.o+'<rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>'+IC_.c,
+    tiktok: IC_.o+'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'+IC_.c,
+    link: IC_.o+'<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'+IC_.c,
+    gift: IC_.o+'<polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>'+IC_.c
+  };
+  function ico(n){ return '<span class="ico" aria-hidden="true">'+ICO[n]+'</span>'; }
 
   /* Everything below renders into innerHTML, so nothing reaches the page
      unescaped. esc() covers text and quoted attributes; url() is a second
@@ -265,6 +340,20 @@
     var open = b>a ? (n.mins>=a&&n.mins<b) : (n.mins>=a||n.mins<b);
     return {open:open,day:n.day,close:t[1]};
   }
+  /* "Closed right now" tells a customer nothing they can act on. "Opens
+     tomorrow at 9 AM" answers the question they actually have. */
+  function nextOpen(hours,tz){
+    var n=shopNow(tz);
+    for(var k=0;k<7;k++){
+      var d2=(n.day+k)%7, t=hours&&hours[String(d2)];
+      if(!t||!t.length) continue;
+      var a=toMins(t[0]); if(a===null) continue;
+      if(k===0&&n.mins>=a) continue;      // today's opening already passed
+      var when = k===0?'today':(k===1?'tomorrow':DAYS[d2]);
+      return 'Opens '+when+' at '+pretty(t[0]);
+    }
+    return '';
+  }
   function stars(n){
     var r=Math.round(Number(n)||0), s='';
     for(var i=0;i<5;i++) s+= i<r ? '★' : '☆';
@@ -309,14 +398,20 @@
     var h='';
 
     /* hero */
+    var initials=esc(String(name).split(/\s+/).map(function(w){
+      var m=w.match(/[A-Za-z0-9]/); return m?m[0]:'';
+    }).join('').slice(0,2).toUpperCase());
     var heroInner='<div class="wrap"><div class="inner">'
-      +(url(s.logo)?'<img class="logo" src="'+url(s.logo)+'" alt="'+esc(name)+' logo">':'')
+      +(url(s.logo)?'<img class="logo" src="'+url(s.logo)+'" alt="'+esc(name)+' logo">'
+                   :'<div class="mono" aria-hidden="true">'+initials+'</div>')
       +'<h1>'+esc(name)+'</h1>'
       +(s.tagline?'<p class="tag">'+esc(s.tagline)+'</p>':'')
+      +'<div class="hbar" aria-hidden="true"></div>'
       +'<div class="badges">'
       +(hasHours?'<span class="pill '+(op.open?'open':'')+'">'
-        +(op.open?'Open now'+(op.close?' · until '+esc(pretty(op.close)):''):'Closed right now')+'</span>':'')
-      +(nrev?'<span class="pill stars">'+stars(d.rating)+' '+esc(d.rating)+' ('+nrev+')</span>':'')
+        +(op.open?'Open now'+(op.close?' · until '+esc(pretty(op.close)):'')
+                 :(esc(nextOpen(d.hours,tz))||'Closed right now'))+'</span>':'')
+      +(nrev?'<span class="pill stars"><span style="color:var(--gold)">'+stars(d.rating)+'</span> '+esc(d.rating)+' ('+nrev+')</span>':'')
       +'</div></div></div>';
     h += url(s.hero)
       ? '<header class="hero"><div class="heropic"><img src="'+url(s.hero)+'" alt="">'
@@ -329,41 +424,41 @@
     h+='<nav class="acts" aria-label="Quick actions">';
     if(bookHref){
       h+='<a class="act primary" id="bookTop" href="'+esc(bookHref)+'"'+(bookExt?' target="_blank" rel="noopener"':'')+'>'
-        +'<span class="ico" aria-hidden="true">📅</span><span>Book an appointment'
+        +ico('cal')+'<span>Book an appointment'
         +'<span class="sub">Pick your time in a few taps</span></span><span class="arw" aria-hidden="true">→</span></a>';
     }
     if(ph){
       h+='<a class="act'+(bookHref?'':' primary')+'" href="tel:'+esc(ph)+'">'
-        +'<span class="ico" aria-hidden="true">📞</span><span>Call the shop'
+        +ico('phone')+'<span>Call the shop'
         +'<span class="sub">'+esc(d.phone)+'</span></span><span class="arw" aria-hidden="true">→</span></a>';
       // barbers and their customers run on text, not email
       if(s.sms!==false){
         h+='<a class="act" href="sms:'+esc(ph)+'">'
-          +'<span class="ico" aria-hidden="true">💬</span><span>Text the shop'
+          +ico('chat')+'<span>Text the shop'
           +'<span class="sub">Quick question? Send a text</span></span><span class="arw" aria-hidden="true">→</span></a>';
       }
     }
     if(maps&&url(maps)){
       h+='<a class="act" href="'+url(maps)+'" target="_blank" rel="noopener">'
-        +'<span class="ico" aria-hidden="true">📍</span><span>Get directions'
+        +ico('pin')+'<span>Get directions'
         +(d.address?'<span class="sub">'+esc(d.address)+'</span>':'')
         +'</span><span class="arw" aria-hidden="true">→</span></a>';
     }
     if(s.ig){
       h+='<a class="act" href="https://instagram.com/'+encodeURIComponent(s.ig)+'" target="_blank" rel="noopener">'
-        +'<span class="ico" aria-hidden="true">📸</span><span>Instagram'
+        +ico('ig')+'<span>Instagram'
         +'<span class="sub">@'+esc(s.ig)+'</span></span><span class="arw" aria-hidden="true">→</span></a>';
     }
     if(s.tiktok){
       h+='<a class="act" href="https://tiktok.com/@'+encodeURIComponent(s.tiktok)+'" target="_blank" rel="noopener">'
-        +'<span class="ico" aria-hidden="true">🎵</span><span>TikTok'
+        +ico('tiktok')+'<span>TikTok'
         +'<span class="sub">@'+esc(s.tiktok)+'</span></span><span class="arw" aria-hidden="true">→</span></a>';
     }
     // whatever else the shop sells — gift cards, product, a second location
     (Array.isArray(s.buttons)?s.buttons:[]).forEach(function(bn){
       if(!bn||!bn.label||!url(bn.url)) return;
       h+='<a class="act" href="'+url(bn.url)+'" target="_blank" rel="noopener">'
-        +'<span class="ico" aria-hidden="true">🔗</span><span>'+esc(bn.label)
+        +ico('link')+'<span>'+esc(bn.label)
         +'</span><span class="arw" aria-hidden="true">→</span></a>';
     });
     h+='</nav>';
@@ -373,9 +468,10 @@
     /* services */
     var svc=Array.isArray(d.services)?d.services:[];
     if(svc.length){
-      h+='<section><h2>Services</h2><div class="card">';
+      h+='<section><h2>Services</h2><div class="card svc">';
       svc.forEach(function(x){
         h+='<div class="row"><span><span class="nm">'+esc(x&&x.name||'Service')+'</span>'
+          +(x&&x.popular?'<span class="pop">Most booked</span>':'')
           +(x&&x.mins?'<span class="mn">'+esc(x.mins)+' min</span>':'')+'</span>'
           +'<span class="pr">'+esc(x&&x.price||'')+'</span></div>';
       });
@@ -413,9 +509,12 @@
     if(revs.length){
       h+='<section><h2>What people say</h2><div class="rev">'
         +revs.map(function(r){
-          return '<div class="rq"><div class="st" aria-label="'+esc(r.rating)+' out of 5">'+stars(r.rating)+'</div>'
-            +'<p>'+esc(r.text)+'</p>'
-            +(r.name?'<div class="who">— '+esc(r.name)+'</div>':'')+'</div>';
+          var nm=String(r.name||'').trim();
+          return '<div class="rq"><div class="rhead">'
+            +'<div class="av" aria-hidden="true">'+esc((nm.charAt(0)||'★').toUpperCase())+'</div>'
+            +'<div>'+(nm?'<div class="who">'+esc(nm)+'</div>':'')
+            +'<div class="st" aria-label="'+esc(r.rating)+' out of 5">'+stars(r.rating)+'</div></div></div>'
+            +'<p>'+esc(r.text)+'</p></div>';
         }).join('')
         +'</div>'
         +(url(d.google_review_url)
@@ -424,7 +523,8 @@
         +'</section>';
     } else if(url(d.google_review_url)){
       h+='<section><h2>Reviews</h2><div class="perk">'
-        +'<div class="big">⭐ Been in already?</div>'
+        +'<div class="gst" aria-hidden="true">★★★★★</div>'
+        +'<div class="big">Been in already?</div>'
         +'<p>A quick review helps other people find the shop.</p>'
         +'<a class="btn" href="'+url(d.google_review_url)+'" target="_blank" rel="noopener">Leave a review</a>'
         +'</div></section>';
@@ -433,10 +533,11 @@
     /* rewards — the reason the site exists commercially */
     if(d.reward_text){
       h+='<section><h2>Rewards</h2><div class="perk">'
+        +'<div class="pico" aria-hidden="true">'+ICO.gift+'</div>'
         // reward_text is stored mid-sentence ("a free haircut") because that is
         // how every other page uses it; as a headline it needs the article off
         // and the first letter up
-        +'<div class="big">🎁 '+esc(d.reward_text.replace(/^an?\s+/i,'').replace(/^./,function(ch){ return ch.toUpperCase(); }))+'</div>'
+        +'<div class="big">'+esc(d.reward_text.replace(/^an?\s+/i,'').replace(/^./,function(ch){ return ch.toUpperCase(); }))+'</div>'
         +'<p>Free to join. Collect a point every visit'
         +(d.reward_at?' — '+esc(d.reward_at)+' gets you there':'')+'.</p>'
         +'<a class="btn" href="/rewards/?c='+encodeURIComponent(d.client)+'">Join the rewards card</a>'
@@ -446,7 +547,7 @@
     h+='<footer><b>'+esc(name)+'</b>'
       +(d.address?'<br>'+esc(d.address):'')
       +(d.phone?'<br><a href="tel:'+esc(ph)+'">'+esc(d.phone)+'</a>':'')
-      +'<div class="powered">Site by <a href="https://tbsol.net/barbers/" target="_blank" rel="noopener">Loop</a></div>'
+      +'<div class="powered">Site by <a href="https://thebarberloop.com/barbers/" target="_blank" rel="noopener">The Barber Loop</a></div>'
       +'</footer>'
       +(bookHref?'<div class="pad"></div>':'')
       +'</div>';
@@ -454,9 +555,9 @@
     /* sticky bar */
     if(bookHref){
       h+='<div class="stick" id="stick">'
-        +'<a href="'+esc(bookHref)+'"'+(bookExt?' target="_blank" rel="noopener"':'')+'>📅 Book now</a>'
-        +(ph?'<a class="sec" href="tel:'+esc(ph)+'" aria-label="Call the shop">📞</a>':'')
-        +(maps&&url(maps)?'<a class="sec" href="'+url(maps)+'" target="_blank" rel="noopener" aria-label="Get directions">📍</a>':'')
+        +'<a href="'+esc(bookHref)+'"'+(bookExt?' target="_blank" rel="noopener"':'')+'>'+ICO.cal+' Book now</a>'
+        +(ph?'<a class="sec" href="tel:'+esc(ph)+'" aria-label="Call the shop">'+ICO.phone+'</a>':'')
+        +(maps&&url(maps)?'<a class="sec" href="'+url(maps)+'" target="_blank" rel="noopener" aria-label="Get directions">'+ICO.pin+'</a>':'')
         +'</div>';
     }
 

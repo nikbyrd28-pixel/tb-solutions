@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://thebarberloop.com/barbers/</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://thebarberloop.com/loyalty/</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://thebarberloop.com/demo/</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://thebarberloop.com/arcade/</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://thebarberloop.com/reps/</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://thebarberloop.com/shop/</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://thebarberloop.com/play/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://www.thebarberloop.com/barbers/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://www.thebarberloop.com/loyalty/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://www.thebarberloop.com/demo/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://www.thebarberloop.com/arcade/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://www.thebarberloop.com/reps/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://www.thebarberloop.com/shop/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://www.thebarberloop.com/play/</loc><changefreq>weekly</changefreq></url>
 </urlset>

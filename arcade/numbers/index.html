@@ -159,7 +159,7 @@ function end(){
   }
 }
 function shareIt(){
-  var t='I scored '+score+' on Number Rush 🔢'+(won?' and hit 2048 👑':'')+' — play free: https://tbsol.net/arcade/numbers/';
+  var t='I scored '+score+' on Number Rush 🔢'+(won?' and hit 2048 👑':'')+' — play free: https://thebarberloop.com/arcade/numbers/';
   if(navigator.share){ navigator.share({text:t}).catch(function(){}); } else { try{ navigator.clipboard.writeText(t); }catch(e){} }
 }
 /* input */

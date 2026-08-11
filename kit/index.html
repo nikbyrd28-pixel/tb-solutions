@@ -151,7 +151,7 @@
 
     <div class="blk">
       <div class="lbl">2 · Hand them the phone</div>
-      <p class="stage">Open tbsol.net/rewards/?c=demo first. Unlock your phone. Hand it over — don't hold it.</p>
+      <p class="stage">Open thebarberloop.com/rewards/?c=demo first. Unlock your phone. Hand it over — don't hold it.</p>
       <p id="c2">So this is what your customer sees. They scan your QR when they sit down, and every cut is a point toward a free one. See those games? They play while they wait and earn coins toward the free cut. Try one.</p>
       <button class="cp" onclick="cp('c2',this)">Copy</button>
     </div>
@@ -170,7 +170,7 @@
 
     <div class="blk">
       <div class="lbl">5 · If they say yes</div>
-      <p class="stage">Hand them your phone on tbsol.net/rewards/signup/ — let them type their own name and PIN. It's theirs, not yours. Then: print their poster, put it on the counter, and add their first customer right there while you're standing in the shop.</p>
+      <p class="stage">Hand them your phone on thebarberloop.com/rewards/signup/ — let them type their own name and PIN. It's theirs, not yours. Then: print their poster, put it on the counter, and add their first customer right there while you're standing in the shop.</p>
     </div>
   </div>
 
@@ -242,10 +242,10 @@
       <img id="flyerQr" alt="Scan to start free">
       <div class="qrtxt">
         <b>Scan to start — free</b>
-        <span>Or go to <span id="flyerUrl">tbsol.net/rewards/signup/</span><br>Set it up yourself in 30 seconds. No card, no contract.</span>
+        <span>Or go to <span id="flyerUrl">thebarberloop.com/rewards/signup/</span><br>Set it up yourself in 30 seconds. No card, no contract.</span>
       </div>
     </div>
-    <div class="ffoot">Loop by TB Solutions · tbsol.net · Built for barbershops, by someone who kept hearing the same problem.</div>
+    <div class="ffoot">Loop by TB Solutions · thebarberloop.com · Built for barbershops, by someone who kept hearing the same problem.</div>
   </div>
 </div>
 
@@ -279,9 +279,9 @@ var DMS=[
   ["Instagram DM — first touch",
    "Yo {shop} — your fades are clean. I'm local and I build a rewards app for barbershops: customers scan a QR at your chair, every cut earns points toward a free one, and they play games while they wait. Free to start, live in 30 seconds. Want me to send you the 60-second demo?"],
   ["Follow-up (2 days later, no reply)",
-   "Hey {shop} — not trying to blow you up. Here's the demo so you can look whenever: tbsol.net/rewards/?c=demo — play one of the games, that's what your customers do in the chair. If it's not for you, no worries at all."],
+   "Hey {shop} — not trying to blow you up. Here's the demo so you can look whenever: thebarberloop.com/rewards/?c=demo — play one of the games, that's what your customers do in the chair. If it's not for you, no worries at all."],
   ["Text after you demoed in person",
-   "Hey it's Nick — good meeting you today. Here's your setup link, takes 30 seconds and it's free: tbsol.net/rewards/signup/ — shop name and a 4-digit PIN, then your QR prints straight from your phone. Hit me if anything looks weird, I'll fix it same day."],
+   "Hey it's Nick — good meeting you today. Here's your setup link, takes 30 seconds and it's free: thebarberloop.com/rewards/signup/ — shop name and a 4-digit PIN, then your QR prints straight from your phone. Hit me if anything looks weird, I'll fix it same day."],
   ["Cold text to a shop number",
    "Hi — is this the owner? I'm Nick, local. I made a free rewards + booking app built just for barbershops (customers earn free cuts and play games while they wait). Can I swing by and show you on my phone this week? Two minutes, no pitch if you hate it."],
   ["After they sign up (day 1)",
@@ -331,7 +331,7 @@ var REF='', REPNAME='';
   [].forEach.call(document.querySelectorAll('.blk p, .obj .a, .hook .t'),function(e){
     var t=e.textContent;
     if(REPNAME) t=t.replace(/\bNick\b/g,REPNAME);
-    t=t.replace(/tbsol\.net\/rewards\/signup\/(?!\?)/g,'tbsol.net/rewards/signup/'+suffix);
+    t=t.replace(/thebarberloop\.com\/rewards\/signup\/(?!\?)/g,'thebarberloop.com/rewards/signup/'+suffix);
     if(t!==e.textContent) e.textContent=t;
   });
   // every outbound link carries their code
@@ -351,11 +351,11 @@ function clearRep(){
 
 /* ---------- flyer QR (carries the rep code so their flyers get credited) ---------- */
 (function(){
-  var url=(location.origin||'https://tbsol.net')+'/rewards/signup/'+(REF?('?ref='+encodeURIComponent(REF)):'');
+  var url=(location.origin||'https://thebarberloop.com')+'/rewards/signup/'+(REF?('?ref='+encodeURIComponent(REF)):'');
   var q=document.getElementById('flyerQr');
   if(q) q.src='https://api.qrserver.com/v1/create-qr-code/?size=360x360&ecc=H&margin=0&color=11-16-36&data='+encodeURIComponent(url);
   var t=document.getElementById('flyerUrl');
-  if(t && REF) t.textContent='tbsol.net/rewards/signup/?ref='+REF;
+  if(t && REF) t.textContent='thebarberloop.com/rewards/signup/?ref='+REF;
 })();
 
 /* ---------- copy ---------- */
