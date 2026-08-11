@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Agent Team — TB Command</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230b0b12'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-weight='900' font-size='26' fill='%238b7bff'%3E🤖%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--bg:#0b0b12;--panel:rgba(255,255,255,.04);--line:rgba(139,123,255,.22);--text:#eef0f6;--muted:#9aa0b0;--acc:#8b7bff;--acc2:#5ad0f0;--good:#43d09a;--bad:#ff6a7a}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;background:radial-gradient(circle at 15% -10%,rgba(139,123,255,.14),transparent 40%),radial-gradient(circle at 100% 110%,rgba(90,208,240,.10),transparent 40%),var(--bg);color:var(--text);line-height:1.55;min-height:100vh}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 16px 90px}
+  h1{font-size:24px;margin:0}
+  h1 b{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);font-size:13px;margin:4px 0 18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+  label{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:12px 0 4px}
+  input,textarea{width:100%;background:rgba(0,0,0,.4);border:1px solid var(--line);border-radius:10px;padding:11px 12px;color:var(--text);font:inherit;font-size:15px}
+  textarea{min-height:84px;resize:vertical}
+  input:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(139,123,255,.15)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:8px}
+  .asset{border:1px solid var(--line);border-radius:14px;padding:13px;cursor:pointer;background:rgba(0,0,0,.25);transition:transform .08s}
+  .asset:active{transform:scale(.97)}
+  .asset.on{border-color:var(--acc);background:rgba(139,123,255,.14)}
+  .asset .e{font-size:22px}
+  .asset .t{font-weight:800;font-size:13px;margin-top:6px}
+  .asset .d{font-size:11px;color:var(--muted);margin-top:2px}
+  .btn{border:0;border-radius:999px;padding:12px 18px;font:inherit;font-weight:800;font-size:14px;cursor:pointer;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#0b0b12}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+  .btn.small{padding:8px 13px;font-size:12px}
+  .btn:disabled{opacity:.55}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  pre{white-space:pre-wrap;word-wrap:break-word;font:13px/1.6 ui-monospace,Menlo,monospace;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:12px;padding:14px;max-height:62vh;overflow:auto}
+  .muted{color:var(--muted);font-size:13px}
+  .err{color:var(--bad);font-size:13px;margin-top:8px}
+  .spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.25);border-top-color:var(--acc);border-radius:50%;animation:s .7s linear infinite;vertical-align:-3px;margin-right:8px}
+  @keyframes s{to{transform:rotate(360deg)}}
+  .hide{display:none!important}
+  .crumb{font-size:13px;margin-bottom:10px}
+  .crumb a{color:var(--muted);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="crumb"><a href="/command/">← TB Command</a></div>
+  <h1>🤖 Agent <b>Team</b></h1>
+  <p class="sub">Nine specialists on call. Pick one, give the task, get finished work — powered by your n8n.</p>
+
+  <div class="card">
+    <label>Who's on it</label>
+    <div class="grid" id="agents"></div>
+    <label>Brain</label>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(140px,1fr))" id="brains"></div>
+    <label>The task</label>
+    <textarea id="fTask" placeholder="e.g. Write the DM I send a shop owner after I've already built their site"></textarea>
+    <label>Client / business in focus (optional)</label>
+    <input id="fBiz" placeholder="e.g. Fresh Kutz, West Chester">
+    <label>Extra context (optional)</label>
+    <textarea id="fExtra" placeholder="offers, links, voice notes, anything the agent should know" style="min-height:60px"></textarea>
+    <div class="bar">
+      <button class="btn" id="goBtn" onclick="run()">Put them to work →</button>
+    </div>
+    <div class="err hide" id="err"></div>
+  </div>
+
+  <div class="card hide" id="outCard">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <b id="outTitle">Result</b>
+      <button class="btn ghost small" onclick="copyOut()">📋 Copy</button>
+    </div>
+    <pre id="out" style="margin-top:10px"></pre>
+  </div>
+</div>
+
+<script>
+var HOOKS={
+  gemini:'https://n8n-fouz.srv1786777.hstgr.cloud/webhook/agent-team-8f3a1c5d92b4',
+  hermes:'https://n8n-fouz.srv1786777.hstgr.cloud/webhook/hermes-4b7e2d9c31f5'
+};
+var BRAINS=[
+  {k:'gemini',e:'✨',t:'Gemini',d:'fast · free'},
+  {k:'hermes',e:'🧠',t:'Hermes',d:'Nous 70B · deeper'}
+];
+var brain='gemini';
+var AGENTS=[
+  {k:'lead-gen',e:'🎯',t:'Lead Gen',d:'prospects & outreach'},
+  {k:'research',e:'🔎',t:'Research',d:'competitor intel'},
+  {k:'copywriter',e:'✍️',t:'Copywriter',d:'pages, SMS, email'},
+  {k:'ui-designer',e:'🎨',t:'UI Design',d:'pages & layouts'},
+  {k:'graphics',e:'🖼️',t:'Graphics',d:'image prompts & art'},
+  {k:'marketing',e:'📣',t:'Marketing',d:'campaigns & SEO'},
+  {k:'script-writer',e:'🎬',t:'Scripts',d:'reels & TikToks'},
+  {k:'client-handler',e:'🤝',t:'Clients',d:'onboarding & saves'},
+  {k:'saas-ops',e:'⚙️',t:'SaaS Ops',d:'Loop product calls'},
+  {k:'partnerships',e:'💼',t:'Partners',d:'reps & deals'}
+];
+var picked='lead-gen';
+function el(id){return document.getElementById(id)}
+function paint(){
+  el('agents').innerHTML=AGENTS.map(function(a){
+    return '<div class="asset'+(a.k===picked?' on':'')+'" onclick="pick(\''+a.k+'\')"><div class="e">'+a.e+'</div><div class="t">'+a.t+'</div><div class="d">'+a.d+'</div></div>';
+  }).join('');
+  el('brains').innerHTML=BRAINS.map(function(b){
+    return '<div class="asset'+(b.k===brain?' on':'')+'" onclick="pickBrain(\''+b.k+'\')"><div class="e">'+b.e+'</div><div class="t">'+b.t+'</div><div class="d">'+b.d+'</div></div>';
+  }).join('');
+}
+function pick(k){picked=k;paint();}
+function pickBrain(k){brain=k;paint();}
+paint();
+function run(){
+  var task=el('fTask').value.trim();
+  if(!task){el('fTask').focus();return flash('Give the agent a task first.');}
+  el('err').classList.add('hide');
+  var b=el('goBtn');b.disabled=true;b.innerHTML='<span class="spin"></span>Working…';
+  fetch(HOOKS[brain],{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({agent:picked,task:task,business:el('fBiz').value,extra:el('fExtra').value})})
+  .then(function(r){if(!r.ok)throw 0;return r.json();})
+  .then(function(j){
+    if(j.error)return flash(j.error);
+    var a=AGENTS.find(function(x){return x.k===picked;});
+    el('outTitle').textContent=(a?a.e+' '+a.t:'Agent')+' delivered:';
+    el('out').textContent=j.text||'(empty)';
+    el('outCard').classList.remove('hide');
+    el('outCard').scrollIntoView({behavior:'smooth'});
+  })
+  .catch(function(){flash('Could not reach the agent — is the '+(brain==='hermes'?'hermes-brain':'agent-team')+' workflow Active in n8n?');})
+  .finally(function(){b.disabled=false;b.textContent='Put them to work →';});
+}
+function flash(m){var e=el('err');e.textContent=m;e.classList.remove('hide');}
+function copyOut(){navigator.clipboard.writeText(el('out').textContent).then(function(){});}
+</script>
+</body>
+</html>
