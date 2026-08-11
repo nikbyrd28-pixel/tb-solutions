@@ -171,8 +171,14 @@ for (const p of live) {
     // wall_off: paths that exist in the repo but do not belong on this
     // product's domain bounce to the product home instead of serving.
     // Redirects run before the filesystem, so this beats the real files.
+    // Three explicit sources per path: `/x/:rest*` alone does NOT match the
+    // bare `/x/` form (the trailing slash goes unconsumed), and that is
+    // exactly the form every internal link uses.
     for (const w of (p.wall_off || [])) {
-      rules.push({ source: w.replace(/\/$/, '') + '/:rest*', has: has(h), destination: p.home, permanent: false });
+      const base = w.replace(/\/$/, '');
+      for (const src of [base, base + '/', base + '/:rest+']) {
+        rules.push({ source: src, has: has(h), destination: p.home, permanent: false });
+      }
     }
   }
 }
