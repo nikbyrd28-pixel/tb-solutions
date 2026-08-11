@@ -155,9 +155,14 @@ const rules = [];
 for (const p of live) {
   const d = p.domain.trim().toLowerCase();
   const has = v => [{ type: 'host', value: v }];
-  rules.push({ source: '/',            has: has(d), destination: p.home });
-  rules.push({ source: '/robots.txt',  has: has(d), destination: '/_hosts/' + p.id + '/robots.txt' });
-  rules.push({ source: '/sitemap.xml', has: has(d), destination: '/_hosts/' + p.id + '/sitemap.xml' });
+  // BOTH host forms. Vercel lets the owner pick www or apex as primary and
+  // 308s the other one — the first connect made www primary, the www rules
+  // didn't exist, and the barber domain served the TB Solutions homepage.
+  for (const h of [d, 'www.' + d]) {
+    rules.push({ source: '/',            has: has(h), destination: p.home });
+    rules.push({ source: '/robots.txt',  has: has(h), destination: '/_hosts/' + p.id + '/robots.txt' });
+    rules.push({ source: '/sitemap.xml', has: has(h), destination: '/_hosts/' + p.id + '/sitemap.xml' });
+  }
 }
 // Only touch the file when the rewrites actually differ. Re-serialising it
 // otherwise reformats hand-written JSON for no reason and buries the real

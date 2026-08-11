@@ -57,6 +57,36 @@
         }
       ],
       "destination": "/_hosts/loop/sitemap.xml"
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thebarberloop.com"
+        }
+      ],
+      "destination": "/_hosts/loop/robots.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thebarberloop.com"
+        }
+      ],
+      "destination": "/_hosts/loop/sitemap.xml"
     }
   ]
 }
