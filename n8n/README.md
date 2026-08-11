@@ -96,7 +96,7 @@ Setup (2 min — reuses everything you already have):
 Local brain setup (your own Ollama on this VPS — free, no API key):
 1. The `ollama` Docker project on the VPS was deployed via the Hostinger API with an auto-puller for `llama3.2:3b` (the size that fits KVM 1's 4GB next to n8n). Nothing to install by hand.
 2. Import from URL: `https://tbsol.net/n8n/hermes-brain.json`
-3. If n8n can't reach Ollama on the first test, open the **Build Hermes Prompt** node — the top of the code has the ONLY settings: `OLLAMA_URL` (default `http://172.17.0.1:11434`; same-compose → `http://ollama:11434`; n8n outside Docker → `http://localhost:11434`) and `MODEL`.
+3. If n8n can't reach Ollama on the first test, open the **Build Hermes Prompt** node — the top of the code has the ONLY settings: `OLLAMA_URL` (default `http://ollama:11434` — the ollama project is attached to n8n's own Docker network) and `MODEL`.
 4. Save → flip **Active**. The **🧠 Local AI** chip on tbsol.net/command/agents/ now works — same agents, your own brain, zero per-call cost.
 
 Upgrade path: bump the VPS to 8GB (KVM 2), pull `hermes3`, change `MODEL` to `hermes3`, and lift the ollama service's `mem_limit` — same workflow, real Hermes.
