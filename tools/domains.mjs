@@ -47,9 +47,7 @@ const home = new Map();      // "/barbers/" -> "https://getloop.app/"
 for (const p of cfg.products) {
   const d = (p.domain || '').trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/$/, '');
   for (const path of p.owns) {
-    home.set(path, d
-      ? 'https://' + d + (path === p.home ? '/' : path)
-      : 'https://' + APEX + path);
+    home.set(path, 'https://' + (d || APEX) + path);
   }
 }
 
@@ -155,20 +153,21 @@ const rules = [];
 for (const p of live) {
   const d = p.domain.trim().toLowerCase();
   const has = v => [{ type: 'host', value: v }];
-  // BOTH host forms. Vercel lets the owner pick www or apex as primary and
-  // 308s the other one — the first connect made www primary, the www rules
-  // didn't exist, and the barber domain served the TB Solutions homepage.
+  // BOTH host forms — the owner may pick www or apex as primary in Vercel.
+  // permanent:false everywhere: a 308 here would be cached by browsers forever
+  // and survive any later change of heart about the domain map.
   for (const h of [d, 'www.' + d]) {
-    rules.push({ source: '/',            has: has(h), destination: p.home });
-    rules.push({ source: '/robots.txt',  has: has(h), destination: '/_hosts/' + p.id + '/robots.txt' });
-    rules.push({ source: '/sitemap.xml', has: has(h), destination: '/_hosts/' + p.id + '/sitemap.xml' });
+    rules.push({ source: '/',            has: has(h), destination: p.home, permanent: false });
+    rules.push({ source: '/robots.txt',  has: has(h), destination: '/_hosts/' + p.id + '/robots.txt', permanent: false });
+    rules.push({ source: '/sitemap.xml', has: has(h), destination: '/_hosts/' + p.id + '/sitemap.xml', permanent: false });
   }
 }
 // Only touch the file when the rewrites actually differ. Re-serialising it
 // otherwise reformats hand-written JSON for no reason and buries the real
 // change in whitespace churn on every future diff.
-if (JSON.stringify(vercel.rewrites || []) !== JSON.stringify(rules)) {
-  if (rules.length) vercel.rewrites = rules; else delete vercel.rewrites;
+delete vercel.rewrites;   // the failed mechanism; never emit it again
+if (JSON.stringify(vercel.redirects || []) !== JSON.stringify(rules)) {
+  if (rules.length) vercel.redirects = rules; else delete vercel.redirects;
   put('vercel.json', JSON.stringify(vercel, null, 2) + '\n');
 }
 
