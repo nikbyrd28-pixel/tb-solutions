@@ -81,6 +81,28 @@ These run on ONE free Google Gemini key — no OpenAI/Anthropic needed.
 
 ---
 
+## 🤖 Agent Team (the herd)
+
+| File | What it does | Runs |
+|---|---|---|
+| **`agent-team.json`** ⭐ | Nine specialist agents on one webhook — lead gen, research, copywriter, UI design, graphics, marketing, script writer, client handler, SaaS ops, partnerships. Each answers with its own expertise + full TB/Loop context baked in. Powers **tbsol.net/command/agents/** | When you hit "Put them to work" |
+| **`hermes-brain.json`** | The SAME nine agents running on **Hermes** (Nous Research, via OpenRouter) instead of Gemini — the second brain. The agents page has a Gemini/Hermes switch | When you pick the Hermes brain |
+
+Setup (2 min — reuses everything you already have):
+1. Import from URL: `https://tbsol.net/n8n/agent-team.json`
+2. Open the **Gemini Model** node → select your existing Gemini credential.
+3. Save → flip **Active**. Then open **tbsol.net/command/agents/** on your phone: pick an agent, type the task, done.
+
+Hermes setup (adds the second brain — needs a paid-per-call key):
+1. **openrouter.ai** → sign up → **Keys → Create key** → copy it (add a few dollars of credit; Hermes 70B costs well under a cent per typical answer).
+2. Import from URL: `https://tbsol.net/n8n/hermes-brain.json`
+3. Open the **Call Hermes (OpenRouter)** node → Credential → **Create new (Header Auth)**: Name `Authorization`, Value `Bearer sk-or-...` (your key, with the word Bearer and a space in front).
+4. Save → flip **Active**. The **🧠 Hermes** chip on tbsol.net/command/agents/ now works — same agents, different brain, compare answers side by side.
+
+The same nine specialists also exist as Claude Code subagents (`.claude/agents/` in the repo) — those are the deep versions that can read the codebase, browse, and edit files when you're working in a Claude session. The n8n version is the fast phone version.
+
+---
+
 ## Ops workflows (Phase 1 — production readiness)
 
 | File | What it does | Runs |
