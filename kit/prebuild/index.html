@@ -163,8 +163,8 @@
       <div class="kv">
         <b>Shop code</b><code id="kCode"></code>
         <b>PIN</b><code id="kPin"></code>
-        <b>Owner app</b><span>tbsol.net/center/</span>
-        <b>Site editor</b><span>tbsol.net/shop/edit/</span>
+        <b>Owner app</b><span>thebarberloop.com/center/</span>
+        <b>Site editor</b><span>thebarberloop.com/shop/edit/</span>
       </div>
       <label>Text to send them on the spot</label>
       <pre id="smsBody"></pre>
@@ -392,7 +392,7 @@
 
   /* ── result ────────────────────────────────────────────────────────── */
   function show(s){
-    var live='https://tbsol.net/shop/?c='+encodeURIComponent(s.slug);
+    var live='https://thebarberloop.com/shop/?c='+encodeURIComponent(s.slug);
     el('form').classList.add('hide');
     el('done').classList.remove('hide');
     el('doneName').textContent=s.name;
@@ -402,7 +402,7 @@
     el('qr').src='https://api.qrserver.com/v1/create-qr-code/?size=372x372&ecc=H&margin=0&data='+encodeURIComponent(live);
     el('kCode').textContent=s.slug;
     el('kPin').textContent=s.pin;
-    var sms='Your shop’s website: '+live+' — I built it for you, it’s live now. Your prices and hours are already on it. It’s yours, free. Sign in to change anything: tbsol.net/shop/edit/ — code '+s.slug+', PIN '+s.pin+'. – Nick, TB Solutions';
+    var sms='Your shop’s website: '+live+' — I built it for you, it’s live now. Your prices and hours are already on it. It’s yours, free. Sign in to change anything: thebarberloop.com/shop/edit/ — code '+s.slug+', PIN '+s.pin+'. – Nick, TB Solutions';
     el('smsBody').textContent=sms;
     el('smsBtn').href='sms:?&body='+encodeURIComponent(sms);
     el('script').textContent='"Looked your shop up on Google — you’ve got no website on your listing, so people searching ‘barber near me’ are finding everyone but you. So I built you one. That’s it — it’s live right now."';

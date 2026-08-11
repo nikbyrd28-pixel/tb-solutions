@@ -287,7 +287,7 @@ function openGame(mode){
     LoopArcade.play({
       mode: mode,
       best: bestOf(mode),
-      shareText: function(m,score){ var nm=m==='flyer'?'Loop Flyer':'Chair Hopper'; return 'I scored '+score+' on '+nm+' \ud83c\udfae Play free \u2014 no download: https://tbsol.net/arcade/'; },
+      shareText: function(m,score){ var nm=m==='flyer'?'Loop Flyer':'Chair Hopper'; return 'I scored '+score+' on '+nm+' \ud83c\udfae Play free \u2014 no download: https://thebarberloop.com/arcade/'; },
       onOver: function(m, score){
         var prev=bestOf(m), nb=score>prev; if(nb) setBest(m, score); refreshBests();
         return { best: Math.max(prev,score), newBest: nb,

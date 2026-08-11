@@ -48,7 +48,7 @@
     <div class="step"><div class="n">2</div><div><b>Show your card every visit</b> — we punch it right on your phone.</div></div>
     <div class="step"><div class="n">3</div><div><b>Play &amp; win</b> — games earn coins, coins spin the slots, and the grand prize is on us. 🏆</div></div>
   </div>
-  <div class="foot">Powered by TB Solutions · tbsol.net</div>
+  <div class="foot">Powered by The Barber Loop · thebarberloop.com</div>
 </div>
 <button class="printbtn" onclick="window.print()">🖨️ Print this poster</button>
 <script>
@@ -59,7 +59,7 @@ var hex=/^[0-9a-fA-F]{6}$/;
 if(hex.test(q.get('ac')||'')) document.documentElement.style.setProperty('--acc','#'+q.get('ac'));
 document.getElementById('bizName').textContent=name;
 document.title=name+' rewards poster';
-var join='https://tbsol.net/rewards/?c='+slug+(q.get('name')?'&name='+encodeURIComponent(q.get('name')):'');
+var join='https://thebarberloop.com/rewards/?c='+slug+(q.get('name')?'&name='+encodeURIComponent(q.get('name')):'');
 document.getElementById('qr').src='https://api.qrserver.com/v1/create-qr-code/?size=480x480&ecc=H&margin=0&color=11-16-36&data='+encodeURIComponent(join);
 // pull the actual reward text so the poster sells the real prize
 fetch('https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/rpc/get_program_public',{method:'POST',headers:{apikey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro',Authorization:'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro','Content-Type':'application/json'},body:JSON.stringify({p_client:slug})})

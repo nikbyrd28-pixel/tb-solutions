@@ -3,26 +3,26 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>The all-in-one system for barbershops — booking, rewards, referrals &amp; content · TB Solutions</title>
+<title>The Barber Loop — booking, rewards &amp; websites, built for barbershops</title>
 <meta name="description" content="One system to keep your barbershop booked: online booking, a loyalty rewards program, a referral engine, AI content, and a lead tracker — all working together, built for barbers. Try every piece live, free to start." />
 <meta name="robots" content="index,follow,max-image-preview:large" />
 <meta name="theme-color" content="#07080c" />
 <link rel="canonical" href="https://thebarberloop.com/barbers/" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="The all-in-one system for barbershops" />
+<meta property="og:title" content="The Barber Loop — the all-in-one system for barbershops" />
 <meta property="og:description" content="Booking, rewards, referrals, content and a lead tracker — one system, built for barbers. Try every piece live." />
 <meta property="og:url" content="https://thebarberloop.com/barbers/" />
-<meta property="og:site_name" content="TB Solutions" />
-<meta property="og:image" content="https://tbsol.net/barbers/og.png" />
+<meta property="og:site_name" content="The Barber Loop" />
+<meta property="og:image" content="https://thebarberloop.com/barbers/og.png" />
 <meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" />
-<meta name="twitter:card" content="summary_large_image" /><meta name="twitter:image" content="https://tbsol.net/barbers/og.png" />
+<meta name="twitter:card" content="summary_large_image" /><meta name="twitter:image" content="https://thebarberloop.com/barbers/og.png" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Service","name":"Barbershop Growth System by TB Solutions","serviceType":"Barbershop booking, loyalty, referrals and marketing system","url":"https://tbsol.net/barbers/","provider":{"@type":"Organization","name":"TB Solutions","url":"https://tbsol.net"},"areaServed":"US","offers":{"@type":"Offer","price":"0","priceCurrency":"USD","description":"Free to start."}}
+{"@context":"https://schema.org","@type":"Service","name":"The Barber Loop","serviceType":"Barbershop booking, loyalty, referrals and marketing system","url":"https://thebarberloop.com/barbers/","provider":{"@type":"Organization","name":"TB Solutions","url":"https://tbsol.net"},"areaServed":"US","offers":{"@type":"Offer","price":"0","priceCurrency":"USD","description":"Free to start."}}
 </script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What do I actually get?","acceptedAnswer":{"@type":"Answer","text":"One connected system for your shop: a real website, an online booking page, a loyalty rewards program, a referral engine, an AI tool that makes your content, and a tracker so no lead is missed. Use one piece or all of them."}},{"@type":"Question","name":"Do my clients need an app?","acceptedAnswer":{"@type":"Answer","text":"No. Everything works from a link or a QR code at your counter — booking, rewards and referrals all open in the browser. Nothing to download."}},{"@type":"Question","name":"Is this like Booksy?","acceptedAnswer":{"@type":"Answer","text":"The booking piece does what Booksy does, but it's your own branded page — no marketplace showing your clients other barbers, and no per-booking cut. And it's bundled with a website, loyalty, referrals and content instead of being one more separate app."}},{"@type":"Question","name":"How much does it cost?","acceptedAnswer":{"@type":"Answer","text":"You can try every piece live for free right now. When you're ready to run it for your shop, we set it up for you — tell us about your shop and we'll reach out."}}]}
 </script>
-<link rel="icon" href="/brand/icon.svg" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307080c'/%3E%3Cg stroke-linecap='round' stroke-width='7' fill='none'%3E%3Cpath d='M10 36 L34 12' stroke='%236f9dff'/%3E%3Cpath d='M18 48 L48 18' stroke='%235df2e0'/%3E%3Cpath d='M32 54 L54 32' stroke='%23ffffff' opacity='.8'/%3E%3C/g%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
 <link rel="preload" as="image" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co/storage/v1/object/public/shop-sites/brand/loop-hero-m.jpg" media="(max-width:760px)">
@@ -34,6 +34,7 @@
     --acc:#5df2e0;--acc2:#6f9dff;--gold:#ffd45a;--good:#43f0b0}
   *{box-sizing:border-box}
   @keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+  @keyframes heroZoom{from{transform:scale(1.08)}to{transform:scale(1)}}
   html{scroll-behavior:smooth}
   body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.6;background:var(--bg)}
   img{max-width:100%}
@@ -62,7 +63,8 @@
 
   /* ── hero: the photograph IS the page ── */
   header{position:relative;min-height:92svh;display:flex;align-items:flex-end;overflow:hidden}
-  .heroimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%}
+  .heroimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%;
+    animation:heroZoom 14s ease-out both}
   .heroshade{position:absolute;inset:0;background:
     linear-gradient(180deg,rgba(7,8,12,.55) 0%,rgba(7,8,12,.15) 35%,rgba(7,8,12,.82) 78%,var(--bg) 100%),
     radial-gradient(900px 400px at 20% 100%,rgba(93,242,224,.12),transparent 60%)}
@@ -146,13 +148,24 @@
   .muted{color:var(--muted)}
   footer{margin-top:84px;padding:30px 0 40px;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px}
   footer a{color:var(--muted)}
-  @media(prefers-reduced-motion:reduce){.reveal{animation:none}}
+  /* ── the live demo in a phone ── */
+  .tryrow{display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center}
+  @media(max-width:860px){.tryrow{grid-template-columns:1fr}}
+  .phone{width:min(300px,84vw);background:#0b0d13;border:1px solid rgba(255,255,255,.16);
+    border-radius:44px;padding:11px;position:relative;margin:0 auto;
+    box-shadow:0 40px 90px rgba(0,0,0,.6),0 0 90px rgba(93,242,224,.09)}
+  .phone::before{content:'';position:absolute;top:21px;left:50%;transform:translateX(-50%);
+    width:86px;height:20px;background:#0b0d13;border-radius:11px;z-index:2}
+  .phone iframe{display:block;width:100%;height:580px;border:0;border-radius:34px;background:#0c0e13}
+  .phonecap{text-align:center;color:var(--muted);font-size:12.5px;font-weight:700;margin-top:12px}
+
+  @media(prefers-reduced-motion:reduce){.reveal{animation:none}.heroimg{animation:none}}
 </style>
 </head>
 <body>
 
 <nav><div class="in">
-  <a class="logo" href="/barbers/">💈 <span>Loop</span> for Barbershops</a>
+  <a class="logo" href="/barbers/"><svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true" style="vertical-align:-4px;margin-right:7px"><rect width="64" height="64" rx="14" fill="#0b0d13" stroke="rgba(255,255,255,.14)"/><g stroke-linecap="round" stroke-width="7" fill="none"><path d="M10 36 L34 12" stroke="#6f9dff"/><path d="M18 48 L48 18" stroke="#5df2e0"/><path d="M32 54 L54 32" stroke="#fff" opacity=".8"/></g></svg>The Barber <span>Loop</span></a>
   <div class="links">
     <a href="#stack" class="hidesm">What's inside</a>
     <a href="#arcade" class="hidesm">The arcade</a>
@@ -298,15 +311,23 @@
 <section id="try">
   <div class="wrap">
     <div class="bandbox reveal">
-      <div class="eyebrow" style="color:var(--acc)">Try before anything</div>
-      <h2>Play with the whole system — no signup</h2>
-      <p>Every tool above is live with sample data. Open the shop site, book an appointment, spin the rewards, play the games. See it before you commit.</p>
-      <div class="cta-row">
-        <a href="/shop/?c=demo" class="btn sm">🌐 The website</a>
-        <a href="/booking/demo/" class="btn sm ghost">💈 Booking</a>
-        <a href="/rewards/?c=demo" class="btn sm ghost">🔁 Rewards</a>
-        <a href="/ambassadors/demo/" class="btn sm ghost">🤝 Referrals</a>
-        <a href="/crm/demo/" class="btn sm ghost">📊 Tracker</a>
+      <div class="tryrow">
+        <div>
+          <div class="eyebrow" style="color:var(--acc)">Try before anything</div>
+          <h2>This is a real shop site, live right now</h2>
+          <p>That phone is not a picture — it's the demo shop's actual website, running. Tap around in it. Then open the booking, the rewards card and the games the same way your customers would.</p>
+          <div class="cta-row">
+            <a href="/shop/?c=demo" class="btn sm">🌐 Open it full screen</a>
+            <a href="/booking/demo/" class="btn sm ghost">💈 Booking</a>
+            <a href="/rewards/?c=demo" class="btn sm ghost">🔁 Rewards</a>
+            <a href="/ambassadors/demo/" class="btn sm ghost">🤝 Referrals</a>
+            <a href="/crm/demo/" class="btn sm ghost">📊 Tracker</a>
+          </div>
+        </div>
+        <div>
+          <div class="phone reveal"><iframe src="/shop/?c=demo" title="Live demo shop website" loading="lazy"></iframe></div>
+          <p class="phonecap">Live right now — scroll it, tap it</p>
+        </div>
       </div>
     </div>
   </div>
@@ -348,7 +369,7 @@
 </section>
 
 <footer>
-  <div class="wrap">💈 <b>Loop for Barbershops</b> · <a href="/rewards/owner/">Shop sign in</a> · <a href="/shop/edit/">Website editor</a> · <a href="/booking/">Chair</a> · <a href="/loyalty/">Loop</a> · <a href="/ambassadors/">Ambassadors</a> · part of <a href="/command/">TB Command</a> · by <a href="https://tbsol.net">TB Solutions</a></div>
+  <div class="wrap">💈 <b>The Barber Loop</b> · <a href="/rewards/owner/">Shop sign in</a> · <a href="/shop/edit/">Website editor</a> · <a href="/loyalty/">Loop rewards</a> · <a href="/reps/">Join the team</a> · by <a href="https://tbsol.net">TB Solutions</a></div>
 </footer>
 
 <script>
