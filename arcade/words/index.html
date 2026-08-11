@@ -98,7 +98,13 @@ function submit(){
     var cell=el('c'+row+'_'+c); if(!cell) return;
     cell.classList.add('rv');
     setTimeout(function(){ cell.classList.add(res[c]);
-      var key=el('k'+g[c]); if(key && !key.classList.contains('g')) key.classList.add(res[c]); if(key && res[c]==='g'){ key.classList.remove('y','b'); key.classList.add('g'); }
+      // keyboard state only ever upgrades (gray -> gold -> green): a repeated
+      // letter used to add BOTH y and b, and .key.b wins in the cascade — the
+      // keyboard showed an in-word letter as absent
+      var key=el('k'+g[c]); if(key){ var st=res[c];
+        if(st==='g'){ key.classList.remove('y','b'); key.classList.add('g'); }
+        else if(st==='y'){ if(!key.classList.contains('g')){ key.classList.remove('b'); key.classList.add('y'); } }
+        else if(!key.classList.contains('g')&&!key.classList.contains('y')){ key.classList.add('b'); } }
     },200);
     if(window.LoopFX)LoopFX.sfx('click');
   }, c*140); })(c); }

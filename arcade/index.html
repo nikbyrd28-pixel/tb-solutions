@@ -150,6 +150,14 @@
       <div class="best" id="bestWords">Keep the 🔥 streak</div>
       <span class="play">▶ Play</span>
     </a>
+    <a class="gcard" id="cardHockey" href="/arcade/hockey/">
+      <div class="tag">New</div>
+      <div class="em">🏒</div>
+      <h3>Ice Hockey</h3>
+      <p>Drag to defend. First to 3 wins.</p>
+      <div class="best" id="bestHockey">Best 0</div>
+      <span class="play">▶ Play</span>
+    </a>
     <a class="gcard" id="cardBlackjack" href="/arcade/blackjack/">
       <div class="tag" style="background:var(--gold)">Casino</div>
       <div class="em">🃏</div>
@@ -224,9 +232,16 @@ refreshBests();
   var q=new URLSearchParams(location.search);
   var client=(q.get('c')||'demo').toLowerCase().replace(/[^a-z0-9]/g,'')||'demo';
   var qs=''; if(q.get('c')) qs='?c='+encodeURIComponent(client)+(q.get('m')?('&m='+encodeURIComponent(q.get('m').slice(0,40))):'');
-  var games=[['cardRunner','/arcade/run/','bestRunner','bd_best_'],['cardSlice','/arcade/slice/','bestSlice','fc_best_'],['cardStack','/arcade/stack/','bestStack','pf_best_'],['cardTetris','/arcade/tetris/','bestTetris','bb_best_']];
+  // EVERY standalone game card must be in this list — a card left out drops
+  // the ?c/&m loyalty params, and a member who taps it plays anonymously and
+  // can never earn coins there. That exact bug shipped for numbers and words.
+  var games=[['cardRunner','/arcade/run/','bestRunner','bd_best_'],['cardSlice','/arcade/slice/','bestSlice','fc_best_'],
+             ['cardStack','/arcade/stack/','bestStack','pf_best_'],['cardTetris','/arcade/tetris/','bestTetris','bb_best_'],
+             ['cardHockey','/arcade/hockey/','bestHockey','ih_best_'],
+             ['cardNumbers','/arcade/numbers/',null,null],['cardWords','/arcade/words/',null,null]];
   games.forEach(function(g){
     var a=el(g[0]); if(a) a.href=g[1]+qs;
+    if(!g[2]) return;               // cards with no numeric local best
     var v=0; try{ v=+localStorage.getItem(g[3]+client)||0; }catch(e){}
     var b=el(g[2]); if(b) b.textContent='Best '+v;
   });

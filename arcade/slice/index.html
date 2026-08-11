@@ -16,6 +16,7 @@
   .overlay{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;z-index:5;
     background:radial-gradient(circle at 50% 30%,rgba(93,242,224,.14),transparent 55%),rgba(5,6,13,.82);backdrop-filter:blur(4px)}
   .overlay.hide{display:none}
+  .hide{display:none!important}
   h1{font-size:clamp(34px,10vw,60px);margin:0 0 6px;letter-spacing:-.02em;font-weight:900;
     background:linear-gradient(90deg,var(--acc),var(--acc2),var(--vio));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 40px rgba(93,242,224,.25)}
   .emoji{font-size:52px;margin:0 auto 4px;filter:drop-shadow(0 0 18px rgba(93,242,224,.4))}
@@ -48,7 +49,7 @@
 </div>
 
 <div class="overlay hide" id="overScreen" onclick="if(!/BUTTON|A/.test(event.target.tagName))this.querySelector('button').click()">
-  <h1 style="font-size:clamp(28px,8vw,46px)" id="ovTitle">TIME'S UP ✂️</h1>
+  <h1 style="font-size:clamp(28px,8vw,46px)" id="ovTitle">WIPED OUT ✂️</h1>
   <div class="row">
     <div class="stat"><b id="ovScore">0</b><span>score</span></div>
     <div class="stat"><b id="ovBestCombo">0</b><span>best combo</span></div>
@@ -271,13 +272,18 @@
   }
 
   /* ---------- flow ---------- */
-  function startGame(){ if(running) return; actx(); if(!muted) MUS.start(actx()); resize(); initStars(); bakeBg(); reset(); running=true; dead=false; el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); last=performance.now(); requestAnimationFrame(frame); }
+  var overAt=-1e9;
+  function startGame(){ if(running) return;
+    // ignore restarts in the instant after the over screen appears — an
+    // in-flight tap/swipe otherwise dismisses the score screen unseen
+    if(performance.now()-overAt<450) return;
+    actx(); if(!muted) MUS.start(actx()); resize(); initStars(); bakeBg(); reset(); running=true; dead=false; el('startScreen').classList.add('hide'); el('overScreen').classList.add('hide'); last=performance.now(); requestAnimationFrame(frame); }
   function gameOver(){
     MUS.stop();
     running=false;
     var _nb=score>best; if(_nb){ best=score; try{ localStorage.setItem('fc_best_'+client, best); }catch(e){} } if(_nb && score>0 && window.LoopFX){ LoopFX.confetti(); LoopFX.sfx('win'); }
     el('ovScore').textContent=score; el('ovBestCombo').textContent=bestCombo; el('ovBest').textContent=best;
-    el('overScreen').classList.remove('hide'); el('coinsWon').classList.add('hide'); el('lbBox').classList.add('hide');
+    overAt=performance.now(); el('overScreen').classList.remove('hide'); el('coinsWon').classList.add('hide'); el('lbBox').classList.add('hide');
     if(code){ rpc('game_reward',{p_code:code,p_game:'slicer',p_score:score}).then(function(r){
       if(r&&!r.error&&r.coins_earned!=null){ var w=el('coinsWon'); w.textContent='🪙 +'+r.coins_earned+' coins earned'+(r.capped?' (daily max)':'')+' — spend them on the prize slot!'; w.classList.remove('hide'); }
     }).catch(function(){}); }
@@ -304,7 +310,7 @@
   el('retryBtn').addEventListener('click',function(e){ e.stopPropagation(); startGame(); });
   el('backBtn').addEventListener('click',function(e){ e.stopPropagation(); });
   // local-only test hook — never defined on the live site
-  if(/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__rt=function(c){ return eval(c); };
+  if(/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) if(/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__rt=function(c){ return eval(c); };
 })();
 </script>
 <script src="/loop-fx.js"></script>

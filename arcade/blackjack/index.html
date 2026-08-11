@@ -196,6 +196,10 @@
     rpc('bj_deal',{p_code:code,p_bet:bet}).then(function(st){
       el('dealBtn').disabled=false; busy=false;
       if(!st||st.error){ banner(st&&st.error||'Error','lose'); return; }
+      // a response with no status/player is a backend hiccup, not a hand —
+      // without this check a network blip dealt a phantom hand that Stand
+      // then "lost", telling a paying customer the dealer beat thin air
+      if(!st.status||!st.player){ banner('Network error — try again','lose'); return; }
       setBal(st.coins); sDeal();
       if(st.status==='done'){ settleUI(st); }
       else { renderHands(st,true); showPlay(true); banner(''); }
@@ -206,6 +210,7 @@
     rpc('bj_hit',{p_code:code}).then(function(st){
       busy=false; el('hitBtn').disabled=false; el('standBtn').disabled=false;
       if(!st||st.error){ banner(st&&st.error||'Error','lose'); return; }
+      if(!st.status){ banner('Network error — try again','lose'); return; }
       sDeal();
       if(st.status==='done'){ settleUI(st); } else { renderHands(st,true); }
     }).catch(function(){ busy=false; el('hitBtn').disabled=false; el('standBtn').disabled=false; });
@@ -215,6 +220,7 @@
     rpc('bj_stand',{p_code:code}).then(function(st){
       busy=false; el('hitBtn').disabled=false; el('standBtn').disabled=false;
       if(!st||st.error){ banner(st&&st.error||'Error','lose'); return; }
+      if(!st.status){ banner('Network error — try again','lose'); return; }
       settleUI(st);
     }).catch(function(){ busy=false; el('hitBtn').disabled=false; el('standBtn').disabled=false; });
   });

@@ -48,6 +48,8 @@
   .note{color:rgba(255,255,255,.6);font-size:12px;text-align:center;margin-top:10px}
   .hide{display:none!important}
   .gate{margin:auto;text-align:center;max-width:320px;padding:30px}
+  /* 5 cards + gaps overflowed a 320px phone by 6px, clipping both edges */
+  @media(max-width:344px){ .card{width:52px;height:76px} }
 </style>
 </head>
 <body>
