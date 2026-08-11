@@ -45,6 +45,10 @@ function put(rel, next) {
 // product stays on the apex.
 const home = new Map();      // "/barbers/" -> "https://getloop.app/"
 for (const p of cfg.products) {
+  // A domain entered WITH a leading www. means www is the primary host in
+  // Vercel (the apex 308s to it). Canonicals must name the host that answers
+  // 200, so the www form is kept for URLs; the bare form still gets redirect
+  // rules below because visitors type it.
   const d = (p.domain || '').trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/$/, '');
   for (const path of p.owns) {
     home.set(path, 'https://' + (d || APEX) + path);
@@ -81,8 +85,12 @@ for (const rel of everyIndexHtml('')) {
   // the second call starts mid-string and returns false. That silently
   // updated canonical while leaving og:url on the old host.
   const mine = new RegExp(
-    '^https://(?:' + [APEX, ...cfg.products.map(p => p.domain).filter(Boolean)]
-      .map(h => h.replace(/\./g, '\\.')).join('|') + ')(?:/|$)');
+    '^https://(?:' + [APEX, ...cfg.products.flatMap(p => {
+      const d = (p.domain || '').trim().toLowerCase();
+      if (!d) return [];
+      const bare = d.replace(/^www\./, '');
+      return [bare, 'www.' + bare];
+    })].map(h => h.replace(/\./g, '\\.')).join('|') + ')(?:/|$)');
 
   src = src.replace(/(<link\s+rel="canonical"\s+href=")([^"]*)(")/i,
     (m, a, url, c) => mine.test(url) ? a + want + c : m);
@@ -151,12 +159,12 @@ const vercelRaw = readFileSync(join(ROOT, 'vercel.json'), 'utf8');
 const vercel = JSON.parse(vercelRaw);
 const rules = [];
 for (const p of live) {
-  const d = p.domain.trim().toLowerCase();
+  const bare = p.domain.trim().toLowerCase().replace(/^www\./, '');
   const has = v => [{ type: 'host', value: v }];
   // BOTH host forms — the owner may pick www or apex as primary in Vercel.
   // permanent:false everywhere: a 308 here would be cached by browsers forever
   // and survive any later change of heart about the domain map.
-  for (const h of [d, 'www.' + d]) {
+  for (const h of [bare, 'www.' + bare]) {
     rules.push({ source: '/',            has: has(h), destination: p.home, permanent: false });
     rules.push({ source: '/robots.txt',  has: has(h), destination: '/_hosts/' + p.id + '/robots.txt', permanent: false });
     rules.push({ source: '/sitemap.xml', has: has(h), destination: '/_hosts/' + p.id + '/sitemap.xml', permanent: false });

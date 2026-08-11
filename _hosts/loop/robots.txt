@@ -18,4 +18,4 @@ Disallow: /studio/
 Disallow: /review/
 Disallow: /rewards/
 Disallow: /clients/
-Sitemap: https://thebarberloop.com/sitemap.xml
+Sitemap: https://www.thebarberloop.com/sitemap.xml
