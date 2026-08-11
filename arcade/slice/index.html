@@ -190,7 +190,13 @@
     if(comboTimer>0){ comboTimer-=dt; if(comboTimer<=0){ comboCount=0; } }
     if(frenzyCd>0) frenzyCd-=dt;
     // decay per-swipe combo when blade idle handled on pointer up
-    for(var i=objs.length-1;i>=0;i--){ var o=objs[i]; o.vy+=GRAV*H*dt; o.x+=o.vx*dt; o.y+=o.vy*dt; o.rot+=o.vr*dt;
+    for(var i=objs.length-1;i>=0;i--){ var o=objs[i]; var ox=o.x, oy=o.y; o.vy+=GRAV*H*dt; o.x+=o.vx*dt; o.y+=o.vy*dt; o.rot+=o.vr*dt;
+      // A held blade cuts too. The pointermove test only fires when the FINGER
+      // moves — an object flying through a still or slow finger crossed the
+      // blade between events and never got tested, which reads as "my swipe
+      // went right through it". Test the object's own path against the blade
+      // point every frame while the finger is down.
+      if(down && !dead && !o.sliced && o.y<=H+10 && segDist(lastX,lastY,ox,oy,o.x,o.y) < o.r+14){ sliceObj(o); }
       if(o.y>H+80){ if(!o.sliced && o.type==='good' && !o.noMiss){ lives--; sMiss(); shake=Math.max(shake,3); popups.push({x:o.x,y:H-40,txt:'miss',life:0.6,col:'#ff9db0'}); if(lives<=0) die(); }
         objs.splice(i,1); }
     }
