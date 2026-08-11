@@ -86,22 +86,20 @@ These run on ONE free Google Gemini key — no OpenAI/Anthropic needed.
 | File | What it does | Runs |
 |---|---|---|
 | **`agent-team.json`** ⭐ | Nine specialist agents on one webhook — lead gen, research, copywriter, UI design, graphics, marketing, script writer, client handler, SaaS ops, partnerships. Each answers with its own expertise + full TB/Loop context baked in. Powers **tbsol.net/command/agents/** | When you hit "Put them to work" |
-| **`hermes-brain.json`** | The SAME nine agents running on **Hermes 3 via YOUR Ollama on this VPS** — free, private, no API key. The agents page has a Gemini/Hermes switch | When you pick the Hermes brain |
+| **`hermes-brain.json`** | The SAME nine agents running on **YOUR OWN Ollama on this VPS** (Llama 3.2 3B — the size that fits KVM 1) — free, private, no API key. The agents page has a Gemini/Local switch | When you pick the Local brain |
 
 Setup (2 min — reuses everything you already have):
 1. Import from URL: `https://tbsol.net/n8n/agent-team.json`
 2. Open the **Gemini Model** node → select your existing Gemini credential.
 3. Save → flip **Active**. Then open **tbsol.net/command/agents/** on your phone: pick an agent, type the task, done.
 
-Hermes setup (your own Ollama on this VPS — free, no API key):
-1. On the VPS, make sure Ollama is running and the model is pulled:
-   `ollama list` — if hermes3 isn't there: `ollama pull hermes3`
-   (If Ollama runs as a Docker container: `docker exec -it ollama ollama pull hermes3`.)
+Local brain setup (your own Ollama on this VPS — free, no API key):
+1. The `ollama` Docker project on the VPS was deployed via the Hostinger API with an auto-puller for `llama3.2:3b` (the size that fits KVM 1's 4GB next to n8n). Nothing to install by hand.
 2. Import from URL: `https://tbsol.net/n8n/hermes-brain.json`
-3. If n8n can't reach Ollama on the first test, open the **Build Hermes Prompt** node — the top of the code has the ONLY setting: `OLLAMA_URL`. Default is `http://172.17.0.1:11434` (n8n in Docker → Ollama on the host). Same compose stack → `http://ollama:11434`. n8n not in Docker → `http://localhost:11434`.
-4. Save → flip **Active**. The **🧠 Hermes 3** chip on tbsol.net/command/agents/ now works — same agents, your own brain, zero per-call cost.
+3. If n8n can't reach Ollama on the first test, open the **Build Hermes Prompt** node — the top of the code has the ONLY settings: `OLLAMA_URL` (default `http://172.17.0.1:11434`; same-compose → `http://ollama:11434`; n8n outside Docker → `http://localhost:11434`) and `MODEL`.
+4. Save → flip **Active**. The **🧠 Local AI** chip on tbsol.net/command/agents/ now works — same agents, your own brain, zero per-call cost.
 
-Heads up: Hermes 3 8B on VPS CPU is thoughtful, not instant — expect ~30s–2min per answer. Gemini stays the fast chip; Hermes is the private one.
+Upgrade path: bump the VPS to 8GB (KVM 2), pull `hermes3`, change `MODEL` to `hermes3`, and lift the ollama service's `mem_limit` — same workflow, real Hermes.
 
 The same nine specialists also exist as Claude Code subagents (`.claude/agents/` in the repo) — those are the deep versions that can read the codebase, browse, and edit files when you're working in a Claude session. The n8n version is the fast phone version.
 
