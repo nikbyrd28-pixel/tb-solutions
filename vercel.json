@@ -7,12 +7,56 @@
     }
   },
   "functions": {
-    "api/render-next.js": { "maxDuration": 60 },
-    "api/post-next.js": { "maxDuration": 60 },
-    "api/ig-webhook.js": { "maxDuration": 30 }
+    "api/render-next.js": {
+      "maxDuration": 60
+    },
+    "api/post-next.js": {
+      "maxDuration": 60
+    },
+    "api/ig-webhook.js": {
+      "maxDuration": 30
+    }
   },
   "crons": [
-    { "path": "/api/render-next", "schedule": "0 16 * * *" },
-    { "path": "/api/post-next", "schedule": "0 17 * * *" }
+    {
+      "path": "/api/render-next",
+      "schedule": "0 16 * * *"
+    },
+    {
+      "path": "/api/post-next",
+      "schedule": "0 17 * * *"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "thebarberloop.com"
+        }
+      ],
+      "destination": "/barbers/"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [
+        {
+          "type": "host",
+          "value": "thebarberloop.com"
+        }
+      ],
+      "destination": "/_hosts/loop/robots.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [
+        {
+          "type": "host",
+          "value": "thebarberloop.com"
+        }
+      ],
+      "destination": "/_hosts/loop/sitemap.xml"
+    }
   ]
 }
