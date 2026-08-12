@@ -20,7 +20,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// 🔒 SEND KEY — must match the key you typed on the Agent Team page.\n// The live copy on the VPS holds the real key; this public repo copy does not.\nconst SEND_KEY = 'PASTE_YOUR_SEND_KEY';\nconst OWNER = 'nikbyrd28@gmail.com';\nconst OWNER_PHONE = 'PASTE_YOUR_PHONE';        // e.g. +16105551234 — where \"send to me first\" texts land\nconst FROM_NUMBER = 'PASTE_TWILIO_NUMBER';     // your Twilio number, e.g. +14845551234\n\nconst body = $json.body || $json;\nconst s = (v, n) => (typeof v === 'string' ? v.trim().slice(0, n) : '');\n\nconst key = s(body.key, 64);\nconst mode = s(body.mode, 10) || 'self';\nconst channel = (s(body.channel, 12) || 'email').toLowerCase();\nconst to = s(body.to, 200);\nconst subject = s(body.subject, 200) || 'A note from TB Solutions';\nconst text = s(body.body, 20000);\nconst agent = s(body.agent, 40);\n\nif (key !== SEND_KEY) {\n  return [{ json: { ok: false, error: 'Wrong send key — tap \"change key\" on the page and re-enter it.' } }];\n}\nif (!text) {\n  return [{ json: { ok: false, error: 'Nothing to send — the message is empty.' } }];\n}\nif (['email', 'sms', 'whatsapp'].indexOf(channel) === -1) {\n  return [{ json: { ok: false, error: 'Unknown channel. Use email, sms or whatsapp.' } }];\n}\n\nconst isText = (channel === 'sms' || channel === 'whatsapp');\n\n// ── SMS / WhatsApp ────────────────────────────────────────────────────────\nif (isText) {\n  if (FROM_NUMBER.indexOf('PASTE') === 0) {\n    return [{ json: { ok: false, error: 'Texting is not switched on yet — add the Twilio credential and your number in the Check & Build node.' } }];\n  }\n  const target = mode === 'send' ? to : OWNER_PHONE;\n  const digits = target.replace(/[^0-9]/g, '');\n  if (target.charAt(0) !== '+' || digits.length < 10) {\n    return [{ json: { ok: false, error: 'Phone numbers need the country code, like +16105551234.' } }];\n  }\n  // One clear thought per text. Long drafts get trimmed rather than split into a wall.\n  let msg = text.replace(/\\s+/g, ' ').trim();\n  if (msg.length > 600) msg = msg.slice(0, 597) + '...';\n  return [{ json: {\n    ok: true,\n    channel: channel,\n    isText: true,\n    to: target,\n    from: FROM_NUMBER,\n    whatsapp: channel === 'whatsapp',\n    text: msg\n  } }];\n}\n\n// ── Email ─────────────────────────────────────────────────────────────────\nconst target = mode === 'send' ? to : OWNER;\nconst at = target.indexOf('@');\nconst dot = target.lastIndexOf('.');\nif (at < 1 || dot < at + 2 || dot >= target.length - 1 || target.indexOf(' ') !== -1) {\n  return [{ json: { ok: false, error: 'That recipient email does not look right.' } }];\n}\n\nconst sig = '\\n\\n—\\nNick Byrd · TB Solutions\\ntbsol.net · thebarberloop.com';\n\nreturn [{ json: {\n  ok: true,\n  channel: 'email',\n  isText: false,\n  to: target,\n  bcc: mode === 'send' ? OWNER : '',\n  subject: mode === 'send' ? subject : '[DRAFT' + (agent ? ' · ' + agent : '') + '] ' + subject,\n  text: text + sig\n} }];\n"
+        "jsCode": "// 🔒 SEND KEY — must match the key you typed on the Agent Team page.\n// The live copy on the VPS holds the real key; this public repo copy does not.\nconst SEND_KEY = 'PASTE_YOUR_SEND_KEY';\nconst OWNER = 'nikbyrd28@gmail.com';\nconst OWNER_PHONE = 'PASTE_YOUR_PHONE';        // e.g. +16105551234 — where \"send to me first\" texts land\n// ── Texting: fill these three in and SMS + WhatsApp switch on. Nothing else to do.\nconst FROM_NUMBER = 'PASTE_TWILIO_NUMBER';     // your Twilio number, e.g. +14845551234\nconst TWILIO_SID = 'PASTE_TWILIO_SID';         // starts with AC…\nconst TWILIO_TOKEN = 'PASTE_TWILIO_TOKEN';\n\nconst body = $json.body || $json;\nconst s = (v, n) => (typeof v === 'string' ? v.trim().slice(0, n) : '');\n\nconst key = s(body.key, 64);\nconst mode = s(body.mode, 10) || 'self';\nconst channel = (s(body.channel, 12) || 'email').toLowerCase();\nconst to = s(body.to, 200);\nconst subject = s(body.subject, 200) || 'A note from TB Solutions';\nconst text = s(body.body, 20000);\nconst agent = s(body.agent, 40);\n\nif (key !== SEND_KEY) {\n  return [{ json: { ok: false, error: 'Wrong send key — tap \"change key\" on the page and re-enter it.' } }];\n}\nif (!text) {\n  return [{ json: { ok: false, error: 'Nothing to send — the message is empty.' } }];\n}\nif (['email', 'sms', 'whatsapp'].indexOf(channel) === -1) {\n  return [{ json: { ok: false, error: 'Unknown channel. Use email, sms or whatsapp.' } }];\n}\n\nconst isText = (channel === 'sms' || channel === 'whatsapp');\n\n// ── SMS / WhatsApp ────────────────────────────────────────────────────────\nif (isText) {\n  if (FROM_NUMBER.indexOf('PASTE') === 0 || TWILIO_SID.indexOf('PASTE') === 0) {\n    return [{ json: { ok: false, error: 'Texting is not switched on yet — add your Twilio SID, token and number at the top of the Check & Build node.' } }];\n  }\n  const target = mode === 'send' ? to : OWNER_PHONE;\n  const digits = target.replace(/[^0-9]/g, '');\n  if (target.charAt(0) !== '+' || digits.length < 10) {\n    return [{ json: { ok: false, error: 'Phone numbers need the country code, like +16105551234.' } }];\n  }\n  // One clear thought per text. Long drafts get trimmed rather than split into a wall.\n  let msg = text.replace(/\\s+/g, ' ').trim();\n  if (msg.length > 600) msg = msg.slice(0, 597) + '...';\n\n  const prefix = channel === 'whatsapp' ? 'whatsapp:' : '';\n  const auth = 'Basic ' + Buffer.from(TWILIO_SID + ':' + TWILIO_TOKEN).toString('base64');\n\n  return [{ json: {\n    ok: true,\n    channel: channel,\n    isText: true,\n    to: target,\n    from: FROM_NUMBER,\n    text: msg,\n    url: 'https://api.twilio.com/2010-04-01/Accounts/' + TWILIO_SID + '/Messages.json',\n    auth: auth,\n    twTo: prefix + target,\n    twFrom: prefix + FROM_NUMBER\n  } }];\n}\n\n// ── Email ─────────────────────────────────────────────────────────────────\nconst target = mode === 'send' ? to : OWNER;\nconst at = target.indexOf('@');\nconst dot = target.lastIndexOf('.');\nif (at < 1 || dot < at + 2 || dot >= target.length - 1 || target.indexOf(' ') !== -1) {\n  return [{ json: { ok: false, error: 'That recipient email does not look right.' } }];\n}\n\nconst sig = '\\n\\n—\\nNick Byrd · TB Solutions\\ntbsol.net · thebarberloop.com';\n\nreturn [{ json: {\n  ok: true,\n  channel: 'email',\n  isText: false,\n  to: target,\n  bcc: mode === 'send' ? OWNER : '',\n  subject: mode === 'send' ? subject : '[DRAFT' + (agent ? ' · ' + agent : '') + '] ' + subject,\n  text: text + sig\n} }];\n"
       },
       "id": "s4000000-0000-4000-8000-000000000002",
       "name": "Check & Build",
@@ -73,16 +73,43 @@
     },
     {
       "parameters": {
-        "from": "={{ $json.from }}",
-        "to": "={{ $json.to }}",
-        "toWhatsapp": "={{ $json.whatsapp }}",
-        "message": "={{ $json.text }}",
-        "options": {}
+        "method": "POST",
+        "url": "={{ $json.url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $json.auth }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "To",
+              "value": "={{ $json.twTo }}"
+            },
+            {
+              "name": "From",
+              "value": "={{ $json.twFrom }}"
+            },
+            {
+              "name": "Body",
+              "value": "={{ $json.text }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
       },
       "id": "s4000000-0000-4000-8000-000000000008",
       "name": "Send text",
-      "type": "n8n-nodes-base.twilio",
-      "typeVersion": 1,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
       "position": [
         820,
         -200
