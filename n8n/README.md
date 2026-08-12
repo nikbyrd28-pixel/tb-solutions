@@ -90,7 +90,7 @@ These run on ONE free Google Gemini key — no OpenAI/Anthropic needed.
 
 Setup (2 min — reuses everything you already have):
 1. Import from URL: `https://tbsol.net/n8n/agent-team.json`
-2. Open the **Gemini Model** node → select your existing Gemini credential.
+2. Open the **Claude Model** node → select your existing Anthropic Claude credential (the one your marketing engine uses — the old Gemini models were retired by Google).
 3. Save → flip **Active**. Then open **tbsol.net/command/agents/** on your phone: pick an agent, type the task, done.
 
 Local brain setup (your own Ollama on this VPS — free, no API key):
@@ -100,6 +100,16 @@ Local brain setup (your own Ollama on this VPS — free, no API key):
 4. Save → flip **Active**. The **🧠 Local AI** chip on tbsol.net/command/agents/ now works — same agents, your own brain, zero per-call cost.
 
 Upgrade path: bump the VPS to 8GB (KVM 2), pull `hermes3`, change `MODEL` to `hermes3`, and lift the ollama service's `mem_limit` — same workflow, real Hermes.
+
+### 📧 Sending what an agent wrote
+
+| File | What it does | Runs |
+|---|---|---|
+| **`agent-send.json`** | The **Email it** button on the agents page: you read the draft, edit it, tap send. Every send BCCs you. Protected by a **send key** (the live copy on the VPS holds the real key — this public repo copy has a `PASTE_YOUR_SEND_KEY` placeholder, so nobody can use the webhook as a spam relay) | When you tap send |
+
+Two buttons on purpose: **📥 Send to me first** mails the draft to your own inbox (arrives tagged `[DRAFT]`) so you can see exactly what a barber would get; **📧 Send to them** asks for confirmation, then sends for real with a copy BCC'd to you. Nothing leaves the server without your tap — no autonomous sending.
+
+> ⚠️ **Resend has no verified domain yet.** The SMTP credential is Resend, and it refuses any `from` address on an unverified domain — which is why sends currently go out as `onboarding@resend.dev` (Resend's test sender, which can only mail *you*). **This also means every other email node in this repo — VoomLux auto-replies, CRM alerts, the weekly report — is failing the same way.** Fix once, fixes everything: resend.com → **Domains → Add domain → tbsol.net** → add the DNS records it shows wherever tbsol.net's DNS lives (it is *not* at Hostinger — only tbsolutions.cloud is) → wait for **Verified** → then switch the `Send email` node's From back to `TB Solutions <nick@tbsol.net>`.
 
 The same nine specialists also exist as Claude Code subagents (`.claude/agents/` in the repo) — those are the deep versions that can read the codebase, browse, and edit files when you're working in a Claude session. The n8n version is the fast phone version.
 
