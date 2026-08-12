@@ -90,7 +90,7 @@ These run on ONE free Google Gemini key — no OpenAI/Anthropic needed.
 
 Setup (2 min — reuses everything you already have):
 1. Import from URL: `https://tbsol.net/n8n/agent-team.json`
-2. Open the **Gemini Model** node → select your existing Gemini credential.
+2. Open the **Claude Model** node → select your existing Anthropic Claude credential (the one your marketing engine uses — the old Gemini models were retired by Google).
 3. Save → flip **Active**. Then open **tbsol.net/command/agents/** on your phone: pick an agent, type the task, done.
 
 Local brain setup (your own Ollama on this VPS — free, no API key):
