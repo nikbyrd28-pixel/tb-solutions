@@ -102,8 +102,40 @@
   </div>
 
   <div class="jump">
-    <a href="#prebuilt">Pre-built play</a><a href="#walkin">Walk-in</a><a href="#obj">Objections</a><a href="#dm">DMs &amp; texts</a>
+    <a href="#founding">The offer</a><a href="#prebuilt">Pre-built play</a><a href="#walkin">Walk-in</a><a href="#obj">Objections</a><a href="#dm">DMs &amp; texts</a>
     <a href="#social">Social</a><a href="#flyerbox">Flyer</a><a href="/kit/targets/">💈 Walk list</a><a href="#links">Links</a>
+  </div>
+
+  <!-- THE OFFER — everything else on this page depends on getting this framing
+       right. "Free" with no frame sounds like it is worth nothing and leaves
+       you negotiating from zero the day you start charging. -->
+  <div class="card" id="founding">
+    <h2>🏅 The offer — Founding Shops</h2>
+    <p class="note">Free is only powerful if it has a reason, a limit, and a price behind it. Never say "it's free" on its own — say this instead.</p>
+
+    <div class="blk">
+      <div class="lbl">Say it exactly like this</div>
+      <p id="fo1">I'm taking on <b class="pxSlots">10</b> shops in Chester County as founding shops. You get the whole thing free — website, booking, the rewards card, all of it — and you keep founding pricing for as long as you stay. After the <b class="pxSlots">10</b> it's <b class="pxPrice">$79/mo</b>. I'd rather have you in the first ten than have your money.</p>
+      <button class="cp" onclick="cp('fo1',this)">Copy</button>
+    </div>
+
+    <div class="blk">
+      <div class="lbl">What you ask for instead of money</div>
+      <p class="stage">Free is a trade, not charity — and asking makes it worth more, not less. Ask for all three, out loud, when they say yes:
+        <br>1 · <b>A Google review</b> for you, once it's working.
+        <br>2 · <b>Permission to film it</b> — their shop, their site, their reaction. That's your content for the week.
+        <br>3 · <b>Two barbers they know.</b> "Who else should have this?" Ask while they're happy, not later.</p>
+    </div>
+
+    <div class="blk">
+      <div class="lbl">Why a limit matters</div>
+      <p class="stage">Ten is not a marketing trick, it's the truth — you can only hand-hold about that many while you're learning what breaks. Say that. "I can only look after ten properly" is more believable than any countdown timer, and it is the reason the next shop should move now.</p>
+    </div>
+
+    <div class="blk">
+      <div class="lbl">When the ten are gone</div>
+      <p class="stage">Stop giving it away and start naming the price on the walk-in. By then you have ten shops, real screenshots, a Google review and a win-back number you can quote — "the last shop pulled 6 regulars back in a week." That sentence is what you are actually building right now.</p>
+    </div>
   </div>
 
   <!-- WALK-IN -->
@@ -128,14 +160,28 @@
     </div>
 
     <div class="blk">
-      <div class="lbl">4 · The ask</div>
-      <p id="pb2">It's yours — free. I'll leave it up either way. Want me to text you the keys so you can change anything you want?</p>
+      <div class="lbl">4 · The question that closes it</div>
+      <p class="stage">Before you talk price, ask this and then <b>be quiet and let him answer</b>. He will start counting in his head, and the number will bother him:</p>
+      <p id="pbQ">How many guys were coming to you every few weeks last year that you haven't seen in a while?</p>
+      <button class="cp" onclick="cp('pbQ',this)">Copy</button>
+    </div>
+
+    <div class="blk">
+      <div class="lbl">5 · Show him Who's due</div>
+      <p class="stage">Open the demo shop's owner screen — <a href="/rewards/owner/"><b>the dashboard</b></a>, code <b>demo</b>, PIN <b>1234</b> — and scroll to <b>Who's due a cut</b>. Hand him the phone. Then say it plain:</p>
+      <p id="pbD">That's every regular who's stopped coming, oldest first. Tap a name and it opens your texts with the message already written. Five taps on a slow Tuesday is your afternoon.</p>
+      <button class="cp" onclick="cp('pbD',this)">Copy</button>
+    </div>
+
+    <div class="blk">
+      <div class="lbl">6 · The ask</div>
+      <p id="pb2">It's yours, free — you'd be one of my <b class="pxSlots">10</b> founding shops. I'll leave it up either way. Want me to text you the keys so you can change anything you want?</p>
       <button class="cp" onclick="cp('pb2',this)">Copy</button>
     </div>
 
     <div class="blk">
-      <div class="lbl">5 · If they nod</div>
-      <p class="stage">The tool has the text pre-written with their sign-in keys — one tap sends it. Then show them the rewards card on the same page. That's the upsell, and it's already built too.</p>
+      <div class="lbl">7 · If they nod</div>
+      <p class="stage">The tool has the text pre-written with their sign-in keys — one tap sends it. Then ask the three founding-shop questions above: the review, the filming, and two barbers they know. Ask right now while they're happy.</p>
     </div>
   </div>
 
@@ -251,11 +297,22 @@
 
 <script>
 /* ---------- objection handlers ---------- */
+/* ---------- the offer, in one place ----------------------------------------
+   Change these two and every script, objection and DM on the page follows.
+   PRICE is what it becomes AFTER the founding shops — it is never charged
+   today, but it has to be said out loud, because "free" with no number behind
+   it sounds like it is worth nothing. */
+var PRICE='$79/mo', SLOTS=10;
+[].forEach.call(document.querySelectorAll('.pxPrice'),function(n){ n.textContent=PRICE; });
+[].forEach.call(document.querySelectorAll('.pxSlots'),function(n){ n.textContent=SLOTS; });
+
 var OBJECTIONS=[
   ["“I already use Booksy.”",
    "Keep it. I'm not asking you to switch anything — this runs on top. Booksy books them, this is the part that makes them come back. I'll even put your Booksy link right inside it so it's all one place for your customers."],
   ["“How much is it?”",
-   "Free to start, no card. Set it up, run it a month. If it doesn't bring people back, delete it — you're out nothing but 30 seconds."],
+   "For you, nothing — I'm taking 10 shops in the county as founding shops and you'd be one of them. After that it's "+PRICE+". You keep the founding rate as long as you stay. No card, no contract, cancel by ignoring me."],
+  ["“So what do you get out of it?”",
+   "Three things, and I'll ask you for them straight: a Google review once it's actually working, permission to film your shop for my page, and two barbers you'd vouch for. That's worth more to me right now than "+PRICE+"."],
   ["“My clients are older, they don't do apps.”",
    "There's no app. They point their camera at your QR and it opens like a website — same as a menu at a restaurant. And if somebody won't pull their phone out, you tap their point in yourself from your phone. Takes two seconds."],
   ["“I don't have time right now.”",
@@ -263,9 +320,11 @@ var OBJECTIONS=[
   ["“Does it cost my customers anything?”",
    "Nothing, ever. They scan, they play, they earn. You decide what the reward is — free cut, line-up, whatever you want."],
   ["“What's the catch — why is it free?”",
-   "Because I need shops actually using it more than I need your money right now. If it works for you, you'll tell other barbers, and that's worth more to me than a monthly fee today."],
+   "Because I'm new and I need ten shops actually running it more than I need ten monthly payments. I can only look after about ten properly while I'm learning what breaks. After those ten I start charging "+PRICE+", and you'd already be in at nothing."],
   ["“I'll think about it.”",
-   "All good, no pressure. Can I just stand the free one up now so it's sitting there if you want it? Nothing to cancel, no card on file. If you never touch it, nothing happens."],
+   "All good, no pressure — it's already built and it's already live, so there's nothing to switch on. Can I just leave it up? If you never touch it, nothing happens. Only thing is the founding spots go in order, so if you want one I'd rather put your name on it today than have you call me in a month."],
+  ["“Free stuff always turns into a bill later.”",
+   "Fair — that's usually how it goes. So here it is straight: it goes to "+PRICE+" once I've got my ten shops, and founding shops keep it free. If I ever changed that on you, you'd tell every barber in the county and I'd deserve it."],
   ["“I already tried a punch card thing.”",
    "Paper ones? Everybody loses those. This one lives in their phone, texts them their points, and honestly — the games are why they open it. Punch cards don't have a leaderboard with your other regulars on it."]
 ];
@@ -277,13 +336,17 @@ document.getElementById('objs').innerHTML=OBJECTIONS.map(function(o,i){
 /* ---------- DM / text templates ---------- */
 var DMS=[
   ["Instagram DM — first touch",
-   "Yo {shop} — your fades are clean. I'm local and I build a rewards app for barbershops: customers scan a QR at your chair, every cut earns points toward a free one, and they play games while they wait. Free to start, live in 30 seconds. Want me to send you the 60-second demo?"],
+   "Yo {shop} — your fades are clean. I'm local, I build the whole setup for barbershops: website, booking, and a rewards card that tells you which regulars have stopped coming in. I'm giving it free to "+SLOTS+" shops in the county as founding shops — after that it's "+PRICE+". Want me to send you the 60-second demo?"],
+  ["Instagram DM — the win-back angle (strongest opener)",
+   "Yo {shop} — quick one. How many guys used to come to you every few weeks that you haven't seen in a while? I built a thing that shows you exactly who they are and texts them for you. Free for the first "+SLOTS+" shops round here. Want to see it?"],
   ["Follow-up (2 days later, no reply)",
    "Hey {shop} — not trying to blow you up. Here's the demo so you can look whenever: thebarberloop.com/rewards/?c=demo — play one of the games, that's what your customers do in the chair. If it's not for you, no worries at all."],
   ["Text after you demoed in person",
    "Hey it's Nick — good meeting you today. Here's your setup link, takes 30 seconds and it's free: thebarberloop.com/rewards/signup/ — shop name and a 4-digit PIN, then your QR prints straight from your phone. Hit me if anything looks weird, I'll fix it same day."],
   ["Cold text to a shop number",
-   "Hi — is this the owner? I'm Nick, local. I made a free rewards + booking app built just for barbershops (customers earn free cuts and play games while they wait). Can I swing by and show you on my phone this week? Two minutes, no pitch if you hate it."],
+   "Hi — is this the owner? I'm Nick, local. I build the full setup for barbershops — website, booking, rewards, and a list of which regulars have stopped coming in. I'm doing it free for "+SLOTS+" shops in the county. Can I swing by and show you on my phone this week? Two minutes, no pitch if you hate it."],
+  ["Re-open a shop that said 'I'll think about it'",
+   "Hey {shop} — no chase, just so you know: I'm down to a few founding spots and then it goes to "+PRICE+". Yours is still built and still live if you want it — same link, nothing to set up. If it's a no that's genuinely fine, I'll take it down."],
   ["After they sign up (day 1)",
    "You're live 🎉 Print your poster and stick it by the register — the first 5 customers who scan it are the ones that matter. Want me to come by and add your first few customers with you?"],
   ["Instagram DM — comment-to-DM angle (best opener for shops that post a lot)",
