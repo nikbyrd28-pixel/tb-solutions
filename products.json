@@ -47,7 +47,8 @@
         "/reps/",
         "/shop/",
         "/play/",
-        "/guides/"
+        "/guides/",
+        "/barbershops/"
       ],
       "wall_off": [
         "/university/",
