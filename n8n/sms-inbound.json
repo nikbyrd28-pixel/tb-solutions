@@ -1,0 +1,132 @@
+{
+  "name": "TB — SMS Inbound (records replies, honours STOP)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sms-inbound-6d4e91c7ba53",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "i6000000-0000-4000-8000-000000000001",
+      "name": "Twilio Inbound",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "sms-inbound-6d4e91c7ba53"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Twilio posts inbound texts here as form data. We record every one, and the\n// database honours STOP / START / HELP the moment it lands.\n//\n// 🔒 The secret below must match the one inside the sms_inbound function.\n// The live copy on the VPS holds the real value; this public repo copy does not.\nconst SECRET = 'PASTE_INBOUND_SECRET';\nconst SUPA_URL = 'https://qgbjiqdwzgkjkmqyjsmc.supabase.co';\nconst SUPA_ANON = 'PASTE_SUPABASE_ANON_KEY';\n\nconst b = $json.body || $json;\nconst s = (v, n) => (typeof v === 'string' ? v.trim().slice(0, n || 300) : '');\n\nconst from = s(b.From || b.from, 40);\nconst body = s(b.Body || b.body, 2000);\nconst sid = s(b.MessageSid || b.SmsSid || '', 60);\nconst to = s(b.To || b.to || '', 40);\n\nif (!from) {\n  return [{ json: { skip: true, reason: 'no From on the payload' } }];\n}\n\nreturn [{\n  json: {\n    url: SUPA_URL + '/rest/v1/rpc/sms_inbound',\n    apikey: SUPA_ANON,\n    payload: { p_secret: SECRET, p_from: from, p_body: body, p_sid: sid || null, p_to: to || null }\n  }\n}];\n"
+      },
+      "id": "i6000000-0000-4000-8000-000000000002",
+      "name": "Read message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $json.apikey }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.apikey }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "timeout": 20000
+        }
+      },
+      "id": "i6000000-0000-4000-8000-000000000003",
+      "name": "Record + honour STOP",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        0
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response></Response>",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/xml"
+              }
+            ]
+          }
+        }
+      },
+      "id": "i6000000-0000-4000-8000-000000000004",
+      "name": "Reply to Twilio",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        660,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Twilio Inbound": {
+      "main": [
+        [
+          {
+            "node": "Read message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read message": {
+      "main": [
+        [
+          {
+            "node": "Record + honour STOP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record + honour STOP": {
+      "main": [
+        [
+          {
+            "node": "Reply to Twilio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
