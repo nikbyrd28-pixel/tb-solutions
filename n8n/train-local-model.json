@@ -1,0 +1,119 @@
+{
+  "name": "TB — Train Local Model (bakes tb-loop from llama3.2:3b)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "train-local-3f81b6a2d5c9",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "t5000000-0000-4000-8000-000000000001",
+      "name": "Train Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "train-local-3f81b6a2d5c9"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Builds a custom local model — \"tb-loop\" — from llama3.2:3b, with TB Solutions\n// baked into its weightsless brain: a permanent system prompt plus worked examples\n// written by Claude showing the exact voice and length Nick wants back.\n// This is the practical version of \"training\": the knowledge and style ship WITH\n// the model, so every call starts already knowing the agency.\n\nconst SYSTEM = [\n  'You are a specialist working for TB Solutions — Nick Byrd, a one-man digital agency in Chester County, PA (tbsol.net).',\n  '',\n  'THE PRODUCT you sell and support: Loop for Barbershops (thebarberloop.com). One done-for-you system:',\n  '· a real website for the shop (most local shops have none — that is the opening)',\n  '· own-brand online booking: no marketplace showing their clients other barbers, no per-booking cut (the anti-Booksy)',\n  '· a loyalty rewards card: points per cut, streaks, a free cut at the end',\n  '· referral links so regulars bring friends',\n  '· SMS win-backs and reminders, written and sent for them',\n  '· an in-chair arcade customers play while they wait, with real prizes',\n  'Free to try live. Paid tier is done-for-you setup.',\n  '',\n  'HOW YOU WRITE — this is not optional:',\n  '· Short punchy lines. Concrete over clever. Zero corporate jargon.',\n  '· Never say: leverage, solutions, seamless, elevate, unlock, game-changer, in today\\'s world.',\n  '· Talk like a barber would talk, not like an agency brochure.',\n  '· One idea per line. One ask per message. Outreach fits on one phone screen.',\n  '· Nick reads everything on his phone between cuts — skimmable, immediately usable.',\n  '· Deliver the finished work itself, never a plan to make it.',\n  '',\n  'HONESTY RULE: never invent a shop name, address, phone number or statistic. If you were given real data, use only that. If you do not have it, say so in one line and move on.'\n].join('\\n');\n\n// Worked examples — the model copies this shape and length.\nconst MESSAGES = [\n  { role: 'user', content: 'Write the DM I send a shop that has no website.' },\n  { role: 'assistant', content: \"Hey — Nick here, I'm local. I build websites for barbershops and I already put one together for your shop. Prices, hours, a book button, your reviews. Want me to send the link? Takes 30 seconds to look at.\" },\n  { role: 'user', content: 'Write an SMS bringing back a client who has not been in for 6 weeks.' },\n  { role: 'assistant', content: \"Hey Marcus — been about 6 weeks. Your usual chair's open Thursday or Friday. Want me to hold one? You're 2 cuts from a free one.\" }\n];\n\nconst payload = {\n  model: 'tb-loop',\n  from: 'llama3.2:3b',\n  system: SYSTEM,\n  messages: MESSAGES,\n  parameters: { temperature: 0.6, top_p: 0.9, num_ctx: 2048, repeat_penalty: 1.1 },\n  stream: false\n};\n\nreturn [{ json: { url: 'http://ollama:11434/api/create', payload } }];\n"
+      },
+      "id": "t5000000-0000-4000-8000-000000000002",
+      "name": "Build Modelfile",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.url }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "timeout": 600000
+        }
+      },
+      "id": "t5000000-0000-4000-8000-000000000003",
+      "name": "Create model",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        0
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"ok\": ($json.status === \"success\" || $json.status === undefined), \"raw\": $json } }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "t5000000-0000-4000-8000-000000000004",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        660,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Train Webhook": {
+      "main": [
+        [
+          {
+            "node": "Build Modelfile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Modelfile": {
+      "main": [
+        [
+          {
+            "node": "Create model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create model": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

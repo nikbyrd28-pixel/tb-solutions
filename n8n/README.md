@@ -86,18 +86,30 @@ These run on ONE free Google Gemini key — no OpenAI/Anthropic needed.
 | File | What it does | Runs |
 |---|---|---|
 | **`agent-team.json`** ⭐ | Nine specialist agents on one webhook — lead gen, research, copywriter, UI design, graphics, marketing, script writer, client handler, SaaS ops, partnerships. Each answers with its own expertise + full TB/Loop context baked in. Powers **tbsol.net/command/agents/** | When you hit "Put them to work" |
-| **`hermes-brain.json`** | The SAME nine agents running on **Hermes** (Nous Research, via OpenRouter) instead of Gemini — the second brain. The agents page has a Gemini/Hermes switch | When you pick the Hermes brain |
+| **`hermes-brain.json`** | The SAME nine agents running on **YOUR OWN Ollama on this VPS** (Llama 3.2 3B — the size that fits KVM 1) — free, private, no API key. The agents page has a Gemini/Local switch | When you pick the Local brain |
 
 Setup (2 min — reuses everything you already have):
 1. Import from URL: `https://tbsol.net/n8n/agent-team.json`
-2. Open the **Gemini Model** node → select your existing Gemini credential.
+2. Open the **Claude Model** node → select your existing Anthropic Claude credential (the one your marketing engine uses — the old Gemini models were retired by Google).
 3. Save → flip **Active**. Then open **tbsol.net/command/agents/** on your phone: pick an agent, type the task, done.
 
-Hermes setup (adds the second brain — needs a paid-per-call key):
-1. **openrouter.ai** → sign up → **Keys → Create key** → copy it (add a few dollars of credit; Hermes 70B costs well under a cent per typical answer).
+Local brain setup (your own Ollama on this VPS — free, no API key):
+1. The `ollama` Docker project on the VPS was deployed via the Hostinger API with an auto-puller for `llama3.2:3b` (the size that fits KVM 1's 4GB next to n8n). Nothing to install by hand.
 2. Import from URL: `https://tbsol.net/n8n/hermes-brain.json`
-3. Open the **Call Hermes (OpenRouter)** node → Credential → **Create new (Header Auth)**: Name `Authorization`, Value `Bearer sk-or-...` (your key, with the word Bearer and a space in front).
-4. Save → flip **Active**. The **🧠 Hermes** chip on tbsol.net/command/agents/ now works — same agents, different brain, compare answers side by side.
+3. If n8n can't reach Ollama on the first test, open the **Build Hermes Prompt** node — the top of the code has the ONLY settings: `OLLAMA_URL` (default `http://ollama:11434` — the ollama project is attached to n8n's own Docker network) and `MODEL`.
+4. Save → flip **Active**. The **🧠 Local AI** chip on tbsol.net/command/agents/ now works — same agents, your own brain, zero per-call cost.
+
+Upgrade path: bump the VPS to 8GB (KVM 2), pull `hermes3`, change `MODEL` to `hermes3`, and lift the ollama service's `mem_limit` — same workflow, real Hermes.
+
+### 📧 Sending what an agent wrote
+
+| File | What it does | Runs |
+|---|---|---|
+| **`agent-send.json`** | The **Email it** button on the agents page: you read the draft, edit it, tap send. Every send BCCs you. Protected by a **send key** (the live copy on the VPS holds the real key — this public repo copy has a `PASTE_YOUR_SEND_KEY` placeholder, so nobody can use the webhook as a spam relay) | When you tap send |
+
+Two buttons on purpose: **📥 Send to me first** mails the draft to your own inbox (arrives tagged `[DRAFT]`) so you can see exactly what a barber would get; **📧 Send to them** asks for confirmation, then sends for real with a copy BCC'd to you. Nothing leaves the server without your tap — no autonomous sending.
+
+> ⚠️ **Resend has no verified domain yet.** The SMTP credential is Resend, and it refuses any `from` address on an unverified domain — which is why sends currently go out as `onboarding@resend.dev` (Resend's test sender, which can only mail *you*). **This also means every other email node in this repo — VoomLux auto-replies, CRM alerts, the weekly report — is failing the same way.** Fix once, fixes everything: resend.com → **Domains → Add domain → tbsol.net** → add the DNS records it shows wherever tbsol.net's DNS lives (it is *not* at Hostinger — only tbsolutions.cloud is) → wait for **Verified** → then switch the `Send email` node's From back to `TB Solutions <nick@tbsol.net>`.
 
 The same nine specialists also exist as Claude Code subagents (`.claude/agents/` in the repo) — those are the deep versions that can read the codebase, browse, and edit files when you're working in a Claude session. The n8n version is the fast phone version.
 

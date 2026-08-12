@@ -45,7 +45,7 @@
 <div class="wrap">
   <div class="crumb"><a href="/command/">← TB Command</a></div>
   <h1>🤖 Agent <b>Team</b></h1>
-  <p class="sub">Nine specialists on call. Pick one, give the task, get finished work — powered by your n8n.</p>
+  <p class="sub">Ten specialists on call. Pick one, give the task, get finished work — with live shop and video data, powered by your n8n.</p>
 
   <div class="card">
     <label>Who's on it</label>
@@ -67,9 +67,35 @@
   <div class="card hide" id="outCard">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
       <b id="outTitle">Result</b>
-      <button class="btn ghost small" onclick="copyOut()">📋 Copy</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn ghost small" onclick="copyOut()">📋 Copy</button>
+        <button class="btn small" onclick="openSend()">📧 Email it</button>
+      </div>
     </div>
     <pre id="out" style="margin-top:10px"></pre>
+  </div>
+
+  <!-- SEND BY EMAIL -->
+  <div class="card hide" id="sendCard">
+    <b>📧 Send it as an email</b>
+    <p class="muted" style="margin:6px 0 0">Read it, edit anything, then send. Every send BCCs you, so you keep a copy.</p>
+    <label>Send to</label>
+    <input id="sTo" type="email" placeholder="barber@theirshop.com">
+    <label>Subject</label>
+    <input id="sSubj" placeholder="Your shop's website is already built">
+    <label>Message (edit before sending)</label>
+    <textarea id="sBody" style="min-height:180px"></textarea>
+    <div id="keyRow">
+      <label>Send key <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">— one time, saved on this phone</span></label>
+      <input id="sKey" type="password" placeholder="the key Claude gave you">
+    </div>
+    <p class="muted hide" id="keySet" style="margin-top:10px">🔒 Send key saved on this phone. <a href="#" onclick="changeKey();return false" style="color:var(--acc)">change key</a></p>
+    <div class="bar">
+      <button class="btn ghost" id="selfBtn" onclick="sendMail('self')">📥 Send to me first</button>
+      <button class="btn" id="sendBtn" onclick="sendMail('send')">📧 Send to them →</button>
+    </div>
+    <div class="err hide" id="sErr"></div>
+    <p class="hide" id="sOk" style="color:var(--good);font-weight:700;margin-top:8px"></p>
   </div>
 </div>
 
@@ -79,8 +105,8 @@ var HOOKS={
   hermes:'https://n8n-fouz.srv1786777.hstgr.cloud/webhook/hermes-4b7e2d9c31f5'
 };
 var BRAINS=[
-  {k:'gemini',e:'✨',t:'Gemini',d:'fast · free'},
-  {k:'hermes',e:'🧠',t:'Hermes',d:'Nous 70B · deeper'}
+  {k:'gemini',e:'✨',t:'Claude',d:'smart · fast'},
+  {k:'hermes',e:'🧠',t:'Local AI',d:'Ollama · your VPS'}
 ];
 var brain='gemini';
 var AGENTS=[
@@ -90,6 +116,7 @@ var AGENTS=[
   {k:'ui-designer',e:'🎨',t:'UI Design',d:'pages & layouts'},
   {k:'graphics',e:'🖼️',t:'Graphics',d:'image prompts & art'},
   {k:'marketing',e:'📣',t:'Marketing',d:'campaigns & SEO'},
+  {k:'viral-scout',e:'🔥',t:'Viral Scout',d:'live hits → scripts'},
   {k:'script-writer',e:'🎬',t:'Scripts',d:'reels & TikToks'},
   {k:'client-handler',e:'🤝',t:'Clients',d:'onboarding & saves'},
   {k:'saas-ops',e:'⚙️',t:'SaaS Ops',d:'Loop product calls'},
@@ -129,6 +156,49 @@ function run(){
 }
 function flash(m){var e=el('err');e.textContent=m;e.classList.remove('hide');}
 function copyOut(){navigator.clipboard.writeText(el('out').textContent).then(function(){});}
+
+/* ── send by email ── */
+var SEND_HOOK='https://n8n-fouz.srv1786777.hstgr.cloud/webhook/agent-send-2ea7e4ec76c7';
+function savedKey(){try{return localStorage.getItem('tb_send_key')||''}catch(e){return ''}}
+function paintKey(){
+  var has=!!savedKey();
+  el('keyRow').classList.toggle('hide',has);
+  el('keySet').classList.toggle('hide',!has);
+}
+function changeKey(){try{localStorage.removeItem('tb_send_key')}catch(e){} el('sKey').value=''; paintKey(); el('sKey').focus();}
+function openSend(){
+  el('sBody').value=el('out').textContent;
+  var a=AGENTS.find(function(x){return x.k===picked;});
+  if(!el('sSubj').value) el('sSubj').value=(a&&a.k==='lead-gen')?"Your shop's website is already built":'A quick note from TB Solutions';
+  paintKey();
+  el('sendCard').classList.remove('hide');
+  el('sendCard').scrollIntoView({behavior:'smooth'});
+}
+function sFlash(m){var e=el('sErr');e.textContent=m;e.classList.remove('hide');el('sOk').classList.add('hide');}
+function sendMail(mode){
+  var key=savedKey()||el('sKey').value.trim();
+  if(!key){el('sKey').focus();return sFlash('Enter your send key first — Claude gave it to you.');}
+  var body=el('sBody').value.trim();
+  if(!body){el('sBody').focus();return sFlash('Nothing to send yet.');}
+  var to=el('sTo').value.trim();
+  if(mode==='send'&&!to){el('sTo').focus();return sFlash('Who is it going to?');}
+  if(mode==='send'&&!confirm('Send this to '+to+'?')) return;
+  el('sErr').classList.add('hide');el('sOk').classList.add('hide');
+  var b=el(mode==='send'?'sendBtn':'selfBtn');var label=b.textContent;
+  b.disabled=true;b.innerHTML='<span class="spin"></span>Sending…';
+  fetch(SEND_HOOK,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({key:key,mode:mode,to:to,subject:el('sSubj').value,body:body,agent:picked})})
+  .then(function(r){return r.json()})
+  .then(function(j){
+    if(!j.ok) return sFlash(j.error||'Could not send.');
+    try{localStorage.setItem('tb_send_key',key)}catch(e){}
+    paintKey();
+    el('sOk').textContent='✅ Sent to '+j.sentTo;
+    el('sOk').classList.remove('hide');
+  })
+  .catch(function(){sFlash('Could not reach the sender — is the agent-send workflow Active in n8n?');})
+  .finally(function(){b.disabled=false;b.textContent=label;});
+}
 </script>
 </body>
 </html>

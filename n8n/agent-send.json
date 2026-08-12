@@ -1,0 +1,186 @@
+{
+  "name": "TB — Agent Send (approval-gated email)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agent-send-2ea7e4ec76c7",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "s4000000-0000-4000-8000-000000000001",
+      "name": "Send Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "agent-send-2ea7e4ec76c7"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 🔒 SEND KEY — must match the key you typed on the Agent Team page.\n// The live copy on the VPS holds the real key; this public repo copy does not.\nconst SEND_KEY = 'PASTE_YOUR_SEND_KEY';\nconst OWNER = 'nikbyrd28@gmail.com';\n\nconst body = $json.body || $json;\nconst s = (v, n) => (typeof v === 'string' ? v.trim().slice(0, n) : '');\n\nconst key = s(body.key, 64);\nconst mode = s(body.mode, 10) || 'self';\nconst to = s(body.to, 200);\nconst subject = s(body.subject, 200) || 'A note from TB Solutions';\nconst text = s(body.body, 20000);\nconst agent = s(body.agent, 40);\n\nif (key !== SEND_KEY) {\n  return [{ json: { ok: false, error: 'Wrong send key — tap \"change key\" on the page and re-enter it.' } }];\n}\nif (!text) {\n  return [{ json: { ok: false, error: 'Nothing to send — the message is empty.' } }];\n}\n\n// mode 'self' = draft to Nick's own inbox (safe test). mode 'send' = to the real recipient.\nconst target = mode === 'send' ? to : OWNER;\nconst at = target.indexOf('@');\nconst dot = target.lastIndexOf('.');\nif (at < 1 || dot < at + 2 || dot >= target.length - 1 || target.indexOf(' ') !== -1) {\n  return [{ json: { ok: false, error: 'That recipient email does not look right.' } }];\n}\n\nconst sig = '\\n\\n—\\nNick Byrd · TB Solutions\\ntbsol.net · thebarberloop.com';\n\nreturn [{ json: {\n  ok: true,\n  to: target,\n  bcc: mode === 'send' ? OWNER : '',\n  subject: mode === 'send' ? subject : '[DRAFT' + (agent ? ' · ' + agent : '') + '] ' + subject,\n  text: text + sig\n} }];\n"
+      },
+      "id": "s4000000-0000-4000-8000-000000000002",
+      "name": "Check & Build",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.ok }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "s4000000-0000-4000-8000-000000000003",
+      "name": "Allowed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        440,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "TB Solutions <onboarding@resend.dev>",
+        "toEmail": "={{ $json.to }}",
+        "subject": "={{ $json.subject }}",
+        "text": "={{ $json.text }}",
+        "emailFormat": "text",
+        "options": {
+          "bccEmail": "={{ $json.bcc }}",
+          "replyTo": "nikbyrd28@gmail.com"
+        }
+      },
+      "id": "s4000000-0000-4000-8000-000000000004",
+      "name": "Send email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        680,
+        -100
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "lvTDHHx97qhXfVpS",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"ok\": true, \"sentTo\": $('Check & Build').item.json.to } }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "s4000000-0000-4000-8000-000000000005",
+      "name": "Respond sent",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        900,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"ok\": false, \"error\": $('Check & Build').item.json.error } }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "s4000000-0000-4000-8000-000000000006",
+      "name": "Respond blocked",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        680,
+        120
+      ]
+    }
+  ],
+  "connections": {
+    "Send Webhook": {
+      "main": [
+        [
+          {
+            "node": "Check & Build",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check & Build": {
+      "main": [
+        [
+          {
+            "node": "Allowed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Allowed?": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond blocked",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send email": {
+      "main": [
+        [
+          {
+            "node": "Respond sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
