@@ -20,7 +20,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const body = $json.body || $json;\nconst clean = (s, n) => (typeof s === 'string' ? s.trim().slice(0, n || 300) : '');\n\nconst agent = clean(body.agent, 30);\nconst task = clean(body.task, 4000);\nconst business = clean(body.business) || '';\nconst extra = clean(body.extra, 3000);\n\n// The Chester County towns Nick sells into → tight bounding boxes (south,west,north,east)\nconst TOWNS = {\n  'west chester': '39.93,-75.65,40.00,-75.55',\n  'downingtown': '39.98,-75.75,40.03,-75.68',\n  'coatesville': '39.96,-75.85,40.02,-75.78',\n  'exton': '39.99,-75.68,40.05,-75.60',\n  'phoenixville': '40.10,-75.55,40.16,-75.48',\n  'malvern': '39.99,-75.55,40.05,-75.48',\n  'kennett square': '39.82,-75.75,39.88,-75.68',\n  'paoli': '40.01,-75.52,40.06,-75.46',\n  'chester county': '39.85,-75.85,40.15,-75.45'\n};\n\nconst hay = (business + ' ' + task).toLowerCase();\nlet town = 'chester county';\nconst names = Object.keys(TOWNS);\nfor (let i = 0; i < names.length; i++) {\n  if (hay.indexOf(names[i]) !== -1) { town = names[i]; break; }\n}\nconst bbox = TOWNS[town];\n\n// Real barbershops / salons in that box, straight from OpenStreetMap (free, no key)\nconst ql = '[out:json][timeout:25];(node[\"shop\"=\"hairdresser\"](' + bbox + ');way[\"shop\"=\"hairdresser\"](' + bbox + ');node[\"shop\"=\"beauty\"](' + bbox + '););out center 60;';\nconst osmUrl = 'https://overpass.kumi.systems/api/interpreter?data=' + encodeURIComponent(ql);\n\nreturn [{ json: { agent, task, business, extra, town, osmUrl } }];\n"
+        "jsCode": "const body = $json.body || $json;\nconst clean = (s, n) => (typeof s === 'string' ? s.trim().slice(0, n || 300) : '');\n\nconst agent = clean(body.agent, 30);\nconst task = clean(body.task, 4000);\nconst business = clean(body.business) || '';\nconst extra = clean(body.extra, 3000);\n\n// The Chester County towns Nick sells into → tight bounding boxes (south,west,north,east)\nconst TOWNS = {\n  'west chester': '39.93,-75.65,40.00,-75.55',\n  'downingtown': '39.98,-75.75,40.03,-75.68',\n  'coatesville': '39.96,-75.85,40.02,-75.78',\n  'exton': '39.99,-75.68,40.05,-75.60',\n  'phoenixville': '40.10,-75.55,40.16,-75.48',\n  'malvern': '39.99,-75.55,40.05,-75.48',\n  'kennett square': '39.82,-75.75,39.88,-75.68',\n  'paoli': '40.01,-75.52,40.06,-75.46',\n  'chester county': '39.85,-75.85,40.15,-75.45'\n};\n\nconst hay = (business + ' ' + task).toLowerCase();\nlet town = 'chester county';\nconst names = Object.keys(TOWNS);\nfor (let i = 0; i < names.length; i++) {\n  if (hay.indexOf(names[i]) !== -1) { town = names[i]; break; }\n}\nconst bbox = TOWNS[town];\n\n// Real barbershops / salons in that box, straight from OpenStreetMap (free, no key).\n// Nodes only — dropping ways keeps the query light enough to answer in seconds.\nconst ql = '[out:json][timeout:40];(node[\"shop\"=\"hairdresser\"](' + bbox + ');node[\"shop\"=\"beauty\"](' + bbox + '););out body 50;';\nconst osmUrl = 'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(ql);\n\nreturn [{ json: { agent, task, business, extra, town, osmUrl } }];\n"
       },
       "id": "a2000000-0000-4000-8000-000000000006",
       "name": "Pick Area",
@@ -35,7 +35,7 @@
       "parameters": {
         "url": "={{ $json.osmUrl }}",
         "options": {
-          "timeout": 25000
+          "timeout": 55000
         }
       },
       "id": "a2000000-0000-4000-8000-000000000007",
