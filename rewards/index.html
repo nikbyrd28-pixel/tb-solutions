@@ -252,6 +252,8 @@
     <p class="lead" id="joinLead">Get a point every visit — hit the goal and your reward is on us.</p>
     <label>Your name</label><input id="jName" autocomplete="name">
     <label>Phone number</label><input id="jPhone" type="tel" autocomplete="tel" placeholder="Used to find your card">
+    <label>Birthday <span style="text-transform:none;letter-spacing:0;font-weight:400;opacity:.7">— optional, we send a treat</span></label>
+    <input id="jBday" type="tel" inputmode="numeric" maxlength="5" placeholder="MM/DD">
     <button class="btn" onclick="join()">Join the club</button>
     <div class="err hide" id="jErr"></div>
     <p class="muted" style="margin-top:10px;font-size:12px;line-height:1.5">By joining you agree to receive appointment &amp; rewards text messages at the number provided. Consent is not a condition of purchase. Msg &amp; data rates may apply. Msg frequency varies. Reply STOP to cancel, HELP for help. <a href="/sms-terms/" style="color:var(--muted)">SMS Terms</a> · <a href="/privacy/" style="color:var(--muted)">Privacy</a></p>
@@ -1229,7 +1231,12 @@ function scrollToArcade(){ scrollToId('arcadeCard'); }
 function join(){
   el('jErr').classList.add('hide');
   if(!slug){ el('jErr').textContent='This link is missing its business code (?c=...).'; el('jErr').classList.remove('hide'); return; }
-  rpc('join_rewards',{p_client:slug,p_name:el('jName').value.trim(),p_phone:el('jPhone').value.trim(),p_ref:refCode||null}).then(function(m){
+  // MM/DD is all a birthday treat needs; the year is nobody's business.
+  var bday=null, bm=(el('jBday')?el('jBday').value:'').match(/^\s*(\d{1,2})\s*[\/\-\.]?\s*(\d{1,2})\s*$/);
+  if(bm){ var mm=+bm[1], dd=+bm[2];
+    if(mm>=1&&mm<=12&&dd>=1&&dd<=31) bday='2000-'+('0'+mm).slice(-2)+'-'+('0'+dd).slice(-2); }
+  // The form above states plainly that joining means agreeing to texts, so record that.
+  rpc('join_rewards',{p_client:slug,p_name:el('jName').value.trim(),p_phone:el('jPhone').value.trim(),p_ref:refCode||null,p_birthday:bday,p_sms_consent:true}).then(function(m){
     if(m.error){ el('jErr').textContent=m.error; el('jErr').classList.remove('hide'); return; }
     rpc('get_member',{p_code:m.code}).then(function(full){ showCard(full.error?m:full); });
   });
