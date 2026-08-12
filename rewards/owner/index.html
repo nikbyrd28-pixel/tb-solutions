@@ -154,6 +154,15 @@
       <div class="stats" id="stats"></div>
     </div>
 
+    <!-- The chair-filler. Sits directly under the numbers because on a slow
+         day this is the one card that turns into money the same afternoon. -->
+    <div class="card" id="dueCard">
+      <h2>💈 <b>Who's due a cut</b> <span class="muted" id="dueCount" style="font-weight:600;font-size:14px"></span></h2>
+      <p class="muted" style="margin:2px 0 12px;font-size:13px">Regulars who haven't been in. Tap one and your own phone opens with the text already written — nothing sends by itself.</p>
+      <div class="links" id="dueWeeks" style="flex-wrap:wrap;margin-bottom:12px"></div>
+      <div id="dueList"><p class="muted">Loading…</p></div>
+    </div>
+
     <div class="card hide" id="startCard">
       <h2>🚀 <b>Your first week</b> <span class="muted" id="startCount" style="font-weight:600;font-size:14px"></span></h2>
       <p class="muted" style="margin:2px 0 12px;font-size:13px">Four things get a shop from empty to running on its own. This card disappears once they're done.</p>
@@ -450,6 +459,73 @@ function renderStart(d){
   if(pb) pb.addEventListener('click',function(){ markPoster(code); setTimeout(function(){ renderStart(d); },400); });
 }
 
+/* ── Who's due ────────────────────────────────────────────────────────────
+   The barber picks the window; the server returns everyone past it who has a
+   phone number. Tapping a name opens HIS phone's messaging app with the text
+   pre-written — we never send anything, which is why this needs no carrier
+   account and raises no consent question. It is his customer and his phone.  */
+var DUE_WEEKS=4, DUE=null;
+function dueMsg(d,r){
+  var first=String(r.name||'').trim().split(/\s+/)[0]||'there';
+  var shop=(d.biz_name&&String(d.biz_name).trim())||cap(d.client);
+  var book=d.book_url ? (/^https?:\/\//i.test(d.book_url)?d.book_url:'https://'+d.book_url)
+         : (d.book_on ? location.origin+'/rewards/?c='+d.client : '');
+  return first+" — it's "+shop+". Been a minute, you're about due. Want me to get you in this week?"
+       + (book? ' '+book : '');
+}
+function loadDue(weeks){
+  if(weeks) DUE_WEEKS=weeks;
+  var box=el('dueList'); if(!box) return;
+  fetch(SUPA_URL+'/rest/v1/rpc/loyalty_due_list',{method:'POST',
+    headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({p_client:CODE,p_pin:PIN,p_weeks:DUE_WEEKS})})
+  .then(function(r){ return r.ok?r.json():null; })
+  .then(function(d){ if(!d||d.ok===false){ box.innerHTML='<p class="muted">Could not load right now.</p>'; return; }
+    DUE=d; renderDue(d); })
+  .catch(function(){ box.innerHTML='<p class="muted">Could not load right now.</p>'; });
+}
+function renderDue(d){
+  var rows=Array.isArray(d.rows)?d.rows:[];
+  el('dueCount').textContent = rows.length ? '· '+rows.length+' to win back' : '· all caught up';
+  el('dueWeeks').innerHTML=[2,3,4,6,8].map(function(w){
+    return '<button class="btn ghost dueW" data-w="'+w+'"'
+      +(w===DUE_WEEKS?' style="border-color:var(--acc);color:var(--acc)"':'')
+      +'>'+w+'+ weeks</button>';
+  }).join('');
+  [].forEach.call(el('dueWeeks').querySelectorAll('.dueW'),function(b){
+    b.onclick=function(){ loadDue(parseInt(b.getAttribute('data-w'),10)); };
+  });
+  if(!rows.length){
+    el('dueList').innerHTML='<p class="muted">Nobody is more than '+d.weeks
+      +' weeks out. That is the goal — check back in a few days.</p>';
+    return;
+  }
+  el('dueList').innerHTML=rows.map(function(r){
+    var wks=Math.floor((r.days_since||0)/7);
+    var when=wks>=1 ? wks+(wks===1?' week':' weeks')+' ago' : (r.days_since||0)+' days ago';
+    var rhythm=r.typical_days ? ' · usually every '+Math.round(r.typical_days/7)+' wks' : '';
+    return '<div class="stp'+(r.nudged?' on':'')+'">'
+      +'<span class="tick">'+(r.nudged?'✓':'')+'</span>'
+      +'<span class="txt"><b>'+esc(r.name||'Member')+'</b>'
+      +'<span>Last in '+esc(when)+esc(rhythm)
+      +(r.barber?' · '+esc(r.barber):'')
+      +(r.nudged?' · texted already':'')+'</span></span>'
+      +'<a class="btn ghost go" data-code="'+esc(r.code||'')+'" href="sms:'+esc(String(r.phone||'').replace(/[^0-9+]/g,''))
+      +'?&body='+encodeURIComponent(dueMsg(d,r))+'">💬 Text</a>'
+      +'</div>';
+  }).join('');
+  // stamp on tap so the same man is not chased every week
+  [].forEach.call(el('dueList').querySelectorAll('a[data-code]'),function(a){
+    a.addEventListener('click',function(){
+      var c=a.getAttribute('data-code'); if(!c) return;
+      fetch(SUPA_URL+'/rest/v1/rpc/loyalty_mark_nudged',{method:'POST',
+        headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
+        body:JSON.stringify({p_client:CODE,p_pin:PIN,p_code:c})}).catch(function(){});
+      a.closest('.stp').classList.add('on');
+    });
+  });
+}
+
 function render(d){
   el('login').classList.add('hide'); el('dash').classList.remove('hide');
   (function(){
@@ -478,6 +554,7 @@ function render(d){
   }).join('');
   animCounts();
   renderStart(d);
+  loadDue();
   // tiers
   var tr=d.tiers||{bronze:0,silver:0,gold:0,vip:0};
   var seg=[['Bronze',tr.bronze,'#c58b5a'],['Silver',tr.silver,'#c9d2e6'],['Gold',tr.gold,'#ffd34d'],['VIP',tr.vip,'#b98bff']];

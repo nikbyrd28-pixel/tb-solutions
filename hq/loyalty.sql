@@ -318,3 +318,36 @@ grant execute on function public.crm_members(text,text,text,text,integer) to ano
 -- segment exactly; booking_admin reads reward_appointments, the same source the
 -- dashboard's Bookings tile now uses, so the agenda and the tile agree;
 -- loyalty_contacts correctly excludes both null AND empty phones.
+
+-- ============================================================================
+-- WHO'S DUE — the chair-filler.  (applied as migrations due_list_chair_filler
+-- and due_list_owner_window)
+--
+-- A shop does not lose regulars loudly. There is no cancellation and no
+-- complaint — a man just drifts to the barber near his new job, and nobody
+-- notices for three months. This turns that silence into a list.
+--
+--   loyalty_due_list(client, pin, weeks default 4)
+--     Everyone with a phone number whose last visit is at least `weeks` old,
+--     most-absent first. Also returns typical_days: that member's own gap
+--     between cuts, but ONLY when the history can support the claim (3+
+--     visits, 60+ days a member, result inside a believable 10-70 days).
+--
+--     An earlier cut of this derived the cadence for EVERY member from
+--     lifetime/points_per_visit. That was wrong: `lifetime` counts points, and
+--     spins, surveys, referrals and milestones inflate it, so every member
+--     looked like a weekly client and the entire roster flagged as overdue. A
+--     list that cries wolf gets ignored once and never opened again, so the
+--     threshold is now the barber's own choice and the per-member rhythm is
+--     shown only where it is real.
+--
+--   loyalty_mark_nudged(client, pin, code)
+--     Stamps last_nudge_at so the same man is not chased every week. The
+--     dashboard greys him for 14 days rather than hiding him.
+--
+-- NOT an automated SMS blast, on purpose. The dashboard builds an sms: link
+-- that opens the BARBER'S phone with the message pre-written; he sends it
+-- himself. No carrier account, no A2P registration, no consent question — it
+-- is a man texting his own customer, with the forgetting removed. If Twilio
+-- ever lands, the same list is the queue it would send from.
+-- ============================================================================
