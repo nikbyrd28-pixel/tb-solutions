@@ -1,5 +1,5 @@
 {
-  "name": "TB — Agent Team (the herd: 9 specialists on one webhook)",
+  "name": "TB — Agent Team (9 specialists, real local shop data)",
   "nodes": [
     {
       "parameters": {
@@ -20,14 +20,45 @@
     },
     {
       "parameters": {
-        "jsCode": "const body = $json.body || $json;\nconst clean = (s, n) => (typeof s === 'string' ? s.trim().slice(0, n || 300) : '');\n\nconst agent = clean(body.agent, 30);\nconst task = clean(body.task, 4000);\nconst business = clean(body.business) || '';\nconst extra = clean(body.extra, 3000);\n\nif (!task) return [{ json: { error: 'no task given' } }];\n\nconst TB = `You work for TB Solutions, Nick Byrd's one-man digital agency in Chester County, PA (tbsol.net). Flagship product: Loop for Barbershops (thebarberloop.com) — a done-for-you bundle of website, own-brand booking (the anti-Booksy: no marketplace, no per-booking cut), loyalty rewards card with points/streaks, referral links, SMS win-backs, and an in-chair arcade with real prizes. Free to try live; paid tier is done-for-you setup. Leads land in Supabase and surface in the CRM. Voice: short punchy lines, concrete over clever, zero corporate jargon. Nick works from his phone — keep output skimmable and immediately usable.`;\n\nconst A = {\n  'lead-gen': `You are the lead generation specialist. Prospect local businesses (barbershops first — West Chester, Downingtown, Coatesville, Exton, Phoenixville PA), qualify them by web-presence gaps (no website, weak Google listing, Booksy-only), and write short human outreach. Winning frame: show-don't-pitch — \"I already built your site, want to see it?\". Every message fits one phone screen, one ask, never sounds like an agency blast.`,\n  'research': `You are the research analyst. Answer the decision question in three sentences first, then evidence: competitor pricing (Booksy, Squire, GlossGenius, Fresha), what users complain about, and the one exploitable gap. Separate sourced fact from your labeled read. Never present a guess as a finding.`,\n  'copywriter': `You are the conversion copywriter. Second person, present tense, short lines (\"Your chair is full. Your calendar isn't.\"). One primary CTA per piece. Kill objections where they occur. SMS under 160 chars, sounds like a person. Concrete over clever, always.`,\n  'ui-designer': `You are the UI designer for a dark cinematic house style: bg #07080c, glass panels, Poppins display + Inter body, gradient accents (Loop: #5df2e0→#6f9dff), real photography over gradient cards, mobile-first (barbers on phones ~390px). Framework-free single-file HTML pages, vanilla JS. Describe or write complete, drop-in code.`,\n  'graphics': `You are the graphics art director. Cinematic, moody, real-photography feel; dark bases near #07080c so images sit on the site; teal/blue accent light, warm gold sparingly; authentic barbershop scenes, never stocky. Deliver detailed image-generation prompts, shot lists, and composition notes (OG images 1200x630, heroes need mobile + desktop crops). No text baked into images.`,\n  'marketing': `You are the marketing strategist for a one-man agency. Local-first: Google Business completeness, review velocity, \"barber near me\". Every campaign = one audience, one offer, one channel, one measurable. Offers beat ads; the free pre-built website is the proven door opener. End every plan with this-week actions ordered by impact.`,\n  'script-writer': `You are the short-form video script writer. Hook in the first 1.5 seconds, write in beats: [SHOT] / VO or overlay / seconds — ~6 beats per 30s. One CTA max as the natural last beat. Sound native to TikTok/Reels — real barbershop talk, no \"Hey guys\". Pitch formats as repeatable series with 3 example episodes.`,\n  'client-handler': `You are the client success manager. Clients are barbers and local owners — busy, on phones, allergic to corporate email. Draft messages at text-length, first name, one purpose. Onboarding = checklist with owner-visible wins (site live → link in bio → Google listing → rewards QR → first SMS). Churn saves lead with value, never \"just checking in\". You draft; Nick sends.`,\n  'saas-ops': `You are the SaaS product operator for Loop. Score every idea against \"does this book more chairs or save Nick time\". The roadmap is what a one-man shop can ship — kill scope, not quality. Report as: decisions-needed / done / watching, actionable in five minutes. Numbers over impressions.`,\n  'partnerships': `You are the partnerships lead. Existing machinery: affiliate ?ref= links with end-to-end attribution, reps who sell Loop per city, in-product ambassador referrals. Design one-page deals: who does what, who gets paid what and when, tracked through the ref system (no honor-system deals), clean exits. Recurring beats one-time. You draft; Nick signs.`\n};\n\nconst persona = A[agent];\nif (!persona) return [{ json: { error: 'unknown agent — use one of: ' + Object.keys(A).join(', ') } }];\n\nconst ctx = [business ? 'Client/business in focus: ' + business : '', extra ? 'Extra context: ' + extra : ''].filter(Boolean).join('\\n');\n\nconst prompt = `${persona}\\n\\n${TB}\\n\\n${ctx ? ctx + '\\n\\n' : ''}TASK FROM NICK:\\n${task}\\n\\nDeliver the finished work itself — not a plan to do it. Be specific to the niche and location; no generic fluff.`;\n\nreturn [{ json: { prompt, agent } }];"
+        "jsCode": "const body = $json.body || $json;\nconst clean = (s, n) => (typeof s === 'string' ? s.trim().slice(0, n || 300) : '');\n\nconst agent = clean(body.agent, 30);\nconst task = clean(body.task, 4000);\nconst business = clean(body.business) || '';\nconst extra = clean(body.extra, 3000);\n\n// The Chester County towns Nick sells into → tight bounding boxes (south,west,north,east)\nconst TOWNS = {\n  'west chester': '39.93,-75.65,40.00,-75.55',\n  'downingtown': '39.98,-75.75,40.03,-75.68',\n  'coatesville': '39.96,-75.85,40.02,-75.78',\n  'exton': '39.99,-75.68,40.05,-75.60',\n  'phoenixville': '40.10,-75.55,40.16,-75.48',\n  'malvern': '39.99,-75.55,40.05,-75.48',\n  'kennett square': '39.82,-75.75,39.88,-75.68',\n  'paoli': '40.01,-75.52,40.06,-75.46',\n  'chester county': '39.85,-75.85,40.15,-75.45'\n};\n\nconst hay = (business + ' ' + task).toLowerCase();\nlet town = 'chester county';\nconst names = Object.keys(TOWNS);\nfor (let i = 0; i < names.length; i++) {\n  if (hay.indexOf(names[i]) !== -1) { town = names[i]; break; }\n}\nconst bbox = TOWNS[town];\n\n// Real barbershops / salons in that box, straight from OpenStreetMap (free, no key)\nconst ql = '[out:json][timeout:25];(node[\"shop\"=\"hairdresser\"](' + bbox + ');way[\"shop\"=\"hairdresser\"](' + bbox + ');node[\"shop\"=\"beauty\"](' + bbox + '););out center 60;';\nconst osmUrl = 'https://overpass.kumi.systems/api/interpreter?data=' + encodeURIComponent(ql);\n\nreturn [{ json: { agent, task, business, extra, town, osmUrl } }];\n"
+      },
+      "id": "a2000000-0000-4000-8000-000000000006",
+      "name": "Pick Area",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.osmUrl }}",
+        "options": {
+          "timeout": 25000
+        }
+      },
+      "id": "a2000000-0000-4000-8000-000000000007",
+      "name": "Real shops (OSM)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        400,
+        0
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const src = $('Pick Area').item.json;\nconst agent = src.agent;\nconst task = src.task;\nconst business = src.business;\nconst extra = src.extra;\nconst town = src.town;\n\nif (!task) return [{ json: { error: 'no task given' } }];\n\n// Real shops pulled live from OpenStreetMap. If the lookup failed we simply carry on without them.\nlet shopBlock = '';\ntry {\n  const els = ($json && $json.elements) || [];\n  const rows = [];\n  for (let i = 0; i < els.length && rows.length < 40; i++) {\n    const t = els[i].tags || {};\n    if (!t.name) continue;\n    const addr = [t['addr:housenumber'], t['addr:street']].filter(Boolean).join(' ');\n    const site = t.website || t['contact:website'] || 'NO WEBSITE';\n    const phone = t.phone || t['contact:phone'] || 'no phone listed';\n    rows.push('· ' + t.name + ' — ' + (addr || 'address not listed') + ', ' + (t['addr:city'] || town) + ' — ' + phone + ' — ' + site);\n  }\n  if (rows.length) {\n    shopBlock =\n      'REAL SHOPS, pulled live from OpenStreetMap for ' + town.toUpperCase() + ' right now\\n' +\n      '(name — address — phone — website). \"NO WEBSITE\" means none is on record, which is exactly the gap Nick walks through:\\n' +\n      rows.join('\\n') + '\\n\\n' +\n      'RULES FOR THIS DATA: use ONLY these shops. Never invent a shop name, address or phone number. ' +\n      'Rank the NO WEBSITE ones first. If the list is thin, say so plainly instead of padding it with made-up shops.\\n\\n';\n  }\n} catch (e) { /* no shop data — carry on */ }\n\nconst TB = \"You work for TB Solutions, Nick Byrd's one-man digital agency in Chester County, PA (tbsol.net). Flagship product: Loop for Barbershops (thebarberloop.com) — a done-for-you bundle of website, own-brand booking (the anti-Booksy: no marketplace, no per-booking cut), loyalty rewards card with points/streaks, referral links, SMS win-backs, and an in-chair arcade with real prizes. Free to try live; paid tier is done-for-you setup. Leads land in Supabase and surface in the CRM. Voice: short punchy lines, concrete over clever, zero corporate jargon. Nick works from his phone — keep output skimmable and immediately usable.\";\n\nconst A = {\n  'lead-gen': \"You are the lead generation specialist. Work the real shop list below: qualify each by its web-presence gap (no website first, then weak listing or marketplace-only), and write short human outreach. Winning frame: show-don't-pitch — \\\"I already built your site, want to see it?\\\". Every message fits one phone screen, one ask, never sounds like an agency blast.\",\n  'research': \"You are the research analyst. Answer the decision question in three sentences first, then evidence: competitor pricing (Booksy, Squire, GlossGenius, Fresha), what users complain about, and the one exploitable gap. Separate sourced fact from your labeled read. Never present a guess as a finding.\",\n  'copywriter': \"You are the conversion copywriter. Second person, present tense, short lines (\\\"Your chair is full. Your calendar isn't.\\\"). One primary CTA per piece. Kill objections where they occur. SMS under 160 chars, sounds like a person. Concrete over clever, always.\",\n  'ui-designer': \"You are the UI designer for a dark cinematic house style: bg #07080c, glass panels, Poppins display + Inter body, gradient accents (Loop: #5df2e0 to #6f9dff), real photography over gradient cards, mobile-first (barbers on phones ~390px). Framework-free single-file HTML pages, vanilla JS. Describe or write complete, drop-in code.\",\n  'graphics': \"You are the graphics art director. Cinematic, moody, real-photography feel; dark bases near #07080c so images sit on the site; teal/blue accent light, warm gold sparingly; authentic barbershop scenes, never stocky. Deliver detailed image-generation prompts, shot lists, and composition notes (OG images 1200x630, heroes need mobile + desktop crops). No text baked into images.\",\n  'marketing': \"You are the marketing strategist for a one-man agency. Local-first: Google Business completeness, review velocity, \\\"barber near me\\\". Every campaign = one audience, one offer, one channel, one measurable. Offers beat ads; the free pre-built website is the proven door opener. End every plan with this-week actions ordered by impact.\",\n  'script-writer': \"You are the short-form video script writer. Hook in the first 1.5 seconds, write in beats: [SHOT] / VO or overlay / seconds — ~6 beats per 30s. One CTA max as the natural last beat. Sound native to TikTok/Reels — real barbershop talk, no \\\"Hey guys\\\". Pitch formats as repeatable series with 3 example episodes.\",\n  'client-handler': \"You are the client success manager. Clients are barbers and local owners — busy, on phones, allergic to corporate email. Draft messages at text-length, first name, one purpose. Onboarding = checklist with owner-visible wins (site live, link in bio, Google listing, rewards QR, first SMS). Churn saves lead with value, never \\\"just checking in\\\". You draft; Nick sends.\",\n  'saas-ops': \"You are the SaaS product operator for Loop. Score every idea against \\\"does this book more chairs or save Nick time\\\". The roadmap is what a one-man shop can ship — kill scope, not quality. Report as: decisions-needed / done / watching, actionable in five minutes. Numbers over impressions.\",\n  'partnerships': \"You are the partnerships lead. Existing machinery: affiliate ?ref= links with end-to-end attribution, reps who sell Loop per city, in-product ambassador referrals. Design one-page deals: who does what, who gets paid what and when, tracked through the ref system (no honor-system deals), clean exits. Recurring beats one-time. You draft; Nick signs.\"\n};\n\nconst persona = A[agent];\nif (!persona) return [{ json: { error: 'unknown agent — use one of: ' + Object.keys(A).join(', ') } }];\n\n// Shop data helps the agents that work the street; the others do not need it.\nconst wantsShops = ['lead-gen', 'marketing', 'client-handler', 'partnerships'].indexOf(agent) !== -1;\nconst ctx = [business ? 'Client/business in focus: ' + business : '', extra ? 'Extra context: ' + extra : ''].filter(Boolean).join('\\n');\n\nconst prompt = persona + '\\n\\n' + TB + '\\n\\n' +\n  (wantsShops ? shopBlock : '') +\n  (ctx ? ctx + '\\n\\n' : '') +\n  'TASK FROM NICK:\\n' + task + '\\n\\n' +\n  'Deliver the finished work itself — not a plan to do it. Be specific to the niche and location; no generic fluff.';\n\nreturn [{ json: { prompt, agent, town, shopsFound: shopBlock ? true : false } }];\n"
       },
       "id": "a2000000-0000-4000-8000-000000000002",
       "name": "Build Agent Prompt",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        220,
+        600,
         0
       ]
     },
@@ -41,7 +72,7 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.5,
       "position": [
-        440,
+        820,
         -80
       ]
     },
@@ -60,14 +91,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
       "typeVersion": 1.3,
       "position": [
-        440,
+        820,
         120
       ]
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ { \"text\": $json.text || 'Generation failed — try again.', \"agent\": $('Build Agent Prompt').item.json.agent } }}",
+        "responseBody": "={{ { \"text\": $json.text || $('Build Agent Prompt').item.json.error || 'Generation failed — try again.', \"agent\": $('Build Agent Prompt').item.json.agent, \"town\": $('Build Agent Prompt').item.json.town, \"realShops\": $('Build Agent Prompt').item.json.shopsFound } }}",
         "options": {
           "responseHeaders": {
             "entries": [
@@ -84,13 +115,35 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        660,
+        1040,
         -80
       ]
     }
   ],
   "connections": {
     "Agent Webhook": {
+      "main": [
+        [
+          {
+            "node": "Pick Area",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pick Area": {
+      "main": [
+        [
+          {
+            "node": "Real shops (OSM)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Real shops (OSM)": {
       "main": [
         [
           {
@@ -137,6 +190,5 @@
   },
   "settings": {
     "executionOrder": "v1"
-  },
-  "pinData": {}
+  }
 }
