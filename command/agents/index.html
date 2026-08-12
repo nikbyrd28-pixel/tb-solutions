@@ -69,7 +69,7 @@
       <b id="outTitle">Result</b>
       <div style="display:flex;gap:8px">
         <button class="btn ghost small" onclick="copyOut()">📋 Copy</button>
-        <button class="btn small" onclick="openSend()">📧 Email it</button>
+        <button class="btn small" onclick="openSend()">📨 Send it</button>
       </div>
     </div>
     <pre id="out" style="margin-top:10px"></pre>
@@ -77,12 +77,16 @@
 
   <!-- SEND BY EMAIL -->
   <div class="card hide" id="sendCard">
-    <b>📧 Send it as an email</b>
-    <p class="muted" style="margin:6px 0 0">Read it, edit anything, then send. Every send BCCs you, so you keep a copy.</p>
-    <label>Send to</label>
-    <input id="sTo" type="email" placeholder="barber@theirshop.com">
-    <label>Subject</label>
-    <input id="sSubj" placeholder="Your shop's website is already built">
+    <b>📨 Send it</b>
+    <p class="muted" style="margin:6px 0 0">Read it, edit anything, then send. Email BCCs you, so you keep a copy.</p>
+    <label>Channel</label>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(120px,1fr))" id="chans"></div>
+    <label id="toLabel">Send to</label>
+    <input id="sTo" placeholder="barber@theirshop.com">
+    <div id="subjWrap">
+      <label>Subject</label>
+      <input id="sSubj" placeholder="Your shop's website is already built">
+    </div>
     <label>Message (edit before sending)</label>
     <textarea id="sBody" style="min-height:180px"></textarea>
     <div id="keyRow">
@@ -92,7 +96,7 @@
     <p class="muted hide" id="keySet" style="margin-top:10px">🔒 Send key saved on this phone. <a href="#" onclick="changeKey();return false" style="color:var(--acc)">change key</a></p>
     <div class="bar">
       <button class="btn ghost" id="selfBtn" onclick="sendMail('self')">📥 Send to me first</button>
-      <button class="btn" id="sendBtn" onclick="sendMail('send')">📧 Send to them →</button>
+      <button class="btn" id="sendBtn" onclick="sendMail('send')">Send to them →</button>
     </div>
     <div class="err hide" id="sErr"></div>
     <p class="hide" id="sOk" style="color:var(--good);font-weight:700;margin-top:8px"></p>
@@ -160,6 +164,23 @@ function copyOut(){navigator.clipboard.writeText(el('out').textContent).then(fun
 
 /* ── send by email ── */
 var SEND_HOOK='https://n8n-fouz.srv1786777.hstgr.cloud/webhook/agent-send-2ea7e4ec76c7';
+var CHANS=[
+  {k:'email',e:'📧',t:'Email',d:'live now'},
+  {k:'sms',e:'💬',t:'SMS',d:'needs Twilio'},
+  {k:'whatsapp',e:'🟢',t:'WhatsApp',d:'needs Twilio'}
+];
+var chan='email';
+function paintChans(){
+  el('chans').innerHTML=CHANS.map(function(c){
+    return '<div class="asset'+(c.k===chan?' on':'')+'" onclick="pickChan(\''+c.k+'\')"><div class="e">'+c.e+'</div><div class="t">'+c.t+'</div><div class="d">'+c.d+'</div></div>';
+  }).join('');
+  var isText=(chan!=='email');
+  el('toLabel').textContent=isText?'Send to (phone, with country code)':'Send to';
+  el('sTo').placeholder=isText?'+16105551234':'barber@theirshop.com';
+  el('sTo').type=isText?'tel':'email';
+  el('subjWrap').classList.toggle('hide',isText);
+}
+function pickChan(k){chan=k;paintChans();}
 function savedKey(){try{return localStorage.getItem('tb_send_key')||''}catch(e){return ''}}
 function paintKey(){
   var has=!!savedKey();
@@ -172,6 +193,7 @@ function openSend(){
   var a=AGENTS.find(function(x){return x.k===picked;});
   if(!el('sSubj').value) el('sSubj').value=(a&&a.k==='lead-gen')?"Your shop's website is already built":'A quick note from TB Solutions';
   paintKey();
+  paintChans();
   el('sendCard').classList.remove('hide');
   el('sendCard').scrollIntoView({behavior:'smooth'});
 }
@@ -183,12 +205,12 @@ function sendMail(mode){
   if(!body){el('sBody').focus();return sFlash('Nothing to send yet.');}
   var to=el('sTo').value.trim();
   if(mode==='send'&&!to){el('sTo').focus();return sFlash('Who is it going to?');}
-  if(mode==='send'&&!confirm('Send this to '+to+'?')) return;
+  if(mode==='send'&&!confirm('Send this '+chan+' to '+to+'?')) return;
   el('sErr').classList.add('hide');el('sOk').classList.add('hide');
   var b=el(mode==='send'?'sendBtn':'selfBtn');var label=b.textContent;
   b.disabled=true;b.innerHTML='<span class="spin"></span>Sending…';
   fetch(SEND_HOOK,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({key:key,mode:mode,to:to,subject:el('sSubj').value,body:body,agent:picked})})
+    body:JSON.stringify({key:key,mode:mode,channel:chan,to:to,subject:el('sSubj').value,body:body,agent:picked})})
   .then(function(r){return r.json()})
   .then(function(j){
     if(!j.ok) return sFlash(j.error||'Could not send.');
