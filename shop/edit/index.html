@@ -98,6 +98,21 @@
   .sw2.on{border-color:#fff}
   .sw2.none{background:repeating-linear-gradient(45deg,#333 0 6px,#555 6px 12px);color:#fff;font-size:10px;font-weight:800}
   input[type=color]{width:48px;height:36px;padding:2px;border-radius:9px;background:transparent}
+  .crewrow{display:grid;grid-template-columns:64px 1fr auto;gap:10px;margin-top:10px;align-items:start}
+  .cav{width:64px;height:64px;border-radius:50%;border:1px dashed var(--line);display:flex;align-items:center;
+    justify-content:center;font-size:11px;color:var(--muted);cursor:pointer;position:relative;overflow:hidden;text-align:center}
+  .cav.has{border-style:solid}
+  .cav img{width:100%;height:100%;object-fit:cover}
+  .cav .x{position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;border:0;
+    background:rgba(0,0,0,.65);color:#fff;font-size:11px;line-height:1;cursor:pointer}
+  .cfields{display:grid;gap:7px;min-width:0}
+  .crm{align-self:center;background:transparent;border:1px solid var(--line);color:var(--muted);
+    border-radius:10px;padding:8px 11px;cursor:pointer;font:inherit}
+  .paybox{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .paychip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;
+    padding:8px 14px;cursor:pointer;font-size:14px;font-weight:700}
+  .paychip input{width:16px;height:16px;margin:0}
+  @media(max-width:430px){ .crewrow{grid-template-columns:52px 1fr auto} .cav{width:52px;height:52px} }
   .btnrow{display:grid;grid-template-columns:1fr 1.4fr auto;gap:8px;margin-top:8px;align-items:center}
   .btnrow input{font-size:14px}
   .btnrow button{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:9px;
@@ -223,8 +238,42 @@
     </div>
 
     <div class="card">
+      <h2>The chairs</h2>
+      <p class="hint">Your barbers, each with their own photo and their own Book button. People follow the man, not the shop — this is the part regulars send to their mates. Up to eight.</p>
+      <div id="crewRows"></div>
+    </div>
+
+    <div class="card">
+      <h2>Shop music</h2>
+      <p class="hint">Upload your own tracks and customers can play them on your page. It never starts on its own — they tap to listen. Up to five, 12&nbsp;MB each.</p>
+      <div id="trackRows"></div>
+      <button class="btn ghost sm" type="button" id="addTrack" style="margin-top:10px">＋ Add a track</button>
+      <input type="file" id="apicker" accept="audio/mpeg,audio/mp4,audio/aac,.mp3,.m4a" class="hide">
+    </div>
+
+    <div class="card">
+      <h2>How the shop runs</h2>
+      <p class="hint">The three things people ask at the door, answered before they get in the car.</p>
+      <label for="fWalkins">Walk-ins</label>
+      <select id="fWalkins">
+        <option value="">Don't say</option>
+        <option value="welcome">Walk-ins welcome</option>
+        <option value="appointment">By appointment</option>
+        <option value="call">Call ahead</option>
+      </select>
+      <label>What you take</label>
+      <div class="paybox" id="payBox"></div>
+      <label for="fParking">Parking</label>
+      <input id="fParking" maxlength="120" placeholder="Free lot behind the shop">
+      <label for="fPolicy">Before you come <small style="font-weight:600;text-transform:none;letter-spacing:0;color:var(--muted)">— late arrivals, no-shows, kids</small></label>
+      <textarea id="fPolicy" rows="3" maxlength="400" placeholder="More than 15 minutes late and we may have to reschedule you."></textarea>
+      <label for="fGift">Gift card link</label>
+      <input id="fGift" placeholder="optional — https://…">
+    </div>
+
+    <div class="card">
       <h2>Extra buttons</h2>
-      <p class="hint">Anything else you want people to tap — gift cards, a product you sell, a second location. Up to three.</p>
+      <p class="hint">Anything else you want people to tap — a product you sell, a second location. Up to three.</p>
       <div id="btnRows"></div>
     </div>
 
@@ -482,10 +531,14 @@
   /* ── uploads (unchanged mechanics) ─────────────────────────────────── */
   var slotEl={};
   var picker=el('picker'), activeSlot=null;
+  var BARBERS=[], PAY=[], TRACKS=[];
 
   function up(file){
-    if(!/^image\//.test(file.type||'')) return Promise.reject(new Error('That is not an image.'));
-    if(file.size>MAXB) return Promise.reject(new Error('That photo is over 6 MB — try a smaller one.'));
+    var isAudio=/^audio\//.test(file.type||'')||/\.(mp3|m4a)$/i.test(file.name||'');
+    if(!/^image\//.test(file.type||'') && !isAudio)
+      return Promise.reject(new Error('That is not an image or an audio file.'));
+    if(!isAudio && file.size>MAXB) return Promise.reject(new Error('That photo is over 6 MB — try a smaller one.'));
+    if(isAudio && file.size>12*1024*1024) return Promise.reject(new Error('That track is over 12 MB — try a shorter one.'));
     var ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,4)||'jpg';
     var rnd=Math.random().toString(36).slice(2,10)+Date.now().toString(36);
     var path=encodeURIComponent(CODE)+'/'+rnd+'.'+ext;
@@ -507,8 +560,15 @@
     up(f).then(function(u){
       if(slot==='hero') HERO=u;
       else if(slot==='logo') LOGO=u;
+      // barber headshots use a b<index> slot so they share this one uploader
+      else if(slot.charAt(0)==='b'){
+        var bi=parseInt(slot.slice(1),10);
+        if(!BARBERS[bi]) BARBERS[bi]={name:'',blurb:'',photo:'',ig:'',book:''};
+        BARBERS[bi].photo=u; crewRows();
+      }
       else { var i=parseInt(slot,10); if(i>=PHOTOS.length) PHOTOS.push(u); else PHOTOS[i]=u; }
-      tiles(); touch();
+      if(slot.charAt(0)!=='b') tiles();
+      touch();
     }).catch(function(e){
       setBusy(slot,false);
       say(e.message||'Upload failed.','err');
@@ -558,6 +618,120 @@
     }
   }
 
+  /* ── the chairs ────────────────────────────────────────────────────────
+     One row per barber, with a spare blank row always at the end so adding
+     the next man is just typing. A row with no name is not a barber, so it
+     is dropped on save rather than saved empty. */
+  function crewRows(){
+    var host=el('crewRows'); if(!host) return;
+    host.innerHTML='';
+    var n=Math.min(8, BARBERS.length+1);
+    for(var i=0;i<n;i++){
+      var b=BARBERS[i]||{name:'',blurb:'',photo:'',ig:'',book:''};
+      var row=document.createElement('div');
+      row.className='crewrow';
+      row.innerHTML=
+        '<div class="cav'+(b.photo?' has':'')+'" role="button" tabindex="0" aria-label="Add a photo">'
+        +(b.photo?'<img src="'+esc(b.photo)+'" alt=""><button class="x" type="button" aria-label="Remove photo">✕</button>':'Photo')
+        +'</div>'
+        +'<div class="cfields">'
+        +'<input class="cn" placeholder="Name" maxlength="40" value="'+esc(b.name)+'">'
+        +'<input class="cb" placeholder="Known for — fades, beards, kids" maxlength="80" value="'+esc(b.blurb)+'">'
+        +'<div class="two">'
+        +'<input class="ci" placeholder="Instagram (optional)" autocapitalize="none" value="'+esc(b.ig)+'">'
+        +'<input class="ck" placeholder="His booking link (optional)" value="'+esc(b.book)+'">'
+        +'</div></div>'
+        +'<button class="crm" type="button" aria-label="Remove barber">✕</button>';
+      (function(idx,row){
+        var ins=row.querySelectorAll('input');
+        function sync(){
+          var v={ name:ins[0].value.trim(), blurb:ins[1].value.trim(),
+                  ig:ins[2].value.trim().replace(/^@/,''), book:ins[3].value.trim(),
+                  photo:(BARBERS[idx]&&BARBERS[idx].photo)||'' };
+          if(!v.name && !v.blurb && !v.ig && !v.book && !v.photo){
+            if(BARBERS[idx]) BARBERS.splice(idx,1);
+          } else BARBERS[idx]=v;
+          touch();
+        }
+        [].forEach.call(ins,function(x){ x.addEventListener('input',sync); });
+        var av=row.querySelector('.cav');
+        av.onclick=function(ev){
+          if(ev.target.classList&&ev.target.classList.contains('x')){
+            ev.stopPropagation();
+            if(BARBERS[idx]) BARBERS[idx].photo='';
+            crewRows(); touch(); return;
+          }
+          activeSlot='b'+idx; picker.click();
+        };
+        row.querySelector('.crm').onclick=function(){
+          if(BARBERS[idx]) BARBERS.splice(idx,1);
+          crewRows(); touch();
+        };
+      })(i,row);
+      host.appendChild(row);
+    }
+  }
+
+  /* ── shop music ────────────────────────────────────────────────────── */
+  function trackRows(){
+    var host=el('trackRows'); if(!host) return;
+    host.innerHTML='';
+    if(!TRACKS.length){
+      host.innerHTML='<p class="hint" style="margin:0">No tracks yet.</p>';
+    }
+    TRACKS.forEach(function(t,i){
+      var row=document.createElement('div');
+      row.className='btnrow';
+      row.innerHTML='<input placeholder="Track name" maxlength="60" value="'+esc(t.name||'')+'">'
+        +'<audio controls preload="none" src="'+esc(t.url)+'" style="width:100%;height:34px"></audio>'
+        +'<button type="button" aria-label="Remove track">✕</button>';
+      (function(idx,row){
+        row.querySelector('input').addEventListener('input',function(){
+          TRACKS[idx].name=this.value.trim(); touch();
+        });
+        row.querySelector('button').onclick=function(){ TRACKS.splice(idx,1); trackRows(); touch(); };
+      })(i,row);
+      host.appendChild(row);
+    });
+    var add=el('addTrack');
+    if(add) add.disabled = TRACKS.length>=5;
+  }
+  (function(){
+    var add=el('addTrack'), ap=el('apicker');
+    if(!add||!ap) return;
+    add.addEventListener('click',function(){ ap.click(); });
+    ap.addEventListener('change',function(){
+      var f=ap.files&&ap.files[0]; ap.value='';
+      if(!f) return;
+      if(!/^audio\//.test(f.type||'') && !/\.(mp3|m4a)$/i.test(f.name||'')){
+        say('That is not an audio file.','err'); return;
+      }
+      if(f.size>12*1024*1024){ say('That track is over 12 MB — try a shorter one.','err'); return; }
+      say('Uploading track…');
+      up(f).then(function(u){
+        TRACKS.push({ name:(f.name||'').replace(/\.[^.]+$/,'').slice(0,60), url:u });
+        trackRows(); touch(); say('Track added.','ok');
+      }).catch(function(e){ say(e.message||'Upload failed.','err'); });
+    });
+  })();
+
+  /* ── what the shop takes ───────────────────────────────────────────── */
+  var PAYS=[['card','Card'],['cash','Cash'],['applepay','Apple Pay'],
+            ['venmo','Venmo'],['cashapp','Cash App'],['zelle','Zelle']];
+  function payBox(){
+    var host=el('payBox'); if(!host) return;
+    host.innerHTML=PAYS.map(function(p){
+      return '<label class="paychip"><input type="checkbox" value="'+p[0]+'"'
+        +(PAY.indexOf(p[0])>=0?' checked':'')+'><span>'+esc(p[1])+'</span></label>';
+    }).join('');
+    [].forEach.call(host.querySelectorAll('input'),function(x){
+      x.addEventListener('change',function(){
+        PAY=[].slice.call(host.querySelectorAll('input:checked')).map(function(y){ return y.value; });
+        touch();
+      });
+    });
+  }
+
   /* ── extra buttons ─────────────────────────────────────────────────── */
   function btnRows(){
     var host=el('btnRows'); host.innerHTML='';
@@ -595,6 +769,10 @@
     HERO=s.hero||''; LOGO=s.logo||'';
     PHOTOS=(s.photos||[]).slice(0,6);
     BUTTONS=(s.buttons||[]).slice(0,3);
+    BARBERS=(s.barbers||[]).slice(0,8).map(function(b){
+      return {name:b.name||'',blurb:b.blurb||'',photo:b.photo||'',ig:b.ig||'',book:b.book||''}; });
+    PAY=(s.pay||[]).slice(0,6);
+    TRACKS=(s.tracks||[]).slice(0,5).map(function(t){ return {name:t.name||'',url:t.url||''}; });
     el('fOn').checked=!!s.on;
     el('fTagline').value=s.tagline||'';
     el('fAbout').value=s.about||'';
@@ -602,6 +780,10 @@
     el('fPhone').value=DATA.phone||s.phone||'';
     el('fIg').value=s.ig||'';
     el('fTiktok').value=s.tiktok||'';
+    el('fWalkins').value=s.walkins||'';
+    el('fParking').value=s.parking||'';
+    el('fPolicy').value=s.policy||'';
+    el('fGift').value=s.gift||'';
     el('fMaps').value=s.maps||'';
     el('fPrices').checked=s.prices!==false;
     el('fReviews').checked=s.reviews!==false;
@@ -618,7 +800,7 @@
         touch(); };
     });
 
-    swatches(); tiles(); btnRows(); bind();
+    swatches(); tiles(); btnRows(); crewRows(); payBox(); trackRows(); bind();
   }
 
   function swatches(){
@@ -639,6 +821,7 @@
   function bind(){
     if(bound) return; bound=true;
     ['fOn','fTagline','fAbout','fAddress','fPhone','fIg','fTiktok','fMaps',
+     'fWalkins','fParking','fPolicy','fGift',
      'fPrices','fReviews','fSms','fTeam']
       .forEach(function(id){ el(id).addEventListener('input',touch); el(id).addEventListener('change',touch); });
   }
@@ -654,6 +837,13 @@
       ig: el('fIg').value.trim().replace(/^@/,''),
       tiktok: el('fTiktok').value.trim().replace(/^@/,''),
       maps: el('fMaps').value.trim(),
+      walkins: el('fWalkins').value,
+      parking: el('fParking').value.trim(),
+      policy: el('fPolicy').value.trim(),
+      gift: el('fGift').value.trim(),
+      pay: PAY.slice(0,6),
+      tracks: TRACKS.filter(function(t){ return t&&t.url; }).slice(0,5),
+      barbers: BARBERS.filter(function(b){ return b&&b.name; }).slice(0,8),
       hero: HERO, logo: LOGO,
       photos: PHOTOS.filter(Boolean).slice(0,6),
       buttons: BUTTONS.filter(function(b){ return b&&b.label&&b.url; }).slice(0,3),

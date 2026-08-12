@@ -116,6 +116,42 @@
   .team{display:flex;flex-wrap:wrap;gap:8px}
   .chip{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-weight:700;font-size:14px}
 
+  /* ── the chairs ───────────────────────────────────────────────────────
+     A barbershop is three or four personal businesses sharing a room, so
+     each barber gets a card with his own face and his own book button. */
+  .crew{display:grid;gap:10px}
+  .bb{display:flex;gap:13px;align-items:center;background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:13px 14px}
+  .bb .av{width:54px;height:54px;flex:0 0 54px;border-radius:50%;object-fit:cover;
+    background:color-mix(in srgb,var(--acc) 15%,transparent);display:flex;align-items:center;
+    justify-content:center;font-weight:900;font-size:20px;color:var(--acc)}
+  .bb .who{flex:1;min-width:0}
+  .bb .who b{display:block;font-size:16px}
+  .bb .who span{display:block;color:var(--muted);font-size:13px;margin-top:1px}
+  .bb .go{flex:0 0 auto;display:flex;gap:7px;align-items:center}
+  .bb .go a{display:flex;align-items:center;justify-content:center;text-decoration:none;
+    font-weight:800;font-size:13px;border-radius:999px;padding:9px 14px;
+    background:var(--acc);color:var(--acc-ink);white-space:nowrap}
+  .bb .go a.ic2{background:transparent;border:1px solid var(--line);color:var(--ink);padding:8px 10px}
+  .bb .go svg{width:16px;height:16px}
+  @media(max-width:420px){
+    .bb{flex-wrap:wrap}
+    .bb .go{width:100%;margin-top:2px}
+    .bb .go a{flex:1}
+  }
+
+  /* ── good to know: the practical answers, as tags not paragraphs ────── */
+  .know{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px}
+  .know .kr{display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line)}
+  .know .kr:first-child{border-top:0;padding-top:0}
+  .know .kr .ki{flex:0 0 20px;color:var(--acc);margin-top:1px}
+  .know .kr .ki svg{width:18px;height:18px}
+  .know .kr .kt{flex:1;font-size:14.5px}
+  .know .kr .kt b{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:3px}
+  .paytags{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+  .paytags span{font-size:12.5px;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:4px 11px}
+
   .gal{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .gal>*{border-radius:12px;height:150px;width:100%;background:var(--bg2);overflow:hidden}
   .gal img{object-fit:cover;height:150px}
@@ -175,6 +211,33 @@
   .stick a svg{width:18px;height:18px}
   .stick a.sec{flex:0 0 56px;background:transparent;color:var(--ink);border:1px solid var(--line);
     box-shadow:none;padding:12px 0}
+
+  /* ── the shop's music ─────────────────────────────────────────────────
+     Never autoplays. Browsers block it anyway, and a page that starts
+     making noise in a quiet room is a page somebody closes. It sits above
+     the book bar so it can never cover the thing that earns money. */
+  .music{position:fixed;left:16px;z-index:19;bottom:calc(16px + env(safe-area-inset-bottom));
+    transition:bottom .22s ease}
+  .music.up{bottom:calc(86px + env(safe-area-inset-bottom))}
+  .mbtn{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;
+    background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);
+    color:var(--ink);font:inherit;font-weight:800;font-size:13.5px;padding:10px 15px;cursor:pointer;
+    box-shadow:0 6px 20px rgba(0,0,0,.22)}
+  .mbtn .eq{display:flex;align-items:flex-end;gap:2px;height:13px}
+  .mbtn .eq i{width:3px;height:4px;border-radius:1px;background:var(--acc);display:block}
+  .music.on .mbtn .eq i{animation:eq .9s ease-in-out infinite}
+  .music.on .mbtn .eq i:nth-child(2){animation-delay:.15s}
+  .music.on .mbtn .eq i:nth-child(3){animation-delay:.3s}
+  @keyframes eq{0%,100%{height:4px}50%{height:13px}}
+  .mlist{position:absolute;bottom:calc(100% + 8px);left:0;min-width:210px;max-width:78vw;
+    background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;
+    box-shadow:0 14px 40px rgba(0,0,0,.35)}
+  .mlist button{display:block;width:100%;text-align:left;background:transparent;border:0;
+    border-bottom:1px solid var(--line);color:var(--ink);font:inherit;font-size:14px;font-weight:600;
+    padding:11px 14px;cursor:pointer}
+  .mlist button:last-child{border-bottom:0}
+  .mlist button.cur{color:var(--acc);font-weight:800}
+  @media(prefers-reduced-motion:reduce){ .music{transition:none} .music.on .mbtn .eq i{animation:none} }
 
   .state{max-width:520px;margin:0 auto;padding:70px 22px;text-align:center}
   .state .em{font-size:44px}
@@ -249,8 +312,15 @@
     ig: IC_.o+'<rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>'+IC_.c,
     tiktok: IC_.o+'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'+IC_.c,
     link: IC_.o+'<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'+IC_.c,
-    gift: IC_.o+'<polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>'+IC_.c
+    gift: IC_.o+'<polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>'+IC_.c,
+    car: IC_.o+'<path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/><path d="M5 12h14"/>'+IC_.c,
+    card: IC_.o+'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>'+IC_.c,
+    info: IC_.o+'<circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/>'+IC_.c
   };
+  /* what each walk-in setting says in the hero, in the customer's words */
+  var WALKIN={ welcome:'Walk-ins welcome', appointment:'By appointment', call:'Call ahead' };
+  var PAYLBL={ card:'Card', cash:'Cash', applepay:'Apple Pay', venmo:'Venmo',
+               cashapp:'Cash App', zelle:'Zelle' };
   function ico(n){ return '<span class="ico" aria-hidden="true">'+ICO[n]+'</span>'; }
 
   /* Everything below renders into innerHTML, so nothing reaches the page
@@ -411,6 +481,8 @@
       +(hasHours?'<span class="pill '+(op.open?'open':'')+'">'
         +(op.open?'Open now'+(op.close?' · until '+esc(pretty(op.close)):'')
                  :(esc(nextOpen(d.hours,tz))||'Closed right now'))+'</span>':'')
+      // the first question a new customer has, answered before he scrolls
+      +(WALKIN[s.walkins]?'<span class="pill">'+esc(WALKIN[s.walkins])+'</span>':'')
       +(nrev?'<span class="pill stars"><span style="color:var(--gold)">'+stars(d.rating)+'</span> '+esc(d.rating)+' ('+nrev+')</span>':'')
       +'</div></div></div>';
     h += url(s.hero)
@@ -453,6 +525,12 @@
       h+='<a class="act" href="https://tiktok.com/@'+encodeURIComponent(s.tiktok)+'" target="_blank" rel="noopener">'
         +ico('tiktok')+'<span>TikTok'
         +'<span class="sub">@'+esc(s.tiktok)+'</span></span><span class="arw" aria-hidden="true">→</span></a>';
+    }
+    // December is a third of some shops' year and there was nowhere to sell one
+    if(url(s.gift)){
+      h+='<a class="act" href="'+url(s.gift)+'" target="_blank" rel="noopener">'
+        +ico('gift')+'<span>Buy a gift card'
+        +'<span class="sub">Sorted in a minute</span></span><span class="arw" aria-hidden="true">→</span></a>';
     }
     // whatever else the shop sells — gift cards, product, a second location
     (Array.isArray(s.buttons)?s.buttons:[]).forEach(function(bn){
@@ -497,10 +575,51 @@
       h+='</div></section>';
     }
 
-    /* team */
-    if(Array.isArray(d.team)&&d.team.length){
+    /* the chairs. Rich cards when the shop has filled its barbers in;
+       otherwise fall back to the plain name chips from the booking staff
+       list, so a shop that never opens the editor still shows its people. */
+    var crew=(Array.isArray(s.barbers)?s.barbers:[]).filter(function(m){ return m&&m.name; });
+    if(crew.length){
+      h+='<section><h2>The chairs</h2><div class="crew">'
+        +crew.map(function(m){
+          // first letter of the NAME — strip anything tag-shaped first, or a
+          // name containing markup puts that markup's letter in the circle
+          var im=String(m.name).replace(/<[^>]*>/g,'').match(/[A-Za-z0-9]/);
+          var ini=(im?im[0]:'•').toUpperCase();
+          var bk=url(m.book) || (bookHref && !bookExt ? bookHref : '');
+          return '<div class="bb">'
+            +(url(m.photo)
+               ? '<img class="av" src="'+url(m.photo)+'" alt="'+esc(m.name)+'" loading="lazy">'
+               : '<div class="av" aria-hidden="true">'+esc(ini)+'</div>')
+            +'<div class="who"><b>'+esc(m.name)+'</b>'
+            +(m.blurb?'<span>'+esc(m.blurb)+'</span>':'')+'</div>'
+            +'<div class="go">'
+            +(m.ig?'<a class="ic2" href="https://instagram.com/'+encodeURIComponent(m.ig)
+                  +'" target="_blank" rel="noopener" aria-label="'+esc(m.name)+' on Instagram">'+ICO.ig+'</a>':'')
+            +(bk?'<a href="'+esc(bk)+'"'+(url(m.book)?' target="_blank" rel="noopener"':'')
+                +'>Book '+esc(String(m.name).trim().split(/\s+/)[0])+'</a>':'')
+            +'</div></div>';
+        }).join('')
+        +'</div></section>';
+    } else if(Array.isArray(d.team)&&d.team.length){
       h+='<section><h2>Barbers</h2><div class="team">'
         +d.team.map(function(m){ return '<span class="chip">'+esc(m&&m.name||'')+'</span>'; }).join('')
+        +'</div></section>';
+    }
+
+    /* good to know — parking, payment and the house rules. All three are
+       things a customer either asks at the door or gets wrong on arrival. */
+    var pays=(Array.isArray(s.pay)?s.pay:[]).filter(function(x){ return PAYLBL[x]; });
+    if(pays.length||s.parking||s.policy){
+      h+='<section><h2>Good to know</h2><div class="know">'
+        +(s.parking?'<div class="kr"><span class="ki" aria-hidden="true">'+ICO.car+'</span>'
+          +'<span class="kt"><b>Parking</b>'+esc(s.parking)+'</span></div>':'')
+        +(pays.length?'<div class="kr"><span class="ki" aria-hidden="true">'+ICO.card+'</span>'
+          +'<span class="kt"><b>Payment</b><span class="paytags">'
+          +pays.map(function(x){ return '<span>'+esc(PAYLBL[x])+'</span>'; }).join('')
+          +'</span></span></div>':'')
+        +(s.policy?'<div class="kr"><span class="ki" aria-hidden="true">'+ICO.info+'</span>'
+          +'<span class="kt"><b>Before you come</b>'+esc(s.policy)+'</span></div>':'')
         +'</div></section>';
     }
 
@@ -561,9 +680,83 @@
         +'</div>';
     }
 
+    /* the shop's playlist */
+    var trax=(Array.isArray(s.tracks)?s.tracks:[])
+      .map(function(t){ return { name:(t&&t.name)||'', url:url(t&&t.url) }; })
+      .filter(function(t){ return t.url; });
+    if(trax.length){
+      h+='<div class="music" id="music">'
+        +'<div class="mlist hide" id="mlist" role="menu">'
+        +trax.map(function(t,i){
+          return '<button type="button" data-i="'+i+'" role="menuitem">'
+            +esc(t.name||('Track '+(i+1)))+'</button>';
+        }).join('')
+        +'</div>'
+        +'<button class="mbtn" id="mbtn" aria-pressed="false">'
+        +'<span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>'
+        +'<span id="mtxt">Play the shop’s music</span></button>'
+        +'</div>';
+    }
+
     app.innerHTML=h;
     stick();
+    music(trax, !!bookHref);
     jsonld(d,s,name,tz,maps);
+  }
+
+  /* ── the shop's music ──────────────────────────────────────────────────
+     Deliberately silent until tapped: autoplay is blocked by every mobile
+     browser worth naming, and a barbershop page that starts playing in a
+     quiet office is a page that gets closed. One <audio> element reused
+     across tracks, so switching never stacks up players. */
+  function music(trax, hasBook){
+    var box=document.getElementById('music'); if(!box||!trax.length) return;
+    var btn=document.getElementById('mbtn'), list=document.getElementById('mlist'),
+        txt=document.getElementById('mtxt');
+    var au=new Audio(); au.preload='none'; au.loop=(trax.length===1);
+    var cur=-1;
+
+    function name(i){ return trax[i].name || ('Track ' + (i+1)); }
+    function label(){
+      txt.textContent = au.paused
+        ? (cur<0 ? 'Play the shop’s music' : 'Play ' + name(cur))
+        : name(cur);
+      box.classList.toggle('on', !au.paused);
+      btn.setAttribute('aria-pressed', String(!au.paused));
+      [].forEach.call(list.querySelectorAll('button'), function(b,i){
+        b.classList.toggle('cur', i===cur);
+      });
+    }
+    function play(i){
+      if(i!==cur){ cur=i; au.src=trax[i].url; }
+      au.play().then(label).catch(function(){
+        // a blocked or broken file must not leave a dead button
+        txt.textContent='Could not play that one'; box.classList.remove('on');
+      });
+    }
+    btn.addEventListener('click', function(){
+      if(trax.length>1 && au.paused && cur<0){ list.classList.toggle('hide'); return; }
+      if(au.paused) play(cur<0?0:cur); else { au.pause(); label(); }
+    });
+    list.addEventListener('click', function(ev){
+      var b=ev.target.closest('button[data-i]'); if(!b) return;
+      list.classList.add('hide');
+      play(parseInt(b.getAttribute('data-i'),10));
+    });
+    // roll into the next track so a shop with five gets a playlist, not a loop
+    au.addEventListener('ended', function(){
+      if(trax.length>1){ play((cur+1)%trax.length); } else label();
+    });
+    au.addEventListener('pause', label);
+    // never sit on top of the book bar once it appears
+    if(hasBook){
+      var bar=document.getElementById('stick');
+      if(bar && window.MutationObserver){
+        new MutationObserver(function(){ box.classList.toggle('up', bar.classList.contains('show')); })
+          .observe(bar,{attributes:true,attributeFilter:['class']});
+      }
+    }
+    label();
   }
 
   /* Show the sticky bar only once the hero's own book button has scrolled
@@ -617,6 +810,19 @@
     if(s.ig) same.push('https://instagram.com/'+s.ig);
     if(s.tiktok) same.push('https://tiktok.com/@'+s.tiktok);
     if(same.length) o.sameAs=same;
+    // the named chairs, so the shop's people line up with its Google listing
+    var crew=(Array.isArray(s.barbers)?s.barbers:[]).filter(function(m){ return m&&m.name; });
+    if(crew.length){
+      o.employee=crew.map(function(m){
+        var p={'@type':'Person',name:m.name};
+        if(m.blurb) p.jobTitle=m.blurb;
+        if(/^https?:\/\//i.test(String(m.photo||''))) p.image=m.photo;
+        if(m.ig) p.sameAs=['https://instagram.com/'+m.ig];
+        return p;
+      });
+    }
+    var pays=(Array.isArray(s.pay)?s.pay:[]).filter(function(x){ return PAYLBL[x]; });
+    if(pays.length) o.paymentAccepted=pays.map(function(x){ return PAYLBL[x]; }).join(', ');
     if(Array.isArray(d.services)&&d.services.length){
       o.makesOffer=d.services.map(function(x){
         return {'@type':'Offer',itemOffered:{'@type':'Service',name:(x&&x.name)||'Service'}};

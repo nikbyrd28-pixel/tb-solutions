@@ -60,6 +60,27 @@
 -- accent, so the page reads as designed rather than unfinished. Those are
 -- inline SVG in /shop/index.html, not stock photography: nothing to license,
 -- and another shop's interior on a barber's own page would be a lie.
+--
+-- ── v3: the things a barbershop page was still missing ──────────────────────
+-- Everything below came from the same question — what does a customer ring the
+-- shop up to ask, that the page should have answered?
+--   · BARBERS (`barbers`). A shop is not one person. Each chair gets a name, a
+--     line about what they're good at, a photo and optionally their own booking
+--     link, so a regular can go straight to their guy instead of the shop's
+--     general queue. Name is the only required field.
+--   · WALK-INS (`walkins`). The single most-asked question, and almost no shop
+--     website answers it. Three states, rendered as a pill beside the hours.
+--   · PAYMENT (`pay`). Fixed vocabulary. "Do you take Apple Pay" is the second
+--     most-asked question and a card-only shop losing a walk-in over it is a
+--     real, avoidable loss.
+--   · PARKING and POLICY. Where to leave the car, and what happens if you turn
+--     up twenty minutes late. Both free text, both length-capped.
+--   · GIFT (`gift`). A link, rendered as its own action row. December money.
+--   · MUSIC (`tracks`). Up to five mp3s the shop uploads itself, played by a
+--     small pinned button. It NEVER autoplays: every mobile browser blocks it,
+--     and a page that starts playing in a quiet office is a page that gets
+--     closed. This is licensing-neutral by design — Loop supplies no music,
+--     only a player for whatever the shop already has the right to play.
 -- ============================================================================
 
 alter table public.reward_settings add column if not exists site jsonb;
@@ -69,8 +90,13 @@ alter table public.reward_settings add column if not exists site jsonb;
 --
 -- A DEDICATED bucket rather than the existing `uploads`: that one is wide open
 -- to anon with no size or type limit, and several other pages depend on it, so
--- tightening it in place would break them. This one takes images only and caps
--- a file at 6 MB, which is meaningfully narrower than what already exists.
+-- tightening it in place would break them. This one takes images and audio
+-- only, which is meaningfully narrower than what already exists.
+--
+-- The hard cap here is 12 MB because a three-minute mp3 does not fit in 6. The
+-- EDITOR still refuses an image over 6 MB before it leaves the phone: a bucket
+-- limit is a backstop, and a barber who waits out a 9 MB upload only to see it
+-- rejected by the server has already had a bad first day.
 --
 -- Public read comes from the bucket's own `public` flag (Supabase serves
 -- /object/public/<bucket>/... without consulting RLS), so no SELECT policy is
@@ -83,8 +109,9 @@ alter table public.reward_settings add column if not exists site jsonb;
 -- leaves the object orphaned — cheap, and the safe direction to fail.
 -- ----------------------------------------------------------------------------
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-values ('shop-sites','shop-sites', true, 6291456,
-        array['image/jpeg','image/png','image/webp','image/gif','image/avif'])
+values ('shop-sites','shop-sites', true, 12582912,
+        array['image/jpeg','image/png','image/webp','image/gif','image/avif',
+              'audio/mpeg','audio/mp3','audio/mp4','audio/x-m4a','audio/aac'])
 on conflict (id) do update
   set public = excluded.public,
       file_size_limit = excluded.file_size_limit,
@@ -106,6 +133,9 @@ declare
   out_j jsonb := '{}'::jsonb;
   ph    jsonb := '[]'::jsonb;
   bt    jsonb := '[]'::jsonb;
+  bb    jsonb := '[]'::jsonb;
+  pay   jsonb := '[]'::jsonb;
+  tr    jsonb := '[]'::jsonb;
   u     text;
   k     text;
   lbl   text;
@@ -149,7 +179,7 @@ begin
 
   -- a URL is kept only if it is plainly http(s); javascript:, data:, vbscript:,
   -- a protocol-relative //evil.com and a bare word are all dropped
-  foreach k in array array['maps','hero','logo'] loop
+  foreach k in array array['maps','hero','logo','gift'] loop
     u := btrim(coalesce(p->>k, ''));
     if u !~* '^https?://[^\s]' then u := ''; end if;
     out_j := out_j || jsonb_build_object(k, left(u, 500));
@@ -184,6 +214,81 @@ begin
     end loop;
   end if;
   out_j := out_j || jsonb_build_object('buttons', bt);
+
+  -- ── the chairs ────────────────────────────────────────────────────────
+  -- Up to 8 barbers. The NAME is the only required part: a shop that types
+  -- five names and no photos still gets a crew section, and each bad field
+  -- is dropped on its own rather than taking the whole barber with it — a
+  -- mistyped booking link should not make somebody vanish off the page.
+  n := 0;
+  if jsonb_typeof(coalesce(p->'barbers','null'::jsonb)) = 'array' then
+    for e in select jsonb_array_elements(p->'barbers') loop
+      exit when n >= 8;
+      if jsonb_typeof(e) = 'object' then
+        lbl := left(btrim(coalesce(e->>'name','')), 40);
+        if lbl <> '' then
+          bb := bb || jsonb_build_object(
+            'name',  lbl,
+            'blurb', left(btrim(coalesce(e->>'blurb','')), 80),
+            'photo', (select case when x ~* '^https?://[^\s]' then left(x,500) else '' end
+                      from (select btrim(coalesce(e->>'photo','')) as x) q),
+            'ig',    left(regexp_replace(coalesce(e->>'ig',''), '[^A-Za-z0-9._]', '', 'g'), 40),
+            'book',  (select case when x ~* '^https?://[^\s]' then left(x,500) else '' end
+                      from (select btrim(coalesce(e->>'book','')) as x) q));
+          n := n + 1;
+        end if;
+      end if;
+    end loop;
+  end if;
+  out_j := out_j || jsonb_build_object('barbers', bb);
+
+  -- ── the shop's music ──────────────────────────────────────────────────
+  -- Up to five tracks the shop uploaded itself. A track with no usable URL
+  -- is dropped entirely; a track with no title falls back to a numbered
+  -- name at render time rather than showing an empty row in the player.
+  -- Nothing here starts on its own — see the player in /shop/index.html.
+  n := 0;
+  if jsonb_typeof(coalesce(p->'tracks','null'::jsonb)) = 'array' then
+    for e in select jsonb_array_elements(p->'tracks') loop
+      exit when n >= 5;
+      if jsonb_typeof(e) = 'object' then
+        u := btrim(coalesce(e->>'url',''));
+        if u ~* '^https?://[^\s]' then
+          tr := tr || jsonb_build_object(
+            'name', left(btrim(coalesce(e->>'name','')), 60),
+            'url',  left(u, 500));
+          n := n + 1;
+        end if;
+      end if;
+    end loop;
+  end if;
+  out_j := out_j || jsonb_build_object('tracks', tr);
+
+  -- ── how the shop runs ─────────────────────────────────────────────────
+  -- The three questions a customer actually rings up to ask. A fixed
+  -- vocabulary rather than free text, so the page can render each one as a
+  -- pill instead of printing whatever was typed into a hero.
+  out_j := out_j || jsonb_build_object('walkins',
+    case lower(btrim(coalesce(p->>'walkins','')))
+      when 'welcome' then 'welcome'
+      when 'appointment' then 'appointment'
+      when 'call' then 'call'
+      else '' end);
+
+  -- payment methods: a whitelist, deduped, order preserved as sent
+  if jsonb_typeof(coalesce(p->'pay','null'::jsonb)) = 'array' then
+    for u in select jsonb_array_elements_text(p->'pay') loop
+      u := lower(btrim(coalesce(u,'')));
+      if u in ('card','cash','applepay','venmo','cashapp','zelle')
+         and not (pay @> to_jsonb(u)) then
+        pay := pay || to_jsonb(u);
+      end if;
+    end loop;
+  end if;
+  out_j := out_j || jsonb_build_object('pay', pay);
+
+  out_j := out_j || jsonb_build_object('parking', left(btrim(coalesce(p->>'parking','')), 120));
+  out_j := out_j || jsonb_build_object('policy',  left(btrim(coalesce(p->>'policy','')),  400));
 
   out_j := out_j || jsonb_build_object('team',
     lower(coalesce(p->>'team','')) in ('true','t','1','yes','on'));
