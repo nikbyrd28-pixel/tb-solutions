@@ -72,10 +72,26 @@ function everyIndexHtml(dir, out = []) {
 const SKIP = [/^clients\//, /^voomlux\//];
 let retagged = 0;
 
+// A product owns a SECTION, not just one URL. /guides/ in `owns` has to claim
+// /guides/slow-week-playbook/ too, or every article canonical falls back to
+// the apex and the two hosts compete — the exact failure this file exists to
+// stop. Longest prefix wins so a more specific entry can override a broader one.
+function ownerOf(path) {
+  if (home.has(path)) return home.get(path);
+  let best = null, bestLen = -1;
+  for (const [owned, url] of home) {
+    if (owned.endsWith('/') && path.startsWith(owned) && owned.length > bestLen) {
+      best = url.slice(0, url.length - owned.length) + path;   // swap host, keep path
+      bestLen = owned.length;
+    }
+  }
+  return best;
+}
+
 for (const rel of everyIndexHtml('')) {
   if (SKIP.some(re => re.test(rel))) continue;
   const path = '/' + rel.replace(/index\.html$/, '');
-  const want = home.get(path) || 'https://' + APEX + path;
+  const want = ownerOf(path) || 'https://' + APEX + path;
   let src = readFileSync(join(ROOT, rel), 'utf8');
   const before = src;
 
@@ -125,7 +141,18 @@ for (const p of live) {
   put('_hosts/' + p.id + '/robots.txt',
     'User-agent: *\nAllow: /\n' + noIndex.map(x => 'Disallow: ' + x).join('\n')
     + '\nSitemap: https://' + d + '/sitemap.xml\n');
-  put('_hosts/' + p.id + '/sitemap.xml', sitemapDoc(p.owns.map(path => home.get(path))));
+  // every real page under an owned section, not just the section root — an
+  // article nobody links to from the sitemap is an article Google finds late
+  const urls = [];
+  for (const rel of everyIndexHtml('')) {
+    if (SKIP.some(re => re.test(rel))) continue;
+    const path = '/' + rel.replace(/index\.html$/, '');
+    if ((cfg._sitemap_exclude || []).includes(path)) continue;
+    if (/name="robots"\s+content="[^"]*noindex/i.test(readFileSync(join(ROOT, rel), 'utf8'))) continue;
+    const owner = ownerOf(path);
+    if (owner && owner.startsWith('https://' + d + '/')) urls.push(owner);
+  }
+  put('_hosts/' + p.id + '/sitemap.xml', sitemapDoc(urls));
 }
 
 {
