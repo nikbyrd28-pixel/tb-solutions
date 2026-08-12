@@ -507,7 +507,7 @@ function renderDue(d){
     return '<div class="stp'+(r.nudged?' on':'')+'">'
       +'<span class="tick">'+(r.nudged?'✓':'')+'</span>'
       +'<span class="txt"><b>'+esc(r.name||'Member')+'</b>'
-      +'<span>Last in '+esc(when)+esc(rhythm)
+      +'<span>'+esc(when)+esc(rhythm)
       +(r.barber?' · '+esc(r.barber):'')
       +(r.nudged?' · texted already':'')+'</span></span>'
       +'<a class="btn ghost go" data-code="'+esc(r.code||'')+'" href="sms:'+esc(String(r.phone||'').replace(/[^0-9+]/g,''))
