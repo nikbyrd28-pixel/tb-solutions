@@ -240,6 +240,21 @@
   .mlist.hide{display:none}
   @media(prefers-reduced-motion:reduce){ .music{transition:none} .music.on .mbtn .eq i{animation:none} }
 
+  /* ── the claim bar ────────────────────────────────────────────────────
+     Shown only with ?claim=1, which is the link Nick hands a barber. The
+     pitch is not a page about the product — it is the barber's OWN shop,
+     already built, on his own phone. He scrolls his site first and reads
+     one line at the end. Nothing here touches the page a customer sees. */
+  .claim{position:fixed;left:0;right:0;bottom:0;z-index:30;
+    padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+    background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(14px);
+    border-top:1px solid var(--line);display:flex;align-items:center;gap:12px}
+  .claim .t{flex:1;min-width:0;font-size:13.5px;line-height:1.35;color:var(--muted)}
+  .claim .t b{display:block;color:var(--ink);font-size:15px;font-weight:800}
+  .claim a{flex:0 0 auto;background:var(--acc);color:var(--acc-ink);text-decoration:none;
+    font-weight:800;font-size:14.5px;border-radius:12px;padding:12px 16px;white-space:nowrap}
+  .claim a:active{transform:scale(.97)}
+
   .state{max-width:520px;margin:0 auto;padding:70px 22px;text-align:center}
   .state .em{font-size:44px}
   .state h1{font-size:22px;margin:12px 0 8px}
@@ -697,6 +712,17 @@
         +'<span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>'
         +'<span id="mtxt">Play the shop’s music</span></button>'
         +'</div>';
+    }
+
+    /* The pitch, for the barber only. ?claim=1 is the link Nick hands over —
+       the shop scrolls its OWN site first and reads one line at the end. It
+       replaces the customer book bar rather than stacking on it, because two
+       fixed bars on a phone is one too many. */
+    if(q.get('claim')==='1'){
+      h+='<div class="claim"><span class="t"><b>This is '+esc(name)+'.</b>'
+        +'Built from your Google listing. Yours to change or delete.</span>'
+        +'<a href="/shop/edit/?c='+encodeURIComponent(d.client)+'">Make it mine</a></div>'
+        +'<style>.stick{display:none}</style>';
     }
 
     app.innerHTML=h;
