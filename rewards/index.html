@@ -251,13 +251,17 @@
     <h1>Join free, earn every visit ⭐</h1>
     <p class="lead" id="joinLead">Get a point every visit — hit the goal and your reward is on us.</p>
     <label>Your name</label><input id="jName" autocomplete="name">
-    <label>Phone number</label><input id="jPhone" type="tel" autocomplete="tel" placeholder="Used to find your card">
+    <label>Phone number <span style="text-transform:none;letter-spacing:0;font-weight:400;opacity:.7">— optional</span></label>
+    <input id="jPhone" type="tel" autocomplete="tel" placeholder="Finds your card, and gets you texts">
+    <label>Email <span style="text-transform:none;letter-spacing:0;font-weight:400;opacity:.7">— optional</span></label>
+    <input id="jEmail" type="email" autocomplete="email" inputmode="email" placeholder="Or use this to find your card">
+    <p class="muted" style="margin:-2px 0 12px;font-size:12px">Give us one of the two — that is how we find your card next time.</p>
     <label>Birthday <span style="text-transform:none;letter-spacing:0;font-weight:400;opacity:.7">— optional, we send a treat</span></label>
     <input id="jBday" type="tel" inputmode="numeric" maxlength="5" placeholder="MM/DD">
     <button class="btn" onclick="join()">Join the club</button>
     <div class="err hide" id="jErr"></div>
-    <p class="muted" style="margin-top:10px;font-size:12px;line-height:1.5">By joining you agree to receive appointment &amp; rewards text messages at the number provided. Consent is not a condition of purchase. Msg &amp; data rates may apply. Msg frequency varies. Reply STOP to cancel, HELP for help. <a href="/sms-terms/" style="color:var(--muted)">SMS Terms</a> · <a href="/privacy/" style="color:var(--muted)">Privacy</a></p>
-    <p class="muted" style="margin-top:8px">Already a member? Same button — your phone number finds your card.</p>
+    <p class="muted" style="margin-top:10px;font-size:12px;line-height:1.5">If you give a phone number, you agree to receive appointment &amp; rewards text messages at it. Consent is not a condition of purchase. Msg &amp; data rates may apply. Msg frequency varies. Reply STOP to cancel, HELP for help. <a href="/sms-terms/" style="color:var(--muted)">SMS Terms</a> · <a href="/privacy/" style="color:var(--muted)">Privacy</a></p>
+    <p class="muted" style="margin-top:8px">Already a member? Same button — whichever one you gave us finds your card.</p>
   </div>
 
   <!-- LOADING -->
@@ -1235,8 +1239,18 @@ function join(){
   var bday=null, bm=(el('jBday')?el('jBday').value:'').match(/^\s*(\d{1,2})\s*[\/\-\.]?\s*(\d{1,2})\s*$/);
   if(bm){ var mm=+bm[1], dd=+bm[2];
     if(mm>=1&&mm<=12&&dd>=1&&dd<=31) bday='2000-'+('0'+mm).slice(-2)+'-'+('0'+dd).slice(-2); }
-  // The form above states plainly that joining means agreeing to texts, so record that.
-  rpc('join_rewards',{p_client:slug,p_name:el('jName').value.trim(),p_phone:el('jPhone').value.trim(),p_ref:refCode||null,p_birthday:bday,p_sms_consent:true}).then(function(m){
+  // Either contact detail is enough, but not neither — a card nobody can look
+  // up again is worse than one more field. The server enforces this too; this
+  // check just saves a round trip and points at the right box.
+  var ph=el('jPhone').value.trim(), em=(el('jEmail')?el('jEmail').value:'').trim();
+  if(!ph && !em){
+    el('jErr').textContent='Add a phone number or an email so we can find your card.';
+    el('jErr').classList.remove('hide'); el('jPhone').focus(); return;
+  }
+  // Consent is about a NUMBER. With no phone given there is nothing to consent
+  // to, and recording one anyway would be a false record.
+  rpc('join_rewards',{p_client:slug,p_name:el('jName').value.trim(),p_phone:ph||null,
+    p_email:em||null,p_ref:refCode||null,p_birthday:bday,p_sms_consent:!!ph}).then(function(m){
     if(m.error){ el('jErr').textContent=m.error; el('jErr').classList.remove('hide'); return; }
     rpc('get_member',{p_code:m.code}).then(function(full){ showCard(full.error?m:full); });
   });
