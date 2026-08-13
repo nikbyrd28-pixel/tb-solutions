@@ -15,7 +15,7 @@
     "",
     "WHY A GENERATOR AND NOT 40 HAND-EDITS: every product page hardcodes",
     "https://tbsol.net/... in its canonical and og:url. Move a product to its own",
-    "domain without updating those and Google keeps indexing the tbsol.net copy —",
+    "domain without updating those and Google keeps indexing the tbsol.net copy \u2014",
     "the new domain never ranks and the two compete with each other. That is the",
     "one mistake that makes this whole exercise backfire, and it is exactly the",
     "kind of thing that rots when done by hand across dozens of files.",
@@ -23,13 +23,13 @@
     "ONE CODEBASE, MANY DOMAINS. Nothing here forks the repo or the hosting",
     "project. Every domain is served by the same deploy and the same files; only",
     "what sits at `/` changes per host. A fix to booking or rewards lands on all",
-    "of them at once — which is the opposite of what happens if each product",
+    "of them at once \u2014 which is the opposite of what happens if each product",
     "becomes its own copy of the site."
   ],
   "_sitemap_exclude": [
     "/shop/"
   ],
-  "_sitemap_exclude_why": "/shop/ with no ?c= says \"no shop selected\". The useful URLs are /shop/?c=<slug>, one per shop, and those belong in each shop's own Google listing — not in TB's sitemap.",
+  "_sitemap_exclude_why": "/shop/ with no ?c= says \"no shop selected\". The useful URLs are /shop/?c=<slug>, one per shop, and those belong in each shop's own Google listing \u2014 not in TB's sitemap.",
   "apex": "tbsol.net",
   "products": [
     {
@@ -37,9 +37,10 @@
       "name": "Loop",
       "buyer": "barbershop owners",
       "domain": "www.thebarberloop.com",
-      "home": "/barbers/",
-      "status": "LIVE — bought 2026-08-11. www is the primary host in Vercel (the apex 308s to it), so the domain is recorded in its www form and canonicals name it that way.",
+      "home": "/build/",
+      "status": "LIVE \u2014 bought 2026-08-11. www is the primary host in Vercel (the apex 308s to it), so the domain is recorded in its www form and canonicals name it that way. Home is /build/ \u2014 the play-to-build funnel \u2014 not /barbers/; a barber between cuts reads a landing page, but he will play something. /barbers/ stays as the long page for anyone who wants the detail.",
       "owns": [
+        "/build/",
         "/barbers/",
         "/loyalty/",
         "/demo/",
@@ -62,12 +63,12 @@
         "/creatives/",
         "/studio/"
       ],
-      "_wall_off_why": "Nick: the barber domain should be barber content only. These are TB's other public products/pages — on thebarberloop.com they bounce to the Loop home. NOT walled: /rewards/ /kit/ /booking/ /ambassadors/ /crm/ /center/ /affiliate/ (barber-facing tools linked from the landing page and prebuild), and /privacy/ /terms/ /sms-terms/ (legal must stay reachable on every host)."
+      "_wall_off_why": "Nick: the barber domain should be barber content only. These are TB's other public products/pages \u2014 on thebarberloop.com they bounce to the Loop home. NOT walled: /rewards/ /kit/ /booking/ /ambassadors/ /crm/ /center/ /affiliate/ (barber-facing tools linked from the landing page and prebuild), and /privacy/ /terms/ /sms-terms/ (legal must stay reachable on every host)."
     },
     {
       "id": "university",
       "name": "TB University",
-      "buyer": "people who want to start a marketing business — a different audience to Loop",
+      "buyer": "people who want to start a marketing business \u2014 a different audience to Loop",
       "domain": "",
       "status": "WAIT. Buy when the course is actually for sale.",
       "home": "/university/",
@@ -78,7 +79,7 @@
     {
       "id": "studio",
       "name": "TB Studio",
-      "buyer": "small businesses wanting free content — a lead magnet, not a paid product",
+      "buyer": "small businesses wanting free content \u2014 a lead magnet, not a paid product",
       "domain": "",
       "status": "WAIT. Only worth a domain if it gets pushed as a standalone free tool.",
       "home": "/content-studio/",
@@ -100,16 +101,16 @@
     }
   ],
   "_clients": {
-    "_why": "Client brands. They own their own domains — Nick does not buy these, and their canonical tags must never be pointed at tbsol.net or their own SEO gets absorbed into his.",
+    "_why": "Client brands. They own their own domains \u2014 Nick does not buy these, and their canonical tags must never be pointed at tbsol.net or their own SEO gets absorbed into his.",
     "hubsandbabydoll": {
       "domain": "hubsandbabydoll.com",
       "owned_by": "the client",
       "hosted_here": false,
       "depends_on_tbsol": [
-        "/capture/?c=hubsandbabydoll  — their inquiry form. Served from tbsol.net.",
+        "/capture/?c=hubsandbabydoll  \u2014 their inquiry form. Served from tbsol.net.",
         "?c=hubby and ?c=babydoll resolve to the same client slug."
       ],
-      "_risk": "Their lead form lives on Nick's hosting. When tbsol.net went dark on 2026-08-09/10, their inquiries had nowhere to land. Leads submitted during an outage are not queued — they are lost. Worth either moving the form onto their own domain or accepting that their lead flow is only as reliable as this account's billing."
+      "_risk": "Their lead form lives on Nick's hosting. When tbsol.net went dark on 2026-08-09/10, their inquiries had nowhere to land. Leads submitted during an outage are not queued \u2014 they are lost. Worth either moving the form onto their own domain or accepting that their lead flow is only as reliable as this account's billing."
     },
     "voomlux": {
       "domain": "",
@@ -120,13 +121,13 @@
   },
   "_stays_on_the_apex": {
     "_why": "Not products with their own buyer. A domain each costs money every year and splits what little SEO exists across sites nobody searches for.",
-    "/booking/": "Chair. The Sites tab already lists it as parked — it duplicates the booking inside Loop.",
+    "/booking/": "Chair. The Sites tab already lists it as parked \u2014 it duplicates the booking inside Loop.",
     "/ambassadors/": "Parked, and duplicates Loop's refer-a-friend.",
     "/crm/": "Part of Command, not a separate thing to sell.",
     "/learn/": "Local SEO content for TB Solutions itself. It should stay on the apex where it already ranks.",
     "/privacy/": "One legal entity, one privacy policy. Reachable from every domain at the apex path.",
     "/terms/": "Same.",
-    "/sms-terms/": "Same — and Twilio's campaign registration points at this exact URL. Moving it breaks that registration."
+    "/sms-terms/": "Same \u2014 and Twilio's campaign registration points at this exact URL. Moving it breaks that registration."
   },
   "_never_public": [
     "/hq/",
