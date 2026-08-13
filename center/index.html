@@ -254,6 +254,7 @@
   </div>
 </div>
 
+<script src="/loop-auth.js"></script>
 <script>
 (function(){
   "use strict";
@@ -284,11 +285,11 @@
       b.disabled=false; b.textContent='Open my command center →';
       if(!d||d.ok===false){ el('signErr').textContent=(d&&d.error)||'Could not sign in — check your code and PIN.'; return; }
       CODE=code; PIN=pin; DASH=d; BIZ=d.biz_name||cap(code);
-      try{ localStorage.setItem('cc_auth',JSON.stringify({c:code,p:pin})); }catch(e){}
+      LoopAuth.set(code,pin);
       enterApp();
     }).catch(function(){ b.disabled=false; b.textContent='Open my command center →'; el('signErr').textContent='Network error — try again.'; });
   };
-  window.signOut=function(){ try{ localStorage.removeItem('cc_auth'); }catch(e){} location.reload(); };
+  window.signOut=function(){ LoopAuth.clear(); location.reload(); };
   el('inPin').addEventListener('keydown',function(e){ if(e.key==='Enter') signIn(); });
 
   function enterApp(){
@@ -296,7 +297,8 @@
     el('bizName').textContent=BIZ; el('bizSub').textContent='Reward: '+(DASH.reward_text||'a reward')+' at '+(DASH.reward_at||5)+' pts';
     renderOverview(); buildShare(); buildTools();
   }
-  if(!autoTried){ autoTried=true; try{ var a=JSON.parse(localStorage.getItem('cc_auth')||'null'); if(a&&a.c&&a.p){ el('inCode').value=a.c; el('inPin').value=a.p; signIn(); } }catch(e){} }
+  // one sign-in for every Loop tool — see /loop-auth.js
+  if(!autoTried){ autoTried=true; var a=LoopAuth.get(); if(a){ el('inCode').value=a.c; el('inPin').value=a.p; signIn(); } }
 
   var loaded={};
   window.showTab=function(t){

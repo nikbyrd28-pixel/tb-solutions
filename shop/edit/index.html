@@ -433,6 +433,7 @@
 
 <input type="file" id="picker" accept="image/*" class="hide">
 
+<script src="/loop-auth.js"></script>
 <script>
 (function(){
   "use strict";
@@ -499,7 +500,7 @@
       if(r.message||r.hint){ gsay(String(r.message||r.hint),'err'); return; }
       if(!r.ok){ gsay(r.error||'Wrong PIN.','err'); return; }
       CODE=c; PIN=p; DATA=r.data;
-      try{ localStorage.setItem('tb_shop_code',c); }catch(e){}   // code only, never the PIN
+      LoopAuth.set(c,p);   // one sign-in for every Loop tool — see /loop-auth.js
       gsay('');
       el('gate').classList.add('hide');
       el('editor').classList.remove('hide');
@@ -512,7 +513,14 @@
     });
   };
   el('inPin').addEventListener('keydown',function(e){ if(e.key==='Enter') el('signBtn').click(); });
-  try{ el('inCode').value=localStorage.getItem('tb_shop_code')||''; }catch(e){}
+  // already signed in somewhere else in Loop? then don't ask again
+  (function(){
+    var a=LoopAuth.get();
+    if(!a){ try{ el('inCode').value=localStorage.getItem('tb_shop_code')||''; }catch(e){} return; }
+    el('inCode').value=a.c; el('inPin').value=a.p;
+    gsay('Opening your site…');
+    setTimeout(function(){ el('signBtn').click(); }, 60);
+  })();
 
   function tools(){
     var t=[

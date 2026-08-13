@@ -146,7 +146,7 @@
       <div><h1 id="bizName">Your program</h1><div class="muted" id="bizSub"></div></div>
       <div class="links">
         <button class="btn ghost" onclick="load(true)">↻ Refresh</button>
-        <button class="btn ghost" onclick="try{localStorage.removeItem('loop_owner')}catch(e){};location.reload()">Log out</button>
+        <button class="btn ghost" onclick="LoopAuth.clear();location.reload()">Log out</button>
       </div>
     </div>
 
@@ -377,6 +377,7 @@
   </div>
 </div>
 
+<script src="/loop-auth.js"></script>
 <script>
 var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
 var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
@@ -387,7 +388,7 @@ if(q.get('c')) el('code').value=q.get('c').toLowerCase();
 el('pin').addEventListener('keydown',function(e){ if(e.key==='Enter') load(); });
 (function(){
   var qc=(new URLSearchParams(location.search).get('c')||'').toLowerCase().replace(/[^a-z0-9]/g,'');
-  var sv=null; try{ sv=JSON.parse(localStorage.getItem('loop_owner')||'null'); }catch(e){}
+  var sv=LoopAuth.get();   // one sign-in for every Loop tool — see /loop-auth.js
   if(qc) el('code').value=qc;
   if(sv && sv.c && sv.p && (!qc || qc===sv.c)){
     el('code').value=sv.c; el('pin').value=sv.p;
@@ -416,7 +417,7 @@ function load(isRefresh){
     }); })
   .then(function(d){
     if(!d || d.ok===false){ showErr((d&&d.error)||'Could not sign in.'); btn.disabled=false; btn.textContent='Open my dashboard →'; return; }
-    CODE=code; PIN=pin; try{ localStorage.setItem('loop_owner', JSON.stringify({c:code,p:pin})); }catch(e){} render(d);
+    CODE=code; PIN=pin; LoopAuth.set(code,pin); render(d);
   })
   .catch(function(){ showErr('Network error — try again.'); btn.disabled=false; btn.textContent='Open my dashboard →'; });
 }

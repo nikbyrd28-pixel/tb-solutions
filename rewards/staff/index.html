@@ -111,6 +111,7 @@
   <p class="muted center">Powered by <a href="https://tbsol.net" style="color:var(--acc);text-decoration:none;font-weight:700">TB Solutions</a></p>
 </div>
 
+<script src="/loop-auth.js"></script>
 <script>
 var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
 var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
@@ -153,11 +154,12 @@ function boot(){
   var c=cfg();
   if(c&&c.slug&&c.pin){ el('setupCard').classList.add('hide'); el('console').classList.remove('hide'); el('bizTag').textContent=c.slug+' · change';  if(c.fast) el('fastMode').checked=true; showScans(); return; }
   // owner already signed in on this device → prefill so setup is one tap
-  try{
-    var ow=JSON.parse(localStorage.getItem('loop_owner')||'null');
-    if(ow && ow.c && ow.p){ el('sSlug').value=ow.c; el('sPin').value=ow.p;
-      el('sErr').style.color='var(--muted)'; el('sErr').textContent='Found your owner sign-in — tap Connect to use this device as the scanner.'; el('sErr').classList.remove('hide'); }
-  }catch(e){}
+  // rw_staff stays the scanner's OWN device config — it carries fast mode and
+  // this tablet may not be the owner's phone — but the credential itself comes
+  // from the one shared store. See /loop-auth.js.
+  var ow=LoopAuth.get();
+  if(ow){ el('sSlug').value=ow.c; el('sPin').value=ow.p;
+    el('sErr').style.color='var(--muted)'; el('sErr').textContent='Found your owner sign-in — tap Connect to use this device as the scanner.'; el('sErr').classList.remove('hide'); }
 }
 function saveSetup(){
   var slug=(el('sSlug').value||'').toLowerCase().replace(/[^a-z0-9]/g,''), pin=el('sPin').value.trim();
@@ -167,6 +169,7 @@ function saveSetup(){
   rpc('loyalty_owner_dashboard',{p_client:slug,p_pin:pin}).then(function(d){
     if(!d || d.ok===false || d.error){ el('sErr').style.color=''; el('sErr').textContent='That business code + PIN don’t match — double-check with the owner.'; el('sErr').classList.remove('hide'); return; }
     localStorage.setItem('rw_staff',JSON.stringify({slug:slug,pin:pin}));
+    LoopAuth.set(slug,pin);   // signing in here signs you in everywhere
     location.reload();
   }).catch(function(){ el('sErr').style.color=''; el('sErr').textContent='Network hiccup — try again in a moment.'; el('sErr').classList.remove('hide'); });
 }

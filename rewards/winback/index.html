@@ -76,6 +76,7 @@
     <p class="muted" style="text-align:center">Tip: a friendly text once a month brings back more revenue than any ad. Powered by TB Solutions.</p>
   </div>
 </div>
+<script src="/loop-auth.js"></script>
 <script>
 (function(){
   "use strict";
@@ -103,7 +104,7 @@
       return { ok:false, error:(j&&(j.message||j.error))||('Service unavailable ('+r.status+')') };
     }); }).then(function(d){
       if(!d || d.ok===false){ showErr((d&&d.error)||'Could not sign in.'); btn.disabled=false; btn.textContent='Show me who to win back →'; return; }
-      CODE=code; render(d);
+      CODE=code; LoopAuth.set(code,pin); render(d);
     }).catch(function(){ showErr('Network error — try again.'); btn.disabled=false; btn.textContent='Show me who to win back →'; });
   }
   function showErr(m){ el('err').textContent=m; el('err').classList.remove('hide'); }
@@ -136,7 +137,15 @@
   function lsGet(p){ try{ return localStorage.getItem(lsKey(p)); }catch(e){ return null; } }
   function lsSet(p){ try{ localStorage.setItem(lsKey(p),String(Date.now())); }catch(e){} }
 
-  if(q.get('c') && q.get('pin')){ el('pin').value=q.get('pin'); load(); }
+  // signed in anywhere else in Loop? open straight into the list.
+  // See /loop-auth.js — this page used to store nothing and ask every time.
+  (function(){
+    if(q.get('c') && q.get('pin')){ el('pin').value=q.get('pin'); load(); return; }
+    var a=LoopAuth.get(); if(!a) return;
+    var qc=(q.get('c')||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+    if(qc && qc!==a.c) return;            // a link for a different shop wins
+    el('code').value=a.c; el('pin').value=a.p; load();
+  })();
   window.addEventListener('error',function(e){ try{
     fetch(SUPA+'/rest/v1/client_errors',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify({page:location.pathname,msg:String((e&&e.message)||'').slice(0,300),src:String((e&&e.filename)||'').slice(0,120),line:(e&&e.lineno)||0})}).catch(function(){});
   }catch(_){} });
