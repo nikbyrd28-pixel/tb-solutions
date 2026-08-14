@@ -121,6 +121,13 @@
   .svcrow input,.barbrow input,.hrow input{padding:10px 10px;font-size:14px}
   .hrow input[type=time]{min-width:0;width:100%;padding:10px 6px}
   .svcrow .rm,.barbrow .rm{background:rgba(255,138,157,.12);border:1px solid rgba(255,138,157,.4);color:#ff8a9d;border-radius:10px;padding:9px 0;font-weight:800;cursor:pointer}
+  .runcard{background:rgba(255,255,255,.05);border:1px solid rgba(150,190,255,.18);
+    border-radius:16px;padding:16px}
+  .runcard b{font-size:19px}
+  .runtop{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--acc);margin-bottom:6px}
+  .runmsg{background:rgba(0,0,0,.3);border:1px solid rgba(150,190,255,.14);border-radius:12px;
+    padding:11px 13px;font-size:14px;line-height:1.5;margin-bottom:12px;white-space:pre-wrap}
 </style>
 </head>
 <body>
@@ -501,7 +508,12 @@ function renderDue(d){
       +' weeks out. That is the goal — check back in a few days.</p>';
     return;
   }
-  el('dueList').innerHTML=rows.map(function(r){
+  if(runState().on){ drawRun(); return; }
+  var sendable=rows.filter(function(r){ return r.phone && !r.nudged; }).length;
+  el('dueList').innerHTML=(sendable>1
+    ? '<button class="btn" id="runStart" style="width:100%;margin-bottom:12px">'
+      +'💬 Text them one by one ('+sendable+')</button>' : '')
+    +rows.map(function(r){
     var wks=Math.floor((r.days_since||0)/7);
     var when=wks>=1 ? wks+(wks===1?' week':' weeks')+' ago' : (r.days_since||0)+' days ago';
     var rhythm=r.typical_days ? ' · usually every '+Math.round(r.typical_days/7)+' wks' : '';
@@ -515,6 +527,7 @@ function renderDue(d){
       +'?&body='+encodeURIComponent(dueMsg(d,r))+'">💬 Text</a>'
       +'</div>';
   }).join('');
+  var rs=el('runStart'); if(rs) rs.onclick=startRun;
   // stamp on tap so the same man is not chased every week
   [].forEach.call(el('dueList').querySelectorAll('a[data-code]'),function(a){
     a.addEventListener('click',function(){
@@ -526,6 +539,91 @@ function renderDue(d){
     });
   });
 }
+
+/* ── the send run ─────────────────────────────────────────────────────────
+   A list of twelve Text buttons looks fine and does not get sent, because
+   tapping one LEAVES the page for Messages and coming back you have lost
+   your place. So the run holds the place for him.
+
+   Everything is keyed per shop and per week window in localStorage, because
+   the round trip through the Messages app can reload this page entirely —
+   state that only lived in memory would be gone at exactly the moment he
+   comes back to send the second one.
+
+   This is the manual path on purpose. It sends from the barber's OWN phone:
+   nothing to register, nothing to pay for, and it is his number and his
+   customers. The automated version needs A2P 10DLC approval; this does not,
+   and it works today. */
+function runKey(){ return 'loop_run_'+CODE+'_'+DUE_WEEKS; }
+function runState(){
+  try{ return JSON.parse(localStorage.getItem(runKey())||'null') || {done:[]}; }
+  catch(e){ return {done:[]}; }
+}
+function runSave(st){ try{ localStorage.setItem(runKey(), JSON.stringify(st)); }catch(e){} }
+
+function startRun(){
+  var st=runState(); st.on=true; runSave(st); drawRun();
+}
+function endRun(){
+  var st=runState(); st.on=false; runSave(st);
+  renderDue(DUE);
+}
+function runQueue(){
+  // never chase a man twice: skip anyone the server says was texted, and
+  // anyone already handled in this run
+  var st=runState(), done=st.done||[];
+  return (DUE && Array.isArray(DUE.rows) ? DUE.rows : []).filter(function(r){
+    return r.phone && !r.nudged && done.indexOf(r.code) < 0;
+  });
+}
+function drawRun(){
+  var q=runQueue(), st=runState(), total=(st.done||[]).length + q.length;
+  var box=el('dueList');
+  if(!q.length){
+    box.innerHTML='<div class="runcard"><b>That is the list. 🎉</b>'
+      +'<p class="muted">'+(st.done||[]).length+' texted. They will drop off this list '
+      +'and you will not be shown them again for a while.</p>'
+      +'<button class="btn ghost" id="runEnd">Back to the list</button></div>';
+    el('runEnd').onclick=endRun;
+    return;
+  }
+  var r=q[0], d=DUE;
+  var wks=Math.floor((r.days_since||0)/7);
+  var when=wks>=1 ? wks+(wks===1?' week':' weeks')+' ago' : (r.days_since||0)+' days ago';
+  var msg=dueMsg(d,r);
+  box.innerHTML='<div class="runcard">'
+    +'<div class="runtop">'+((st.done||[]).length+1)+' of '+total+'</div>'
+    +'<b>'+esc(r.name||'Member')+'</b>'
+    +'<p class="muted" style="margin:2px 0 10px">Last in '+esc(when)
+      +(r.barber?' · '+esc(r.barber):'')+'</p>'
+    +'<div class="runmsg">'+esc(msg)+'</div>'
+    +'<a class="btn" id="runGo" href="sms:'+esc(String(r.phone||'').replace(/[^0-9+]/g,''))
+      +'?&body='+encodeURIComponent(msg)+'">💬 Open Messages</a>'
+    +'<div class="links" style="margin-top:8px">'
+      +'<button class="btn ghost" id="runSkip">Skip him</button>'
+      +'<button class="btn ghost" id="runStop">Stop for now</button>'
+    +'</div></div>';
+
+  // Stamped when he opens Messages, not when he comes back — we never find
+  // out whether he actually pressed send, and chasing the same man twice is
+  // the worse of the two mistakes.
+  el('runGo').addEventListener('click',function(){
+    var st2=runState(); (st2.done=st2.done||[]).push(r.code); runSave(st2);
+    fetch(SUPA_URL+'/rest/v1/rpc/loyalty_mark_nudged',{method:'POST',
+      headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_client:CODE,p_pin:PIN,p_code:r.code})}).catch(function(){});
+    setTimeout(drawRun, 400);   // redrawn for when he lands back here
+  });
+  el('runSkip').onclick=function(){
+    var st2=runState(); (st2.done=st2.done||[]).push(r.code); runSave(st2); drawRun();
+  };
+  el('runStop').onclick=endRun;
+}
+// coming back from the Messages app can re-run the page or just refocus it;
+// either way he should land on the next man, not the one he just texted
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='visible' && runState().on && DUE) drawRun();
+});
 
 function render(d){
   el('login').classList.add('hide'); el('dash').classList.remove('hide');
