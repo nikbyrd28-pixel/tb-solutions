@@ -120,6 +120,11 @@
   .tile b{display:block;font-size:13.5px;margin-top:3px}
   .tile .td{display:block;color:var(--muted);font-size:11.5px;line-height:1.4;margin-top:1px}
 
+  /* the ten games as a glance, not a list — seeing them beats being told */
+  .emrow{font-size:21px;letter-spacing:5px;line-height:1.9;margin:14px 0 0;
+    word-spacing:2px;filter:saturate(.95)}
+  .spots{margin:12px 0 0;font-size:13px;font-weight:800;color:var(--gold)}
+
   .done{text-align:center;padding:8px 0 0}
   .done .big{font-size:27px;font-weight:900;color:var(--acc);margin:6px 0 4px}
   .done .lede{color:var(--muted);font-size:14.5px;margin:0 0 6px}
@@ -522,11 +527,28 @@
       '<div class="done" style="padding-top:2px">'+
         '<p class="lede" style="font-size:15px">Every cut earns a point. They play your arcade '+
         'for coins. Coins buy prizes you set.</p>'+
-        '<button class="btn" id="skip">Set up my rewards →</button>'+
-        '<button class="btn ghost" id="play">Play the games first</button>'+
+        '<div class="emrow" aria-hidden="true">🐦 🚦 💈 ✂️ 🧱 🧩 🔢 🔤 🃏 ♠️</div>'+
+        '<p class="lede" style="margin:2px 0 0;font-size:13px">Ten games, inside your card.</p>'+
+        '<button class="btn" id="play">Try one — 20 seconds →</button>'+
+        '<button class="btn ghost" id="skip">Skip, set it up</button>'+
+        '<p class="spots hide" id="spots"></p>'+
       '</div>';
     el('play').addEventListener('click',flappy);
     el('skip').addEventListener('click',function(){ startClock(); r1(); });
+
+    // Honest scarcity or none at all. This is the real number of shops that
+    // have finished, not a countdown invented to rush anybody — and it stays
+    // hidden until at least one is gone, because "0 of 10 taken" is an empty
+    // room, which is the opposite of pressure.
+    rpc('claim_spin_stats').then(function(st){
+      if(!st || typeof st.claimed !== 'number' || st.claimed < 1) return;
+      var left = Math.max(0, 10 - st.claimed);
+      var e = el('spots'); if(!e) return;
+      e.textContent = left > 0
+        ? '★ ' + left + ' of the 10 free founding spots left'
+        : '★ All 10 founding spots are taken — you can still set up free';
+      e.classList.remove('hide');
+    });
   }
 
   /* ── stage 1: the demo game ───────────────────────────────────────────
