@@ -103,6 +103,15 @@
      /loop-arcade.js engine his customers play, loaded on demand so the
      landing stays light for a barber who taps Skip. It draws its own
      full-screen overlay, so there is nothing to style here. */
+  /* what Loop Rewards actually is — three lines, because he is standing up */
+  .what{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 15px}
+  .what .wr{display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line)}
+  .what .wr:first-of-type{border-top:0;padding-top:2px}
+  .what .wi{flex:0 0 26px;font-size:19px;line-height:1.2}
+  .what .wt{flex:1;font-size:14.5px;color:var(--ink)}
+  .what .wt b{display:block;font-size:12px;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:2px;font-weight:800}
+
   .done{text-align:center;padding:8px 0 0}
   .done .big{font-size:27px;font-weight:900;color:var(--acc);margin:6px 0 4px}
   .done .lede{color:var(--muted);font-size:14.5px;margin:0 0 6px}
@@ -458,11 +467,19 @@
   function flappy(){
     el('head').classList.add('hide');
     el('stage').innerHTML=
-      '<p class="q">Loop Flyer</p>'+
-      '<p class="qs">This is the real game from your arcade — the one your customers '+
-      'play between cuts to win free ones.</p>'+
-      '<p class="lede" id="gmsg" style="color:var(--muted);font-size:14px">Loading the game…</p>'+
-      '<button class="btn ghost" id="skip2" style="margin-top:14px">Skip to building my site</button>';
+      '<p class="q">Loop Rewards</p>'+
+      '<p class="qs">The part your customers see. Here is the whole idea:</p>'+
+      '<div class="what">'+
+        '<div class="wr"><span class="wi">\u2702\ufe0f</span><span class="wt">'+
+          '<b>Every cut earns a point</b>Enough points and the next one is on you \u2014 you set the number.</span></div>'+
+        '<div class="wr"><span class="wi">\ud83c\udfae</span><span class="wt">'+
+          '<b>Waiting turns into playing</b>They play your arcade in the chair and earn coins.</span></div>'+
+        '<div class="wr"><span class="wi">\ud83c\udf81</span><span class="wt">'+
+          '<b>Coins buy what you decide</b>A beard trim, $5 off, a free line-up. Your prizes, your margins.</span></div>'+
+      '</div>'+
+      '<button class="btn" id="startg">Play the game they get \u2192</button>'+
+      '<p class="lede" id="gmsg" style="color:var(--muted);font-size:13px;margin-top:8px"></p>'+
+      '<button class="btn ghost" id="skip2">Skip to building my site</button>';
 
     var moved=false;
     function onward(){
@@ -472,15 +489,23 @@
     el('skip2').addEventListener('click',onward);
 
     // load the arcade engine only when he actually asks to play
+    // preload while he reads the card, so the tap opens the game instantly
+    var ready=false, wanted=false, broke=false;
     var sc=document.createElement('script');
     sc.src='/loop-arcade.js';
     sc.onerror=function(){
       // the funnel must survive the arcade being unreachable
+      broke=true;
       el('gmsg').textContent='Could not load the game just now — let\'s build your site instead.';
-      setTimeout(onward,900);
+      if(wanted) setTimeout(onward,900);
     };
-    sc.onload=function(){
-      if(!window.LoopArcade){ sc.onerror(); return; }
+    el('startg').addEventListener('click',function(){
+      wanted=true;
+      if(broke){ setTimeout(onward,900); return; }
+      if(ready) launch(); else el('gmsg').textContent='Loading the game\u2026';
+    });
+
+    function launch(){
       el('gmsg').textContent='Tap to fly. Close the game when you\'re done and we\'ll build your shop.';
       LoopArcade.play({
         mode:'flyer', best:0, accent:'#5df2e0', accent2:'#6f9dff',
@@ -501,6 +526,12 @@
       } else {
         onward();   // no way to watch it: do not trap him in the game
       }
+    }
+
+    sc.onload=function(){
+      if(!window.LoopArcade){ sc.onerror(); return; }
+      ready=true;
+      if(wanted) launch();   // he tapped before it finished downloading
     };
     document.head.appendChild(sc);
   }
