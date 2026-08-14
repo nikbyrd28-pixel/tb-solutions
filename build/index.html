@@ -99,21 +99,10 @@
   @keyframes pop{0%{transform:scale(.94);opacity:.3}100%{transform:scale(1);opacity:1}}
 
   /* ── the demo game ────────────────────────────────────────────────────
-     He plays the thing his customers will play. Short on purpose: it ends
-     on the first crash, because the point is the FEELING of the rewards
-     product, not a high score. A barber who has to sit through a game to
-     sign up is a barber who closes the tab. */
-  .gamewrap{position:relative;margin:14px auto 0;max-width:340px}
-  #cv{width:100%;height:400px;display:block;border-radius:16px;
-    border:1px solid var(--line);background:#0d1017;touch-action:manipulation}
-  .gover{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
-    justify-content:center;gap:6px;text-align:center;padding:20px;border-radius:16px;
-    background:rgba(7,8,12,.82);backdrop-filter:blur(3px)}
-  .gover b{font-size:20px;font-weight:900}
-  .gover span{color:var(--muted);font-size:13.5px;max-width:240px}
-  .score{position:absolute;top:12px;left:0;right:0;text-align:center;
-    font-size:30px;font-weight:900;text-shadow:0 2px 10px rgba(0,0,0,.7);pointer-events:none}
-
+     This is the REAL Loop Flyer from the arcade, not a lookalike — the same
+     /loop-arcade.js engine his customers play, loaded on demand so the
+     landing stays light for a barber who taps Skip. It draws its own
+     full-screen overlay, so there is nothing to style here. */
   .done{text-align:center;padding:8px 0 0}
   .done .big{font-size:27px;font-weight:900;color:var(--acc);margin:6px 0 4px}
   .done .lede{color:var(--muted);font-size:14.5px;margin:0 0 6px}
@@ -469,104 +458,51 @@
   function flappy(){
     el('head').classList.add('hide');
     el('stage').innerHTML=
-      '<p class="q">Fly the comb</p>'+
-      '<p class="qs">Tap to flap. This is what your customers play to win free cuts.</p>'+
-      '<div class="gamewrap"><canvas id="cv"></canvas><div class="score" id="sc"></div>'+
-        '<div class="gover" id="go1"><b>Tap to start</b><span>Get through the poles. One life.</span></div></div>'+
+      '<p class="q">Loop Flyer</p>'+
+      '<p class="qs">This is the real game from your arcade — the one your customers '+
+      'play between cuts to win free ones.</p>'+
+      '<p class="lede" id="gmsg" style="color:var(--muted);font-size:14px">Loading the game…</p>'+
       '<button class="btn ghost" id="skip2" style="margin-top:14px">Skip to building my site</button>';
-    el('skip2').addEventListener('click',function(){ stop=true; startClock(); r1(); });
 
-    var cv=el('cv'), ctx=cv.getContext('2d');
-    var DPR=Math.min(2,window.devicePixelRatio||1);
-    var W=cv.clientWidth, H=400;
-    cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
-
-    var y=H/2, vy=0, run=false, dead=false, stop=false, score=0, t=0;
-    var poles=[], GAP=132, SPD=2.15, R=13;
-
-    function reset(){ y=H/2; vy=0; score=0; poles=[]; t=0; dead=false; el('sc').textContent=''; }
-    function addPole(){
-      var top=46+Math.random()*(H-GAP-120);
-      poles.push({x:W+30,top:top,scored:false});
+    var moved=false;
+    function onward(){
+      if(moved) return; moved=true;
+      el('head').classList.remove('hide'); startClock(); r1();
     }
-    function flap(){
-      if(stop) return;
-      if(dead) return;
-      if(!run){ run=true; el('go1').classList.add('hide'); reset(); addPole(); }
-      vy=-5.1;
-    }
-    cv.addEventListener('pointerdown',function(e){ e.preventDefault(); flap(); });
-    el('go1').addEventListener('pointerdown',function(e){ e.preventDefault(); flap(); });
-    window.addEventListener('keydown',function(e){
-      if(e.code==='Space'){ e.preventDefault(); flap(); }
-    });
+    el('skip2').addEventListener('click',onward);
 
-    function over(){
-      if(dead) return;   // collision and floor can both fire in one frame
-      dead=true; run=false;
-      var msg = score>=3 ? 'Nice — '+score+' through.' : 'That\'s the idea.';
-      el('go1').innerHTML='<b>'+msg+'</b>'+
-        '<span>Your customers play this between cuts and spend what they win on you. '+
-        'Now let\'s build your shop.</span>';
-      el('go1').classList.remove('hide');
-      var b=document.createElement('button');
-      b.className='btn'; b.textContent='Build my site →'; b.style.maxWidth='220px';
-      b.addEventListener('pointerdown',function(e){ e.stopPropagation(); });
-      b.addEventListener('click',function(){ stop=true; el('head').classList.remove('hide'); startClock(); r1(); });
-      el('go1').appendChild(b);
-    }
-
-    function frame(){
-      if(stop) return;
-      ctx.clearRect(0,0,W,H);
-      // shop wall behind the poles
-      ctx.fillStyle='#0d1017'; ctx.fillRect(0,0,W,H);
-      ctx.strokeStyle='rgba(150,190,255,.07)'; ctx.lineWidth=1;
-      for(var gx=0;gx<W;gx+=28){ ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,H); ctx.stroke(); }
-
-      if(run){
-        t++;
-        vy+=0.31; y+=vy;
-        if(t%92===0) addPole();
-        for(var i=poles.length-1;i>=0;i--){
-          var p=poles[i]; p.x-=SPD*1.6;
-          if(p.x<-40){ poles.splice(i,1); continue; }
-          if(!p.scored && p.x+18<W*0.3){ p.scored=true; score++; }
-          // collision
-          if(W*0.3+R>p.x && W*0.3-R<p.x+30 && (y-R<p.top || y+R>p.top+GAP)) over();
+    // load the arcade engine only when he actually asks to play
+    var sc=document.createElement('script');
+    sc.src='/loop-arcade.js';
+    sc.onerror=function(){
+      // the funnel must survive the arcade being unreachable
+      el('gmsg').textContent='Could not load the game just now — let\'s build your site instead.';
+      setTimeout(onward,900);
+    };
+    sc.onload=function(){
+      if(!window.LoopArcade){ sc.onerror(); return; }
+      el('gmsg').textContent='Tap to fly. Close the game when you\'re done and we\'ll build your shop.';
+      LoopArcade.play({
+        mode:'flyer', best:0, accent:'#5df2e0', accent2:'#6f9dff',
+        onOver:function(mode,score){
+          // the engine prints these two lines on its own game-over card
+          return { line1: score>0 ? 'That\'s '+score+' — and that is what your customers play.'
+                                  : 'That is what your customers play between cuts.',
+                   line2: 'Close this and we\'ll build your shop.' };
         }
-        if(y>H-R || y<R) over();
-      }
-
-      // barber poles, top and bottom of each gap
-      poles.forEach(function(p){
-        [[0,p.top],[p.top+GAP,H-(p.top+GAP)]].forEach(function(seg){
-          var py=seg[0], ph=seg[1];
-          ctx.fillStyle='#e8eaf0'; ctx.fillRect(p.x,py,30,ph);
-          ctx.save(); ctx.beginPath(); ctx.rect(p.x,py,30,ph); ctx.clip();
-          ctx.strokeStyle='#c1272d'; ctx.lineWidth=7;
-          for(var s=-40;s<ph+40;s+=20){
-            ctx.beginPath(); ctx.moveTo(p.x-6,py+s+((t*0.9)%20));
-            ctx.lineTo(p.x+36,py+s-14+((t*0.9)%20)); ctx.stroke();
-          }
-          ctx.restore();
-          ctx.fillStyle='#9aa3ba'; ctx.fillRect(p.x-3,py+(py===0?ph-8:0),36,8);
-        });
       });
-
-      // the comb
-      ctx.save();
-      ctx.translate(W*0.3,y);
-      ctx.rotate(Math.max(-0.5,Math.min(0.9,vy*0.06)));
-      ctx.fillStyle='#5df2e0';
-      ctx.fillRect(-16,-7,32,8);
-      for(var k=-14;k<14;k+=4){ ctx.fillRect(k,1,2,9); }
-      ctx.restore();
-
-      if(run) el('sc').textContent=score;
-      requestAnimationFrame(frame);
-    }
-    frame();
+      // the engine owns its overlay and its ✕; when the overlay goes away he
+      // is done with it, however he got there — game over, or straight out
+      var root=document.querySelector('.la');
+      if(root && window.MutationObserver){
+        new MutationObserver(function(){
+          if(!root.classList.contains('on')) onward();
+        }).observe(root,{attributes:true,attributeFilter:['class']});
+      } else {
+        onward();   // no way to watch it: do not trap him in the game
+      }
+    };
+    document.head.appendChild(sc);
   }
 
   pips(); intro();
