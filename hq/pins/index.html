@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PIN recovery queue — Loop admin</title>
+<meta name="robots" content="noindex,nofollow" />
+<meta name="theme-color" content="#07080c" />
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<style>
+  /* Deliberately its own page rather than a panel inside /hq/: that file is a
+     1700-line router app and this is a five-minute job Nick does standing in
+     a shop doorway with the barber on the phone. */
+  :root{--bg:#07080c;--panel:rgba(255,255,255,.05);--line:rgba(150,190,255,.16);
+        --ink:#f0f2f8;--muted:#9aa3ba;--acc:#5df2e0;--acc2:#6f9dff;--warn:#f0b100}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.5;
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif}
+  .wrap{max-width:640px;margin:0 auto;padding:26px 16px 60px}
+  h1{font-size:23px;font-weight:900;margin:0 0 4px}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 18px}
+  input{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--ink);
+    border-radius:11px;padding:12px 13px;font:inherit;font-size:16px}
+  .btn{border:0;cursor:pointer;font:inherit;background:linear-gradient(135deg,var(--acc),var(--acc2));
+    color:#05060d;font-weight:900;border-radius:11px;padding:12px 16px;font-size:15px}
+  .btn.sm{padding:9px 13px;font-size:13.5px;border-radius:9px}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:800}
+  .btn[disabled]{opacity:.45}
+  .row{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:14px;margin-bottom:11px}
+  .row .top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+  .row b{font-size:16px}
+  .row .when{color:var(--muted);font-size:12px;white-space:nowrap}
+  .row .ct{margin-top:6px;font-size:14.5px}
+  .row .nt{margin-top:4px;color:var(--muted);font-size:13.5px}
+  .tag{display:inline-block;font-size:11px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;
+    border-radius:999px;padding:3px 9px;margin-top:8px}
+  .tag.real{background:rgba(93,242,224,.16);color:var(--acc)}
+  .tag.ghost{background:rgba(240,177,0,.16);color:var(--warn)}
+  .act{display:flex;gap:8px;align-items:center;margin-top:11px}
+  .act input{width:120px}
+  .warn{background:rgba(240,177,0,.08);border:1px solid rgba(240,177,0,.35);border-radius:14px;
+    padding:13px 14px;margin:0 0 18px;font-size:13.5px;color:#f3e2b6}
+  .msg{margin-top:10px;font-size:14px}
+  .msg.err{color:#ff8b8b} .msg.ok{color:var(--acc)}
+  .hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>PIN recovery queue</h1>
+  <p class="sub">Barbers who locked themselves out. Verify, then set a new PIN.</p>
+
+  <div class="warn">
+    <b>Ring the shop's own listed number first.</b> Not the number on the request —
+    the one on their Google listing. A shop code is public and an email is easy to find,
+    so the phone call is the only thing standing between a stranger and that shop's
+    whole customer list.
+  </div>
+
+  <div id="gate">
+    <input id="key" type="password" placeholder="Admin key" autocomplete="off">
+    <button class="btn" id="go" style="width:100%;margin-top:10px">Open the queue</button>
+    <div class="msg err hide" id="gerr"></div>
+  </div>
+
+  <div id="list" class="hide"></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var SUPA='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+  var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+  function el(i){ return document.getElementById(i); }
+  function esc(s){ return String(s==null?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+  function rpc(fn,body){
+    return fetch(SUPA+'/rest/v1/rpc/'+fn,{method:'POST',
+      headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},
+      body:JSON.stringify(body||{})}).then(function(r){ return r.json(); })
+      .catch(function(){ return null; });
+  }
+  var ADMIN='';
+
+  // the key lives in memory only — a bookmarked admin key on a shared laptop
+  // is the same problem this whole page exists to prevent
+  el('go').addEventListener('click',function(){
+    var k=(el('key').value||'').trim();
+    if(!k) return;
+    var b=this; b.disabled=true; b.textContent='Checking…';
+    rpc('pin_recovery_list',{p_key:k}).then(function(d){
+      b.disabled=false; b.textContent='Open the queue';
+      if(!d || d.ok===false){
+        el('gerr').textContent=(d&&d.error)||'Could not reach the queue.';
+        el('gerr').classList.remove('hide'); return;
+      }
+      ADMIN=k;
+      el('gate').classList.add('hide');
+      el('list').classList.remove('hide');
+      draw(d.requests||[]);
+    });
+  });
+  el('key').addEventListener('keydown',function(e){ if(e.key==='Enter') el('go').click(); });
+
+  function refresh(){
+    rpc('pin_recovery_list',{p_key:ADMIN}).then(function(d){
+      if(d && d.ok) draw(d.requests||[]);
+    });
+  }
+
+  function draw(rows){
+    if(!rows.length){
+      el('list').innerHTML='<p class="sub">Nothing waiting. 🎉</p>'+
+        '<button class="btn ghost sm" id="rf">Refresh</button>';
+      el('rf').addEventListener('click',refresh);
+      return;
+    }
+    el('list').innerHTML=rows.map(function(r){
+      var when=new Date(r.created_at).toLocaleString();
+      return '<div class="row" data-id="'+r.id+'">'+
+        '<div class="top"><b>'+esc(r.biz_name||r.client)+'</b><span class="when">'+esc(when)+'</span></div>'+
+        '<div class="ct">code <b>'+esc(r.client)+'</b> · says: '+esc(r.contact)+'</div>'+
+        (r.note?'<div class="nt">'+esc(r.note)+'</div>':'')+
+        // a request naming a shop that does not exist is somebody probing, and
+        // should look different at a glance from a barber who forgot his PIN
+        '<span class="tag '+(r.matched?'real':'ghost')+'">'+
+          (r.matched?'real shop':'no such shop — likely probing')+'</span>'+
+        (r.matched
+          ? '<div class="act"><input class="np" inputmode="numeric" maxlength="8" placeholder="New PIN">'+
+            '<button class="btn sm rs">Set it</button></div>'
+          : '')+
+        '<div class="msg" style="display:none"></div>'+
+      '</div>';
+    }).join('')+'<button class="btn ghost sm" id="rf">Refresh</button>';
+    el('rf').addEventListener('click',refresh);
+
+    [].forEach.call(el('list').querySelectorAll('.rs'),function(btn){
+      btn.addEventListener('click',function(){
+        var row=btn.closest('.row'), id=+row.getAttribute('data-id');
+        var np=(row.querySelector('.np').value||'').trim();
+        var m=row.querySelector('.msg'); m.style.display='block'; m.className='msg';
+        if(!/^[0-9]{4,8}$/.test(np)){ m.className='msg err'; m.textContent='4–8 digits.'; return; }
+        if(!confirm('Set a new PIN for '+row.querySelector('b').textContent+'?\n\nOnly do this after ringing the shop on its own listed number.')) return;
+        btn.disabled=true; m.textContent='Setting…';
+        rpc('pin_recovery_reset',{p_key:ADMIN,p_id:id,p_new_pin:np}).then(function(d){
+          btn.disabled=false;
+          if(!d || d.ok===false){ m.className='msg err'; m.textContent=(d&&d.error)||'Failed.'; return; }
+          m.className='msg ok';
+          m.textContent='Done — tell them their PIN is '+np+'. Their lockout is cleared too.';
+          row.querySelector('.act').style.display='none';
+        });
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>

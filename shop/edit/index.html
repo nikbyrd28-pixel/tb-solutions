@@ -141,6 +141,11 @@
   .toolgrid a small{display:block;color:var(--muted);font-weight:400;font-size:12.5px;margin-top:2px}
   .foot{color:var(--muted);font-size:12.5px;text-align:center;margin:26px 0}
   .foot a{color:var(--muted)}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:4px}
+  .chips button{border:1px solid var(--line,rgba(150,190,255,.16));background:transparent;
+    color:inherit;border-radius:999px;padding:8px 13px;font:inherit;font-size:13.5px;
+    font-weight:800;cursor:pointer;opacity:.62}
+  .chips button.on{background:#5df2e0;color:#05060d;border-color:transparent;opacity:1}
 </style>
 </head>
 <body>
@@ -386,6 +391,34 @@
       </select>
       <label for="rwTourney">Weekly leaderboard prize</label>
       <input id="rwTourney" maxlength="80" placeholder="Free haircut for this week's #1 player">
+    </div>
+
+    <div class="card">
+      <h2>🔁 Bring them back sooner</h2>
+      <p class="hint">Bonus points for the things you actually want more of. None of these
+        discount the cut in the chair — they cost you points, not money. All off unless you
+        turn them on.</p>
+
+      <div class="tog"><span>Coming back sooner<small>Extra points if their next cut is
+        inside the window below. Buys a shorter gap without discounting anything.</small></span>
+        <input type="checkbox" id="erVelOn"></div>
+      <label>Window</label>
+      <div class="step3">
+        <button type="button" data-t="erVelDays" data-d="-1" aria-label="Shorter window">−</button>
+        <output id="erVelDays">25<small>days</small></output>
+        <button type="button" data-t="erVelDays" data-d="1" aria-label="Longer window">+</button>
+      </div>
+
+      <div class="tog"><span>Filling your quiet days<small>Extra points for a mid-week visit.
+        Point inflation instead of a cash discount.</small></span>
+        <input type="checkbox" id="erMidOn"></div>
+      <label>Which days count</label>
+      <div class="chips" id="erMidDays"></div>
+
+      <div class="tog"><span>Booking before they leave<small>Extra points if they book the
+        next one at the register. Locks in the revenue and costs you nothing.</small></span>
+        <input type="checkbox" id="erReOn"></div>
+      <p class="hint" id="erNote" style="margin-top:10px"></p>
     </div>
 
     <div class="card">
@@ -960,9 +993,67 @@
   };
 
   /* ── rewards card tab ──────────────────────────────────────────────── */
-  var STEP={rwAt:{min:1,max:20,unit:'visits'},rwPPV:{min:1,max:10,unit:'points'},
+  /* ── the earning mechanics ──────────────────────────────────────────
+     Read and written on their own call rather than bolted onto
+     save_reward_settings: that function already has six overloads and
+     adding a seventh argument to it would break every existing caller. */
+  var ER=null;
+  var DAYNAME=[['1','Mon'],['2','Tue'],['3','Wed'],['4','Thu'],['5','Fri'],['6','Sat'],['7','Sun']];
+
+  function drawMidDays(){
+    var host=el('erMidDays'); if(!host) return;
+    var on=(ER&&ER.midweek&&ER.midweek.days)||[2,3];
+    host.innerHTML=DAYNAME.map(function(d){
+      return '<button type="button" data-d="'+d[0]+'"'+
+        (on.indexOf(+d[0])>=0?' class="on"':'')+'>'+d[1]+'</button>';
+    }).join('');
+  }
+  function earnNote(){
+    var n=el('erNote'); if(!n) return;
+    var bits=[];
+    if(el('erVelOn').checked) bits.push('back inside '+NUM.erVelDays+' days');
+    if(el('erMidOn').checked) bits.push('a mid-week visit');
+    if(el('erReOn').checked)  bits.push('booking before they leave');
+    n.textContent = bits.length
+      ? 'Right now a customer earns bonus points for: '+bits.join(', ')+'.'
+      : 'Nothing extra is switched on — customers earn the normal point a visit.';
+  }
+  function loadEarning(){
+    rpc('earning_get',{p_client:CODE,p_pin:PIN}).then(function(r){
+      ER=(r&&r.ok&&r.earning)||null;
+      var v=(ER&&ER.velocity)||{}, m=(ER&&ER.midweek)||{}, b=(ER&&ER.rebook)||{};
+      el('erVelOn').checked=!!v.on; el('erMidOn').checked=!!m.on; el('erReOn').checked=!!b.on;
+      NUM.erVelDays=v.days||25;
+      var o=el('erVelDays'); if(o) o.innerHTML=NUM.erVelDays+'<small>days</small>';
+      drawMidDays(); earnNote();
+    });
+  }
+  function saveEarning(){
+    var days=[].map.call(el('erMidDays').querySelectorAll('button.on'),
+      function(b){ return +b.getAttribute('data-d'); });
+    return rpc('earning_set',{p_client:CODE,p_pin:PIN,p_earning:{
+      velocity:{on:el('erVelOn').checked,days:NUM.erVelDays,
+                points:((ER&&ER.velocity&&ER.velocity.points)||10)},
+      midweek:{on:el('erMidOn').checked,days:days,
+               points:((ER&&ER.midweek&&ER.midweek.points)||10)},
+      rebook:{on:el('erReOn').checked,points:((ER&&ER.rebook&&ER.rebook.points)||10)},
+      peak:(ER&&ER.peak)||{on:false}
+    }}).then(function(r){ if(r&&r.ok) ER=r.earning; return r; });
+  }
+  (function(){
+    var h=el('erMidDays');
+    if(h) h.addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      b.classList.toggle('on'); touch();
+    });
+    ['erVelOn','erMidOn','erReOn'].forEach(function(id){
+      var x=el(id); if(x) x.addEventListener('change',function(){ earnNote(); touch(); });
+    });
+  })();
+
+  var STEP={erVelDays:{min:7,max:60,unit:'days'},rwAt:{min:1,max:20,unit:'visits'},rwPPV:{min:1,max:10,unit:'points'},
             rwSpin:{min:1,max:20,unit:'points'},rwMileCuts:{min:2,max:50,unit:'cuts'}};
-  var NUM={rwAt:6,rwPPV:1,rwSpin:2,rwMileCuts:10};
+  var NUM={rwAt:6,rwPPV:1,rwSpin:2,rwMileCuts:10,erVelDays:25};
   function setNum(id,v){
     var c=STEP[id];
     NUM[id]=Math.min(c.max,Math.max(c.min,v));
@@ -996,6 +1087,7 @@
       if(!r||!r.ok){ rsay((r&&(r.error||r.message))||'Could not load. Try again.','err'); return; }
       RW=r; if(!quiet) rsay('');
       el('rwText').value=r.reward_text||'';
+      loadEarning();
       setNum('rwAt', r.reward_at||6);
       setNum('rwPPV', r.points_per_visit||1);
       setNum('rwSpin', r.spin_cost||2);
@@ -1036,6 +1128,8 @@
       p_milestone:mile,
       p_lottery:null,
       p_pay_link:null,p_pay_label:null
+    }).then(function(r){
+      return saveEarning().then(function(){ return r; });
     }).then(function(r){
       btn.disabled=false;
       if(!r){ rsay('Could not reach the server. Try again.','err'); return; }

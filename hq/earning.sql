@@ -267,3 +267,49 @@ end $$;
 --   · sum(ledger) == reward_members.lifetime
 --   · all 9 live shops: earning is null, no mechanic enabled
 -- ----------------------------------------------------------------------------
+
+-- ----------------------------------------------------------------------------
+-- 4) The two calls the owner editor uses.
+--
+-- Deliberately their own pair rather than more arguments on
+-- save_reward_settings: that function already carries six overloads, and a
+-- seventh argument would break every existing caller the moment PostgREST
+-- could no longer pick between them.
+--
+-- Both read and write through earning_sanitize, so a page can never post a
+-- shape the visit engine would then have to defend itself against. Verified
+-- with junk: 9999 days clamps to 90, -5 points to 1, a weekday of "9" or "x"
+-- is dropped, and an unknown key never lands.
+-- ----------------------------------------------------------------------------
+create or replace function public.earning_get(p_client text, p_pin text)
+returns jsonb language plpgsql security definer set search_path to 'public','pg_temp' as $$
+declare s public.reward_settings;
+begin
+  select * into s from public.reward_settings where client = lower(coalesce(p_client,''));
+  if s.client is null then return jsonb_build_object('ok',false,'error','No shop with that code.'); end if;
+  perform public.pin_gate(p_client, p_pin, s.pin);
+  if coalesce(s.pin,'') = '' or coalesce(p_pin,'') <> s.pin then
+    return jsonb_build_object('ok',false,'error','Wrong PIN.');
+  end if;
+  return jsonb_build_object('ok',true,'earning',public.earning_sanitize(coalesce(s.earning,'{}'::jsonb)));
+end $$;
+
+create or replace function public.earning_set(p_client text, p_pin text, p_earning jsonb)
+returns jsonb language plpgsql security definer set search_path to 'public','pg_temp' as $$
+declare s public.reward_settings; clean jsonb;
+begin
+  select * into s from public.reward_settings where client = lower(coalesce(p_client,''));
+  if s.client is null then return jsonb_build_object('ok',false,'error','No shop with that code.'); end if;
+  perform public.pin_gate(p_client, p_pin, s.pin);
+  if coalesce(s.pin,'') = '' or coalesce(p_pin,'') <> s.pin then
+    return jsonb_build_object('ok',false,'error','Wrong PIN.');
+  end if;
+  clean := public.earning_sanitize(coalesce(p_earning,'{}'::jsonb));
+  update public.reward_settings set earning = clean where client = s.client;
+  return jsonb_build_object('ok',true,'earning',clean);
+end $$;
+
+revoke execute on function public.earning_get(text,text)       from public, anon, authenticated;
+revoke execute on function public.earning_set(text,text,jsonb) from public, anon, authenticated;
+grant  execute on function public.earning_get(text,text)       to anon, authenticated;
+grant  execute on function public.earning_set(text,text,jsonb) to anon, authenticated;
