@@ -112,6 +112,14 @@
   .what .wt b{display:block;font-size:12px;letter-spacing:.09em;text-transform:uppercase;
     color:var(--muted);margin-bottom:2px;font-weight:800}
 
+  /* the arcade line-up — tiles, not a list, because ten reads as a lot */
+  .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:4px}
+  @media(min-width:460px){ .tiles{grid-template-columns:repeat(3,1fr)} }
+  .tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 11px}
+  .tile .te{font-size:21px;display:block}
+  .tile b{display:block;font-size:13.5px;margin-top:3px}
+  .tile .td{display:block;color:var(--muted);font-size:11.5px;line-height:1.4;margin-top:1px}
+
   .done{text-align:center;padding:8px 0 0}
   .done .big{font-size:27px;font-weight:900;color:var(--acc);margin:6px 0 4px}
   .done .lede{color:var(--muted);font-size:14.5px;margin:0 0 6px}
@@ -164,6 +172,7 @@
   </footer>
 </div>
 
+<script src="/loop-auth.js"></script>
 <script>
 (function(){
   "use strict";
@@ -182,7 +191,7 @@
     .replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
   /* what the game is actually collecting — the same shape the editor saves */
-  var G={ name:'', theme:'fade', accent:'', services:[], hours:{}, walkins:'', pin:'' };
+  var G={ name:'', email:'', theme:'fade', accent:'', services:[], hours:{}, walkins:'', pin:'' };
   var STEP=0, TOTAL=4, t0=null, tick=null;
 
   var THEMES=[
@@ -237,13 +246,15 @@
       '<p class="q">Round 1 — what\'s the shop called?</p>'+
       '<p class="qs">This is the name your customers will see at the top.</p>'+
       '<input class="inp" id="nm" placeholder="e.g. Maple Street Barbers" maxlength="40" autocomplete="organization">'+
+      '<p class="qs" style="margin:14px 0 6px">Email <span style="opacity:.75">— optional, but it is how we prove it is you if you ever lose your PIN.</span></p>'+
+      '<input class="inp" id="em" type="email" inputmode="email" placeholder="you@shop.com" autocomplete="email">'+
       '<button class="btn" id="go" disabled>Next →</button>';
     var i=el('nm'), b=el('go');
     i.addEventListener('input',function(){
       G.name=this.value.trim(); b.disabled=G.name.length<2; paintLive(); startClock();
     });
     i.addEventListener('keydown',function(e){ if(e.key==='Enter'&&!b.disabled) b.click(); });
-    b.addEventListener('click',function(){ STEP=1; pips(); r2(); });
+    b.addEventListener('click',function(){ G.email=(el('em').value||'').trim(); STEP=1; pips(); r2(); });
     setTimeout(function(){ i.focus(); },80);
     paintLive();
   }
@@ -361,7 +372,7 @@
     var pin=String(Math.floor(1000+Math.random()*9000));
     G.pin=pin;
 
-    rpc('create_loop_shop',{p_name:G.name,p_pin:pin,p_email:null,p_kind:'shop',p_ref:null})
+    rpc('create_loop_shop',{p_name:G.name,p_pin:pin,p_email:G.email||null,p_kind:'shop',p_ref:null})
     .then(function(r){
       if(!r || r.ok===false || !r.slug){
         b.disabled=false; b.textContent='Finish and go live →';
@@ -370,6 +381,10 @@
         return null;
       }
       var slug=r.slug;
+      // Signed in on this device for 30 days across every Loop tool, so the PIN
+      // on the finish screen is a backup rather than the only copy in existence.
+      // Most lockouts were simply this never happening.
+      try{ if(window.LoopAuth) LoopAuth.set(slug,pin); }catch(e){}
       var site={on:true,theme:G.theme,cta:'book',accent:'',tagline:'',about:'',
         address:'',phone:'',ig:'',tiktok:'',maps:'',hero:'',logo:'',photos:[],buttons:[],
         team:true,prices:true,reviews:true,sms:true,walkins:G.walkins,pay:[],
@@ -401,7 +416,9 @@
         '<div class="big">'+esc(G.name)+' is online</div>'+
         '<p class="lede">Real site, real booking page, real rewards card. Nothing to pay.</p>'+
         '<div class="codebox"><b>Your shop code</b><div class="v">'+esc(slug)+'</div></div>'+
-        '<div class="codebox"><b>Your staff PIN — write this down</b><div class="v">'+esc(pin)+'</div></div>'+
+        '<div class="codebox"><b>Your staff PIN — write this down</b><div class="v">'+esc(pin)+'</div>'+
+          '<p class="lede" style="margin:8px 0 0;font-size:12.5px">This phone stays signed in for 30 days. '+
+          'On a new phone and stuck? <a href="/shop/recover/?c='+encodeURIComponent(slug)+'" style="color:var(--acc)">Get it reset</a>.</p></div>'+
         (sp&&sp.ok?'<p class="lede" style="margin-top:16px">And your spin…</p>'+
           '<div class="wheelwrap"><div class="pin"></div><div class="wheel" id="wheel"></div></div>'+
           '<div class="scarce hide" id="prize"></div>':'')+
@@ -452,9 +469,8 @@
       '<div class="done" style="padding-top:2px">'+
         '<p class="lede" style="font-size:15px">A website, a booking page, and a rewards card '+
         'your regulars open.</p>'+
-        '<p class="lede" style="margin-top:10px"><b style="color:var(--ink)">Try the part they play first.</b></p>'+
-        '<button class="btn" id="play">Play it →</button>'+
-        '<button class="btn ghost" id="skip">Skip, just build my site</button>'+
+        '<button class="btn" id="skip">Build my site →</button>'+
+        '<button class="btn ghost" id="play">Play the games first</button>'+
       '</div>';
     el('play').addEventListener('click',flappy);
     el('skip').addEventListener('click',function(){ startClock(); r1(); });
@@ -464,6 +480,37 @@
      A comb through the barber poles. Deliberately tiny and deliberately
      over on the first crash — this is a taste of what his customers get
      for their points, not a game he has to beat to sign up. */
+  /* ── what a shop actually gets: all ten, not the one he just played ──── */
+  var ARCADE=[
+    ['🐦','Loop Flyer','Tap to fly, dodge the clippers'],
+    ['🚦','Chair Hopper','Hop across the traffic'],
+    ['💈','Barber Dash','Run and jump the razors'],
+    ['✂️','Fresh Cuts','Swipe to slice'],
+    ['🧱','Perfect Fade','Stack the cleanest fade'],
+    ['🧩','Barber Blocks','Stack blocks, clear lines'],
+    ['🔢','Number Rush','Swipe and merge to 2048'],
+    ['🔤','Fresh Words','Daily barber word'],
+    ['🃏','Blackjack','Bet coins, beat the dealer'],
+    ['♠️','Video Poker','Jacks or better']
+  ];
+  function lineup(){
+    el('head').classList.add('hide');
+    el('stage').innerHTML=
+      '<p class="q">That was one of ten</p>'+
+      '<p class="qs">Every one of these sits inside your rewards card. They play, they earn '+
+      'coins, they spend them on prizes you set.</p>'+
+      '<div class="tiles">'+ARCADE.map(function(g){
+        return '<div class="tile"><span class="te">'+g[0]+'</span><b>'+esc(g[1])+'</b>'+
+               '<span class="td">'+esc(g[2])+'</span></div>';
+      }).join('')+'</div>'+
+      '<button class="btn" id="toBuild">Build my shop →</button>'+
+      '<a class="btn ghost" href="/arcade/?c=demo" target="_blank" rel="noopener" '+
+        'style="text-decoration:none;text-align:center">Open the full arcade</a>';
+    el('toBuild').addEventListener('click',function(){
+      el('head').classList.remove('hide'); startClock(); r1();
+    });
+  }
+
   function flappy(){
     el('head').classList.add('hide');
     el('stage').innerHTML=
@@ -484,7 +531,7 @@
     var moved=false;
     function onward(){
       if(moved) return; moved=true;
-      el('head').classList.remove('hide'); startClock(); r1();
+      lineup();          // he has seen ONE game; show him the other nine
     }
     el('skip2').addEventListener('click',onward);
 

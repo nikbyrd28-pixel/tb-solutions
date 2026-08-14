@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Forgot your PIN — The Barber Loop</title>
+<meta name="robots" content="noindex,nofollow" />
+<meta name="theme-color" content="#07080c" />
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307080c'/%3E%3Cg stroke-linecap='round' stroke-width='7' fill='none'%3E%3Cpath d='M10 36 L34 12' stroke='%236f9dff'/%3E%3Cpath d='M18 48 L48 18' stroke='%235df2e0'/%3E%3C/g%3E%3C/svg%3E" />
+<style>
+  :root{--bg:#07080c;--panel:rgba(255,255,255,.05);--line:rgba(150,190,255,.16);
+        --ink:#f0f2f8;--muted:#9aa3ba;--acc:#5df2e0;--acc2:#6f9dff}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.55;
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif}
+  .wrap{max-width:460px;margin:0 auto;padding:34px 18px 60px}
+  h1{font-size:26px;font-weight:900;margin:0 0 6px;letter-spacing:-.4px}
+  .sub{color:var(--muted);font-size:15px;margin:0 0 20px}
+  label{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);font-weight:800;margin:14px 0 6px}
+  input,textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--line);
+    color:var(--ink);border-radius:12px;padding:13px 14px;font:inherit;font-size:16px}
+  textarea{min-height:74px;resize:vertical}
+  .btn{display:block;width:100%;border:0;cursor:pointer;font:inherit;margin-top:18px;
+    background:linear-gradient(135deg,var(--acc),var(--acc2));color:#05060d;
+    font-weight:900;font-size:16px;border-radius:13px;padding:15px}
+  .btn[disabled]{opacity:.5}
+  .note{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:14px 15px;margin-top:22px;color:var(--muted);font-size:13.5px}
+  .note b{color:var(--ink)}
+  .err{color:#ff8b8b;font-size:14px;margin-top:10px}
+  .ok{background:rgba(93,242,224,.1);border:1px solid rgba(93,242,224,.4);border-radius:14px;
+    padding:18px;margin-top:18px}
+  .ok b{display:block;font-size:17px;margin-bottom:5px}
+  .hide{display:none}
+  footer{color:var(--muted);font-size:12.5px;margin-top:26px;text-align:center}
+  footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Forgot your PIN</h1>
+  <p class="sub">Tell us which shop and how to reach you. We'll ring the shop to check it's you, then set a new one.</p>
+
+  <div id="form">
+    <label for="code">Your shop code</label>
+    <input id="code" placeholder="e.g. maplestreet" autocomplete="off" style="text-transform:lowercase">
+    <label for="contact">How to reach you</label>
+    <input id="contact" placeholder="Phone or email" autocomplete="tel">
+    <label for="note">Anything else <span style="text-transform:none;letter-spacing:0;font-weight:400">— optional</span></label>
+    <textarea id="note" placeholder="e.g. new phone, lost the PIN"></textarea>
+    <button class="btn" id="send">Send the request →</button>
+    <div class="err hide" id="err"></div>
+  </div>
+
+  <div class="ok hide" id="done">
+    <b>Request sent ✅</b>
+    We'll call the shop's own number to check it's you before changing anything, so keep an eye out.
+    That check is the point — without it, anyone who knew your shop code could take your customer list.
+  </div>
+
+  <div class="note">
+    <b>Why we don't just show it to you.</b> Your shop code is public — it's in your own website's
+    link — so a PIN handed to whoever types it would hand over every customer's name and phone
+    number too. Checking by phone takes a few minutes and keeps that from happening.
+  </div>
+
+  <footer>
+    💈 <a href="/build/">The Barber Loop</a> · <a href="/shop/edit/">Back to sign in</a>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var SUPA='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+  var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+  function el(i){ return document.getElementById(i); }
+
+  // a code in the link saves him typing it, and /shop/edit/ knows it
+  var q=new URLSearchParams(location.search);
+  var pre=(q.get('c')||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  if(!pre){ try{ pre=(localStorage.getItem('tb_shop_code')||''); }catch(e){} }
+  if(!pre){ try{ var a=JSON.parse(localStorage.getItem('loop_auth')||'null'); if(a&&a.c) pre=a.c; }catch(e){} }
+  if(pre) el('code').value=pre;
+
+  el('send').addEventListener('click',function(){
+    var c=(el('code').value||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+    var ct=(el('contact').value||'').trim();
+    el('err').classList.add('hide');
+    if(!c){ el('err').textContent='Which shop? Enter your shop code.'; el('err').classList.remove('hide'); return; }
+    if(!ct){ el('err').textContent='We need a phone or email to reach you on.'; el('err').classList.remove('hide'); return; }
+    var b=this; b.disabled=true; b.textContent='Sending…';
+    fetch(SUPA+'/rest/v1/rpc/pin_recovery_request',{method:'POST',
+      headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_client:c,p_contact:ct,p_note:(el('note').value||'').trim()})})
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(!d || d.ok===false){
+        b.disabled=false; b.textContent='Send the request →';
+        el('err').textContent=(d&&d.error)||'Could not send that — try again.';
+        el('err').classList.remove('hide'); return;
+      }
+      el('form').classList.add('hide');
+      el('done').classList.remove('hide');
+    })
+    .catch(function(){
+      b.disabled=false; b.textContent='Send the request →';
+      el('err').textContent='Network error — try again in a moment.';
+      el('err').classList.remove('hide');
+    });
+  });
+})();
+</script>
+</body>
+</html>
