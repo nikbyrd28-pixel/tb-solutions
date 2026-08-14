@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bring your clients in — The Barber Loop</title>
+<meta name="robots" content="noindex,nofollow" />
+<meta name="theme-color" content="#07080c" />
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307080c'/%3E%3Cg stroke-linecap='round' stroke-width='7' fill='none'%3E%3Cpath d='M10 36 L34 12' stroke='%236f9dff'/%3E%3Cpath d='M18 48 L48 18' stroke='%235df2e0'/%3E%3C/g%3E%3C/svg%3E" />
+<script src="/loop-auth.js"></script>
+<style>
+  :root{--bg:#07080c;--panel:rgba(255,255,255,.05);--line:rgba(150,190,255,.16);
+        --ink:#f0f2f8;--muted:#9aa3ba;--acc:#5df2e0;--acc2:#6f9dff;--warn:#f0b100}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.55;
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif}
+  .wrap{max-width:720px;margin:0 auto;padding:26px 16px 70px}
+  h1{font-size:25px;font-weight:900;margin:0 0 5px;letter-spacing:-.4px}
+  .sub{color:var(--muted);font-size:15px;margin:0 0 20px}
+  h2{font-size:16px;margin:0 0 4px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+  label{display:block;font-size:12px;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--muted);font-weight:800;margin:12px 0 5px}
+  input,textarea,select{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--line);
+    color:var(--ink);border-radius:11px;padding:12px 13px;font:inherit;font-size:15.5px}
+  textarea{min-height:150px;resize:vertical;font-family:ui-monospace,monospace;font-size:13px}
+  .btn{border:0;cursor:pointer;font:inherit;width:100%;display:block;
+    background:linear-gradient(135deg,var(--acc),var(--acc2));color:#05060d;
+    font-weight:900;border-radius:12px;padding:14px;font-size:16px;margin-top:14px}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:800;font-size:15px;padding:12px}
+  .btn[disabled]{opacity:.45}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:10px}
+  th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:170px}
+  th{color:var(--muted);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+  .tot{display:flex;gap:16px;flex-wrap:wrap;margin:4px 0 0}
+  .tot div{font-size:13.5px}
+  .tot b{display:block;font-size:24px;font-weight:900}
+  .tot .a b{color:var(--acc)} .tot .m b{color:var(--acc2)} .tot .s b{color:var(--warn)}
+  .warn{background:rgba(240,177,0,.08);border:1px solid rgba(240,177,0,.35);border-radius:14px;
+    padding:13px 14px;font-size:13.5px;color:#f3e2b6;margin-bottom:14px}
+  .warn b{color:#fff}
+  .msg{margin-top:10px;font-size:14px}
+  .msg.err{color:#ff8b8b} .msg.ok{color:var(--acc)}
+  .hint{color:var(--muted);font-size:13px;margin:6px 0 0}
+  .hide{display:none}
+  footer{color:var(--muted);font-size:12.5px;text-align:center;margin-top:22px}
+  footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Bring your clients in</h1>
+  <p class="sub">Export from Booksy, Square, your phone, a spreadsheet — anything that makes a CSV.</p>
+
+  <!-- sign in -->
+  <div class="card" id="gate">
+    <h2>Your shop</h2>
+    <label for="code">Shop code</label>
+    <input id="code" placeholder="e.g. maplestreet" autocomplete="off" style="text-transform:lowercase">
+    <label for="pin">Staff PIN</label>
+    <input id="pin" type="password" inputmode="numeric" placeholder="Your PIN" autocomplete="off">
+    <button class="btn" id="signIn">Continue →</button>
+    <div class="msg err hide" id="gerr"></div>
+    <p class="hint">Forgot it? <a href="/shop/recover/" style="color:var(--acc)">Get it reset</a></p>
+  </div>
+
+  <!-- paste -->
+  <div class="card hide" id="step1">
+    <h2>1. Paste your export</h2>
+    <p class="hint">Open the CSV and copy the lot, or pick the file. The first row should be the column names.</p>
+    <input type="file" id="file" accept=".csv,text/csv,text/plain" style="margin-top:10px;padding:10px">
+    <label for="csv">…or paste it here</label>
+    <textarea id="csv" placeholder="name,phone,email,last visit&#10;Ray Dolan,(610) 555-0134,ray@mail.com,2026-06-14"></textarea>
+    <button class="btn" id="parse">Read it →</button>
+    <div class="msg err hide" id="perr"></div>
+  </div>
+
+  <!-- map -->
+  <div class="card hide" id="step2">
+    <h2>2. Which column is which?</h2>
+    <p class="hint" id="found"></p>
+    <div class="cols">
+      <div><label for="mName">Name</label><select id="mName"></select></div>
+      <div><label for="mPhone">Phone</label><select id="mPhone"></select></div>
+      <div><label for="mEmail">Email</label><select id="mEmail"></select></div>
+      <div><label for="mLast">Last visit <span style="text-transform:none;letter-spacing:0;font-weight:400">— optional</span></label><select id="mLast"></select></div>
+    </div>
+    <p class="hint">A last-visit date is worth adding if you have one — it makes your win-back list
+      work straight away instead of in three months.</p>
+    <div id="preview"></div>
+    <button class="btn" id="check">Check it before importing →</button>
+    <div class="msg err hide" id="cerr"></div>
+  </div>
+
+  <!-- confirm -->
+  <div class="card hide" id="step3">
+    <h2>3. Here's what will happen</h2>
+    <div class="tot" id="totals"></div>
+    <div id="notes"></div>
+    <div class="warn" style="margin-top:14px">
+      <b>Nobody gets texted automatically.</b> Your clients haven't opted in to messages from Loop,
+      so they come in without text consent — you can still text them yourself from the win-back list,
+      one at a time, from your own phone. They opt in themselves when they scan your card.
+    </div>
+    <button class="btn" id="go">Import them →</button>
+    <button class="btn ghost" id="back">Back</button>
+    <div class="msg hide" id="gmsg"></div>
+  </div>
+
+  <footer>💈 <a href="/build/">The Barber Loop</a> · <a href="/rewards/owner/">Owner dashboard</a></footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var SUPA='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+  var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+  function el(i){ return document.getElementById(i); }
+  function esc(s){ return String(s==null?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+  function rpc(fn,body){
+    return fetch(SUPA+'/rest/v1/rpc/'+fn,{method:'POST',
+      headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},
+      body:JSON.stringify(body||{})}).then(function(r){ return r.json(); })
+      .catch(function(){ return null; });
+  }
+  var CODE='', PIN='', HEAD=[], ROWS=[];
+
+  /* ── CSV, done properly ───────────────────────────────────────────────
+     Not split(','). A real export has "Dolan, Ray" and "he said ""no"""
+     in it, and a naive split shifts every column after it — which would
+     quietly import phone numbers into the email field. */
+  function parseCSV(text){
+    var rows=[], row=[], cell='', q=false, i=0;
+    text = String(text||'').replace(/^﻿/,'');   // Excel's byte-order mark
+    while(i < text.length){
+      var c = text[i];
+      if(q){
+        if(c === '"'){
+          if(text[i+1] === '"'){ cell += '"'; i += 2; continue; }
+          q = false; i++; continue;
+        }
+        cell += c; i++; continue;
+      }
+      if(c === '"'){ q = true; i++; continue; }
+      if(c === ','){ row.push(cell); cell=''; i++; continue; }
+      if(c === '\r'){ i++; continue; }
+      if(c === '\n'){ row.push(cell); rows.push(row); row=[]; cell=''; i++; continue; }
+      cell += c; i++;
+    }
+    if(cell !== '' || row.length){ row.push(cell); rows.push(row); }
+    return rows.filter(function(r){ return r.some(function(x){ return String(x).trim() !== ''; }); });
+  }
+
+  // guess the mapping so most barbers never touch the dropdowns
+  function guess(head, words){
+    for(var i=0;i<head.length;i++){
+      var h=String(head[i]||'').toLowerCase().replace(/[^a-z]/g,'');
+      for(var j=0;j<words.length;j++){ if(h.indexOf(words[j])>=0) return i; }
+    }
+    return -1;
+  }
+  function fillSelect(sel, head, chosen){
+    sel.innerHTML='<option value="-1">— none —</option>'+head.map(function(h,i){
+      return '<option value="'+i+'"'+(i===chosen?' selected':'')+'>'+esc(h||('Column '+(i+1)))+'</option>';
+    }).join('');
+  }
+
+  el('signIn').addEventListener('click',function(){
+    var c=(el('code').value||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+    var p=(el('pin').value||'').trim();
+    el('gerr').classList.add('hide');
+    if(!c||!p){ el('gerr').textContent='Shop code and PIN, please.'; el('gerr').classList.remove('hide'); return; }
+    var b=this; b.disabled=true; b.textContent='Checking…';
+    // a zero-row dry run is the cheapest way to verify the PIN
+    rpc('loop_import_members',{p_client:c,p_pin:p,p_rows:[],p_dry_run:true}).then(function(r){
+      b.disabled=false; b.textContent='Continue →';
+      if(!r || r.ok===false){
+        el('gerr').textContent=(r&&r.error)||'Could not sign in.'; el('gerr').classList.remove('hide'); return;
+      }
+      CODE=c; PIN=p;
+      try{ if(window.LoopAuth) LoopAuth.set(c,p); }catch(e){}
+      el('gate').classList.add('hide'); el('step1').classList.remove('hide');
+    });
+  });
+  el('pin').addEventListener('keydown',function(e){ if(e.key==='Enter') el('signIn').click(); });
+  (function(){
+    var a=null; try{ a=window.LoopAuth?LoopAuth.get():null; }catch(e){}
+    var qc=(new URLSearchParams(location.search).get('c')||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+    if(a && (!qc || qc===a.c)){ el('code').value=a.c; el('pin').value=a.p; el('signIn').click(); }
+    else if(qc){ el('code').value=qc; }
+  })();
+
+  el('file').addEventListener('change',function(){
+    var f=this.files&&this.files[0]; if(!f) return;
+    var fr=new FileReader();
+    fr.onload=function(){ el('csv').value=String(fr.result||''); el('parse').click(); };
+    fr.readAsText(f);
+  });
+
+  el('parse').addEventListener('click',function(){
+    el('perr').classList.add('hide');
+    var rows=parseCSV(el('csv').value);
+    if(rows.length < 2){
+      el('perr').textContent='Need a header row and at least one client.';
+      el('perr').classList.remove('hide'); return;
+    }
+    HEAD=rows[0]; ROWS=rows.slice(1);
+    el('found').textContent=ROWS.length+' rows found, with '+HEAD.length+' columns.';
+    fillSelect(el('mName'),  HEAD, guess(HEAD,['name','client','customer','first']));
+    fillSelect(el('mPhone'), HEAD, guess(HEAD,['phone','mobile','cell','tel']));
+    fillSelect(el('mEmail'), HEAD, guess(HEAD,['email','mail']));
+    fillSelect(el('mLast'),  HEAD, guess(HEAD,['last','recent','visit','appointment','seen','date']));
+    drawPreview();
+    ['mName','mPhone','mEmail','mLast'].forEach(function(id){ el(id).onchange=drawPreview; });
+    el('step1').classList.add('hide'); el('step2').classList.remove('hide');
+  });
+
+  function pick(){
+    return { name:+el('mName').value, phone:+el('mPhone').value,
+             email:+el('mEmail').value, last:+el('mLast').value };
+  }
+  function shape(){
+    var m=pick();
+    return ROWS.map(function(r){
+      return { name:  m.name  >= 0 ? (r[m.name]  || '') : '',
+               phone: m.phone >= 0 ? (r[m.phone] || '') : '',
+               email: m.email >= 0 ? (r[m.email] || '') : '',
+               last_visit: m.last >= 0 ? (r[m.last] || '') : '' };
+    });
+  }
+  function drawPreview(){
+    var s=shape().slice(0,5);
+    el('preview').innerHTML='<table><thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Last visit</th></tr></thead><tbody>'
+      +s.map(function(x){ return '<tr><td>'+esc(x.name)+'</td><td>'+esc(x.phone)+'</td><td>'
+        +esc(x.email)+'</td><td>'+esc(x.last_visit)+'</td></tr>'; }).join('')
+      +'</tbody></table><p class="hint">First '+s.length+' of '+ROWS.length+'.</p>';
+  }
+
+  el('check').addEventListener('click',function(){
+    var b=this; b.disabled=true; b.textContent='Checking…'; el('cerr').classList.add('hide');
+    rpc('loop_import_members',{p_client:CODE,p_pin:PIN,p_rows:shape(),p_dry_run:true}).then(function(r){
+      b.disabled=false; b.textContent='Check it before importing →';
+      if(!r || r.ok===false){
+        el('cerr').textContent=(r&&r.error)||'Could not check that.'; el('cerr').classList.remove('hide'); return;
+      }
+      showTotals(r);
+      el('step2').classList.add('hide'); el('step3').classList.remove('hide');
+    });
+  });
+  function showTotals(r){
+    el('totals').innerHTML=
+      '<div class="a"><b>'+r.added+'</b>new clients</div>'+
+      '<div class="m"><b>'+r.merged+'</b>already had, updated</div>'+
+      '<div class="s"><b>'+r.skipped+'</b>skipped</div>';
+    var n=(r.notes||[]);
+    el('notes').innerHTML = n.length
+      ? '<p class="hint" style="margin-top:12px"><b>Skipped rows</b></p><table><tbody>'
+        +n.map(function(x){ return '<tr><td>Row '+x.row+'</td><td>'+esc(x.name||'')+'</td><td>'+esc(x.why)+'</td></tr>'; }).join('')
+        +'</tbody></table>'+(r.skipped>n.length?'<p class="hint">…and '+(r.skipped-n.length)+' more.</p>':'')
+      : '';
+    if(r.truncated) el('notes').innerHTML += '<p class="hint" style="color:var(--warn)">'
+      +'Only the first 2000 rows are read — import the rest in a second file.</p>';
+  }
+
+  el('back').addEventListener('click',function(){
+    el('step3').classList.add('hide'); el('step2').classList.remove('hide');
+  });
+  el('go').addEventListener('click',function(){
+    var b=this; b.disabled=true; b.textContent='Importing…';
+    var m=el('gmsg'); m.className='msg'; m.classList.remove('hide'); m.textContent='';
+    rpc('loop_import_members',{p_client:CODE,p_pin:PIN,p_rows:shape(),p_dry_run:false}).then(function(r){
+      b.disabled=false; b.textContent='Import them →';
+      if(!r || r.ok===false){
+        m.className='msg err'; m.textContent=(r&&r.error)||'Import failed — nothing was changed.'; return;
+      }
+      m.className='msg ok';
+      m.innerHTML='Done — '+r.added+' added, '+r.merged+' updated. '
+        +'<a href="/rewards/owner/?c='+encodeURIComponent(CODE)+'" style="color:var(--acc)">Open your dashboard</a>';
+      b.disabled=true;
+    });
+  });
+})();
+</script>
+</body>
+</html>

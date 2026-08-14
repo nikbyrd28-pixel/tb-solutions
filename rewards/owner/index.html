@@ -378,6 +378,7 @@
         <button class="btn ghost" id="lkJoin">📱 Member join link</button>
         <button class="btn ghost" id="lkPoster">🖨️ Counter poster</button>
         <a class="btn ghost" id="lkStaff" href="#" target="_blank" rel="noopener">📷 Staff scanner</a>
+        <a class="btn ghost" id="lkImport" href="/shop/import/">📥 Bring your clients in</a>
       </div>
     </div>
     <p class="muted" style="text-align:center">Powered by TB Solutions · tbsol.net</p>
@@ -631,6 +632,7 @@ function render(d){
     var join=location.origin+'/rewards/?c='+d.client;
     var img=el('shopQrImg'); if(img) img.src='https://api.qrserver.com/v1/create-qr-code/?size=264x264&ecc=H&margin=0&color=11-16-36&data='+encodeURIComponent(join);
     var cb=el('qrCopy'); if(cb) cb.onclick=function(){ cp(join); };
+    var li=el('lkImport'); if(li) li.href='/shop/import/?c='+encodeURIComponent(d.client);
     var sb=el('qrShare'); if(sb) sb.onclick=function(){ if(navigator.share){ navigator.share({title:((d.biz_name&&String(d.biz_name).trim())||cap(d.client))+' rewards',url:join}).catch(function(){}); } else cp(join); };
     var pb=el('qrPoster'); if(pb) pb.onclick=function(){ window.open(location.origin+'/rewards/poster/?c='+d.client,'_blank'); };
   })();
