@@ -53,7 +53,7 @@
 <body>
 <div class="wrap">
   <h1>Bring your clients in</h1>
-  <p class="sub">Export from Booksy, Square, your phone, a spreadsheet — anything that makes a CSV.</p>
+  <p class="sub">Straight from Booksy, Square, Vagaro, your phone — anything that makes a CSV. Keep booking wherever you book; this just brings the people across.</p>
 
   <!-- sign in -->
   <div class="card" id="gate">
@@ -71,6 +71,18 @@
   <div class="card hide" id="step1">
     <h2>1. Paste your export</h2>
     <p class="hint">Open the CSV and copy the lot, or pick the file. The first row should be the column names.</p>
+    <details style="margin-top:10px">
+      <summary style="cursor:pointer;color:var(--acc);font-size:13.5px">Where do I get the file?</summary>
+      <p class="hint" style="margin-top:8px">
+        <b style="color:var(--ink)">Booksy</b> — Booksy Biz → Clients → the ⋯ menu → Export.
+        Comes as a CSV with the name split into two columns; that's handled.<br>
+        <b style="color:var(--ink)">Square</b> — Dashboard → Customers → Directory → Export.<br>
+        <b style="color:var(--ink)">Vagaro</b> — Customers → Customer List → Export.<br>
+        <b style="color:var(--ink)">Your phone</b> — export contacts as CSV, or just type the regulars in.<br>
+        Names and numbers are enough. If the file has a last-visit date, keep it — that's what
+        makes your win-back list work on day one instead of in three months.
+      </p>
+    </details>
     <input type="file" id="file" accept=".csv,text/csv,text/plain" style="margin-top:10px;padding:10px">
     <label for="csv">…or paste it here</label>
     <textarea id="csv" placeholder="name,phone,email,last visit&#10;Ray Dolan,(610) 555-0134,ray@mail.com,2026-06-14"></textarea>
@@ -83,7 +95,8 @@
     <h2>2. Which column is which?</h2>
     <p class="hint" id="found"></p>
     <div class="cols">
-      <div><label for="mName">Name</label><select id="mName"></select></div>
+      <div><label for="mName">First name / full name</label><select id="mName"></select></div>
+      <div><label for="mLast2">Surname <span style="text-transform:none;letter-spacing:0;font-weight:400">— if separate</span></label><select id="mLast2"></select></div>
       <div><label for="mPhone">Phone</label><select id="mPhone"></select></div>
       <div><label for="mEmail">Email</label><select id="mEmail"></select></div>
       <div><label for="mLast">Last visit <span style="text-transform:none;letter-spacing:0;font-weight:400">— optional</span></label><select id="mLast"></select></div>
@@ -164,6 +177,17 @@
     }
     return -1;
   }
+  // same as guess(), but never lands on a column already spoken for
+  function guessExcept(head, words, banned){
+    for(var j=0;j<words.length;j++){
+      for(var i=0;i<head.length;i++){
+        if(banned.indexOf(i) >= 0) continue;
+        var h=String(head[i]||'').toLowerCase().replace(/[^a-z]/g,'');
+        if(h.indexOf(words[j])>=0) return i;
+      }
+    }
+    return -1;
+  }
   function fillSelect(sel, head, chosen){
     sel.innerHTML='<option value="-1">— none —</option>'+head.map(function(h,i){
       return '<option value="'+i+'"'+(i===chosen?' selected':'')+'>'+esc(h||('Column '+(i+1)))+'</option>';
@@ -211,23 +235,34 @@
     }
     HEAD=rows[0]; ROWS=rows.slice(1);
     el('found').textContent=ROWS.length+' rows found, with '+HEAD.length+' columns.';
-    fillSelect(el('mName'),  HEAD, guess(HEAD,['name','client','customer','first']));
-    fillSelect(el('mPhone'), HEAD, guess(HEAD,['phone','mobile','cell','tel']));
-    fillSelect(el('mEmail'), HEAD, guess(HEAD,['email','mail']));
-    fillSelect(el('mLast'),  HEAD, guess(HEAD,['last','recent','visit','appointment','seen','date']));
+    /* Real exports, not tidy ones. Booksy, Square and Vagaro all split the
+       name in two and all name the visit column differently, so the surname
+       is guessed FIRST — otherwise "Last name" gets grabbed by the
+       last-visit matcher looking for "last" and the barber imports a column
+       of surnames as dates. */
+    var iSur = guess(HEAD,['lastname','surname','familyname']);
+    fillSelect(el('mLast2'), HEAD, iSur);
+    fillSelect(el('mName'),  HEAD, guess(HEAD,['firstname','clientname','customername','fullname','name','client','customer']));
+    fillSelect(el('mPhone'), HEAD, guess(HEAD,['mobilenumber','phonenumber','mobile','phone','cell','tel']));
+    fillSelect(el('mEmail'), HEAD, guess(HEAD,['emailaddress','email','mail']));
+    fillSelect(el('mLast'),  HEAD, guessExcept(HEAD,
+      ['lastvisit','lastappointment','lastbooking','mostrecent','lastseen','recentvisit',
+       'lastservice','visit','appointment','recent','seen'], [iSur]));
     drawPreview();
-    ['mName','mPhone','mEmail','mLast'].forEach(function(id){ el(id).onchange=drawPreview; });
+    ['mName','mLast2','mPhone','mEmail','mLast'].forEach(function(id){ el(id).onchange=drawPreview; });
     el('step1').classList.add('hide'); el('step2').classList.remove('hide');
   });
 
   function pick(){
-    return { name:+el('mName').value, phone:+el('mPhone').value,
+    return { name:+el('mName').value, sur:+el('mLast2').value, phone:+el('mPhone').value,
              email:+el('mEmail').value, last:+el('mLast').value };
   }
   function shape(){
     var m=pick();
     return ROWS.map(function(r){
-      return { name:  m.name  >= 0 ? (r[m.name]  || '') : '',
+      var nm = m.name >= 0 ? String(r[m.name] || '').trim() : '';
+      if(m.sur >= 0){ nm = (nm + ' ' + String(r[m.sur] || '').trim()).trim(); }
+      return { name:  nm,
                phone: m.phone >= 0 ? (r[m.phone] || '') : '',
                email: m.email >= 0 ? (r[m.email] || '') : '',
                last_visit: m.last >= 0 ? (r[m.last] || '') : '' };
