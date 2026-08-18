@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!--
+  YTS Automotive — mobile automotive locksmith funnel.
+
+  BEFORE SHARING PUBLICLY, replace these placeholders everywhere in this file:
+    (555) 555-5555      → the real display phone number
+    +15555555555        → the real number in E.164 (used by tel: and sms: links)
+    Your City, ST       → the city/state served
+    ytsautomotive    → the real Instagram handle
+    https://ytsautomotive.com → the real domain (canonical, og:url, JSON-LD)
+  A find-and-replace on each string updates the copy, the links AND the SEO
+  structured data in one pass. Hero photo: drop a wide shot at img/hero.jpg and
+  it appears automatically — until then the page renders its own gradient hero.
+-->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Car Key Replacement &amp; Key Programming | YTS Automotive — Mobile Locksmith</title>
+<meta name="description" content="Lost your car key or need a spare? YTS Automotive comes to you and programs a new key in minutes. Spare keys from $50, programming $100–$200. Same-day mobile service in Your City, ST." />
+<link rel="canonical" href="https://ytsautomotive.com/" />
+<meta name="theme-color" content="#08090c" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="format-detection" content="telephone=yes" />
+<meta name="geo.region" content="US" />
+<meta name="geo.placename" content="Your City, ST" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="YTS Automotive" />
+<meta property="og:title" content="Lost your car key? We come to you — new key programmed in minutes." />
+<meta property="og:description" content="Mobile automotive locksmith. Spare keys from $50, key programming $100–$200, no tow, no dealership appointment. Same-day in Your City, ST." />
+<meta property="og:url" content="https://ytsautomotive.com/" />
+<meta property="og:image" content="https://ytsautomotive.com/img/hero.jpg" />
+<meta property="og:image:alt" content="Technician programming a car key with a diagnostic tablet plugged into a vehicle's OBD-II port" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Lost your car key? We come to you." />
+<meta name="twitter:description" content="Mobile key programming and spare keys. Minutes, not a tow to the dealer." />
+<meta name="twitter:image" content="https://ytsautomotive.com/img/hero.jpg" />
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2308090c'/%3E%3Ctext x='50%25' y='57%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-weight='900' font-size='30' fill='%23ffb020'%3EY%3C/text%3E%3C/svg%3E" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2308090c'/%3E%3Ctext x='50%25' y='57%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-weight='900' font-size='30' fill='%23ffb020'%3EY%3C/text%3E%3C/svg%3E" />
+
+<style>
+  :root{
+    --ink:#08090c;--ink2:#101218;--card:#12141b;--line:rgba(255,176,32,.20);--line2:rgba(255,255,255,.08);
+    --amber:#ffb020;--amber2:#ffd066;--amber3:#e07b00;--text:#f3f4f7;--muted:#9a9fad;--good:#3ddc97;--bar:76px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  html,body{margin:0}
+  body{background:var(--ink);color:var(--text);line-height:1.58;overflow-x:hidden;
+    font-family:Inter,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    padding-bottom:calc(var(--bar) + env(safe-area-inset-bottom))}
+  a{color:var(--amber);text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{max-width:560px;margin:0 auto;padding:0 20px}
+  .amber{background:linear-gradient(180deg,var(--amber2),var(--amber) 55%,var(--amber3));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:0;border-radius:999px;
+    padding:16px 24px;font:inherit;font-weight:800;font-size:15.5px;letter-spacing:.01em;cursor:pointer;
+    background:linear-gradient(180deg,var(--amber2),var(--amber));color:#241700;
+    box-shadow:0 12px 30px rgba(255,176,32,.26)}
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text);box-shadow:none;font-weight:700}
+  .btn.wide{display:flex;width:100%}
+
+  /* header */
+  header{position:sticky;top:0;z-index:40;background:rgba(8,9,12,.86);backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line2)}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:900;letter-spacing:.10em;font-size:15px;text-transform:uppercase;color:var(--text)}
+  .brand .dot{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:14px;color:#241700;
+    background:linear-gradient(180deg,var(--amber2),var(--amber))}
+  .brand small{display:block;font-size:9px;letter-spacing:.22em;color:var(--muted);font-weight:700}
+  .navcall{border:1px solid var(--line);border-radius:999px;padding:8px 15px;font-size:13px;font-weight:800;color:var(--amber)}
+
+  /* hero */
+  .hero{position:relative;padding:30px 0 34px;overflow:hidden}
+  .hero::before{content:'';position:absolute;inset:-30% -30% auto -30%;height:80%;pointer-events:none;
+    background:radial-gradient(ellipse at 50% 0,rgba(255,176,32,.18),transparent 62%)}
+  .shot{position:relative;border-radius:20px;overflow:hidden;border:1px solid var(--line2);margin-bottom:22px;
+    aspect-ratio:16/9;background:
+      radial-gradient(circle at 78% 30%,rgba(255,176,32,.30),transparent 55%),
+      radial-gradient(circle at 20% 85%,rgba(90,140,255,.18),transparent 55%),
+      linear-gradient(160deg,#171a22,#0a0b10)}
+  .shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .shot .glyph{position:absolute;inset:0;display:grid;place-items:center;opacity:.9}
+  .shot .tagpill{position:absolute;left:12px;bottom:12px;z-index:2;background:rgba(8,9,12,.72);border:1px solid var(--line);
+    border-radius:999px;padding:6px 13px;font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--amber)}
+  .kick{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.26em;
+    text-transform:uppercase;color:var(--amber);margin-bottom:14px}
+  .live{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 0 0 rgba(61,220,151,.7);animation:pulse 2s infinite}
+  @keyframes pulse{70%{box-shadow:0 0 0 9px rgba(61,220,151,0)}100%{box-shadow:0 0 0 0 rgba(61,220,151,0)}}
+  h1{font-size:clamp(32px,8.6vw,44px);line-height:1.06;margin:0 0 14px;font-weight:900;letter-spacing:-.022em}
+  .hero p.lead{color:var(--muted);font-size:16px;margin:0 0 22px}
+  .cta{display:grid;gap:10px}
+  .under{color:#71768a;font-size:12.5px;margin:14px 0 0;text-align:center}
+
+  .trust{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:22px}
+  .trust div{border:1px solid var(--line2);border-radius:12px;padding:11px 12px;font-size:12.5px;font-weight:700;
+    background:rgba(255,255,255,.02);display:flex;gap:8px;align-items:center}
+  .trust span{color:var(--amber);font-size:14px}
+
+  /* sections */
+  section{padding:38px 0;border-top:1px solid var(--line2)}
+  h2{font-size:11px;font-weight:900;letter-spacing:.24em;text-transform:uppercase;color:var(--amber);margin:0 0 8px}
+  h3.big{font-size:clamp(24px,6.4vw,30px);line-height:1.15;margin:0 0 10px;font-weight:900;letter-spacing:-.02em}
+  .sub{color:var(--muted);margin:0 0 22px;font-size:14.5px}
+
+  .grid{display:grid;gap:11px}
+  .svc{border:1px solid var(--line2);border-radius:16px;padding:15px 16px;background:linear-gradient(160deg,rgba(255,176,32,.05),rgba(255,255,255,.012))}
+  .svc b{display:block;font-size:15.5px;margin-bottom:2px}
+  .svc span{color:var(--muted);font-size:13.5px}
+  .svc .i{font-size:22px;line-height:1;margin-bottom:8px;display:block}
+
+  /* pricing */
+  .price{border:1px solid var(--line);border-radius:18px;padding:18px;background:linear-gradient(160deg,rgba(255,176,32,.07),rgba(18,20,27,.7));
+    display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+  .price b{font-size:16px;display:block}
+  .price span{color:var(--muted);font-size:13px}
+  .price .amt{font-size:22px;font-weight:900;white-space:nowrap;letter-spacing:-.02em}
+  .note{color:#71768a;font-size:12.5px;margin-top:14px}
+  .vs{margin-top:16px;border:1px dashed var(--line);border-radius:16px;padding:16px;background:rgba(255,176,32,.04)}
+  .vs b{color:var(--amber)}
+
+  /* steps */
+  .steps{display:grid;gap:16px;counter-reset:s}
+  .step{display:flex;gap:14px;align-items:flex-start}
+  .step .n{width:34px;height:34px;flex:0 0 auto;border-radius:50%;display:grid;place-items:center;font-weight:900;
+    color:#241700;background:linear-gradient(180deg,var(--amber2),var(--amber))}
+  .step b{font-size:15.5px;display:block}
+  .step span{color:var(--muted);font-size:13.5px}
+
+  /* form */
+  .form{border:1px solid var(--line);border-radius:22px;padding:22px;background:linear-gradient(160deg,rgba(255,176,32,.08),rgba(16,18,24,.85));
+    box-shadow:0 24px 60px rgba(0,0,0,.55)}
+  label{display:block;font-size:10.5px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}
+  input,select,textarea{width:100%;padding:14px 15px;border-radius:12px;background:rgba(0,0,0,.42);border:1px solid var(--line2);
+    color:var(--text);font:inherit;font-size:16px}
+  textarea{min-height:74px;resize:vertical}
+  select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--amber) 50%),linear-gradient(135deg,var(--amber) 50%,transparent 50%);
+    background-position:calc(100% - 20px) 22px,calc(100% - 14px) 22px;background-size:6px 6px,6px 6px;background-repeat:no-repeat}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 3px rgba(255,176,32,.14)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+  .err{color:#ff8a9d;font-size:13px;margin-top:10px;min-height:16px;font-weight:700;text-align:center}
+  .fine{color:#6b7082;font-size:11.5px;text-align:center;margin-top:12px}
+  .hide{display:none}
+  .done{text-align:center;padding:8px 0}
+  .done .tick{font-size:40px;margin-bottom:6px}
+
+  /* faq */
+  details{border:1px solid var(--line2);border-radius:14px;padding:0 16px;background:rgba(255,255,255,.02);margin-bottom:9px}
+  summary{cursor:pointer;list-style:none;padding:15px 0;font-weight:700;font-size:15px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:'+';color:var(--amber);font-weight:900;font-size:19px;line-height:1}
+  details[open] summary::after{content:'–'}
+  details p{margin:0 0 15px;color:var(--muted);font-size:14px}
+
+  .area{display:flex;flex-wrap:wrap;gap:7px}
+  .area span{border:1px solid var(--line2);border-radius:999px;padding:6px 13px;font-size:12.5px;color:var(--muted)}
+
+  footer{padding:30px 0 34px;text-align:center;color:#6b7082;font-size:12.5px;border-top:1px solid var(--line2)}
+  footer a{color:#9a9fad}
+
+  /* sticky call bar */
+  .callbar{position:fixed;left:0;right:0;bottom:0;z-index:50;padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+    background:rgba(8,9,12,.94);backdrop-filter:blur(12px);border-top:1px solid var(--line2);
+    display:grid;grid-template-columns:1fr 1fr;gap:9px;max-width:592px;margin:0 auto}
+  .callbar .btn{padding:14px 16px;font-size:15px}
+
+  @media (min-width:600px){
+    .trust{grid-template-columns:repeat(2,1fr)}
+    .cta{grid-template-columns:1fr 1fr}
+  }
+</style>
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@graph":[
+    {
+      "@type":["Locksmith","AutomotiveBusiness"],
+      "@id":"https://ytsautomotive.com/#business",
+      "name":"YTS Automotive",
+      "description":"Mobile automotive locksmith. Car key replacement, transponder and smart-key programming, spare keys and key cutting — at your car, same day.",
+      "url":"https://ytsautomotive.com/",
+      "telephone":"+15555555555",
+      "image":"https://ytsautomotive.com/img/hero.jpg",
+      "priceRange":"$50–$300",
+      "currenciesAccepted":"USD",
+      "paymentAccepted":"Cash, Credit Card, Debit Card, Zelle, Cash App",
+      "address":{"@type":"PostalAddress","addressLocality":"Your City","addressRegion":"ST","addressCountry":"US"},
+      "areaServed":{"@type":"GeoCircle","geoMidpoint":{"@type":"GeoCoordinates","address":"Your City, ST"},"geoRadius":"48000"},
+      "openingHoursSpecification":[{
+        "@type":"OpeningHoursSpecification",
+        "dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+        "opens":"08:00","closes":"21:00"
+      }],
+      "sameAs":["https://www.instagram.com/ytsautomotive"],
+      "hasOfferCatalog":{
+        "@type":"OfferCatalog",
+        "name":"Mobile automotive locksmith services",
+        "itemListElement":[
+          {"@type":"Offer",
+           "itemOffered":{"@type":"Service","name":"Spare car key cut and programmed","serviceType":"Car key duplication"},
+           "priceSpecification":{"@type":"PriceSpecification","price":"50","priceCurrency":"USD","valueAddedTaxIncluded":false},
+           "description":"Standard spare key when you still have a working key."},
+          {"@type":"Offer",
+           "itemOffered":{"@type":"Service","name":"Car key programming","serviceType":"Transponder and smart key programming"},
+           "priceSpecification":{"@type":"PriceSpecification","minPrice":"100","maxPrice":"200","priceCurrency":"USD"},
+           "description":"Key or fob programmed to your vehicle, typically in minutes."},
+          {"@type":"Offer",
+           "itemOffered":{"@type":"Service","name":"Mobile service call","serviceType":"On-site locksmith visit"},
+           "priceSpecification":{"@type":"PriceSpecification","minPrice":"100","maxPrice":"150","priceCurrency":"USD"},
+           "description":"We drive to the vehicle — home, work, parking lot or roadside."}
+        ]
+      }
+    },
+    {
+      "@type":"WebSite",
+      "@id":"https://ytsautomotive.com/#website",
+      "url":"https://ytsautomotive.com/",
+      "name":"YTS Automotive",
+      "publisher":{"@id":"https://ytsautomotive.com/#business"},
+      "inLanguage":"en-US"
+    },
+    {
+      "@type":"FAQPage",
+      "@id":"https://ytsautomotive.com/#faq",
+      "mainEntity":[
+        {"@type":"Question","name":"How long does it take to program a car key?",
+         "acceptedAnswer":{"@type":"Answer","text":"Most vehicles take about two minutes on the programmer once we are at the car. Cutting the blade and getting set up is what fills out the visit — most jobs are done well inside an hour."}},
+        {"@type":"Question","name":"What does a replacement car key cost?",
+         "acceptedAnswer":{"@type":"Answer","text":"A spare key starts at $50 when you still have a working key. Programming runs $100 to $200 depending on the vehicle, and the mobile service call is $100 to $150. You get the full number before we drive out."}},
+        {"@type":"Question","name":"Do you come to me?",
+         "acceptedAnswer":{"@type":"Answer","text":"Yes. We are fully mobile — driveway, work parking lot, roadside or a tow yard. No tow to the dealership and no appointment weeks out."}},
+        {"@type":"Question","name":"I lost every key to the car. Can you still help?",
+         "acceptedAnswer":{"@type":"Answer","text":"Yes. All-keys-lost is a normal job for us: we cut a new blade to your vehicle's code and program it on site. Tell us the year, make and model when you call so we bring the right blank."}},
+        {"@type":"Question","name":"What vehicles do you work on?",
+         "acceptedAnswer":{"@type":"Answer","text":"Most domestic and import cars, trucks and SUVs — transponder keys, remote head keys, flip keys and push-to-start smart fobs. Send us the year, make and model and we will confirm before we roll."}},
+        {"@type":"Question","name":"Do I need proof the car is mine?",
+         "acceptedAnswer":{"@type":"Answer","text":"Yes. We ask for your ID and the registration or title matching the vehicle before any key is cut or programmed. It protects you and it is how a legitimate locksmith operates."}}
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="brand">
+      <span class="dot">&#128273;</span>
+      <span>YTS<small>Automotive</small></span>
+    </div>
+    <a class="navcall" href="tel:+15555555555">Call now</a>
+  </div>
+</header>
+
+<main>
+<div class="hero">
+  <div class="wrap">
+    <div class="shot">
+      <!-- Drop a wide hero photo at img/hero.jpg and it takes over this panel. -->
+      <img src="img/hero.jpg" alt="Technician programming a replacement car key with a diagnostic tablet plugged into a vehicle's OBD-II port" onerror="this.remove()" />
+      <div class="glyph" aria-hidden="true">
+        <svg width="132" height="132" viewBox="0 0 120 120" fill="none">
+          <circle cx="60" cy="60" r="46" stroke="rgba(255,176,32,.35)" stroke-width="1.5"/>
+          <rect x="38" y="26" width="30" height="44" rx="10" stroke="#ffb020" stroke-width="3"/>
+          <circle cx="53" cy="41" r="3.6" fill="#ffb020"/><circle cx="53" cy="55" r="3.6" fill="rgba(255,176,32,.55)"/>
+          <path d="M53 70v22M53 80h11M53 88h8" stroke="#ffb020" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="tagpill">Mobile &middot; Same day</div>
+    </div>
+
+    <div class="kick"><i class="live"></i> Taking calls now</div>
+    <h1>Locked out? Lost your key?<br><span class="amber">We come to you</span> &mdash; open it and key it.</h1>
+    <p class="lead">No tow. No dealership appointment. We pull up to your car, get it open if it&rsquo;s locked, cut the key and program it &mdash; the programming itself takes about two minutes.</p>
+
+    <div class="cta">
+      <a class="btn" href="tel:+15555555555" data-track="call-hero">&#128222; Call (555) 555-5555</a>
+      <a class="btn ghost" href="#quote">Get my price &rarr;</a>
+    </div>
+    <p class="under">Straight pricing before we drive out &mdash; no surprise bill at the car.</p>
+
+    <div class="trust">
+      <div><span>&#9201;</span> ~2 min to program</div>
+      <div><span>&#128663;</span> We drive to you</div>
+      <div><span>&#128273;</span> Spares from $50</div>
+      <div><span>&#128179;</span> Cash, card, Zelle</div>
+    </div>
+  </div>
+</div>
+
+<section id="services">
+  <div class="wrap">
+    <h2>What we handle</h2>
+    <h3 class="big">Keys, fobs and lockouts &mdash; on site.</h3>
+    <p class="sub">If it starts a car and you don't have it, that's the job.</p>
+    <div class="grid">
+      <div class="svc"><span class="i">&#128273;</span><b>Spare key</b><span>You still have one key and want a backup before you don't. Cut and programmed, from $50.</span></div>
+      <div class="svc"><span class="i">&#128225;</span><b>Key &amp; fob programming</b><span>Transponder keys, remote heads, flip keys and push-to-start smart fobs paired to your vehicle.</span></div>
+      <div class="svc"><span class="i">&#128683;</span><b>Lost all keys</b><span>Nothing left to copy? We cut a fresh blade to your vehicle's code and program it at the car.</span></div>
+      <div class="svc"><span class="i">&#9986;</span><b>Key cutting</b><span>Laser and edge-cut blades cut on the spot &mdash; no mailing a blank off and waiting a week.</span></div>
+      <div class="svc"><span class="i">&#128274;</span><b>Lockouts</b><span>Keys sitting on the seat? We open it without wrecking the door or the glass.</span></div>
+      <div class="svc"><span class="i">&#128119;</span><b>Dealers &amp; lots</b><span>Auction cars, trade-ins and tow yards with one key or none. Volume pricing &mdash; just ask.</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <h2>Pricing</h2>
+    <h3 class="big">You hear the number before we roll.</h3>
+    <p class="sub">Final price depends on the vehicle and how many keys are missing. These are the ranges we quote from.</p>
+    <div class="grid">
+      <div class="price">
+        <div><b>Spare key</b><span>Cut and programmed while you still have a working key.</span></div>
+        <div class="amt amber">$50</div>
+      </div>
+      <div class="price">
+        <div><b>Key programming</b><span>Paired to your car &mdash; transponder, remote or smart fob.</span></div>
+        <div class="amt amber">$100&ndash;200</div>
+      </div>
+      <div class="price">
+        <div><b>Mobile service call</b><span>We drive out to wherever the car is sitting.</span></div>
+        <div class="amt amber">$100&ndash;150</div>
+      </div>
+    </div>
+    <div class="vs">
+      <b>Why not the dealership?</b> They need the car on their lot &mdash; which usually means paying a tow first &mdash; and an appointment that isn't today. We meet the car where it already is and finish in one visit.
+    </div>
+    <p class="note">Exotics, high-security and all-keys-lost jobs can run higher; you'll be told the exact number on the phone, not at the car.</p>
+    <a class="btn wide" style="margin-top:18px" href="#quote">Get my exact price &rarr;</a>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <h2>How it works</h2>
+    <h3 class="big">Three steps, one visit.</h3>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div><b>Tell us the car</b><span>Year, make, model, and whether you still have a working key. Takes ten seconds.</span></div></div>
+      <div class="step"><div class="n">2</div><div><b>Get your price</b><span>A firm number and an arrival window &mdash; before anyone drives anywhere.</span></div></div>
+      <div class="step"><div class="n">3</div><div><b>We pull up and key it</b><span>Blade cut, key programmed, you start the car and we're gone. Usually inside the hour.</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="quote">
+  <div class="wrap">
+    <h2>Get a price</h2>
+    <h3 class="big">Text me the car, I'll text back the number.</h3>
+    <p class="sub">Fill this in and it opens your messages with everything already typed &mdash; hit send.</p>
+
+    <div class="form" id="form">
+      <label for="fName">Your name</label>
+      <input id="fName" type="text" autocomplete="name" placeholder="First name" />
+
+      <div class="row">
+        <div>
+          <label for="fYear">Year</label>
+          <input id="fYear" type="text" inputmode="numeric" maxlength="4" placeholder="2018" />
+        </div>
+        <div>
+          <label for="fMake">Make</label>
+          <input id="fMake" type="text" placeholder="Chevrolet" />
+        </div>
+      </div>
+
+      <label for="fModel">Model</label>
+      <input id="fModel" type="text" placeholder="Malibu" />
+
+      <label for="fNeed">What do you need?</label>
+      <select id="fNeed">
+        <option value="a spare key">Spare key (I still have one that works)</option>
+        <option value="a replacement key — I lost my only key">Replacement — I lost my only key</option>
+        <option value="all keys lost">All keys lost / car won't start</option>
+        <option value="a lockout — keys are in the car">Lockout — keys are locked inside</option>
+        <option value="a fob programmed">Fob / remote programming</option>
+        <option value="something else">Something else</option>
+      </select>
+
+      <label for="fWhere">Where is the car?</label>
+      <input id="fWhere" type="text" placeholder="City or cross streets" />
+
+      <button class="btn wide" id="sendBtn" type="button" style="margin-top:20px">&#128172; Text my quote request</button>
+      <div class="err" id="err"></div>
+      <a class="btn ghost wide" href="tel:+15555555555" data-track="call-form" style="margin-top:6px">Or just call (555) 555-5555</a>
+      <p class="fine">Goes straight to a phone, not a call center. Reply times are fastest 8am&ndash;9pm.</p>
+    </div>
+
+    <div class="form hide" id="done">
+      <div class="done">
+        <div class="tick">&#9989;</div>
+        <h3 class="big" style="font-size:22px">Your message is ready.</h3>
+        <p class="sub" style="margin-bottom:16px">If your messages app didn't open, tap below &mdash; or just call and skip the typing.</p>
+        <a class="btn wide" id="smsLink" href="#">Open my text</a>
+        <a class="btn ghost wide" href="tel:+15555555555" style="margin-top:9px">Call (555) 555-5555</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>Questions</h2>
+    <h3 class="big">The ones everybody asks.</h3>
+    <details open><summary>How long does it take?</summary><p>About two minutes on the programmer once we're at the car. Cutting the blade and setting up is what fills out the visit &mdash; most jobs are done well inside an hour.</p></details>
+    <details><summary>What's it going to cost me?</summary><p>Spare keys start at $50 when you still have a working key. Programming runs $100&ndash;$200 depending on the vehicle, and the mobile service call is $100&ndash;$150. You get the full number on the phone before anyone drives out.</p></details>
+    <details><summary>Do you actually come to me?</summary><p>Yes &mdash; driveway, work parking lot, roadside, tow yard. That's the whole point: no tow bill to get the car to a dealer.</p></details>
+    <details><summary>I lost every key. Am I stuck?</summary><p>No. All-keys-lost is a normal job. We cut a new blade to your vehicle's code and program it on site. Have the year, make and model ready so we bring the right blank.</p></details>
+    <details><summary>What cars do you work on?</summary><p>Most domestic and import cars, trucks and SUVs &mdash; transponder, remote head, flip key and push-to-start smart fobs. Send the year/make/model and we'll confirm before we roll.</p></details>
+    <details><summary>Do you need paperwork?</summary><p>Yes. Your ID plus registration or title matching the vehicle, before any key gets cut or programmed. That's how a legitimate locksmith works &mdash; and it's what stops somebody else from doing this to your car.</p></details>
+  </div>
+</section>
+
+<section id="area">
+  <div class="wrap">
+    <h2>Service area</h2>
+    <h3 class="big">Your City and about 30 miles out.</h3>
+    <p class="sub">Farther than that? Call anyway &mdash; if the job's worth the drive, we'll quote the drive.</p>
+    <div class="area">
+      <span>Your City</span><span>Nearby Town</span><span>Nearby Town</span><span>Nearby Town</span><span>Nearby Town</span><span>+ surrounding county</span>
+    </div>
+    <!-- Replace the chips above with the real towns you cover — local names in plain
+         text are the single highest-value on-page SEO signal for a mobile trade. -->
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p style="margin:0 0 6px"><b style="color:var(--text)">YTS Automotive</b> &mdash; mobile automotive locksmith</p>
+    <p style="margin:0 0 10px">Your City, ST &middot; 8am&ndash;9pm, seven days</p>
+    <p style="margin:0 0 14px"><a href="tel:+15555555555">(555) 555-5555</a> &middot; <a href="https://www.instagram.com/ytsautomotive" rel="noopener">@ytsautomotive</a></p>
+    <p style="margin:0;font-size:11.5px">ID and proof of ownership required on every job. &copy; <span id="yr">2026</span> YTS Automotive.</p>
+  </div>
+</footer>
+
+<div class="callbar">
+  <a class="btn" href="tel:+15555555555" data-track="call-bar">&#128222; Call now</a>
+  <a class="btn ghost" href="#quote">Get a price</a>
+</div>
+
+<script>
+(function(){
+  /* One place to change the destination number for the text-quote flow.
+     Keep it in sync with the tel: links above (find-and-replace +15555555555). */
+  var SMS_TO = '+15555555555';
+
+  var el = function(id){ return document.getElementById(id); };
+  el('yr').textContent = new Date().getFullYear();
+
+  /* iOS wants sms:number&body=, everything else wants sms:number?body= */
+  function smsHref(to, body){
+    var sep = /iPhone|iPad|iPod|Macintosh/i.test(navigator.userAgent) ? '&' : '?';
+    return 'sms:' + to + sep + 'body=' + encodeURIComponent(body);
+  }
+
+  function compose(){
+    var name  = (el('fName').value || '').trim();
+    var year  = (el('fYear').value || '').trim();
+    var make  = (el('fMake').value || '').trim();
+    var model = (el('fModel').value || '').trim();
+    var need  = el('fNeed').value;
+    var where = (el('fWhere').value || '').trim();
+    var car   = [year, make, model].filter(Boolean).join(' ');
+
+    var msg = 'Hi YTS — ' + (name ? 'this is ' + name + '. ' : '');
+    msg += 'I need ' + need + ' for my ' + (car || 'car') + '.';
+    if (where) msg += ' Car is at ' + where + '.';
+    msg += ' What would that run?';
+    return msg;
+  }
+
+  el('sendBtn').addEventListener('click', function(){
+    var year = (el('fYear').value || '').trim();
+    var make = (el('fMake').value || '').trim();
+    /* Without a vehicle there is nothing to quote, so that is the only gate. */
+    if (!make && !year){
+      el('err').textContent = 'Add the year and make so we can price it.';
+      el('fYear').focus();
+      return;
+    }
+    el('err').textContent = '';
+    var href = smsHref(SMS_TO, compose());
+    el('smsLink').href = href;
+    el('form').classList.add('hide');
+    el('done').classList.remove('hide');
+    el('done').scrollIntoView({behavior:'smooth', block:'center'});
+    location.href = href;
+  });
+
+  el('fWhere').addEventListener('keydown', function(e){ if (e.key === 'Enter') el('sendBtn').click(); });
+})();
+</script>
+</body>
+</html>
