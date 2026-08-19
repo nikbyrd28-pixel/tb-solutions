@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Loop CRM</title>
+<meta name="robots" content="noindex,nofollow" />
+<meta name="theme-color" content="#07080c" />
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<style>
+  /* Built for one hand, standing outside a barbershop. Every action a barber
+     visit produces — rang them, walked in, they said come back Tuesday — has to
+     be one tap from the row, or it gets done in the car and then never. */
+  :root{--bg:#07080c;--panel:rgba(255,255,255,.05);--line:rgba(150,190,255,.16);
+        --ink:#f0f2f8;--muted:#9aa3ba;--acc:#5df2e0;--acc2:#6f9dff;--warn:#f0b100;--bad:#ff8b8b}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-text-size-adjust:100%;
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif}
+  .wrap{max-width:680px;margin:0 auto;padding:22px 14px 70px}
+  h1{font-size:22px;font-weight:900;margin:0 0 3px}
+  .sub{color:var(--muted);font-size:13.5px;margin:0 0 16px}
+  input,select,textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--line);
+    color:var(--ink);border-radius:11px;padding:11px 12px;font:inherit;font-size:16px}
+  textarea{min-height:66px;resize:vertical}
+  select option{color:#111}
+  .btn{border:0;cursor:pointer;font:inherit;background:linear-gradient(135deg,var(--acc),var(--acc2));
+    color:#05060d;font-weight:900;border-radius:11px;padding:11px 15px;font-size:15px}
+  .btn.sm{padding:8px 12px;font-size:13px;border-radius:9px}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:800}
+  .btn[disabled]{opacity:.45}
+
+  .tabs{display:flex;gap:7px;overflow-x:auto;padding-bottom:3px;margin:0 0 13px;-webkit-overflow-scrolling:touch}
+  .tab{white-space:nowrap;border:1px solid var(--line);background:transparent;color:var(--muted);
+    border-radius:999px;padding:7px 13px;font:inherit;font-size:13px;font-weight:800;cursor:pointer}
+  .tab.on{background:rgba(93,242,224,.14);border-color:rgba(93,242,224,.5);color:var(--acc)}
+
+  .row{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:13px;margin-bottom:10px}
+  .row.due{border-color:rgba(240,177,0,.5)}
+  .row.on{border-color:rgba(93,242,224,.45)}
+  .rhead{display:flex;justify-content:space-between;gap:9px;align-items:flex-start;cursor:pointer}
+  .rname{font-size:16px;font-weight:800;margin:0}
+  .rwhere{color:var(--muted);font-size:12.5px;margin-top:2px}
+  .pill{display:inline-block;font-size:10.5px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;
+    border-radius:999px;padding:3px 8px;white-space:nowrap}
+  .p-lead{background:rgba(255,255,255,.08);color:var(--muted)}
+  .p-pitched{background:rgba(111,157,255,.18);color:#b9cdff}
+  .p-warm{background:rgba(240,177,0,.18);color:var(--warn)}
+  .p-signed{background:rgba(93,242,224,.18);color:var(--acc)}
+  .p-no{background:rgba(255,139,139,.14);color:var(--bad)}
+  .rank{background:rgba(240,177,0,.16);color:var(--warn);margin-right:5px}
+  .angle{font-size:13.5px;color:#cdd4e6;margin-top:8px}
+  .meta{font-size:12.5px;color:var(--muted);margin-top:7px}
+  .meta b{color:var(--ink)}
+  .live{margin-top:9px;font-size:13px;background:rgba(93,242,224,.08);border:1px solid rgba(93,242,224,.28);
+    border-radius:11px;padding:9px 11px}
+  .live.cold{background:rgba(240,177,0,.08);border-color:rgba(240,177,0,.35);color:#f3e2b6}
+  .body{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+  .acts{display:flex;flex-wrap:wrap;gap:7px}
+  .acts a,.acts button{text-decoration:none;display:inline-block}
+  .lab{font-size:11px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:13px 0 5px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .hist{margin-top:11px;font-size:13px;color:var(--muted)}
+  .hist div{padding:5px 0;border-top:1px solid rgba(255,255,255,.06)}
+  .hist b{color:#cdd4e6}
+  .msg{margin-top:9px;font-size:13.5px}
+  .msg.err{color:var(--bad)} .msg.ok{color:var(--acc)}
+  .x{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:9px;
+     width:32px;height:32px;font-size:19px;line-height:1;cursor:pointer;flex:0 0 auto}
+  .hide{display:none}
+  .foot{margin-top:26px;color:var(--muted);font-size:12.5px}
+  .foot a{color:var(--acc2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Loop CRM</h1>
+  <p class="sub">Every shop worth pitching, and what Loop already knows about the ones that signed.</p>
+
+  <div id="gate">
+    <input id="key" type="password" placeholder="Admin key" autocomplete="off">
+    <button class="btn" id="go" style="width:100%;margin-top:10px">Open</button>
+    <div class="msg err hide" id="gerr"></div>
+  </div>
+
+  <div id="app" class="hide">
+    <div class="tabs" id="tabs"></div>
+    <div id="list"></div>
+    <div id="unclaimed"></div>
+
+    <div class="lab">Spotted a shop that isn't here</div>
+    <div class="row">
+      <input id="nName" placeholder="Shop name" autocomplete="off">
+      <div class="grid2" style="margin-top:8px">
+        <input id="nTown" placeholder="Town" autocomplete="off">
+        <input id="nPhone" placeholder="Phone" inputmode="tel" autocomplete="off">
+      </div>
+      <button class="btn sm" id="nAdd" style="margin-top:9px">Add it</button>
+      <div class="msg hide" id="nMsg"></div>
+    </div>
+
+    <p class="foot">Offline walk list (no key needed): <a href="/kit/targets/">/kit/targets/</a> ·
+      PIN queue: <a href="/hq/pins/">/hq/pins/</a></p>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var SUPA='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+  var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+  function el(i){ return document.getElementById(i); }
+  function esc(s){ return String(s==null?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+  function rpc(fn,body){
+    return fetch(SUPA+'/rest/v1/rpc/'+fn,{method:'POST',
+      headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},
+      body:JSON.stringify(body||{})}).then(function(r){ return r.json(); })
+      .catch(function(){ return null; });
+  }
+
+  // Same reasoning as the PIN queue: the key stays in memory. A bookmarked
+  // admin key is a spare set of shop keys left in the door.
+  var ADMIN='', VIEW='all', ROWS=[], OPEN=null, COUNTS={};
+
+  el('go').addEventListener('click', function(){
+    var k=(el('key').value||'').trim(); if(!k) return;
+    var b=this; b.disabled=true; b.textContent='Checking…';
+    rpc('crm_list',{p_key:k,p_view:'all'}).then(function(d){
+      b.disabled=false; b.textContent='Open';
+      if(!d || d.ok===false){
+        el('gerr').textContent=(d&&d.error)||'Could not reach the CRM.';
+        el('gerr').classList.remove('hide'); return;
+      }
+      ADMIN=k; el('gate').classList.add('hide'); el('app').classList.remove('hide');
+      take(d); loadUnclaimed();
+    });
+  });
+  el('key').addEventListener('keydown',function(e){ if(e.key==='Enter') el('go').click(); });
+
+  function take(d){ ROWS=d.rows||[]; COUNTS=d.counts||{}; drawTabs(); draw(); }
+  function load(){ return rpc('crm_list',{p_key:ADMIN,p_view:VIEW}).then(function(d){ if(d&&d.ok) take(d); }); }
+
+  var TABS=[['due','Chase today','due'],['signed','Signed','signed'],
+            ['open','Still open','open'],['top','Top 10',null],['all','All','all']];
+  function drawTabs(){
+    el('tabs').innerHTML=TABS.map(function(t){
+      var n=t[2]?COUNTS[t[2]]:null;
+      return '<button class="tab'+(VIEW===t[0]?' on':'')+'" data-v="'+t[0]+'">'
+        +esc(t[1])+(n==null?'':' '+n)+'</button>';
+    }).join('');
+    Array.prototype.forEach.call(el('tabs').querySelectorAll('.tab'),function(b){
+      b.addEventListener('click',function(){ VIEW=b.getAttribute('data-v'); OPEN=null; load(); });
+    });
+  }
+
+  var STL={lead:'Lead',pitched:'Pitched',warm:'Warm',signed:'Signed',no:'Not now'};
+  function ago(t){
+    if(!t) return '';
+    var d=Math.floor((Date.now()-new Date(t).getTime())/86400000);
+    return d<=0?'today':d===1?'yesterday':d+' days ago';
+  }
+  function tel(p){ var d=String(p||'').replace(/[^0-9]/g,''); if(d.length===10) d='1'+d; return d.length===11?'+'+d:''; }
+  function today(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  function plus(n){ var d=new Date(); d.setDate(d.getDate()+n);
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+
+  // The pitch he actually uses, pre-filled so the text is one tap and not a
+  // blank compose screen he backs out of.
+  function pitch(r){
+    return 'Hey — Nick from Loop. Free rewards app for '+(r.name||'the shop')
+      +': your regulars punch a card on their phone, you see who has not been in for a month. '
+      +'Takes five minutes to set up, costs nothing to start. Want me to show you?';
+  }
+
+  function draw(){
+    if(!ROWS.length){
+      el('list').innerHTML='<p class="sub">Nothing in this view.</p>'; return;
+    }
+    el('list').innerHTML=ROWS.map(card).join('');
+    Array.prototype.forEach.call(el('list').querySelectorAll('[data-open]'),function(h){
+      h.addEventListener('click',function(){
+        var id=+h.getAttribute('data-open');
+        OPEN = (OPEN===id ? null : id);
+        draw();
+      });
+    });
+    // history is repainted on every draw, not just on open: logging a touch
+    // reloads the board underneath the open card, which would otherwise wipe
+    // the list of touches the moment you added one to it.
+    if(OPEN!=null){ wire(OPEN); history_(OPEN); }
+  }
+
+  function card(r){
+    var open = OPEN===r.id;
+    var isDue = r.next_at && r.next_at <= today();
+    var h='<div class="row'+(r.client?' on':'')+(isDue&&!r.client?' due':'')+'" id="row'+r.id+'">'
+      +'<div class="rhead" data-open="'+r.id+'">'
+        +'<div><p class="rname">'
+          +(r.rank>0?'<span class="pill rank">#'+r.rank+'</span>':'')
+          +esc(r.name)+'</p>'
+          +'<div class="rwhere">'+esc(r.town||'')+(r.address?' · '+esc(r.address):'')+'</div></div>'
+        +'<span class="pill p-'+esc(r.status)+'">'+esc(STL[r.status]||r.status)+'</span>'
+      +'</div>';
+
+    // The platform's own verdict, not a typed one.
+    if(r.client){
+      var cold = (+r.visits)===0;
+      h+='<div class="live'+(cold?' cold':'')+'">'
+        +'<b>On Loop</b> as <code>'+esc(r.client)+'</code> since '+esc(r.joined_on||'—')+' · '
+        +r.members+' member'+(+r.members===1?'':'s')+' · '+r.visits+' visit'+(+r.visits===1?'':'s')
+        +(cold?'<br><b>Nobody has punched a card yet.</b> This is the one to ring.':'')
+        +'</div>';
+    } else if(r.maybe && r.maybe.length){
+      h+='<div class="live cold">Might be <b>'+esc(r.maybe[0].biz_name||r.maybe[0].client)
+        +'</b> on Loop. <button class="btn sm" data-link="'+r.id+'" data-c="'+esc(r.maybe[0].client)+'">Yes, that is them</button></div>';
+    }
+
+    if(r.angle) h+='<div class="angle">'+esc(r.angle)+'</div>';
+
+    var bits=[];
+    if(r.last_touch) bits.push('<b>'+esc(r.last_kind||'note')+'</b> '+ago(r.last_touch));
+    if(r.next_at) bits.push((isDue?'<b>chase now</b> (':'chase ')+esc(r.next_at)+(isDue?')':''));
+    if(r.touches) bits.push(r.touches+' touch'+(+r.touches===1?'':'es'));
+    if(bits.length) h+='<div class="meta">'+bits.join(' · ')+'</div>';
+    if(r.note) h+='<div class="meta">📝 '+esc(r.note)+'</div>';
+
+    if(open) h+=body(r);
+    return h+'</div>';
+  }
+
+  function body(r){
+    var t=tel(r.phone), q=encodeURIComponent((r.name||'')+' '+(r.address||r.town||''));
+    var h='<div class="body">';
+    h+='<div class="acts">';
+    if(t) h+='<a class="btn sm" href="tel:'+t+'" data-t="'+r.id+'" data-k="call">Call</a>'
+           +'<a class="btn sm ghost" href="sms:'+t+'?&body='+encodeURIComponent(pitch(r))+'" data-t="'+r.id+'" data-k="text">Text the pitch</a>';
+    if(r.instagram) h+='<a class="btn sm ghost" target="_blank" rel="noopener" href="https://instagram.com/'+esc(r.instagram)+'" data-t="'+r.id+'" data-k="dm">Instagram</a>';
+    h+='<a class="btn sm ghost" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query='+q+'">Map</a>';
+    h+='<button class="btn sm ghost" data-t="'+r.id+'" data-k="walk">Walked in</button>';
+    h+='</div>';
+
+    h+='<div class="lab">What happened</div>'
+      +'<textarea id="nt'+r.id+'" placeholder="Owner is Kev, in Tuesdays and Fridays…">'+esc(r.note||'')+'</textarea>';
+
+    // Most of the research rows have no phone — the number gets found on the
+    // walk. Somewhere to put it is the difference between a CRM that gets
+    // richer every visit and a list that stays as thin as the day it was made.
+    h+='<div class="lab">Who to ask for</div>'
+      +'<input id="ow'+r.id+'" placeholder="Owner\u2019s name" value="'+esc(r.owner_name||'')+'">'
+      +'<div class="grid2" style="margin-top:8px">'
+      +'<input id="ph'+r.id+'" inputmode="tel" placeholder="Phone" value="'+esc(r.phone||'')+'">'
+      +'<input id="ig'+r.id+'" placeholder="Instagram" value="'+esc(r.instagram||'')+'">'
+      +'</div>'
+      +'<input id="em'+r.id+'" inputmode="email" placeholder="Email" style="margin-top:8px" value="'+esc(r.email||'')+'">';
+
+    h+='<div class="lab">Chase again</div><div class="acts">'
+      +'<button class="btn sm ghost" data-next="'+r.id+'" data-d="'+plus(2)+'">In 2 days</button>'
+      +'<button class="btn sm ghost" data-next="'+r.id+'" data-d="'+plus(7)+'">Next week</button>'
+      +'<button class="btn sm ghost" data-next="'+r.id+'" data-d="'+plus(30)+'">In a month</button>'
+      +'<button class="btn sm ghost" data-next="'+r.id+'" data-d="">Never</button></div>';
+
+    h+='<div class="lab">Where they stand</div>'
+      +'<select id="st'+r.id+'">'
+      +['lead','pitched','warm','signed','no'].map(function(s){
+          return '<option value="'+s+'"'+(r.status===s?' selected':'')+'>'+STL[s]+'</option>'; }).join('')
+      +'</select>';
+
+    if(!r.client){
+      h+='<div class="lab">Already on Loop under another name?</div>'
+        +'<div class="acts"><input id="lk'+r.id+'" placeholder="shop code" style="flex:1;min-width:150px">'
+        +'<button class="btn sm ghost" data-linkin="'+r.id+'">Attach</button></div>';
+    }
+
+    h+='<div class="acts" style="margin-top:13px">'
+      +'<button class="btn" data-save="'+r.id+'">Save</button></div>'
+      +'<div class="msg hide" id="m'+r.id+'"></div>'
+      +'<div class="hist" id="h'+r.id+'"></div>';
+    return h+'</div>';
+  }
+
+  function say(id,txt,bad){
+    var m=el('m'+id); if(!m) return;
+    m.className='msg '+(bad?'err':'ok'); m.textContent=txt; m.classList.remove('hide');
+    setTimeout(function(){ if(m) m.classList.add('hide'); },2600);
+  }
+
+  function wire(id){
+    var root=el('row'+id); if(!root) return;
+
+    // Tapping Call or Text hands the phone to another app. Log the touch on the
+    // way out — coming back to log it is the step that never happens.
+    Array.prototype.forEach.call(root.querySelectorAll('[data-t]'),function(a){
+      a.addEventListener('click',function(){
+        rpc('crm_touch',{p_key:ADMIN,p_id:+a.getAttribute('data-t'),
+          p_kind:a.getAttribute('data-k'),p_body:null,p_next_at:null,p_status:null})
+          .then(function(){ history_(id); load(); });
+      });
+    });
+
+    Array.prototype.forEach.call(root.querySelectorAll('[data-next]'),function(b){
+      b.addEventListener('click',function(){
+        var d0=b.getAttribute('data-d');
+        rpc('crm_save',{p_key:ADMIN,p_id:id,p_patch:{next_at:d0}}).then(function(d){
+          if(!(d&&d.ok)){ say(id,(d&&d.error)||'Did not save.',true); return; }
+          return load().then(function(){ say(id, d0?'Chase set.':'Chase cleared.'); });
+        });
+      });
+    });
+
+    var sv=root.querySelector('[data-save]');
+    if(sv) sv.addEventListener('click',function(){
+      var patch={ note:       (el('nt'+id)||{}).value||'',
+                  status:     (el('st'+id)||{}).value||'',
+                  owner_name: (el('ow'+id)||{}).value||'',
+                  phone:      (el('ph'+id)||{}).value||'',
+                  instagram:  (el('ig'+id)||{}).value||'',
+                  email:      (el('em'+id)||{}).value||'' };
+      sv.disabled=true;
+      rpc('crm_save',{p_key:ADMIN,p_id:id,p_patch:patch}).then(function(d){
+        sv.disabled=false;
+        if(!(d&&d.ok)){ say(id,(d&&d.error)||'Did not save.',true); return; }
+        return load().then(function(){ say(id,'Saved.'); });
+      });
+    });
+
+    var li=root.querySelector('[data-linkin]');
+    if(li) li.addEventListener('click',function(){
+      var c=((el('lk'+id)||{}).value||'').trim();
+      rpc('crm_link',{p_key:ADMIN,p_id:id,p_client:c}).then(function(d){
+        if(!(d&&d.ok)){ say(id,(d&&d.error)||'Could not attach.',true); return; }
+        loadUnclaimed();
+        return load().then(function(){ say(id,'Attached.'); });
+      });
+    });
+  }
+
+  // the suggestion buttons live on collapsed cards too
+  el('list').addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('[data-link]'):null; if(!b) return;
+    e.stopPropagation();
+    rpc('crm_link',{p_key:ADMIN,p_id:+b.getAttribute('data-link'),p_client:b.getAttribute('data-c')})
+      .then(function(){ load(); loadUnclaimed(); });
+  });
+
+  function history_(id){
+    rpc('crm_history',{p_key:ADMIN,p_id:id}).then(function(d){
+      var box=el('h'+id); if(!box||!d||!d.ok) return;
+      var t=d.touches||[];
+      box.innerHTML = t.length
+        ? t.map(function(x){ return '<div><b>'+esc(x.kind)+'</b> · '+ago(x.at)
+            +(x.body?' — '+esc(x.body):'')+'</div>'; }).join('')
+        : '<div>No touches logged yet.</div>';
+    });
+  }
+
+  // A barber who signs up off a poster never went through the walk list. Without
+  // this he is a row in the database that nobody is looking after.
+  function loadUnclaimed(){
+    rpc('crm_unclaimed',{p_key:ADMIN}).then(function(d){
+      var box=el('unclaimed'); if(!d||!d.ok){ box.innerHTML=''; return; }
+      var s=d.shops||[];
+      if(!s.length){ box.innerHTML=''; return; }
+      box.innerHTML='<div class="lab">On Loop, not on anyone\'s list ('+s.length+')</div>'
+        +s.map(function(x){
+          return '<div class="row"><div class="rhead"><div>'
+            +'<p class="rname">'+esc(x.biz_name||x.client)+'</p>'
+            +'<div class="rwhere"><code>'+esc(x.client)+'</code> · '+esc(x.created_at)
+            +' · '+x.members+' member'+(+x.members===1?'':'s')
+            +(x.owner_email?' · '+esc(x.owner_email):'')+'</div></div>'
+            +'<button class="x" title="Not a lead" data-hide="'+esc(x.client)+'">&times;</button>'
+            +'</div>'
+            +'<button class="btn sm" style="margin-top:9px" data-claim="'+esc(x.client)+'" data-n="'+esc(x.biz_name||x.client)+'">Add to CRM</button>'
+            +'</div>';
+        }).join('');
+      // Nick's own test shops live in reward_settings too. Dismissing them once
+      // is what keeps a real signup from being the twelfth row down.
+      Array.prototype.forEach.call(box.querySelectorAll('[data-hide]'),function(b){
+        b.addEventListener('click',function(){
+          b.disabled=true;
+          rpc('crm_ignore',{p_key:ADMIN,p_client:b.getAttribute('data-hide')})
+            .then(function(){ loadUnclaimed(); });
+        });
+      });
+      Array.prototype.forEach.call(box.querySelectorAll('[data-claim]'),function(b){
+        b.addEventListener('click',function(){
+          b.disabled=true;
+          rpc('crm_add',{p_key:ADMIN,p_name:b.getAttribute('data-n')}).then(function(d2){
+            if(!d2||!d2.ok){ b.disabled=false; return; }
+            rpc('crm_link',{p_key:ADMIN,p_id:d2.id,p_client:b.getAttribute('data-claim')})
+              .then(function(){ load(); loadUnclaimed(); });
+          });
+        });
+      });
+    });
+  }
+
+  el('nAdd').addEventListener('click',function(){
+    var n=(el('nName').value||'').trim(); if(!n) return;
+    var b=this; b.disabled=true;
+    rpc('crm_add',{p_key:ADMIN,p_name:n,p_town:(el('nTown').value||'').trim(),
+                   p_phone:(el('nPhone').value||'').trim()}).then(function(d){
+      b.disabled=false;
+      var m=el('nMsg'); m.classList.remove('hide');
+      if(d&&d.ok){ m.className='msg ok'; m.textContent='Added.';
+        el('nName').value=''; el('nTown').value=''; el('nPhone').value=''; load(); }
+      else { m.className='msg err'; m.textContent=(d&&d.error)||'Could not add it.'; }
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -158,3 +158,21 @@ n8n + Resend. No app code required.
 | Invoices & payments | **Stripe account** → publishable + secret keys (secret goes in Vercel env, never the repo) |
 | AI writing/research in ARIA | **Anthropic API key** |
 | Client portal | Just a "go" — built on the Supabase you already have |
+
+## Key-gated admin pages (unlinked on purpose)
+Neither is reachable from any nav — the URL plus the admin key is the whole
+door, so no page advertises them.
+
+| Page | What it is | Backing SQL |
+|------|------------|-------------|
+| `/hq/pins/` | Barbers locked out of their own shop. Verify by ringing the shop's listed number, then set a new PIN. | migration `loop_admin_panel`, `pin_recovery_*` |
+| `/hq/crm/` | The Loop sales pipeline: the 45 researched Chester County shops, every touch, and the platform's own numbers for the ones that signed. | `hq/crm.sql` |
+
+The CRM deliberately does not let a status be typed into existence. Each row is
+joined live to `reward_settings`, so "signed" means a Loop account exists, and
+the member and visit counts beside it come from `reward_members` and
+`reward_points_ledger`. A row reading **signed · 0 members · 0 visits** is the
+most useful thing on the screen and no amount of self-reporting would produce
+it. The offline rep walk list at `/kit/targets/` keeps its own localStorage copy
+of the same 45 shops; `tools/gen-crm-seed.cjs` regenerates the CRM seed from
+that file so the two lists cannot drift apart on a typo.
