@@ -166,7 +166,7 @@ door, so no page advertises them.
 | Page | What it is | Backing SQL |
 |------|------------|-------------|
 | `/hq/pins/` | Barbers locked out of their own shop. Verify by ringing the shop's listed number, then set a new PIN. | migration `loop_admin_panel`, `pin_recovery_*` |
-| `/hq/crm/` | The Loop sales pipeline: the 45 researched Chester County shops, every touch, and the platform's own numbers for the ones that signed. | `hq/crm.sql` |
+| `/hq/crm/` | The Loop sales pipeline: the 45 researched Chester County shops, every touch, and the platform's own numbers for the ones that signed. Opens on **the run** — today's work, in order. | `hq/crm.sql`, `hq/crm-outreach.sql` |
 
 The CRM deliberately does not let a status be typed into existence. Each row is
 joined live to `reward_settings`, so "signed" means a Loop account exists, and
@@ -176,3 +176,31 @@ most useful thing on the screen and no amount of self-reporting would produce
 it. The offline rep walk list at `/kit/targets/` keeps its own localStorage copy
 of the same 45 shops; `tools/gen-crm-seed.cjs` regenerates the CRM seed from
 that file so the two lists cannot drift apart on a typo.
+
+**The run** (`crm_run`, in `hq/crm-outreach.sql`) is the same principle applied
+to the day rather than the board. The board answers *what is the state of
+everything*; nobody has that question at 9am. Six things put a shop on the run,
+and every one of them is a fact the database holds rather than an intention
+someone recorded: a signed shop where **nobody has ever punched a card**
+(worst first, three days' grace), a signed shop whose **cards have gone quiet**
+for three weeks, an **overdue** chase, a chase **due today**, a shop **pitched
+a fortnight ago** with no chase date and nothing since, and otherwise the
+**best-ranked shop never approached at all**, so the run is never empty. It is
+capped, because a run of forty-five is a run of none.
+
+The message is chosen the same way. A shop that already signed is never pitched
+again — it is asked why the flyer never made it to the counter. A shop on its
+second approach gets a bump, its third a close, its fourth a polite exit. The
+ladder is keyed off `loop_crm.attempts`, which `crm_touch` now increments
+whenever a call, text, DM, email or walk-in is logged from the page.
+
+That counter is shared with an outreach machine that was applied straight to
+the database and never committed here: `loop_crm_next` (who is due),
+`loop_crm_mark` (record the send), and `loop_send_sms` / `loop_send_email`,
+called by n8n's service key. It had never run — 45 shops, zero attempts — and
+it spoke a different language: it wrote `contacted`, `demo_sent`, `replied`,
+`lost`, `skip`, while the board only reads `lead`, `pitched`, `warm`, `signed`,
+`no`. The first shop it touched would have lost its status pill and dropped out
+of "Still open" — the shops being worked hardest would have been the ones that
+vanished. Both halves now speak the board's five words, `loop_crm_mark`
+translates at the door, and a check constraint stops a sixth appearing.

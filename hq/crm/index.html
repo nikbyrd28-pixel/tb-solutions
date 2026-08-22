@@ -48,6 +48,19 @@
   .p-signed{background:rgba(93,242,224,.18);color:var(--acc)}
   .p-no{background:rgba(255,139,139,.14);color:var(--bad)}
   .rank{background:rgba(240,177,0,.16);color:var(--warn);margin-right:5px}
+  /* The reason a shop is on today's run. It sits above the name because it is
+     the thing that decides whether he taps it, and the name is only how he
+     knows which door to walk through. */
+  .why{display:flex;gap:7px;align-items:baseline;margin:0 0 7px;font-size:12.5px;color:#cdd4e6}
+  .r-dead{background:rgba(255,139,139,.16);color:var(--bad)}
+  .r-quiet{background:rgba(240,177,0,.18);color:var(--warn)}
+  .r-overdue{background:rgba(255,139,139,.14);color:#ffb0b0}
+  .r-due{background:rgba(111,157,255,.18);color:#b9cdff}
+  .r-dropped{background:rgba(240,177,0,.14);color:#f3d99a}
+  .r-fresh{background:rgba(255,255,255,.08);color:var(--muted)}
+  .row.urgent{border-color:rgba(255,139,139,.45)}
+  #q{margin:0 0 11px}
+  .tally{color:var(--muted);font-size:12.5px;margin:-4px 0 12px}
   .angle{font-size:13.5px;color:#cdd4e6;margin-top:8px}
   .meta{font-size:12.5px;color:var(--muted);margin-top:7px}
   .meta b{color:var(--ink)}
@@ -84,6 +97,8 @@
 
   <div id="app" class="hide">
     <div class="tabs" id="tabs"></div>
+    <div class="tally hide" id="tally"></div>
+    <input id="q" placeholder="Find a shop" autocomplete="off">
     <div id="list"></div>
     <div id="unclaimed"></div>
 
@@ -121,36 +136,60 @@
 
   // Same reasoning as the PIN queue: the key stays in memory. A bookmarked
   // admin key is a spare set of shop keys left in the door.
-  var ADMIN='', VIEW='all', ROWS=[], OPEN=null, COUNTS={};
+  var ADMIN='', VIEW='run', ROWS=[], OPEN=null, COUNTS={}, TALLY={}, RUNN=null, Q='';
 
   el('go').addEventListener('click', function(){
     var k=(el('key').value||'').trim(); if(!k) return;
     var b=this; b.disabled=true; b.textContent='Checking…';
-    rpc('crm_list',{p_key:k,p_view:'all'}).then(function(d){
+    rpc('crm_run',{p_key:k,p_limit:8}).then(function(d){
       b.disabled=false; b.textContent='Open';
       if(!d || d.ok===false){
         el('gerr').textContent=(d&&d.error)||'Could not reach the CRM.';
         el('gerr').classList.remove('hide'); return;
       }
       ADMIN=k; el('gate').classList.add('hide'); el('app').classList.remove('hide');
-      take(d); loadUnclaimed();
+      take(d); counts(); loadUnclaimed();
     });
   });
   el('key').addEventListener('keydown',function(e){ if(e.key==='Enter') el('go').click(); });
 
-  function take(d){ ROWS=d.rows||[]; COUNTS=d.counts||{}; drawTabs(); draw(); }
-  function load(){ return rpc('crm_list',{p_key:ADMIN,p_view:VIEW}).then(function(d){ if(d&&d.ok) take(d); }); }
+  function take(d){
+    ROWS=d.rows||[];
+    if(d.counts) COUNTS=d.counts;
+    // the badge is how many shops are actually on the run — the tally's total
+    // counts everything that qualifies, and promising 49 then showing 8 is a
+    // lie the first time he counts the rows
+    if(d.tally){ TALLY=d.tally; RUNN=ROWS.length; }
+    drawTabs(); drawTally(); draw();
+  }
+  function load(){
+    if(VIEW==='run'){
+      // the tab badges come off the board, so the run refreshes them too —
+      // otherwise logging a touch from the run leaves stale numbers behind it
+      return rpc('crm_run',{p_key:ADMIN,p_limit:8}).then(function(d){
+        if(d&&d.ok) take(d); return counts();
+      });
+    }
+    return rpc('crm_list',{p_key:ADMIN,p_view:VIEW}).then(function(d){ if(d&&d.ok) take(d); });
+  }
+  function counts(){
+    return rpc('crm_list',{p_key:ADMIN,p_view:'all'}).then(function(d){
+      if(d&&d.ok&&d.counts){ COUNTS=d.counts; drawTabs(); }
+    });
+  }
 
-  var TABS=[['due','Chase today','due'],['signed','Signed','signed'],
+  var TABS=[['run','The run',null],['due','Chase today','due'],['signed','Signed','signed'],
             ['open','Still open','open'],['top','Top 10',null],['all','All','all']];
   function drawTabs(){
     el('tabs').innerHTML=TABS.map(function(t){
-      var n=t[2]?COUNTS[t[2]]:null;
+      var n=t[0]==='run' ? RUNN : (t[2]?COUNTS[t[2]]:null);
       return '<button class="tab'+(VIEW===t[0]?' on':'')+'" data-v="'+t[0]+'">'
         +esc(t[1])+(n==null?'':' '+n)+'</button>';
     }).join('');
     Array.prototype.forEach.call(el('tabs').querySelectorAll('.tab'),function(b){
-      b.addEventListener('click',function(){ VIEW=b.getAttribute('data-v'); OPEN=null; load(); });
+      b.addEventListener('click',function(){
+        VIEW=b.getAttribute('data-v'); OPEN=null; Q=''; el('q').value=''; load();
+      });
     });
   }
 
@@ -165,19 +204,95 @@
   function plus(n){ var d=new Date(); d.setDate(d.getDate()+n);
     return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 
-  // The pitch he actually uses, pre-filled so the text is one tap and not a
-  // blank compose screen he backs out of.
+  // The message, pre-filled so texting is one tap and not a blank compose
+  // screen he backs out of — and different every time, because the third
+  // identical pitch to the same shop is the one that gets the number blocked.
+  // What to say is decided by why the shop is in front of him and how many
+  // times he has already tried, both of which the database already knows.
   function pitch(r){
-    return 'Hey — Nick from Loop. Free rewards app for '+(r.name||'the shop')
-      +': your regulars punch a card on their phone, you see who has not been in for a month. '
-      +'Takes five minutes to set up, costs nothing to start. Want me to show you?';
+    var who = r.owner_name ? r.owner_name : '';
+    var hi  = who ? 'Hey '+who+' — ' : 'Hey — ';
+    var shop = r.name||'the shop';
+
+    // A signed shop is not a lead. Pitching a barber who already said yes is
+    // the fastest way to look like you have not been paying attention.
+    if(r.reason==='dead'){
+      return hi+'Nick from Loop. '+shop+' is all set up but nobody has punched a card yet — '
+        +'usually that just means the flyer never made it to the counter. '
+        +'Want me to drop one in this week and show the chairs the 10-second version?';
+    }
+    if(r.reason==='quiet'){
+      return hi+'Nick from Loop. Noticed the cards at '+shop+' have gone quiet the last few weeks. '
+        +'Normally that is the front desk forgetting to ask, not the customers. '
+        +'Want me to swing by and get it back in the routine?';
+    }
+
+    var n = +(r.attempts||0);
+    if(n<=0){
+      return hi+'Nick from Loop. Free rewards app for '+shop
+        +': your regulars punch a card on their phone, you see who has not been in for a month. '
+        +'Takes five minutes to set up, costs nothing to start. Want me to show you?';
+    }
+    if(n===1){
+      return hi+'Nick again about the rewards app for '+shop
+        +'. Quickest version: I set it up for you, you keep it if the regulars use it. '
+        +'Two minutes on your phone — worth a look?';
+    }
+    if(n===2){
+      return hi+'last one from me. I can have '+shop
+        +' running rewards before your next Saturday — nothing to pay, nothing to install. '
+        +'Yes or no is fine either way.';
+    }
+    return hi+'closing the file on this one so I stop bothering you. '
+      +'If rewards ever comes up at '+shop+', the offer stands.';
+  }
+
+  // Every one of these is a fact out of the database, phrased the way he would
+  // say it to himself in the van. None of them is a status anyone typed.
+  var WHY={dead:'Dead on arrival',quiet:'Gone quiet',overdue:'Overdue',
+           due:'Due today',dropped:'Dropped',fresh:'Never approached'};
+  function why(r){
+    var d=+(r.hurt||0), day=function(n){ return n+' day'+(n===1?'':'s'); };
+    switch(r.reason){
+      case 'dead':    return 'Signed '+day(d)+' ago and not one card has been punched.'
+                             +(+r.members?' '+r.members+' member'+(+r.members===1?'':'s')+' signed up and stopped.':'');
+      case 'quiet':   return 'Last punch was '+day(d)+' ago. '+r.visits+' visit'+(+r.visits===1?'':'s')+' before that.';
+      case 'overdue': return 'Chase was due '+day(d)+' ago.';
+      case 'due':     return 'Chase is today.';
+      case 'dropped': return 'Pitched '+day(d)+' ago, nothing since, no chase set.';
+      case 'fresh':   return r.rank>0 ? 'Never approached. #'+r.rank+' on the list.' : 'Never approached.';
+      default: return '';
+    }
+  }
+
+  function drawTally(){
+    var box=el('tally');
+    if(VIEW!=='run' || Q || !TALLY.total){ box.classList.add('hide'); return; }
+    var bits=[];
+    [['dead','dead'],['quiet','gone quiet'],['overdue','overdue'],
+     ['due','due today'],['dropped','dropped'],['fresh','never approached']]
+      .forEach(function(t){ if(TALLY[t[0]]) bits.push(TALLY[t[0]]+' '+t[1]); });
+    box.textContent = bits.join(' · ')
+      + (TALLY.total>ROWS.length ? ' — first '+ROWS.length+' below.' : '');
+    box.classList.remove('hide');
   }
 
   function draw(){
-    if(!ROWS.length){
-      el('list').innerHTML='<p class="sub">Nothing in this view.</p>'; return;
+    var rows=ROWS;
+    if(Q){
+      var q=Q.toLowerCase();
+      rows=ROWS.filter(function(r){
+        return ((r.name||'')+' '+(r.town||'')+' '+(r.owner_name||'')).toLowerCase().indexOf(q)>=0;
+      });
     }
-    el('list').innerHTML=ROWS.map(card).join('');
+    if(!rows.length){
+      el('list').innerHTML='<p class="sub">'
+        +(Q?'No shop by that name in this view.'
+           :(VIEW==='run'?'Nothing needs you today. That is allowed.':'Nothing in this view.'))
+        +'</p>';
+      return;
+    }
+    el('list').innerHTML=rows.map(card).join('');
     Array.prototype.forEach.call(el('list').querySelectorAll('[data-open]'),function(h){
       h.addEventListener('click',function(){
         var id=+h.getAttribute('data-open');
@@ -194,7 +309,10 @@
   function card(r){
     var open = OPEN===r.id;
     var isDue = r.next_at && r.next_at <= today();
-    var h='<div class="row'+(r.client?' on':'')+(isDue&&!r.client?' due':'')+'" id="row'+r.id+'">'
+    var hot = r.reason==='dead'||r.reason==='overdue';
+    var h='<div class="row'+(r.client?' on':'')+(isDue&&!r.client?' due':'')+(hot?' urgent':'')+'" id="row'+r.id+'">'
+      +(r.reason?'<div class="why"><span class="pill r-'+esc(r.reason)+'">'+esc(WHY[r.reason]||r.reason)
+                 +'</span><span>'+esc(why(r))+'</span></div>':'')
       +'<div class="rhead" data-open="'+r.id+'">'
         +'<div><p class="rname">'
           +(r.rank>0?'<span class="pill rank">#'+r.rank+'</span>':'')
@@ -209,7 +327,7 @@
       h+='<div class="live'+(cold?' cold':'')+'">'
         +'<b>On Loop</b> as <code>'+esc(r.client)+'</code> since '+esc(r.joined_on||'—')+' · '
         +r.members+' member'+(+r.members===1?'':'s')+' · '+r.visits+' visit'+(+r.visits===1?'':'s')
-        +(cold?'<br><b>Nobody has punched a card yet.</b> This is the one to ring.':'')
+        +(cold&&r.reason!=='dead'?'<br><b>Nobody has punched a card yet.</b> This is the one to ring.':'')
         +'</div>';
     } else if(r.maybe && r.maybe.length){
       h+='<div class="live cold">Might be <b>'+esc(r.maybe[0].biz_name||r.maybe[0].client)
@@ -222,6 +340,7 @@
     if(r.last_touch) bits.push('<b>'+esc(r.last_kind||'note')+'</b> '+ago(r.last_touch));
     if(r.next_at) bits.push((isDue?'<b>chase now</b> (':'chase ')+esc(r.next_at)+(isDue?')':''));
     if(r.touches) bits.push(r.touches+' touch'+(+r.touches===1?'':'es'));
+    if(+r.attempts>0) bits.push('<b>'+r.attempts+'</b> approach'+(+r.attempts===1?'':'es'));
     if(bits.length) h+='<div class="meta">'+bits.join(' · ')+'</div>';
     if(r.note) h+='<div class="meta">📝 '+esc(r.note)+'</div>';
 
@@ -234,11 +353,16 @@
     var h='<div class="body">';
     h+='<div class="acts">';
     if(t) h+='<a class="btn sm" href="tel:'+t+'" data-t="'+r.id+'" data-k="call">Call</a>'
-           +'<a class="btn sm ghost" href="sms:'+t+'?&body='+encodeURIComponent(pitch(r))+'" data-t="'+r.id+'" data-k="text">Text the pitch</a>';
+           +'<a class="btn sm ghost" href="sms:'+t+'?&body='+encodeURIComponent(pitch(r))+'" data-t="'+r.id+'" data-k="text">'
+           +(r.reason==='dead'||r.reason==='quiet' ? 'Text them'
+             : (+r.attempts>0 ? 'Text the follow-up' : 'Text the pitch'))+'</a>';
     if(r.instagram) h+='<a class="btn sm ghost" target="_blank" rel="noopener" href="https://instagram.com/'+esc(r.instagram)+'" data-t="'+r.id+'" data-k="dm">Instagram</a>';
     h+='<a class="btn sm ghost" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query='+q+'">Map</a>';
     h+='<button class="btn sm ghost" data-t="'+r.id+'" data-k="walk">Walked in</button>';
     h+='</div>';
+
+    h+='<div class="lab">What the text will say</div>'
+      +'<div class="angle" style="color:#9aa3ba">'+esc(pitch(r))+'</div>';
 
     h+='<div class="lab">What happened</div>'
       +'<textarea id="nt'+r.id+'" placeholder="Owner is Kev, in Tuesdays and Fridays…">'+esc(r.note||'')+'</textarea>';
@@ -394,6 +518,12 @@
       });
     });
   }
+
+  el('q').addEventListener('input',function(){
+    Q=(this.value||'').trim(); OPEN=null;
+    if(Q && VIEW==='run'){ VIEW='all'; load(); return; }
+    drawTally(); draw();
+  });
 
   el('nAdd').addEventListener('click',function(){
     var n=(el('nName').value||'').trim(); if(!n) return;
