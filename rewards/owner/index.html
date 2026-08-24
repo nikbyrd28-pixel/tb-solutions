@@ -153,6 +153,7 @@
       <div><h1 id="bizName">Your program</h1><div class="muted" id="bizSub"></div></div>
       <div class="links">
         <button class="btn ghost" onclick="load(true)">↻ Refresh</button>
+        <button class="btn ghost" id="tourBtn" type="button">▶ How it works</button>
         <button class="btn ghost" onclick="LoopAuth.clear();location.reload()">Log out</button>
       </div>
     </div>
@@ -372,7 +373,7 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" id="linksCard">
       <h2>🔗 <b>Quick links</b></h2>
       <div class="links">
         <button class="btn ghost" id="lkJoin">📱 Member join link</button>
@@ -386,6 +387,7 @@
 </div>
 
 <script src="/loop-auth.js"></script>
+<script src="/loop-tour.js"></script>
 <script>
 var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
 var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
@@ -626,6 +628,30 @@ document.addEventListener('visibilitychange',function(){
   if(document.visibilityState==='visible' && runState().on && DUE) drawRun();
 });
 
+
+/* ── the 60-second walk-through ─────────────────────────────────────────────
+   A barber who signs up and closes the tab is the single most expensive thing
+   that happens to Loop: the shop exists, the card exists, and not one customer
+   ever punches it. Nothing on this screen is hard — it is just fourteen cards
+   deep, and the one that matters is the QR. So point at it, once, on the first
+   visit, and leave a button to play it again.
+   Steps whose card this shop has not got yet are skipped by /loop-tour.js. */
+var OWNER_TOUR=[
+  {sel:'#stats', t:'1 · Your shop, in numbers',
+   b:"Members, who has been in this month, rewards claimed. All zeros just means nobody has scanned yet — the next card is how that changes."},
+  {sel:'#qrCard', t:'2 · This is the one that matters',
+   b:"Every scan opens your rewards card. Print the poster and put it where people wait — a shop with Loop set up and no QR on the counter is a shop where nothing happens."},
+  {sel:'#startCard', t:'3 · Your first week',
+   b:"Four things take a shop from empty to running on its own. Tick them off and this card disappears for good."},
+  {sel:'#dueCard', t:'4 · Who is due a cut',
+   b:"Regulars who have not been in. Tap one and your own phone opens with the text already written — nothing sends by itself, ever."},
+  {sel:'#settingsCard', t:'5 · What they are playing for',
+   b:"The reward, how many visits earn it, and how hard the games are. Change it whenever you like — customers see it the next time they open their card."},
+  {sel:'#linksCard', t:'6 · Everything else',
+   b:"The join link, a poster for the counter, the scanner for the chair, and a way to bring the clients you already have into Loop."}
+];
+function startOwnerTour(){ LoopTour.start(OWNER_TOUR,{id:'owner'}); }
+
 function render(d){
   el('login').classList.add('hide'); el('dash').classList.remove('hide');
   (function(){
@@ -639,6 +665,10 @@ function render(d){
   // show the shop's real name — the slug ("2005marketstsuite192") is not what they called it
   var shopName=(d.biz_name && String(d.biz_name).trim()) ? String(d.biz_name).trim() : cap(d.client);
   el('bizName').textContent=shopName;
+  // after the tiles are filled, not before — a tour that rings an empty box
+  // teaches nothing
+  (function(){ var t=el('tourBtn'); if(t&&!t._w){ t._w=1; t.onclick=startOwnerTour; }
+    setTimeout(function(){ try{ LoopTour.auto('owner',OWNER_TOUR); }catch(e){} },400); })();
   el('bizSub').textContent=(shopName===d.client?'':d.client+' · ')+'Reward: '+d.reward_text+' at '+d.reward_at+' points';
   var tiles=[
     {n:d.members,l:'Members',c:''},

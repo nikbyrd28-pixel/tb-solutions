@@ -157,6 +157,7 @@
     <button class="tab on" data-p="site">🌐 Website</button>
     <button class="tab" data-p="card">🎁 Rewards card</button>
     <button class="tab" data-p="tools">🛠️ More</button>
+    <button class="tab hide" id="tourBtn" type="button">▶ How it works</button>
   </nav>
 </div></div>
 
@@ -181,7 +182,7 @@
 
   <!-- ═══ WEBSITE panel ═══ -->
   <div id="p-site">
-    <div class="card">
+    <div class="card" id="pubCard">
       <div class="tog">
         <span>Publish my website<small id="liveNote">Off — nobody can see it yet.</small></span>
         <input type="checkbox" id="fOn">
@@ -330,7 +331,7 @@
 
   <!-- ═══ REWARDS CARD panel ═══ -->
   <div id="p-card" class="hide">
-    <div class="card">
+    <div class="card" id="rewardCard">
       <h2>🎁 The headline reward</h2>
       <p class="hint">What a full card earns, and how many visits fill it. This is the first thing a customer reads.</p>
       <label for="rwText">The reward</label>
@@ -468,6 +469,7 @@
 <input type="file" id="picker" accept="image/*" class="hide">
 
 <script src="/loop-auth.js"></script>
+<script src="/loop-tour.js"></script>
 <script>
 (function(){
   "use strict";
@@ -507,7 +509,7 @@
   var PANE='site';
   function pane(p){
     PANE=p;
-    [].forEach.call(el('tabs').children,function(b){ b.classList.toggle('on',b.getAttribute('data-p')===p); });
+    [].forEach.call(el('tabs').querySelectorAll('[data-p]'),function(b){ b.classList.toggle('on',b.getAttribute('data-p')===p); });
     el('p-site').classList.toggle('hide',p!=='site');
     el('p-card').classList.toggle('hide',p!=='card');
     el('p-tools').classList.toggle('hide',p!=='tools');
@@ -517,9 +519,33 @@
     el('prevCardCard').classList.toggle('hide',p!=='card');
     if(p==='card') rwOpen();
   }
-  [].forEach.call(el('tabs').children,function(b){
+  [].forEach.call(el('tabs').querySelectorAll('[data-p]'),function(b){
     b.addEventListener('click',function(){ pane(b.getAttribute('data-p')); });
   });
+
+  /* ── the 60-second walk-through ──────────────────────────────────────────
+     This is the screen a barber lands on the minute he finishes signing up,
+     and it is twenty-one cards long. He does not need to understand all of it
+     today — he needs to know the toggle that puts him online, where the reward
+     is set, and that the preview on the right is his actual shop. Six steps,
+     once, with a button to play it again. */
+  function tab(p){ return function(){ var b=document.querySelector('.tab[data-p="'+p+'"]'); if(b) b.click(); }; }
+  var EDIT_TOUR=[
+    {sel:'#pubCard',    before:tab('site'), t:'1 · Off until you say so',
+     b:"Your website is built already — it just is not switched on. Flip this when it looks right, and the link underneath is the one for your Instagram bio."},
+    {sel:'#themes',     before:tab('site'), t:'2 · Pick a look',
+     b:"Same page, four looks. Tap one and the preview changes instantly. Nothing here can break anything."},
+    {sel:'#prevcol',    before:tab('site'), t:'3 · That is the real thing',
+     b:"Not a mock-up — that is your page, updating as you type. On a phone it sits under the editor; scroll down to see it."},
+    {sel:'#savebar',    before:tab('site'), t:'4 · Nothing is live until you save',
+     b:"Edit as much as you like and walk away; nothing changes for a customer until you hit save."},
+    {sel:'#rewardCard', before:tab('card'), t:'5 · What a full card earns',
+     b:"The reward and how many visits fill the card. This is the first line a customer reads, so make it something they actually want."},
+    {sel:'#toolGrid',   before:tab('tools'), t:'6 · The rest of your shop',
+     b:"Your dashboard, the scanner for the chair, posters, your customer list — all of it opens already signed in.",
+     pad:10}
+  ];
+  function startEditTour(){ tab('site')(); LoopTour.start(EDIT_TOUR,{id:'shopedit',onDone:tab('site')}); }
 
   /* ── sign in ───────────────────────────────────────────────────────── */
   el('signBtn').onclick=function(){
@@ -540,10 +566,13 @@
       el('editor').classList.remove('hide');
       el('savebar').classList.remove('hide');
       el('tabs').classList.remove('hide');
+      el('tourBtn').classList.remove('hide');
       el('chipCode').textContent=c; el('chipCode').classList.remove('hide');
       el('ownerLink').href='/rewards/owner/?c='+encodeURIComponent(c);
       tools();
       fill(); paint();
+      var tb=el('tourBtn'); if(tb) tb.onclick=startEditTour;
+      setTimeout(function(){ try{ LoopTour.auto('shopedit',EDIT_TOUR,{onDone:tab('site')}); }catch(e){} },500);
     });
   };
   el('inPin').addEventListener('keydown',function(e){ if(e.key==='Enter') el('signBtn').click(); });
