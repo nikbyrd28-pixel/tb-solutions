@@ -3,7 +3,7 @@
 Goal: own the Chester County marketing search, starting with the AI-marketing
 queries nobody has claimed and expanding into the head-on agency terms.
 
-Last updated: 2026-08-24
+Last updated: 2026-08-24 (GBP confirmed claimed)
 
 ---
 
@@ -30,7 +30,7 @@ Both use the exact phrase as the title. Both show a real favicon.
 
 1. **This query is won in the map pack, not in the blue links.** Three local
    results sit above the first organic result. No amount of on-page work
-   outranks a Google Business Profile that does not exist.
+   outranks a Google Business Profile that is not finished and reviewed.
 2. **Review count is the moat.** 309 reviews is years of work. It is beatable
    on recency and rate, not on volume, and not this quarter.
 3. **The organic titles are exact-match.** `/services/marketing-agency-chester-county/`
@@ -89,26 +89,38 @@ Rebuild the logos: `node tools/brand-build.mjs && node tools/brand-raster.mjs`
 
 Ranked by impact. Items 1–3 matter more than every page above combined.
 
-### 1. Google Business Profile — claim and finish it
-Without this there is no map pack, and the map pack is the query.
-- Claim / verify **TB Solutions** at the West Chester service address.
-- Set it up as a **service-area business** if there is no walk-in office —
-  hide the address, define the towns served.
-- Primary category: **Marketing agency** (or *Internet marketing service* —
-  pick the one your competitors in the pack use, then test).
-- Secondary categories: Website designer, Advertising agency, Internet marketing
-  service, Marketing consultant.
-- Fill in services with real descriptions and the published prices.
-- 10+ real photos: work, screens, you. Keep adding monthly.
-- Hours, service area, website link → `https://tbsol.net/services/`.
-- Post weekly. Answer the Q&A yourself with the obvious questions.
+### 1. Google Business Profile — finish it (claimed 2026-08-24)
+The profile exists. Claimed is not the same as competitive — an unfinished
+profile ranks like a half-built one, because Google has nothing to match against.
 
-### 2. Reviews — start the engine today
-Rate and recency beat raw volume in the medium term.
-- Ask every client, by text, the day the work goes live.
-- Target: 10 in the first 60 days, then 3–5/month, forever.
-- Reply to all of them, within a day.
-- The Loop review flow already exists at `/review/` — point it at TB's profile.
+**Everything below is written out ready to paste in `hq/gbp-paste-kit.md`** —
+categories, the 738-character description, all 11 services with descriptions,
+product tiles with prices, 8 seeded Q&As, a photo shot list, 12 weeks of posts,
+review request texts and reply templates.
+
+Order of work, highest leverage first:
+- **Categories.** Primary → *Marketing agency*. Secondaries: Website designer,
+  Internet marketing service, Advertising agency, Marketing consultant. This
+  single field decides which searches you are eligible for at all.
+- **Description + services + products.** All written; paste them.
+- **10 photos**, then a few weekly. Never stock.
+- **Seed the Q&A** yourself — ask from a second account, answer from the
+  business. Free real estate that shows in the profile and nobody uses it.
+- **Website link** → `https://tbsol.net/services/`.
+- **Hours and service area**, including holiday hours.
+- **Post weekly.** Twelve are written.
+
+### 2. Reviews — this is now the top blocker
+With the profile claimed, reviews are the thing standing between TB Solutions
+and the map pack. Padula Media has 309. You do not beat that on volume this
+year — you beat it on **rate and recency**, which Google weighs heavily.
+
+- Ask every client by text within an hour of the work going live. Templates are
+  in the paste kit.
+- **Target: 10 in the first 60 days, then 3–5/month, forever.**
+- Reply to every one within a day, naming the specific thing.
+- The Loop review flow at `/review/` already exists — point it at TB's profile
+  and the asking becomes automatic instead of remembered.
 
 ### 3. Citations — same name, address, phone, everywhere
 - Bing Places, Apple Business Connect, Yelp, Facebook, Nextdoor, LinkedIn,
