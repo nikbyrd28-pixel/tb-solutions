@@ -3,7 +3,7 @@
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SITE, TOWNS, GUIDES } from './seo-data.mjs';
+import { SITE, TOWNS, GUIDES, SERVICES } from './seo-data.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TODAY = new Date().toISOString().slice(0, 10);
@@ -134,7 +134,7 @@ const ctaBlock = (line) => `  <div class="cta">
     </div>
   </div>`;
 
-const SERVICES = `  <h2>What the system is made of</h2>
+const SYSTEM_BLOCK = `  <h2>What the system is made of</h2>
   <p>Four parts. They are sold separately, but they are designed to feed each other — the ads fill the site, the site feeds the agent, the agent feeds the follow-up, and the follow-up feeds the reviews that make the next customer cheaper to win.</p>
   <div class="box">
     <h3>1. An AI growth agent on your site</h3>
@@ -167,7 +167,7 @@ function townPage(t, all) {
   <p>${esc(t.local)}</p>
   <p>${esc(t.name)} is ${esc(t.blurb)} — and that shapes the whole approach. The point of putting AI into your marketing is not novelty. It is that a small business here competes against companies with staff, and software is the only way to be as responsive as a company with staff without hiring one.</p>
 
-${SERVICES}
+${SYSTEM_BLOCK}
 
   <h2>Where the money usually is first</h2>
   <p>For most ${esc(t.name)} businesses the fastest return is not more traffic. It is the leads you are already getting and losing — the missed call at 4:50pm, the form filled out on Sunday, the message that got read and then buried. Close that gap first, then spend on getting found. <a href="/ai-marketing/cost/">What each piece costs →</a></p>
@@ -205,10 +205,11 @@ ${ctaBlock(`Tell us what you do in ${t.name} and we will tell you exactly where 
   return { url, html: page({ url, title, desc, schema, body }) };
 }
 
-function guidePage(g) {
-  const url = `/ai-marketing/${g.slug}/`;
-  const body = `  <div class="crumb"><a href="/">Home</a> › <a href="/ai-marketing/">AI Marketing</a> › ${esc(g.h1)}</div>
-  <div class="eyebrow">Chester County, PA · AI marketing guide</div>
+function contentPage(g, opts) {
+  const { base, siblings, hubName, hubUrl } = opts;
+  const url = `${base}${g.slug}/`;
+  const body = `  <div class="crumb"><a href="/">Home</a> › <a href="${hubUrl}">${esc(hubName)}</a> › ${esc(g.h1)}</div>
+  <div class="eyebrow">Chester County, PA · ${esc(hubName)}</div>
   <h1>${esc(g.h1)}</h1>
   <p class="lead">${esc(g.lead)}</p>
 
@@ -218,14 +219,15 @@ ${faqBlock(g.faqs)}
 
   <h2>Keep reading</h2>
   <div class="grid">
-    <a href="/ai-marketing/">AI marketing in Chester County<small>The main guide</small></a>
-${GUIDES.filter((x) => x.slug !== g.slug).map((x) => `    <a href="/ai-marketing/${x.slug}/">${esc(x.h1)}<small>Guide</small></a>`).join('\n')}
+    <a href="${hubUrl}">${esc(hubName)}<small>The hub</small></a>
+${siblings.filter((x) => x.slug !== g.slug).map((x) => `    <a href="${base}${x.slug}/">${esc(x.h1)}<small>${esc(x.title.split('|')[0].trim())}</small></a>`).join('\n')}
+${base === '/services/' ? `    <a href="/ai-marketing/">AI marketing in Chester County<small>The AI guide</small></a>` : `    <a href="/services/">Marketing services in Chester County<small>Websites, SEO, ads</small></a>`}
   </div>
 
 ${ctaBlock('Bring your website, your Google listing and your worst month.')}`;
 
   const schema = [
-    crumbs([['Home', '/'], ['AI Marketing', '/ai-marketing/'], [g.h1, url]]),
+    crumbs([['Home', '/'], [hubName, hubUrl], [g.h1, url]]),
     faqSchema(g.faqs),
     {
       '@context': 'https://schema.org',
@@ -261,7 +263,7 @@ function pillarPage() {
   <p>Chester County is a county of small businesses competing against companies with staff. A four-person shop in Downingtown is bidding for the same customer as a regional chain with a call center and a marketing department. The chain will always answer the phone. It will always follow up. It will never forget to ask for a review.</p>
   <p>That used to be an unwinnable gap. It is not anymore, because the specific advantages a bigger company buys with payroll — availability, consistency, memory — are now the exact things software does best. That is the entire argument for putting AI in the middle of a local marketing system, and it is the only argument that matters.</p>
 
-${SERVICES}
+${SYSTEM_BLOCK}
 
   <h2>Pick your town</h2>
   <p>Every town in the county competes differently. West Chester is a dogfight for the same walkable customer; Exton is a corridor of people in motion; Oxford is a referral market where barely anyone has a complete listing. The pages below get specific about each one.</p>
@@ -276,6 +278,9 @@ ${GUIDES.map((g) => `    <a href="/ai-marketing/${g.slug}/">${esc(g.h1)}<small>$
 
   <h2>What it costs</h2>
   <p>Published, not quoted-on-a-call: a local presence audit is about $100, a premium one-page site about $300, an AI growth agent setup about $400, a lead follow-up system about $500, and ad setup from $250 (Meta) or $350 (Google) with spend paid directly by you. Monthly management is quoted after a call. No long-term contracts. <a href="/ai-marketing/cost/">The full pricing breakdown →</a></p>
+
+  <h2>Every service, with the price on it</h2>
+  <p>Websites from $300, local SEO and Google Business Profile work, Google and Meta Ads, and the follow-up system — each one has its own page with what it does and what it costs. <a href="/services/">All marketing services in Chester County →</a></p>
 
   <h2>Who does the work</h2>
   <p>TB Solutions is a Chester County studio run by Nick Byrd out of West Chester. You talk to the person building the thing — no account manager, no ticket queue, no two-week turnaround on a one-line change. That is why the pricing looks nothing like an agency retainer and why changes happen the same day. <a href="/ai-marketing/ai-marketing-vs-agency/">How this compares to hiring an agency →</a></p>
@@ -335,8 +340,97 @@ ${ctaBlock('Bring your website, your Google listing and the number you wish were
   return { url, html: page({ url, title, desc, schema, body }) };
 }
 
+
+function servicesHub() {
+  const url = '/services/';
+  const title = 'Marketing Services in Chester County, PA | Web Design, SEO, Ads — TB Solutions';
+  const desc = 'Marketing services for Chester County, PA businesses: websites from $300, local SEO and Google Business Profile work, Google and Meta Ads, AI growth agents and lead follow-up. Published prices, no long-term contracts.';
+  const body = `  <div class="crumb"><a href="/">Home</a> › Marketing services</div>
+  <div class="eyebrow">Chester County · Pennsylvania</div>
+  <h1>Marketing services in Chester County, PA</h1>
+  <p class="lead">Websites, local SEO, Google and Meta Ads, AI growth agents and lead follow-up — for owner-run businesses from West Chester to Oxford. The prices are on the pages, and the person you call is the person who builds it.</p>
+
+  <div class="box">
+    <h3>Start here if you are shopping around</h3>
+    <p>Two pages do most of the work: what an agency in this county actually costs and what you get for it, and how to evaluate anyone pitching you — including us. <a href="/services/marketing-agency-chester-county/">The agency page →</a> · <a href="/services/how-to-choose-a-marketing-agency/">The buyer's guide →</a></p>
+  </div>
+
+  <h2>The services</h2>
+  <div class="grid">
+${SERVICES.map((x) => `    <a href="/services/${x.slug}/">${esc(x.h1)}<small>${esc(x.title.split('|')[0].split('—')[0].trim())}</small></a>`).join('\n')}
+  </div>
+
+  <h2>What each piece costs</h2>
+  <ul>
+    <li><b>Local presence audit — $100.</b> The full written read on your Google profile, your site and your competitors, with the fixes in priority order.</li>
+    <li><b>Premium one-page website — $300.</b> Fast, mobile-first, states the offer and takes a booking.</li>
+    <li><b>AI growth agent setup — $400.</b> Trained on your services and prices, answers in seconds, texts you the lead.</li>
+    <li><b>Lead follow-up system — $500.</b> Missed-call text-back, instant reply, review requests, win-back.</li>
+    <li><b>Meta Ads setup — from $250. Google Ads setup — from $350.</b> Ad spend paid directly by you to the platform.</li>
+    <li><b>Creative proof pack — $150.</b> Real assets to run before you spend on distribution.</li>
+    <li><b>Monthly management — quoted after a call.</b> No long-term contract.</li>
+  </ul>
+
+  <h2>Where AI fits</h2>
+  <p>Every service here is run with AI doing the repetitive, time-sensitive parts — replying, qualifying, following up, drafting — because that is what closes the gap between a small business and a competitor with staff. The full explanation, town by town, lives in the <a href="/ai-marketing/">AI marketing guide</a>.</p>
+
+${faqBlock([
+    ['What marketing services does TB Solutions offer in Chester County?',
+     'Website design and build, local SEO and Google Business Profile optimization, Google Ads and Meta Ads setup and management, AI growth agents for websites, lead follow-up automation including missed-call text-back and review requests, CRM setup, and monthly management. Serving West Chester, Exton, Malvern, Downingtown, Kennett Square, Phoenixville, Coatesville, Paoli, Chadds Ford, Oxford and the Main Line.'],
+    ['How much do marketing services cost in Chester County?',
+     'TB Solutions publishes fixed prices: $100 audit, $300 one-page website, $400 AI agent setup, $500 lead follow-up system, Meta Ads setup from $250, Google Ads setup from $350, $150 creative proof pack. Monthly management is quoted after a free call, with no long-term contract. Traditional agency retainers in this area commonly run $1,500 to $5,000 a month plus ad spend.'],
+    ['Do I have to buy everything at once?',
+     'No, and you should not. Start with follow-up and your Google profile, because they recover revenue from traffic you already have. Ads come last, once there is somewhere worth sending them.'],
+    ['Is there a contract?',
+     'No long-term contract. Starter packages are half up front and half on delivery; monthly work is billed monthly and cancellable.'],
+  ])}
+
+${ctaBlock('Bring your website, your Google listing and the number you wish were higher.')}`;
+
+  const schema = [
+    crumbs([['Home', '/'], ['Marketing services', url]]),
+    faqSchema([
+      ['What marketing services does TB Solutions offer in Chester County?',
+       'Website design and build, local SEO and Google Business Profile optimization, Google Ads and Meta Ads setup and management, AI growth agents, lead follow-up automation, CRM setup and monthly management, across Chester County and the Main Line, PA.'],
+      ['How much do marketing services cost in Chester County?',
+       'Published fixed prices: $100 audit, $300 one-page website, $400 AI agent setup, $500 lead follow-up system, Meta Ads setup from $250, Google Ads setup from $350. Monthly management quoted after a free call, no long-term contract.'],
+      ['Do I have to buy everything at once?',
+       'No. Start with follow-up and the Google Business Profile, which recover revenue from traffic you already have. Ads come last.'],
+      ['Is there a contract?',
+       'No long-term contract. Starter packages are half up front and half on delivery.'],
+    ]),
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ProfessionalService',
+      '@id': SITE.origin + '/#business',
+      name: SITE.brand,
+      url: SITE.origin + '/',
+      telephone: SITE.phone,
+      email: SITE.email,
+      priceRange: '$100-$500',
+      address: { '@type': 'PostalAddress', addressLocality: 'West Chester', addressRegion: 'PA', addressCountry: 'US' },
+      areaServed: [{ '@type': 'AdministrativeArea', name: 'Chester County, PA' }, ...TOWNS.map((t) => ({ '@type': 'City', name: t.full }))],
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: 'Marketing services in Chester County, PA',
+        itemListElement: SERVICES.map((x) => ({
+          '@type': 'Offer',
+          itemOffered: { '@type': 'Service', name: x.h1, description: x.desc, url: SITE.origin + '/services/' + x.slug + '/' },
+        })),
+      },
+    },
+  ];
+  return { url, html: page({ url, title, desc, schema, body }) };
+}
+
 // ---- write pages ----
-const pages = [pillarPage(), ...TOWNS.map((t) => townPage(t, TOWNS)), ...GUIDES.map(guidePage)];
+const pages = [
+  pillarPage(),
+  ...TOWNS.map((t) => townPage(t, TOWNS)),
+  ...GUIDES.map((g) => contentPage(g, { base: '/ai-marketing/', siblings: GUIDES, hubName: 'AI Marketing', hubUrl: '/ai-marketing/' })),
+  servicesHub(),
+  ...SERVICES.map((g) => contentPage(g, { base: '/services/', siblings: SERVICES, hubName: 'Marketing services', hubUrl: '/services/' })),
+];
 for (const p of pages) {
   const dir = join(ROOT, p.url);
   mkdirSync(dir, { recursive: true });
@@ -355,8 +449,8 @@ const PUBLIC = [
   '/university/lessons/outreach/', '/university/lessons/loop-pitch/', '/university/lessons/scale/',
   '/crm/demo/', '/rewards/signup/', '/command/',
 ];
-const priority = (u) => (u === '/' ? '1.0' : u === '/ai-marketing/' ? '0.95' : u.startsWith('/ai-marketing/') ? '0.85' : u.startsWith('/learn/') || u.startsWith('/guides/') ? '0.7' : '0.6');
-const freq = (u) => (u === '/' || u.startsWith('/ai-marketing/') ? 'weekly' : 'monthly');
+const priority = (u) => (u === '/' ? '1.0' : u === '/ai-marketing/' || u === '/services/' ? '0.95' : u.startsWith('/services/') ? '0.85' : u.startsWith('/ai-marketing/') ? '0.85' : u.startsWith('/learn/') || u.startsWith('/guides/') ? '0.7' : '0.6');
+const freq = (u) => (u === '/' || u.startsWith('/ai-marketing/') || u.startsWith('/services/') ? 'weekly' : 'monthly');
 const urls = [...new Set([...PUBLIC, ...pages.map((p) => p.url)])]
   .filter((u) => existsSync(join(ROOT, u, 'index.html')))
   .sort((a, b) => (a === '/' ? -1 : b === '/' ? 1 : a.localeCompare(b)));
@@ -384,6 +478,9 @@ writeFileSync(join(ROOT, 'llms.txt'), `# TB Solutions
 ## Key pages
 - [AI marketing in Chester County](${SITE.origin}/ai-marketing/): the main guide to AI marketing for local businesses in Chester County, PA
 ${GUIDES.map((g) => `- [${g.h1}](${SITE.origin}/ai-marketing/${g.slug}/): ${g.desc}`).join('\n')}
+
+## Services
+${SERVICES.map((x) => `- [${x.h1}](${SITE.origin}/services/${x.slug}/): ${x.desc}`).join('\n')}
 
 ## Town pages
 ${TOWNS.map((t) => `- [AI marketing in ${t.full}](${SITE.origin}/ai-marketing/${t.slug}/): AI marketing, local SEO and web design for businesses in ${t.full} (${t.zips.join(', ')})`).join('\n')}
