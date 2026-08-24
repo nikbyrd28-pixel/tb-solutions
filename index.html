@@ -119,6 +119,13 @@
     .aurora i:nth-child(2){width:46vw;height:46vw;right:-12vw;top:-6vw;background:radial-gradient(circle,rgba(185,139,255,.5),transparent 68%);animation:drift2 26s ease-in-out infinite}
     .aurora i:nth-child(3){width:60vw;height:60vw;left:20vw;bottom:-28vw;background:radial-gradient(circle,rgba(111,157,255,.5),transparent 68%);animation:drift3 30s ease-in-out infinite}
     .aurora i:nth-child(4){width:34vw;height:34vw;right:6vw;bottom:-6vw;background:radial-gradient(circle,rgba(255,143,214,.35),transparent 68%);animation:drift2 24s ease-in-out infinite reverse}
+    /* Cinematic brand plate behind the hero. Decorative only — if the image is
+       missing the page just loses a wash of light, nothing shifts. */
+    body:after{content:"";position:absolute;top:0;left:0;right:0;height:min(94vh,900px);z-index:-3;pointer-events:none;
+      background:url("https://qgbjiqdwzgkjkmqyjsmc.supabase.co/storage/v1/object/public/shop-sites/brand/tbsol-glow.jpg") center top/cover no-repeat;opacity:.26;mix-blend-mode:screen;
+      -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.92),rgba(0,0,0,.5) 46%,transparent);
+      mask-image:linear-gradient(180deg,rgba(0,0,0,.92),rgba(0,0,0,.5) 46%,transparent)}
+    @media(max-width:760px){body:after{height:min(72vh,620px);opacity:.2}}
     @keyframes drift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(8vw,6vw) scale(1.18)}}
     @keyframes drift2{0%,100%{transform:translate(0,0) scale(1.1)}50%{transform:translate(-7vw,7vw) scale(.9)}}
     @keyframes drift3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-6vw,-8vw) scale(1.2)}}

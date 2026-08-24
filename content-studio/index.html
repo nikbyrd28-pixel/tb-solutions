@@ -66,6 +66,13 @@
 
   /* hero */
   header.hero{padding:56px 0 30px}
+  /* Brand plate behind the hero — sits under the copy, dissolves into the page. */
+  header.hero{position:relative;isolation:isolate}
+  header.hero:before{content:"";position:absolute;inset:-30px 0 0;z-index:-1;pointer-events:none;
+    background:url("https://qgbjiqdwzgkjkmqyjsmc.supabase.co/storage/v1/object/public/shop-sites/brand/tbsol-creator.jpg") center 28%/cover no-repeat;opacity:.3;
+    -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.85),rgba(0,0,0,.32) 58%,transparent);
+    mask-image:linear-gradient(180deg,rgba(0,0,0,.85),rgba(0,0,0,.32) 58%,transparent)}
+  @media(max-width:760px){header.hero:before{opacity:.22}}
   .kick{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
     color:var(--acc2);border:1px solid var(--line);border-radius:999px;padding:7px 14px;margin-bottom:18px;background:rgba(122,162,255,.06)}
   .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:34px;align-items:center}
