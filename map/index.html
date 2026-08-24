@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The map — every page on this estate</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#05060c">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet"></noscript>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2306070e'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-size='34'%3E%F0%9F%97%BA%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<style>
+:root{--bg:#05060c;--line:rgba(255,255,255,.09);--line2:rgba(255,212,90,.28);--text:#f3f5ff;--muted:#a2abc7;
+  --gold:#ffd45a;--amber:#ff9a3d;--good:#43f0b0;--acc:#7aa2ff;--vio:#b98bff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;line-height:1.6}
+h1,h2,h3{font-family:Poppins,Inter,sans-serif;margin:0;letter-spacing:-.02em}
+a{color:var(--gold);text-decoration:none}
+.wrap{max-width:940px;margin:0 auto;padding:26px 16px 70px}
+header{text-align:center;margin-bottom:22px}
+header h1{font-size:clamp(26px,5vw,38px);font-weight:900}
+header p{color:var(--muted);font-size:15px;max-width:56ch;margin:10px auto 0}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0 8px}
+@media(max-width:600px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpis div{border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center;background:rgba(255,255,255,.025)}
+.kpis b{display:block;font-family:Poppins;font-size:20px;font-weight:900}
+.kpis span{font-size:11px;color:var(--muted)}
+#q{width:100%;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.05);color:var(--text);
+  padding:13px 18px;font:inherit;font-size:15px;margin:14px 0 20px}
+#q:focus{outline:0;border-color:var(--line2)}
+section{margin-bottom:26px}
+.sh{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+.sh h2{font-size:19px;font-weight:900}
+.sh span{color:var(--muted);font-size:12.5px}
+.sb{color:var(--muted);font-size:13.5px;margin:0 0 12px}
+.row{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:13px;padding:11px 13px;margin-bottom:8px;
+  background:rgba(255,255,255,.025);transition:border-color .15s,transform .15s}
+.row:hover{border-color:var(--line2);transform:translateY(-1px)}
+.row .bd{flex:1;min-width:0}
+.row .bd b{display:block;font-size:14.5px;font-weight:700}
+.row .bd code{color:var(--acc);font-size:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.row .bd span{display:block;color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tag{flex:0 0 auto;font-size:10.5px;font-weight:800;border-radius:999px;padding:3px 9px;border:1px solid var(--line);color:var(--muted)}
+.tag.pub{color:var(--good);border-color:rgba(67,240,176,.35);background:rgba(67,240,176,.07)}
+.tag.int{color:var(--muted)}
+.none{color:var(--muted);font-size:13px;text-align:center;padding:26px}
+footer{border-top:1px solid var(--line);padding-top:18px;color:var(--muted);font-size:12px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>🗺️ The map</h1>
+  <p>Every page on this estate, sorted by who it is for. Generated from the filesystem — run <code>node tools/build-map.mjs</code> after adding a page.</p>
+  <div class="kpis">
+    <div><b>102</b><span>pages</span></div>
+    <div><b>44</b><span>public</span></div>
+    <div><b>58</b><span>internal</span></div>
+    <div><b>8</b><span>areas</span></div>
+  </div>
+</header>
+
+<input id="q" type="search" placeholder="Filter — type 'loop', 'kit', 'admin'…" autocomplete="off">
+
+<section data-group>
+  <div class="sh"><h2>🏢 TB Solutions — the agency</h2><span>12</span></div>
+  <p class="sb">The front door for a local business that wants marketing done for them.</p>
+  <a class="row" href="/" data-s="/ chester county digital marketing &amp;amp; web design | tb solutions tb solutions is a chester county digital marketing studio: out-of-this-world websites with a built-in ai growth agent, local seo, google business cleanup, meta &amp;amp; google ads, and lead follow-up — serving west chester, exton, malvern, downingtown, kennett square, and the main line. book a free marketing plan call.">
+    <div class="bd"><b>Chester County Digital Marketing &amp;amp; Web Design | TB Solutions</b><code>/</code><span>TB Solutions is a Chester County digital marketing studio: out-of-this-world websites with a built-in AI growth agent, local SEO, Google Business cleanup, Meta &amp;amp; Google Ads, and lead follow-up — serving West Chester, Exton, Malvern, Downingtown, Kennett Square, and the Main Line. Book a free marketing plan call.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/capture/" data-s="/capture/ get a quote ">
+    <div class="bd"><b>Get a quote</b><code>/capture/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/command/" data-s="/command/ tb command — the marketing command center for local business tb command is one place to run local-business marketing: make content with ai, keep customers coming back with loop rewards, and track every lead and client in your hq. three tools, one system. free to start.">
+    <div class="bd"><b>TB Command — the marketing command center for local business</b><code>/command/</code><span>TB Command is one place to run local-business marketing: make content with AI, keep customers coming back with Loop rewards, and track every lead and client in your HQ. Three tools, one system. Free to start.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/learn/" data-s="/learn/ marketing guides for chester county businesses | tb solutions learn plain-english marketing guides for small businesses in west chester, exton, malvern, downingtown, kennett square, and the main line — why marketing matters, what the terms mean, and how ai tools help local businesses win.">
+    <div class="bd"><b>Marketing Guides for Chester County Businesses | TB Solutions Learn</b><code>/learn/</code><span>Plain-English marketing guides for small businesses in West Chester, Exton, Malvern, Downingtown, Kennett Square, and the Main Line — why marketing matters, what the terms mean, and how AI tools help local businesses win.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/learn/ai-tools/" data-s="/learn/ai-tools/ why local businesses are adding ai tools | chester county guide | tb solutions ai tools for small businesses explained simply: 24/7 chat assistants, instant replies, automatic follow-up. why chester county businesses in west chester, exton, and malvern are adding them — and what it costs to wait.">
+    <div class="bd"><b>Why Local Businesses Are Adding AI Tools | Chester County Guide | TB Solutions</b><code>/learn/ai-tools/</code><span>AI tools for small businesses explained simply: 24/7 chat assistants, instant replies, automatic follow-up. Why Chester County businesses in West Chester, Exton, and Malvern are adding them — and what it costs to wait.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/learn/marketing-terms/" data-s="/learn/marketing-terms/ marketing terms explained in plain english — for chester county business owners | tb solutions seo, leads, google business profile, conversion, crm, funnel — every marketing term explained in normal words, for small business owners in west chester, exton, malvern, downingtown, and kennett square pa.">
+    <div class="bd"><b>Marketing Terms Explained in Plain English — For Chester County Business Owners | TB Solutions</b><code>/learn/marketing-terms/</code><span>SEO, leads, Google Business Profile, conversion, CRM, funnel — every marketing term explained in normal words, for small business owners in West Chester, Exton, Malvern, Downingtown, and Kennett Square PA.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/learn/why-marketing-matters/" data-s="/learn/why-marketing-matters/ why marketing matters for chester county businesses (old-school vs. new) | tb solutions word of mouth built west chester, downingtown, and kennett square businesses for decades. here&#39;s what changed, what still works, and what customers in chester county do before they call you.">
+    <div class="bd"><b>Why Marketing Matters for Chester County Businesses (Old-School vs. New) | TB Solutions</b><code>/learn/why-marketing-matters/</code><span>Word of mouth built West Chester, Downingtown, and Kennett Square businesses for decades. Here&#39;s what changed, what still works, and what customers in Chester County do before they call you.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/play/" data-s="/play/ talk to nick — the game · tb solutions talk to nick — a 60-second game that builds your business a growth plan. no email to play, no scary prices, no pressure.">
+    <div class="bd"><b>Talk to Nick — The Game · TB Solutions</b><code>/play/</code><span>Talk to Nick — a 60-second game that builds your business a growth plan. No email to play, no scary prices, no pressure.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/share/" data-s="/share/ share tb solutions — qr codes ">
+    <div class="bd"><b>Share TB Solutions — QR codes</b><code>/share/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/start/" data-s="/start/ start with tb solutions — client intake ">
+    <div class="bd"><b>Start with TB Solutions — Client Intake</b><code>/start/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/suite/" data-s="/suite/ the marketing suite — tools that get you customers | tb solutions everything a local business needs to get and keep customers — websites, ai marketing, video, a loyalty slot machine, review collection, crm and more. buy the whole suite or just the piece you need. chester county, pa.">
+    <div class="bd"><b>The Marketing Suite — Tools that get you customers | TB Solutions</b><code>/suite/</code><span>Everything a local business needs to get and keep customers — websites, AI marketing, video, a loyalty slot machine, review collection, CRM and more. Buy the whole suite or just the piece you need. Chester County, PA.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/support/" data-s="/support/ support &amp; requests — tb solutions ">
+    <div class="bd"><b>Support &amp; Requests — TB Solutions</b><code>/support/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+</section>
+<section data-group>
+  <div class="sh"><h2>🔁 Loop — the product shops buy</h2><span>43</span></div>
+  <p class="sb">One product, several doors. /build/ is the front door thebarberloop.com points at.</p>
+  <a class="row" href="/ambassadors/" data-s="/ambassadors/ ambassadors — turn your customers into your sales team · tb solutions ambassadors is a done-for-you referral program for local business: your happy customers share a link, bring their friends, and earn rewards — you get new customers on autopilot. see the live demo. free to start.">
+    <div class="bd"><b>Ambassadors — turn your customers into your sales team · TB Solutions</b><code>/ambassadors/</code><span>Ambassadors is a done-for-you referral program for local business: your happy customers share a link, bring their friends, and earn rewards — you get new customers on autopilot. See the live demo. Free to start.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/ambassadors/demo/" data-s="/ambassadors/demo/ ambassador portal — live demo · tb solutions a live, hands-on demo of the ambassador portal your customers get: share a link, refer friends, climb the leaderboard and earn rewards. sample data — try it yourself.">
+    <div class="bd"><b>Ambassador portal — live demo · TB Solutions</b><code>/ambassadors/demo/</code><span>A live, hands-on demo of the ambassador portal your customers get: share a link, refer friends, climb the leaderboard and earn rewards. Sample data — try it yourself.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/ambassadors/owner/" data-s="/ambassadors/owner/ ambassadors — owner setup · tb solutions ">
+    <div class="bd"><b>Ambassadors — owner setup · TB Solutions</b><code>/ambassadors/owner/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/ambassadors/portal/" data-s="/ambassadors/portal/ ambassador portal · tb solutions ">
+    <div class="bd"><b>Ambassador portal · TB Solutions</b><code>/ambassadors/portal/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/arcade/" data-s="/arcade/ loop arcade — play free · tb solutions play barber dash, fresh cuts, perfect fade and more free — no download. the same arcade your customers play inside a loop loyalty card to earn coins, spins and prizes at your shop.">
+    <div class="bd"><b>Loop Arcade — play free · TB Solutions</b><code>/arcade/</code><span>Play Barber Dash, Fresh Cuts, Perfect Fade and more free — no download. The same arcade your customers play inside a Loop loyalty card to earn coins, spins and prizes at your shop.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/arcade/blackjack/" data-s="/arcade/blackjack/ loop blackjack ">
+    <div class="bd"><b>Loop Blackjack</b><code>/arcade/blackjack/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/arcade/hockey/" data-s="/arcade/hockey/ ice hockey — loop arcade classic arcade air hockey — beat the barber bot, level up, it gets faster every round. earn coins toward a free cut.">
+    <div class="bd"><b>Ice Hockey — Loop Arcade</b><code>/arcade/hockey/</code><span>Classic arcade air hockey — beat the barber bot, level up, it gets faster every round. Earn coins toward a free cut.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/arcade/numbers/" data-s="/arcade/numbers/ number rush — loop arcade number rush — swipe to match and merge numbers. reach 2048 for the crown. earn coins toward a free cut.">
+    <div class="bd"><b>Number Rush — Loop Arcade</b><code>/arcade/numbers/</code><span>Number Rush — swipe to match and merge numbers. Reach 2048 for the crown. Earn coins toward a free cut.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/arcade/poker/" data-s="/arcade/poker/ loop video poker ">
+    <div class="bd"><b>Loop Video Poker</b><code>/arcade/poker/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/arcade/run/" data-s="/arcade/run/ barber dash ">
+    <div class="bd"><b>Barber Dash</b><code>/arcade/run/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/arcade/slice/" data-s="/arcade/slice/ fresh cuts ">
+    <div class="bd"><b>Fresh Cuts</b><code>/arcade/slice/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/arcade/stack/" data-s="/arcade/stack/ perfect fade ">
+    <div class="bd"><b>Perfect Fade</b><code>/arcade/stack/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/arcade/tetris/" data-s="/arcade/tetris/ barber blocks ">
+    <div class="bd"><b>Barber Blocks</b><code>/arcade/tetris/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/arcade/words/" data-s="/arcade/words/ fresh words — loop arcade fresh words — the barbershop word game. guess the 5-letter word in 6 tries, keep your streak, earn coins toward a free cut.">
+    <div class="bd"><b>Fresh Words — Loop Arcade</b><code>/arcade/words/</code><span>Fresh Words — the barbershop word game. Guess the 5-letter word in 6 tries, keep your streak, earn coins toward a free cut.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/barbers/" data-s="/barbers/ the barber loop — booking, rewards &amp;amp; websites, built for barbershops one system to keep your barbershop booked: online booking, a loyalty rewards program, a referral engine, ai content, and a lead tracker — all working together, built for barbers. try every piece live, free to start.">
+    <div class="bd"><b>The Barber Loop — booking, rewards &amp;amp; websites, built for barbershops</b><code>/barbers/</code><span>One system to keep your barbershop booked: online booking, a loyalty rewards program, a referral engine, AI content, and a lead tracker — all working together, built for barbers. Try every piece live, free to start.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/barbershops/west-chester-pa/" data-s="/barbershops/west-chester-pa/ barbershops in west chester, pa — the independent shops every independent barbershop in and around west chester, pa, with addresses, phone numbers and websites. no chains, no rankings — just the local shops, in one list.">
+    <div class="bd"><b>Barbershops in West Chester, PA — the independent shops</b><code>/barbershops/west-chester-pa/</code><span>Every independent barbershop in and around West Chester, PA, with addresses, phone numbers and websites. No chains, no rankings — just the local shops, in one list.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/booking/" data-s="/booking/ chair — booking for barbers &amp;amp; salons, without the marketplace · tb solutions chair is your own branded booking page for barbers and salons. clients book in seconds, you keep 100% (no per-booking cut), and your customers never get shown a competitor. a simpler, cheaper alternative to marketplace booking apps.">
+    <div class="bd"><b>Chair — booking for barbers &amp;amp; salons, without the marketplace · TB Solutions</b><code>/booking/</code><span>Chair is your own branded booking page for barbers and salons. Clients book in seconds, you keep 100% (no per-booking cut), and your customers never get shown a competitor. A simpler, cheaper alternative to marketplace booking apps.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/booking/book/" data-s="/booking/book/ book an appointment · chair ">
+    <div class="bd"><b>Book an appointment · Chair</b><code>/booking/book/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/booking/demo/" data-s="/booking/demo/ book an appointment — live demo · tb solutions a live, hands-on demo of the booking page your shop gets: pick a service, choose your barber, grab a time, and you&#39;re booked — no app, no marketplace. sample data, try it yourself.">
+    <div class="bd"><b>Book an appointment — live demo · TB Solutions</b><code>/booking/demo/</code><span>A live, hands-on demo of the booking page your shop gets: pick a service, choose your barber, grab a time, and you&#39;re booked — no app, no marketplace. Sample data, try it yourself.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/booking/owner/" data-s="/booking/owner/ chair — shop setup · tb solutions ">
+    <div class="bd"><b>Chair — shop setup · TB Solutions</b><code>/booking/owner/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/build/" data-s="/build/ loop rewards — the card your regulars actually open a rewards card your regulars actually open — points every cut, an arcade in the chair, prizes you set. set up in ninety seconds. website and booking page included.">
+    <div class="bd"><b>Loop Rewards — the card your regulars actually open</b><code>/build/</code><span>A rewards card your regulars actually open — points every cut, an arcade in the chair, prizes you set. Set up in ninety seconds. Website and booking page included.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/demo/" data-s="/demo/ see loop working — live demo for barbershops a real loop rewards card, running live. play the games, spin for a free cut, book an appointment — then set your own shop up free in 30 seconds.">
+    <div class="bd"><b>See Loop working — live demo for barbershops</b><code>/demo/</code><span>A real Loop rewards card, running live. Play the games, spin for a free cut, book an appointment — then set your own shop up free in 30 seconds.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/guides/" data-s="/guides/ guides for barbershop owners — the barber loop straight, practical guides for barbershop owners: filling a slow week, winning back regulars who stopped coming, and getting found when somebody searches barber near me.">
+    <div class="bd"><b>Guides for barbershop owners — The Barber Loop</b><code>/guides/</code><span>Straight, practical guides for barbershop owners: filling a slow week, winning back regulars who stopped coming, and getting found when somebody searches barber near me.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/guides/google-business-profile-for-barbers/" data-s="/guides/google-business-profile-for-barbers/ getting found when somebody searches “barber near me” your google business profile decides whether a stranger finds your barbershop, not your website. the fields that matter, the one most shops leave blank, and how to get reviews properly.">
+    <div class="bd"><b>Getting found when somebody searches “barber near me”</b><code>/guides/google-business-profile-for-barbers/</code><span>Your Google Business Profile decides whether a stranger finds your barbershop, not your website. The fields that matter, the one most shops leave blank, and how to get reviews properly.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/guides/slow-week-playbook/" data-s="/guides/slow-week-playbook/ what to do about a slow week — today, not next month five things a barber can do between cuts to fill chairs this week: no ad budget, no agency, nothing that takes a month to work.">
+    <div class="bd"><b>What to do about a slow week — today, not next month</b><code>/guides/slow-week-playbook/</code><span>Five things a barber can do between cuts to fill chairs this week: no ad budget, no agency, nothing that takes a month to work.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/guides/win-back-lapsed-clients/" data-s="/guides/win-back-lapsed-clients/ the regulars who quietly stopped coming — and how to get them back barbershops don&#39;t lose clients loudly. nobody cancels — they drift. how to work out which regulars have gone quiet, what to text them, and when to leave it alone.">
+    <div class="bd"><b>The regulars who quietly stopped coming — and how to get them back</b><code>/guides/win-back-lapsed-clients/</code><span>Barbershops don&#39;t lose clients loudly. Nobody cancels — they drift. How to work out which regulars have gone quiet, what to text them, and when to leave it alone.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/loyalty/" data-s="/loyalty/ loop — loyalty &amp; booking that keeps customers coming back loop is the loyalty rewards + booking app for local businesses. points, a prize game, vip tiers, streaks, referrals and one-tap booking — one qr code, no app, no hardware. turn one-time customers into regulars.">
+    <div class="bd"><b>Loop — Loyalty &amp; Booking that keeps customers coming back</b><code>/loyalty/</code><span>Loop is the loyalty rewards + booking app for local businesses. Points, a prize game, VIP tiers, streaks, referrals and one-tap booking — one QR code, no app, no hardware. Turn one-time customers into regulars.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/loyalty/welcome/" data-s="/loyalty/welcome/ welcome to loop 🎉 ">
+    <div class="bd"><b>Welcome to Loop 🎉</b><code>/loyalty/welcome/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/review/" data-s="/review/ how was your visit? ">
+    <div class="bd"><b>How was your visit?</b><code>/review/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/review/poster/" data-s="/review/poster/ review table-tent ">
+    <div class="bd"><b>Review table-tent</b><code>/review/poster/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/rewards/" data-s="/rewards/ rewards ">
+    <div class="bd"><b>Rewards</b><code>/rewards/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/rewards/blast/" data-s="/rewards/blast/ blast — loop ">
+    <div class="bd"><b>Blast — Loop</b><code>/rewards/blast/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/rewards/owner/" data-s="/rewards/owner/ loop — owner dashboard ">
+    <div class="bd"><b>Loop — Owner Dashboard</b><code>/rewards/owner/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/rewards/poster/" data-s="/rewards/poster/ rewards poster ">
+    <div class="bd"><b>Rewards poster</b><code>/rewards/poster/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/rewards/signup/" data-s="/rewards/signup/ start your loop — free, live in 30 seconds create your free loop loyalty + booking program in 30 seconds. get your qr code, owner dashboard and staff scanner instantly — no app, no hardware, no card.">
+    <div class="bd"><b>Start your Loop — free, live in 30 seconds</b><code>/rewards/signup/</code><span>Create your free Loop loyalty + booking program in 30 seconds. Get your QR code, owner dashboard and staff scanner instantly — no app, no hardware, no card.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/rewards/signup/poster/" data-s="/rewards/signup/poster/ loop — barber signup qr poster ">
+    <div class="bd"><b>Loop — barber signup QR poster</b><code>/rewards/signup/poster/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/rewards/staff/" data-s="/rewards/staff/ staff console — rewards ">
+    <div class="bd"><b>Staff Console — Rewards</b><code>/rewards/staff/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/rewards/wall/" data-s="/rewards/wall/ reviews see what our customers are saying.">
+    <div class="bd"><b>Reviews</b><code>/rewards/wall/</code><span>See what our customers are saying.</span></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/rewards/winback/" data-s="/rewards/winback/ win-back — loop ">
+    <div class="bd"><b>Win-back — Loop</b><code>/rewards/winback/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/shop/" data-s="/shop/ loop site book an appointment, see prices and hours, and join the rewards card.">
+    <div class="bd"><b>Loop Site</b><code>/shop/</code><span>Book an appointment, see prices and hours, and join the rewards card.</span></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/shop/edit/" data-s="/shop/edit/ shop backend — loop ">
+    <div class="bd"><b>Shop backend — Loop</b><code>/shop/edit/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/shop/import/" data-s="/shop/import/ bring your clients in — the barber loop ">
+    <div class="bd"><b>Bring your clients in — The Barber Loop</b><code>/shop/import/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/shop/recover/" data-s="/shop/recover/ forgot your pin — the barber loop ">
+    <div class="bd"><b>Forgot your PIN — The Barber Loop</b><code>/shop/recover/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+</section>
+<section data-group>
+  <div class="sh"><h2>💰 Ways to earn with Loop</h2><span>5</span></div>
+  <p class="sb">Three different arrangements that are easy to confuse. /earn/ explains which is which.</p>
+  <a class="row" href="/affiliate/" data-s="/affiliate/ rep portal — tb solutions ">
+    <div class="bd"><b>Rep Portal — TB Solutions</b><code>/affiliate/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/affiliate/admin/" data-s="/affiliate/admin/ affiliate payouts · tb command ">
+    <div class="bd"><b>Affiliate payouts · TB Command</b><code>/affiliate/admin/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/earn/" data-s="/earn/ four ways to make money with loop — which one is you? refer shops for commission, resell loop as your own product, sell ambassadors to a shop, or learn the whole business at tb university. four different arrangements, explained plainly.">
+    <div class="bd"><b>Four ways to make money with Loop — which one is you?</b><code>/earn/</code><span>Refer shops for commission, resell Loop as your own product, sell Ambassadors to a shop, or learn the whole business at TB University. Four different arrangements, explained plainly.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/kit/loop-resell/" data-s="/kit/loop-resell/ resell loop · tb solutions run loop as your own product: claim the shops you set up, set your own prices, and see your book of business.">
+    <div class="bd"><b>Resell Loop · TB Solutions</b><code>/kit/loop-resell/</code><span>Run Loop as your own product: claim the shops you set up, set your own prices, and see your book of business.</span></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/reps/" data-s="/reps/ get paid to sign up barbershops — loop you&#39;re already in barbershops every day. show them loop, get paid when they start. no experience, no cost, no quota — get your link in 30 seconds.">
+    <div class="bd"><b>Get paid to sign up barbershops — Loop</b><code>/reps/</code><span>You&#39;re already in barbershops every day. Show them Loop, get paid when they start. No experience, no cost, no quota — get your link in 30 seconds.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+</section>
+<section data-group>
+  <div class="sh"><h2>🎓 TB University</h2><span>12</span></div>
+  <p class="sb">The school and the campus students log into.</p>
+  <a class="row" href="/university/" data-s="/university/ tb university — start an ai-powered marketing business from zero learn to start and run an ai-powered marketing business — the niches, the client-getting scripts, the campaigns, and the exact ai toolstack (content studio, loyalty, crm, automations) i use every day. built by an operator, not a guru. apply for the next cohort.">
+    <div class="bd"><b>TB University — start an AI-powered marketing business from zero</b><code>/university/</code><span>Learn to start and run an AI-powered marketing business — the niches, the client-getting scripts, the campaigns, and the exact AI toolstack (content studio, loyalty, CRM, automations) I use every day. Built by an operator, not a guru. Apply for the next cohort.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/university/admin/" data-s="/university/admin/ campus admin · tb university ">
+    <div class="bd"><b>Campus admin · TB University</b><code>/university/admin/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/university/campus/" data-s="/university/campus/ the campus · tb university the tb university campus — five campuses, twenty-eight lessons, the daily checklist, and the toolstack. members only.">
+    <div class="bd"><b>The Campus · TB University</b><code>/university/campus/</code><span>The TB University campus — five campuses, twenty-eight lessons, the daily checklist, and the toolstack. Members only.</span></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/university/lessons/" data-s="/university/lessons/ free mini-course — start an ai marketing business · tb university a free mini-course from tb university: land your first client, pick a niche you can win, and make content that sells with ai — plus the first-client toolkit. no cost, start now.">
+    <div class="bd"><b>Free mini-course — start an AI marketing business · TB University</b><code>/university/lessons/</code><span>A free mini-course from TB University: land your first client, pick a niche you can win, and make content that sells with AI — plus the first-client toolkit. No cost, start now.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/university/lessons/content/" data-s="/university/lessons/content/ lesson 3: make content that sells (with ai) · tb university free lesson: the only 3 content types a local business needs, the anatomy of a post that sells, and how to batch a week of content in an hour with ai.">
+    <div class="bd"><b>Lesson 3: make content that sells (with AI) · TB University</b><code>/university/lessons/content/</code><span>Free lesson: the only 3 content types a local business needs, the anatomy of a post that sells, and how to batch a week of content in an hour with AI.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/university/lessons/loop-pitch/" data-s="/university/lessons/loop-pitch/ lesson 6: the loop pitch — the easiest local sale · tb university free lesson: why a loyalty program is the easiest thing to sell a local business, how to pitch loop in one sentence, and how it turns a one-off gig into a client for years.">
+    <div class="bd"><b>Lesson 6: the Loop pitch — the easiest local sale · TB University</b><code>/university/lessons/loop-pitch/</code><span>Free lesson: why a loyalty program is the easiest thing to sell a local business, how to pitch Loop in one sentence, and how it turns a one-off gig into a client for years.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/university/lessons/niche/" data-s="/university/lessons/niche/ lesson 2: pick a niche you can win · tb university free lesson: how to pick the one marketing niche that makes landing clients easier — the money-gap-volume filter, how to choose, and the math that makes it real.">
+    <div class="bd"><b>Lesson 2: pick a niche you can win · TB University</b><code>/university/lessons/niche/</code><span>Free lesson: how to pick the one marketing niche that makes landing clients easier — the money-gap-volume filter, how to choose, and the math that makes it real.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/university/lessons/outreach/" data-s="/university/lessons/outreach/ lesson 5: outreach mastery — get the meeting · tb university free lesson: the outreach that actually lands clients — where to reach owners, the message that gets a reply, the walk-in play, and the follow-up most beginners skip.">
+    <div class="bd"><b>Lesson 5: outreach mastery — get the meeting · TB University</b><code>/university/lessons/outreach/</code><span>Free lesson: the outreach that actually lands clients — where to reach owners, the message that gets a reply, the walk-in play, and the follow-up most beginners skip.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/university/lessons/pricing/" data-s="/university/lessons/pricing/ lesson 4: price it right &amp;amp; keep clients forever · tb university free lesson: how to price marketing services on value (not hours), win recurring retainers, prove results, and use loyalty so clients never leave — turning one client into steady income.">
+    <div class="bd"><b>Lesson 4: price it right &amp;amp; keep clients forever · TB University</b><code>/university/lessons/pricing/</code><span>Free lesson: how to price marketing services on value (not hours), win recurring retainers, prove results, and use loyalty so clients never leave — turning one client into steady income.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/university/lessons/scale/" data-s="/university/lessons/scale/ lesson 7: scale to an agency · tb university free lesson: how to grow from solo freelancer to an agency — systematize delivery, batch with ai, bring in help, raise your rates, and build income that doesn&#39;t depend on your hours.">
+    <div class="bd"><b>Lesson 7: scale to an agency · TB University</b><code>/university/lessons/scale/</code><span>Free lesson: how to grow from solo freelancer to an agency — systematize delivery, batch with AI, bring in help, raise your rates, and build income that doesn&#39;t depend on your hours.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/university/start/" data-s="/university/start/ free lesson: land your first marketing client with ai — tb university a free start here lesson from tb university: the 5-step path to landing your first marketing client using ai — pick a niche, build a no-brainer offer, create proof before you have clients, reach out with value, and close. no cost.">
+    <div class="bd"><b>Free lesson: land your first marketing client with AI — TB University</b><code>/university/start/</code><span>A free Start Here lesson from TB University: the 5-step path to landing your first marketing client using AI — pick a niche, build a no-brainer offer, create proof before you have clients, reach out with value, and close. No cost.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/university/toolkit/" data-s="/university/toolkit/ the free toolkit — niches, scripts &amp;amp; the call framework · tb university your free tb university toolkit: the niche cheat-sheet, the exact outreach scripts, and the client-call framework that closes — everything you need to land your first marketing client.">
+    <div class="bd"><b>The free toolkit — niches, scripts &amp;amp; the call framework · TB University</b><code>/university/toolkit/</code><span>Your free TB University toolkit: the niche cheat-sheet, the exact outreach scripts, and the client-call framework that closes — everything you need to land your first marketing client.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+</section>
+<section data-group>
+  <div class="sh"><h2>🧰 Builders &amp; kits</h2><span>9</span></div>
+  <p class="sb">Generators that produce something a student or client walks away with.</p>
+  <a class="row" href="/brand/" data-s="/brand/ loop for barbershops — brand kit the loop barbershop logo: mark, app icon and wordmark. download svg or png for posters, socials and shop windows.">
+    <div class="bd"><b>Loop for Barbershops — brand kit</b><code>/brand/</code><span>The Loop barbershop logo: mark, app icon and wordmark. Download SVG or PNG for posters, socials and shop windows.</span></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/content-studio/" data-s="/content-studio/ tb studio — free ai content studio for reels, tiktok &amp; youtube tb studio turns one idea into a finished short-form video, a click-winning thumbnail and a ready-to-post caption — for every one of your brands. ai writes the script, you get a polished reel in minutes. free with loop. no editor, no app.">
+    <div class="bd"><b>TB Studio — free AI content studio for Reels, TikTok &amp; YouTube</b><code>/content-studio/</code><span>TB Studio turns one idea into a finished short-form video, a click-winning thumbnail and a ready-to-post caption — for every one of your brands. AI writes the script, you get a polished reel in minutes. Free with Loop. No editor, no app.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/creatives/" data-s="/creatives/ loop — creative maker make post-ready loop graphics for instagram, tiktok and stories. pick a line, pick a look, download the png.">
+    <div class="bd"><b>Loop — creative maker</b><code>/creatives/</code><span>Make post-ready Loop graphics for Instagram, TikTok and stories. Pick a line, pick a look, download the PNG.</span></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/kit/" data-s="/kit/ loop — shop-signing kit scripts, objection handlers, dm templates, social hooks and a printable flyer for signing barbershops onto loop.">
+    <div class="bd"><b>Loop — shop-signing kit</b><code>/kit/</code><span>Scripts, objection handlers, DM templates, social hooks and a printable flyer for signing barbershops onto Loop.</span></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/kit/leadform/" data-s="/kit/leadform/ compliant lead form builder · tb solutions build a lead capture form whose sms opt-in passes a2p 10dlc review the first time — with the consent wording, the stored proof, and the registration pack written for you.">
+    <div class="bd"><b>Compliant lead form builder · TB Solutions</b><code>/kit/leadform/</code><span>Build a lead capture form whose SMS opt-in passes A2P 10DLC review the first time — with the consent wording, the stored proof, and the registration pack written for you.</span></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/kit/prebuild/" data-s="/kit/prebuild/ pre-build a shop — loop ">
+    <div class="bd"><b>Pre-build a shop — Loop</b><code>/kit/prebuild/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/kit/storefront/" data-s="/kit/storefront/ storefront builder · tb solutions build a complete, self-contained ecommerce storefront for a client in about ten minutes. fill the form, download one html file, put it on any host.">
+    <div class="bd"><b>Storefront builder · TB Solutions</b><code>/kit/storefront/</code><span>Build a complete, self-contained ecommerce storefront for a client in about ten minutes. Fill the form, download one HTML file, put it on any host.</span></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/kit/targets/" data-s="/kit/targets/ loop — chester county walk list all 45 independent barbershops in chester county, in walking order, with the angle for each one.">
+    <div class="bd"><b>Loop — Chester County walk list</b><code>/kit/targets/</code><span>All 45 independent barbershops in Chester County, in walking order, with the angle for each one.</span></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/studio/" data-s="/studio/ tb video studio — ai marketing video maker ">
+    <div class="bd"><b>TB Video Studio — AI marketing video maker</b><code>/studio/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+</section>
+<section data-group>
+  <div class="sh"><h2>🔒 Your back office</h2><span>14</span></div>
+  <p class="sb">Internal. Nothing here should ever be in search results.</p>
+  <a class="row" href="/admin/" data-s="/admin/ loop — super admin ">
+    <div class="bd"><b>Loop — Super Admin</b><code>/admin/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/center/" data-s="/center/ loop command center your barbershop command center — calendar, customers, messaging and rewards in one place.">
+    <div class="bd"><b>Loop Command Center</b><code>/center/</code><span>Your barbershop command center — calendar, customers, messaging and rewards in one place.</span></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/command/agents/" data-s="/command/agents/ agent team — tb command ">
+    <div class="bd"><b>Agent Team — TB Command</b><code>/command/agents/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/command/the-last-game/" data-s="/command/the-last-game/ last game studio — tb command ">
+    <div class="bd"><b>Last Game Studio — TB Command</b><code>/command/the-last-game/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/crm/" data-s="/crm/ your crm — powered by tb solutions ">
+    <div class="bd"><b>Your CRM — powered by TB Solutions</b><code>/crm/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/crm/demo/" data-s="/crm/demo/ live crm demo — the customer tracker · tb solutions a live, hands-on demo of the tb solutions customer tracker: watch leads come in, move them through the pipeline, and never let a customer slip through the cracks. sample data — try it yourself.">
+    <div class="bd"><b>Live CRM demo — the customer tracker · TB Solutions</b><code>/crm/demo/</code><span>A live, hands-on demo of the TB Solutions customer tracker: watch leads come in, move them through the pipeline, and never let a customer slip through the cracks. Sample data — try it yourself.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/crm/guide/" data-s="/crm/guide/ how to use your crm — tb solutions ">
+    <div class="bd"><b>How to use your CRM — TB Solutions</b><code>/crm/guide/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/hq/" data-s="/hq/ tb command center ">
+    <div class="bd"><b>TB Command Center</b><code>/hq/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/hq/crm/" data-s="/hq/crm/ loop crm ">
+    <div class="bd"><b>Loop CRM</b><code>/hq/crm/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/hq/pins/" data-s="/hq/pins/ pin recovery queue — loop admin ">
+    <div class="bd"><b>PIN recovery queue — Loop admin</b><code>/hq/pins/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/map/" data-s="/map/ the map — every page on this estate ">
+    <div class="bd"><b>The map — every page on this estate</b><code>/map/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/marketing-engine/" data-s="/marketing-engine/ marketing engine — tb command ">
+    <div class="bd"><b>Marketing Engine — TB Command</b><code>/marketing-engine/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/portal/" data-s="/portal/ client portal — tb solutions ">
+    <div class="bd"><b>Client Portal — TB Solutions</b><code>/portal/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/setup/" data-s="/setup/ setup &amp;amp; how-to — everything you&#39;re running · tb command ">
+    <div class="bd"><b>Setup &amp;amp; How-To — everything you&#39;re running · TB Command</b><code>/setup/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+</section>
+<section data-group>
+  <div class="sh"><h2>👤 Client work</h2><span>4</span></div>
+  <p class="sb">Sites and pages built for paying clients.</p>
+  <a class="row" href="/clients/hubsandbabydoll/" data-s="/clients/hubsandbabydoll/ hubs &amp;amp; babydoll — handcrafted self-care, made to be felt hubs &amp; babydoll — a small, home-based brand of handcrafted body oils, butters, washes and gift boxes. rooted in one belief: everyone deserves to feel seen and heard.">
+    <div class="bd"><b>Hubs &amp;amp; Babydoll — Handcrafted Self-Care, Made to Be Felt</b><code>/clients/hubsandbabydoll/</code><span>Hubs &amp; Babydoll — a small, home-based brand of handcrafted body oils, butters, washes and gift boxes. Rooted in one belief: everyone deserves to feel SEEN and HEARD.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/clients/voomlux/" data-s="/clients/voomlux/ book your ride — voomlux luxury transport ">
+    <div class="bd"><b>Book Your Ride — VoomLux Luxury Transport</b><code>/clients/voomlux/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/clients/voomlux/corporate/" data-s="/clients/voomlux/corporate/ corporate &amp; partner accounts — voomlux luxury transport ">
+    <div class="bd"><b>Corporate &amp; Partner Accounts — VoomLux Luxury Transport</b><code>/clients/voomlux/corporate/</code></div>
+    <span class="tag int">internal</span>
+  </a>
+  <a class="row" href="/voomlux/" data-s="/voomlux/ voom lux — vip rewards join voom lux vip rewards — earn points on every premium ride toward complimentary rides, upgrades and priority pickup. your premium ride awaits.">
+    <div class="bd"><b>Voom Lux — VIP Rewards</b><code>/voomlux/</code><span>Join Voom Lux VIP Rewards — earn points on every premium ride toward complimentary rides, upgrades and priority pickup. Your premium ride awaits.</span></div>
+    <span class="tag int">internal</span>
+  </a>
+</section>
+<section data-group>
+  <div class="sh"><h2>📜 Legal &amp; policy</h2><span>3</span></div>
+  <p class="sb">Linked from forms and required by the carriers.</p>
+  <a class="row" href="/privacy/" data-s="/privacy/ privacy policy — tb solutions how tb solutions collects, uses, and protects your information.">
+    <div class="bd"><b>Privacy Policy — TB Solutions</b><code>/privacy/</code><span>How TB Solutions collects, uses, and protects your information.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/sms-terms/" data-s="/sms-terms/ sms terms &amp;amp; conditions — tb solutions mobile message terms for tb solutions / loop text messaging: opt-in, opt-out, frequency, rates, and support.">
+    <div class="bd"><b>SMS Terms &amp;amp; Conditions — TB Solutions</b><code>/sms-terms/</code><span>Mobile message terms for TB Solutions / Loop text messaging: opt-in, opt-out, frequency, rates, and support.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+  <a class="row" href="/terms/" data-s="/terms/ terms of service — tb solutions the terms that govern use of tb solutions&#39; website, tools, and services.">
+    <div class="bd"><b>Terms of Service — TB Solutions</b><code>/terms/</code><span>The terms that govern use of TB Solutions&#39; website, tools, and services.</span></div>
+    <span class="tag pub">public</span>
+  </a>
+</section>
+
+<div class="none" id="none" style="display:none">Nothing matches that.</div>
+<footer>Generated 2026-08-24 · <a href="/earn/">the offer ladder</a> · <a href="/hq/">HQ</a></footer>
+</div>
+<script>
+var q=document.getElementById('q');
+q.addEventListener('input',function(){
+  var t=q.value.trim().toLowerCase(), hits=0;
+  [].forEach.call(document.querySelectorAll('.row'),function(r){
+    var on=!t||r.getAttribute('data-s').indexOf(t)>=0;
+    r.style.display=on?'':'none'; if(on)hits++;
+  });
+  [].forEach.call(document.querySelectorAll('[data-group]'),function(s){
+    s.style.display=s.querySelector('.row:not([style*="none"])')?'':'none';
+  });
+  document.getElementById('none').style.display=hits?'none':'block';
+});
+</script>
+</body>
+</html>
