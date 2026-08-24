@@ -99,6 +99,7 @@ td{padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
       <p class="muted" style="font-size:13.5px;margin:0 0 12px">Changes go live for every student the next time they open the campus. Leave a field blank to keep the original; save with everything blank to restore the original completely. Body is HTML — <code>&lt;p&gt;</code>, <code>&lt;h3&gt;</code> and <code>&lt;div class="ex"&gt;</code> boxes.</p>
       <label for="lsPick">Lesson</label><select id="lsPick"></select>
       <label for="lsTitle">Title</label><input id="lsTitle">
+      <label for="lsVideo">Video URL <span style="text-transform:none;font-weight:600">(YouTube unlisted, Loom or Vimeo share link — embeds above the lesson text)</span></label><input id="lsVideo" placeholder="https://youtu.be/… or https://www.loom.com/share/…">
       <label for="lsBody">Body (HTML)</label><textarea id="lsBody" style="min-height:180px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px"></textarea>
       <div class="row">
         <div><label for="lsMission">Mission</label><textarea id="lsMission" style="min-height:60px"></textarea></div>
@@ -276,6 +277,7 @@ function loadLessonFields(){
   el('lsBody').value=ov.body||x.l.body||'';
   el('lsMission').value=ov.mission||x.l.mission||'';
   el('lsAsk').value=ov.ask||x.l.ask||'';
+  el('lsVideo').value=ov.video||'';
   el('lsFlag').textContent=OVERRIDES[id]?'This lesson has live edits.':'';
 }
 el('lsPick').addEventListener('change',loadLessonFields);
@@ -287,15 +289,16 @@ el('lsSave').addEventListener('click',function(){
     p_title:diff(el('lsTitle').value,x.l.title),
     p_body:diff(el('lsBody').value,x.l.body),
     p_mission:diff(el('lsMission').value,x.l.mission),
-    p_ask:diff(el('lsAsk').value,x.l.ask)};
-  if(!payload.p_title&&!payload.p_body&&!payload.p_mission&&!payload.p_ask){
+    p_ask:diff(el('lsAsk').value,x.l.ask),
+    p_video:(el('lsVideo').value||'').trim()||null};
+  if(!payload.p_title&&!payload.p_body&&!payload.p_mission&&!payload.p_ask&&!payload.p_video){
     el('lsFlag').textContent='Nothing differs from the original.'; return;
   }
   el('lsSave').disabled=true; el('lsSave').textContent='Saving…';
   rpc('uni_lesson_override_set',payload).then(function(r){
     el('lsSave').disabled=false; el('lsSave').textContent='Save changes';
     if(!r||!r.ok){ alert((r&&r.error)||'Could not save.'); return; }
-    OVERRIDES[id]={title:payload.p_title,body:payload.p_body,mission:payload.p_mission,ask:payload.p_ask};
+    OVERRIDES[id]={title:payload.p_title,body:payload.p_body,mission:payload.p_mission,ask:payload.p_ask,video:payload.p_video};
     el('lsFlag').textContent='Live. Students see it on their next visit.';
     fillLessonPicker(); el('lsPick').value=id; loadLessonFields();
   });

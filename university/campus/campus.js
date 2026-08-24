@@ -1468,6 +1468,26 @@
     wire();
   }
 
+  /* A pasted share link becomes the right player. YouTube, Loom and Vimeo get
+     their embed forms; a direct .mp4/.webm gets a native <video>. Anything
+     unrecognised gets a plain link rather than a broken frame. */
+  function videoEmbed(url) {
+    if (!url) return '';
+    var u = String(url).trim(), src = null;
+    var m = u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([\w-]{6,20})/);
+    if (m) src = 'https://www.youtube-nocookie.com/embed/' + m[1];
+    if (!src) { m = u.match(/loom\.com\/(?:share|embed)\/([a-f0-9]{16,40})/); if (m) src = 'https://www.loom.com/embed/' + m[1]; }
+    if (!src) { m = u.match(/vimeo\.com\/(?:video\/)?(\d{6,12})/); if (m) src = 'https://player.vimeo.com/video/' + m[1]; }
+    if (src) {
+      return '<div class="lvid"><iframe src="' + esc(src) + '" allow="fullscreen; picture-in-picture" allowfullscreen '
+        + 'title="Video lesson" loading="lazy"></iframe></div>';
+    }
+    if (/\.(mp4|webm|mov)(\?|$)/i.test(u)) {
+      return '<div class="lvid"><video src="' + esc(u) + '" controls playsinline preload="metadata"></video></div>';
+    }
+    return '<p><a href="' + esc(u) + '" target="_blank" rel="noopener">&#127909; Watch the video for this lesson &rarr;</a></p>';
+  }
+
   function viewLesson(id) {
     var entry = lessonById(id);
     if (!entry) { location.hash = '#/learn'; return; }
@@ -1484,6 +1504,7 @@
       +   '<span class="chip">' + l.min + ' min</span>'
       +   (done ? '<span class="chip gold">✓ Done</span>' : '') + '</div>'
       + '<h1>' + esc(l.title) + '</h1>'
+      + ((CONTENT.overrides[l.id] && CONTENT.overrides[l.id].video) ? videoEmbed(CONTENT.overrides[l.id].video) : '')
       + '<div class="body">' + l.body + '</div>';
 
     if (done) {

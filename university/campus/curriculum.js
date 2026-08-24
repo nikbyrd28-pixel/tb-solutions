@@ -667,6 +667,111 @@
     },
 
     {
+      id: 'platforms',
+      name: 'Platforms',
+      icon: '📱',
+      tag: 'Where local money lives',
+      blurb: 'Google, Instagram, Facebook, TikTok, Yelp, Booksy and the rest — every app a local business lives on is a service you can charge to run.',
+      lessons: [
+        {
+          id: 'pl1', title: 'The platform map', min: 8,
+          body: [
+            '<p>Every local business is being graded on five or six apps whether they participate or not. The owner sees a pile of logins he is behind on. You should see a menu of monthly services — because <b>every platform a business is bad at is a line item you can charge to fix.</b></p>',
+            '<h3>Sort them by what they actually do</h3>',
+            '<div class="ex"><b>Intent platforms</b> — Google (search + Maps), Yelp, Apple Maps: people arrive already wanting the thing, today. Highest-converting, most neglected, fix these first.<br><b>Attention platforms</b> — Instagram, TikTok, Facebook: nobody is searching, you interrupt them well enough that they remember you Thursday. Compounds slowly.<br><b>Operations platforms</b> — Booksy, Fresha, Square, Shopify, the POS: where booking and money physically happen. Fees hide here, and so does the customer data.<br><b>Community platforms</b> — Facebook Groups, Nextdoor: where "anyone know a good barber?" gets asked and answered, daily, without a single ad impression.</div>',
+            '<h3>The audit that becomes your pitch</h3>',
+            '<p>Twenty minutes per business, no access needed: search them on Google, open their Yelp, scroll their Instagram, check where their booking link goes, ask the community group what people say. Score each platform red / yellow / green. That one-page audit is simultaneously your diagnosis, your free sample, and your proposal — the reds become the retainer.</p>',
+            '<h3>Priority is not opinion</h3>',
+            '<p>Intent before attention, always: fixing a Google profile pays this month; growing an Instagram pays next quarter. Operations before either when money is leaking (a booking platform taking new-client fees for regulars who would have booked direct is a hole in the boat). Community costs nothing and works immediately, so it runs alongside everything.</p>',
+            '<h3>The retainer stack this produces</h3>',
+            '<p>Platform management is the most legible retainer there is: "$400/month — I run your Google, your Instagram, your reviews and your booking setup" is countable, checkable, and impossible for the owner to do himself at 9pm. Each lesson in this campus is one platform deep enough to charge for.</p>'
+          ].join(''),
+          mission: 'Run the twenty-minute audit on one real business across all their platforms. Score each red/yellow/green and write the one-line fix for every red.',
+          ask: 'The business, the scorecard, and which red you would fix first for money.'
+        },
+        {
+          id: 'pl2', title: 'Instagram, run as a service', min: 9,
+          body: [
+            '<p>Instagram is the portfolio of every appearance business — barbers, salons, tattoo, food. Customers check it the way they check reviews: not to follow, to <b>verify</b>. That reframe changes how you run it.</p>',
+            '<h3>The grid is a shop window, not a diary</h3>',
+            '<p>A new visitor sees nine squares and decides in four seconds. Those nine need to answer: is the work good (proof posts), is it my kind of place (personality), can I act now (an offer or booking link visible). The 5:3:2 ratio from the content campus IS the grid strategy. Pin the three best; bio gets one line of what+where and ONE link — the booking page, not a link-tree maze.</p>',
+            '<h3>What actually grows local accounts</h3>',
+            '<div class="ex"><b>Reels with local hooks</b> — named places, times, people; the algorithm shows local content to local people when you give it location signals.<br><b>Collab posts</b> with the client in the chair — their followers are your next customers, and a collab hits both audiences.<br><b>Location tags + town in the caption</b> on everything.<br><b>Stories for the daily pulse</b> — today\'s open slots, the walk-in that turned into a transformation. Stories are where regulars live; the grid is for strangers.<br><b>Reply speed</b> — a DM answered in five minutes converts; one answered tomorrow is a customer somewhere else. This is exactly where an AI front desk earns its fee.</div>',
+            '<h3>What to ignore</h3>',
+            '<p>Follower count as a goal (400 locals beat 40,000 randoms), posting daily (three good beats seven filler), trending audio that fights the shop\'s voice, and buying anything. The metric you report monthly: profile visits, link taps, DMs started — the funnel numbers, not the vanity ones.</p>',
+            '<h3>Priced</h3>',
+            '<p>Instagram management inside a content retainer: 12 posts + stories cadence + DM coverage, $300–500/month of the bundle. Your batching system from the content campus means it costs you ~3 hours once the engine runs.</p>'
+          ].join(''),
+          mission: 'Rebuild the top of one real business\'s Instagram: bio line, link target, and the nine-grid plan (which posts, pinned what). Implement it if you have access; spec it if not.',
+          ask: 'Before/after of the bio, and your nine squares.'
+        },
+        {
+          id: 'pl3', title: 'Facebook: the unfashionable goldmine', min: 8,
+          body: [
+            '<p>Nobody brags about Facebook, and that is exactly why it is underpriced. For local business over-30 customers — the ones with money — it is still where they are, and its three surfaces do different jobs.</p>',
+            '<h3>The Page: the second Google profile</h3>',
+            '<p>Complete it like the GBP: hours, services, booking link, reviews on. It ranks in normal search, feeds WhatsApp/Messenger contact, and is the identity ads run from. Cross-post the Instagram content automatically — zero extra work, second surface.</p>',
+            '<h3>Groups: where the referrals actually happen</h3>',
+            '<div class="ex">Every town has "[Town] Community", "[Town] Moms", buy/sell groups. Inside them, "anyone know a good barber?" gets asked weekly — and whoever gets three comment-mentions wins the customer. The service you sell: be present as the shop (helpful answers, never spam), cultivate the regulars who name-drop, and post the shop\'s content where group rules allow. Fifteen minutes a day, unfakeable, and no competitor is doing it because it does not feel like marketing. It is the digital version of sponsoring the little-league team.</div>',
+            '<h3>Ads: the sharpest local targeting left</h3>',
+            '<p>Meta ads can put an offer in front of people within 3 miles by age and interest for a few dollars a day. The local playbook is narrow: boost the proof post to a 3-mile radius ($5/day), run the offer to lapsed-lookalikes, retarget site visitors. Sell ads management only after organic works — ads amplify a message, they cannot invent one. And Marketplace: for any client who sells objects, free listings with real reach.</p>',
+            '<h3>Messenger is a front desk</h3>',
+            '<p>Page messages get the same five-minute-reply economics as Instagram DMs, and the same AI answer: one inbox (Meta Business Suite merges both), one bot, one monthly fee from you.</p>'
+          ].join(''),
+          mission: 'Join the three most active local groups for one client\'s town, watch for a week, and log every "anyone know a…" request relevant to their trade. Answer one, helpfully, as yourself.',
+          ask: 'The groups, how many requests appeared in a week, and what you answered.'
+        },
+        {
+          id: 'pl4', title: 'TikTok & short video for shops', min: 8,
+          body: [
+            '<p>TikTok is the only major platform where an account with 40 followers can reach 40,000 people tomorrow, because distribution follows the video, not the account. For a local shop that is a lottery ticket printed daily — and the same vertical video re-posts to Reels and Shorts for free.</p>',
+            '<h3>What works from a shop, specifically</h3>',
+            '<div class="ex"><b>Transformations</b> — the before/after is the native currency of barbering and beauty; a 15-second cut with a satisfying reveal needs no editing skill.<br><b>Process ASMR</b> — clipper sound, lather, the towel; oddly massive.<br><b>The owner\'s voice</b> — "what I\'d tell a kid getting his first fade" beats any produced ad; personality is the moat.<br><b>Local stitches</b> — react to town news, the rival\'s viral post, the food spot next door. The algorithm reads the locality; comments fill with neighbours.</div>',
+            '<h3>The realistic promise</h3>',
+            '<p>Never sell TikTok as "going viral". Sell it honestly: one in thirty posts pops, the pop fills the books for two weeks, and the other twenty-nine cost fifteen minutes each because you batch them from the same shoot-day footage as everything else. It is a slot machine where the coins are content you already made.</p>',
+            '<h3>One shoot, four platforms</h3>',
+            '<p>The workflow that makes this profitable: shoot-day footage → cut vertical once → TikTok + Reels + Shorts + Facebook, captions adjusted per platform by the AI, scheduled in one sitting. You are not running four platforms; you are running one pipeline with four outlets. That sentence is also the pitch.</p>',
+            '<h3>When to skip it entirely</h3>',
+            '<p>A shop whose customers are 55+ contractors does not need TikTok, and selling it to them anyway is how you become the agency people warn each other about. The platform map decides; the menu is not a set menu.</p>'
+          ].join(''),
+          mission: 'Cut three verticals from existing footage (yours or a client\'s), post to at least two platforms from the same files, and log the reach difference between platforms.',
+          ask: 'The three videos, where they went, and the numbers after 48 hours.'
+        },
+        {
+          id: 'pl5', title: 'Yelp, and the review economy', min: 8,
+          body: [
+            '<p>Owners have feelings about Yelp — usually strong ones about filtered reviews and ad calls. Your job is not to love it; it is to know exactly how it works so your client stops being hurt by it.</p>',
+            '<h3>The non-negotiables (free)</h3>',
+            '<p>Claim the listing, correct the categories and hours, load real photos, turn on messaging, respond to every review. An unclaimed Yelp page with a wrong phone number is actively sending customers to voicemail — twenty minutes fixes it forever. Yelp data also feeds Apple Maps, which is every iPhone\'s default navigation; that alone justifies the claim.</p>',
+            '<div class="ex"><b>The filter, explained honestly:</b> Yelp\'s software hides reviews it does not trust — typically from accounts with no history, which is exactly what a happy customer who made an account just to review you looks like. So the classic move (ask your regulars to go make Yelp accounts) backfires: they all get filtered and the owner concludes Yelp hates him. The play instead: reviews from people who already use Yelp. Know which of the regulars are Yelpers (just ask), and let the ask land there. Never, on any platform, pay for or fabricate reviews — one takedown or FTC complaint costs more than a year of the retainer.</div>',
+            '<h3>Yelp ads: usually no</h3>',
+            '<p>The sales calls are relentless and the local math rarely works for sub-$100-ticket businesses. Your value to a client is often literally "I take those calls now, and the answer is no until the free profile outperforms". For lawyers, dentists, contractors — high tickets — test it with a hard budget; for a barbershop, the money does better in Meta radius ads.</p>',
+            '<h3>The wider review economy</h3>',
+            '<p>Same mechanics everywhere: Google reviews move the map pack, Facebook recommendations move the groups, Booksy ratings move in-app ranking. Your review engine (ask at the right moment, one tap, reply to all) is ONE service feeding four platforms — count it once in the retainer, report it as four lines.</p>'
+          ].join(''),
+          mission: 'Claim or audit a real business\'s Yelp, fix the basics, and find out which three of their regulars actually use Yelp. Route the next review asks accordingly.',
+          ask: 'What was wrong with the listing, and your Yelper shortlist.'
+        },
+        {
+          id: 'pl6', title: 'Booksy, Fresha & the booking platforms', min: 9,
+          body: [
+            '<p>For barbers and beauty, the booking app is not marketing — it is the till, the calendar and the client list in one. Which means it is also where the leverage and the leaks are, and almost no owner has read their own statement.</p>',
+            '<h3>Know the models cold</h3>',
+            '<div class="ex"><b>Booksy</b> — subscription per staff member (roughly $30/month each, check current), plus paid "Boost" which takes a serious cut of the FIRST visit of customers it claims to bring. The dispute worth understanding: Boost sometimes credits itself for customers who searched the shop by name. The fix is not rage; it is measuring.<br><b>Fresha</b> — looks free; monetises through payment processing and a hefty new-client marketplace fee. Free is never free; it is fees moved somewhere less visible.<br><b>Square Appointments</b> — flat and honest, ties into Square POS, weakest at marketplace discovery.<br>The pattern everywhere: <b>the platform charges most for NEW clients. So the game is: let the marketplace bring strangers, and move every repeat booking to a direct channel the shop owns.</b></div>',
+            '<h3>The service you sell here</h3>',
+            '<p>1) Read the statements and price the leak ("Boost took $340 last month; $190 of it was people searching your name"). 2) Configure the escape: direct booking link on the Google profile, Instagram bio, and the loyalty card, so regulars book without the middleman. 3) Keep the marketplace profile sharp — photos, services, prices — because for genuine strangers it still ranks. This is a $200 audit plus ongoing management, and it pays for itself in recovered fees, which makes it the easiest ROI conversation in this whole campus.</p>',
+            '<h3>Where Loop fits, said honestly</h3>',
+            '<p>Loop\'s booking + loyalty is the direct channel — the shop-owned lane the regulars move into. The pitch is never "leave Booksy", it is "stop paying new-client prices for your own regulars". Platforms for discovery, owned rails for retention. The owner keeps both and pays less.</p>',
+            '<h3>Own the export</h3>',
+            '<p>First week of any engagement: export the client list out of whatever platform holds it (the import kit handles Booksy\'s format already). The list is the business. A shop that cannot leave its booking app does not own its customers — the app does.</p>'
+          ].join(''),
+          mission: 'Get one real shop\'s booking-platform statement (or their fee settings screen) and price the leak: what did new-client fees cost last month, and how much was for people who already knew the shop?',
+          ask: 'The platform, the monthly leak, and your one-sentence recovered-fees pitch.'
+        }
+      ]
+    },
+
+    {
       id: 'academy',
       name: 'Sales Academy',
       icon: '🎤',
@@ -810,6 +915,38 @@
           ].join(''),
           mission: 'Pick your lane — refer, resell, or close for a reseller — and book one fifteen-minute sit-down this week using the two-step. The doorstep ask sells only the appointment.',
           ask: 'Your lane, how the doorstep ask went, and when the sit-down is.'
+        },
+        {
+          id: 'sa10', title: 'Cold calling — the phone floor', min: 10,
+          body: [
+            '<p>The phone is the fastest volume machine in sales: forty attempts an hour against ten doors a morning. It is also the most hated channel, which is precisely why it still works — your competitors\' fear is your open lane. Everything here is old floor discipline, tuned for calling local shops.</p>',
+            '<h3>The mechanics of a call block</h3>',
+            '<div class="ex"><b>Block the time</b> — two 45-minute blocks beat an afternoon of "getting around to it". Dials only: no research mid-block, no email, list prepared the night before.<br><b>Call when they can answer</b> — shops: mid-morning before the rush; never lunch, never Saturday.<br><b>Stand up</b> — old floor trick, real effect on voice energy.<br><b>Track every dial</b> — dials → pickups → conversations → appointments. The connect rate tells you whether phones beat doors for YOUR list; the ratios are the law of averages with a headset on.</div>',
+            '<h3>The opener that survives</h3>',
+            '<p>You have ten seconds and one job: not sounding like every robocall they already hung up on. Pattern-break + honesty + permission: <b>"Hey — it\'s Nick, I do the marketing for a couple of shops on Market Street. This is a cold call, thirty seconds, then I\'ll let you go — fair?"</b> Naming the cold call disarms it; asking permission returns control; the local detail proves you are a person. Then deliver exactly the thirty seconds you promised: one pain, one sentence of proof, one small ask — the fifteen-minute sit-down, never the sale itself.</p>',
+            '<h3>Voicemail and the callback myth</h3>',
+            '<p>Most calls hit voicemail. Leave one — short, name + one specific hook + number — but expect nothing: voicemail is a branding impression, not a channel. The callback comes from the text you send right after ("Just left you a voicemail — I\'m the one who does Ray\'s marketing…"), because a missed call plus a text is familiar; a missed call alone is spam.</p>',
+            '<h3>The rejection arithmetic, again, because the phone makes it brutal</h3>',
+            '<p>Doors reject you ten times a morning; phones can reject you ten times in twenty minutes. Same law of averages, compressed. That compression is the gift: you learn in one week of call blocks what door people learn in a month. Track, adjust one variable per fifty dials (the sa-lesson iteration rule), and keep the tank guarded — never end a block on a hang-up; end it on any human moment, even a pleasant no.</p>'
+          ].join(''),
+          mission: 'Run one full 45-minute call block on your list: dials tracked, the honest opener, voicemail + text on every miss. Log dials, pickups, conversations, appointments.',
+          ask: 'Your four numbers from the block, and the opener line you actually said.'
+        },
+        {
+          id: 'sa11', title: 'Selling on video calls', min: 9,
+          body: [
+            '<p>The fifteen-minute video call is where local deals actually close now — the owner books it from your text, takes it from the back room between cuts. It is in-person selling through a window, and the window has its own rules.</p>',
+            '<h3>Before: engineer the show-up</h3>',
+            '<div class="ex">Booked calls are worthless; attended calls close. The show-up machine: calendar invite the moment they agree (with YOUR face and the agenda in the description), a confirm text at booking, a reminder at T-minus-2-hours — "still good for 2pm? I\'ll have your shop\'s numbers up." That last clause matters: curiosity about THEIR data drags people onto calls that "quick chat" never would. This whole sequence is one automation from the glue lesson — build it once, every no-show after that is a system failure, not a character flaw.</div>',
+            '<h3>During: the window craft</h3>',
+            '<p>Camera at eye level, light on your face, shop noise off. First ninety seconds are human — the town, the trade, the thing you noticed — because rapport through glass needs deliberate oxygen. Then <b>screen share is your demo-in-their-hand</b>: their Google listing next to the competitor\'s, the loyalty card live on your phone held to the camera, the win-back numbers from another shop. Prepared tabs, zoomed to readable, notifications off — a Slack ping over your screen share costs more credibility than a bad suit ever did. Talk a third, ask the five questions, trial close ("if Tuesdays filled, would that actually matter?"), then the real close with the calendar already open: <b>"I can start the setup Thursday — want me to?"</b></p>',
+            '<h3>The close-through-glass differences</h3>',
+            '<p>Silence feels three times longer on video — hold it anyway; the first voice still concedes. Screens make people polite: video prospects say "looks great" more and mean it less, so replace enthusiasm-reading with commitment-testing — a date, an access grant, a deposit link sent while still on the call ("I\'ll send the payment link now so we\'re booked — thirty seconds"). Paying while together is the video floor\'s handshake.</p>',
+            '<h3>After: the same-hour rule</h3>',
+            '<p>The recap goes out within the hour, three lines: what we agreed, what happens next, the one thing you need from them. Video-call agreements evaporate overnight faster than in-person ones — the recap is the fixative. No-show? One guilt-free text within the hour; half rebook, and the automation already sent it.</p>'
+          ].join(''),
+          mission: 'Book and run one video sales call with the full machine: invite + reminder automation, prepared screen share of THEIR data, a commitment tested on-call, recap within the hour.',
+          ask: 'Whether they showed, what you screen-shared, the commitment you tested, and the recap you sent.'
         }
       ]
     },
@@ -1042,6 +1179,142 @@
           ].join(''),
           mission: 'Take three real chores from businesses you know and map each to the right animal (or combination) — then note which one you could ship with the skills you already have.',
           ask: 'The three chores, the type of AI each maps to, and the one you could ship this month.'
+        }
+      ]
+    },
+
+    {
+      id: 'trade',
+      name: 'Tools of the Trade',
+      icon: '🔧',
+      tag: 'The agency stack, demystified',
+      blurb: 'GHL, Twilio, Resend, Make, Shopify, payments & POS, CRMs and pipelines, SEO/GEO/AEO — every tool the industry name-drops, explained until you can sell your knowledge of it.',
+      lessons: [
+        {
+          id: 'tr1', title: 'GoHighLevel — the agency machine', min: 9,
+          body: [
+            '<p>Say "GHL" in any marketing group and half the room runs their business on it. GoHighLevel is the all-in-one agencies rent: CRM, pipelines, funnels, SMS and email, calendars, review requests, and — the reason it won — <b>white-label SaaS mode</b>, where the agency rebrands the whole platform and resells it to clients at their own price.</p>',
+            '<h3>What it actually is</h3>',
+            '<div class="ex">Roughly (check current pricing): ~$97/month for one business, ~$297/month for unlimited sub-accounts — one per client — and a higher tier that lets you sell it AS your own software. The model that made it famous: agency pays $297, spins up 20 client sub-accounts, charges each client $99–297/month for "their" branded system. The software margin funds the agency between retainers.</div>',
+            '<h3>Why agencies love it, and what it costs them</h3>',
+            '<p>Love: one login for everything, snapshots (clone a whole working setup per niche in minutes), and the resale margin. Cost: it does everything at 7/10 — the emails are clunkier than a real email tool, the funnels uglier than a real site, and the client experience feels like what it is, a rented dashboard. And every agency in your niche has the same snapshots, so "our proprietary system" is often the same template with a different logo.</p>',
+            '<h3>Your position, having built this campus\'s stack</h3>',
+            '<p>You already own white-label loyalty, booking, CRM, storefronts and compliant SMS capture — at effectively zero marginal cost, which undercuts GHL\'s whole economic pitch. So the honest decision rule: <b>use your stack when the client needs the outcomes; consider GHL when a client demands the whole kitchen-sink dashboard under one login, or when you inherit an agency already living in it.</b> Knowing GHL fluently is worth money either way — half your future clients will arrive FROM an agency that had them in it, and "I can read your GHL and tell you what you\'re actually using" is a paid audit.</p>',
+            '<h3>The vocabulary that signals fluency</h3>',
+            '<p>Sub-account (one client\'s instance), snapshot (a cloneable setup), workflow (their automation builder), SaaS mode (reselling it branded), A2P registration (same Twilio rules as everywhere — GHL sends through Twilio underneath). Underneath the paint, it is the same rails you already learned.</p>'
+          ].join(''),
+          mission: 'Take the GHL trial (or watch a full demo walkthrough) and map each feature to what you would use instead from your own stack. Write the audit sentence you would say to a client currently paying an agency for it.',
+          ask: 'Your feature-by-feature map, and the audit sentence.'
+        },
+        {
+          id: 'tr2', title: 'Twilio & the SMS rails', min: 9,
+          body: [
+            '<p>Every text a business sends — from GHL, from Booksy, from your win-back tool — rides the same rails, and Twilio is the biggest carrier of them. Understanding the rails is what separates "we send texts" from someone who can be trusted with a client\'s number.</p>',
+            '<h3>How a business text actually travels</h3>',
+            '<div class="ex">Your code → Twilio\'s API → the A2P 10DLC registration system (who are you, what campaign, what consent) → the carriers (Verizon, T-Mobile, AT&T) → the phone. Every hop can block you: unregistered traffic gets filtered silently — messages "send" and never arrive, which is worse than an error because nobody tells you. Costs, roughly: ~$1/month for a number, about a cent per SMS segment, plus small carrier and registration fees. Cheap enough to ignore at shop volume; the compliance is the real cost.</div>',
+            '<h3>The rules that keep clients out of trouble</h3>',
+            '<p>You built this in the lead-form kit; now own it as knowledge: written consent with the exact wording stored, STOP honoured instantly (the rails do it, but your list must record it), HELP answered, identify the sender, no more than promised frequency, 10am–7pm sends. The A2P campaign registration asks how you collect opt-in — a vague answer is the #1 rejection. Your compliant-form generator produces the provable version; that is a sellable setup service on its own ($300–500 to make a business textable, legally).</p>',
+            '<h3>Toll-free, 10DLC, shortcode — which number</h3>',
+            '<p>10DLC (a normal local number, registered): right for almost every local business — local caller ID, low cost. Toll-free (verified): faster to approve, less local trust. Shortcodes (the 5-digit ones): thousands per month, enterprise only. Answer for your clients: 10DLC, registered properly, always.</p>',
+            '<h3>Alternatives to know by name</h3>',
+            '<p>Telnyx and Plivo (cheaper Twilio-likes), SimpleTexting/EZTexting (non-technical, pricier per message), and the platforms that hide Twilio inside them (GHL, Podium). When an owner says "Podium quoted me $400/month", you now know that is mostly Twilio\'s pennies plus software margin — and you can say so, gently, with numbers.</p>'
+          ].join(''),
+          mission: 'Price a real shop\'s texting honestly: their volume × the raw rail cost vs. what a platform quotes them. Write the two-line comparison you would show the owner.',
+          ask: 'The volumes, both prices, and the comparison line.'
+        },
+        {
+          id: 'tr3', title: 'Email rails — Resend, and why mail disappears', min: 8,
+          body: [
+            '<p>Email looks free and simple until a client says "customers say they never got it". Deliverability — whether mail lands in the inbox, the spam folder, or nowhere — is a real discipline, and knowing it makes you the person who fixes a problem most owners think is fate.</p>',
+            '<h3>The two kinds of email, never mixed</h3>',
+            '<div class="ex"><b>Transactional</b> — receipts, confirmations, PIN resets: one recipient, triggered by an action. Tools: Resend (the modern developer favourite — clean API, generous free tier), Postmark, SendGrid.<br><b>Marketing</b> — newsletters, offers: many recipients, needs unsubscribe links by law. Tools: Mailchimp, Klaviyo (ecommerce king), Brevo.<br>Send marketing through your transactional pipe and its reputation tanks — then the RECEIPTS start going to spam. Separate senders, always.</div>',
+            '<h3>The three DNS records that decide everything</h3>',
+            '<p>SPF (which servers may send as this domain), DKIM (a cryptographic signature on each mail), DMARC (what receivers should do with failures). Miss them and Gmail quietly bins the mail. This is a fifteen-minute, four-DNS-record fix that most local businesses have never done — <b>"I checked, your domain isn\'t authenticated, that\'s why the confirmations go to spam"</b> is a $150 job that takes you twenty minutes and makes you look like a wizard.</p>',
+            '<h3>What to actually build for clients</h3>',
+            '<p>Booking confirmations and reminders (transactional, via Resend), the monthly "what\'s new + offer" (marketing, via a proper list tool, fed by the loyalty database), and win-back emails as the cheap sibling of win-back texts — email costs ~nothing, so it goes to the whole lapsed list while SMS goes to the top slice. Report opens honestly (Apple privacy inflates them; clicks are the truth).</p>',
+            '<h3>The pitch vocabulary</h3>',
+            '<p>Deliverability, sender reputation, authentication (SPF/DKIM/DMARC), open vs click rate, list hygiene (prune dead addresses or they drag the rest). Five terms, and you sound like — because you now are — someone who has fixed this before.</p>'
+          ].join(''),
+          mission: 'Check the DNS authentication of three real local businesses (free tools: MXToolbox, or dig). Write the twenty-minute-fix pitch for the worst one.',
+          ask: 'The three results, and your pitch to the worst offender.'
+        },
+        {
+          id: 'tr4', title: 'Make, Zapier, n8n — selling automations', min: 9,
+          body: [
+            '<p>Automation glue connects apps that don\'t know each other: form fills become CRM rows become texts become calendar events, while the owner sleeps. You met the idea in the AI campus; this lesson is the business of it, because <b>"automation setup" is one of the cleanest $300–1,500 projects in local services.</b></p>',
+            '<h3>The three glues, honestly compared</h3>',
+            '<div class="ex"><b>Zapier</b> — easiest, most connectors, priciest per task; fine for simple two-step zaps, expensive at volume.<br><b>Make</b> (ex-Integromat) — visual scenario builder, much cheaper per operation, steeper learning curve; the sweet spot for client work.<br><b>n8n</b> — open source; self-host it for ~$5/month and operations are effectively free. Your margin machine once you\'re comfortable — and it is what this estate itself runs on.<br>Same shape everywhere: a <b>trigger</b> (something happened) → <b>steps</b> (look up, transform, decide) → <b>actions</b> (write, send, create).</div>',
+            '<h3>The five automations local businesses actually pay for</h3>',
+            '<p>1) Lead lands → instant text-back to the lead + alert to the owner (speed-to-lead is the single highest-ROI automation in existence). 2) Missed call → "sorry we missed you, want Thursday?" text. 3) Appointment done → review ask, timed right. 4) New review → drafted reply for approval. 5) Friday → the week\'s numbers assembled into one owner-readable message. Notice each one replaces a human remembering to do something — that is the product: <b>you are not selling software, you are selling the end of forgetting.</b></p>',
+            '<h3>How to price and package it</h3>',
+            '<p>Setup fee per automation ($150–500 by complexity) plus a small monthly "keep it running" ($50–100) — automations break when apps change, and the retainer is what makes breakage your problem instead of a fresh invoice. Bundle of five = a $1,500 project plus $99/month, delivered in a weekend once you have templates. Build each one ONCE as a template, resell it to every shop in the niche — the second sale is an afternoon.</p>',
+            '<h3>The AI upgrade</h3>',
+            '<p>Every glue tool now has an AI step. That is where the intelligence slots in: the missed-call text that actually answers the question, the review reply drafted in the shop\'s voice. Glue + model = the products from the AI campus, assembled without code. Two skills, one invoice.</p>'
+          ].join(''),
+          mission: 'Build the speed-to-lead automation end to end for one real business (form → instant text + owner alert), using any of the three glues. Time your build.',
+          ask: 'The glue you chose, how long it took, and proof it fired.'
+        },
+        {
+          id: 'tr5', title: 'Shopify & the ecommerce landscape', min: 8,
+          body: [
+            '<p>When a client says "I want to sell online", the reflex answer is Shopify. Sometimes right — and knowing exactly when is what stops you from installing a $39/month platform plus fees on a candle maker who will sell forty candles a year.</p>',
+            '<h3>What Shopify actually is</h3>',
+            '<div class="ex">Hosted ecommerce: from roughly $39/month (check current), plus payment processing (~2.9% + 30¢ online), plus apps that creep ($10 here, $30 there — audit any existing store and find $80/month of forgotten apps, which is itself a paid service). In exchange: bulletproof checkout, inventory, shipping labels, an app for everything, and it never goes down on Black Friday. For a real product business doing real volume, worth every cent.</div>',
+            '<h3>The decision ladder you sell as advice</h3>',
+            '<p><b>Under ~10 orders/week or price-on-request products</b> → your storefront kit: one file, no monthly fee, orders into the CRM (the Hubs & Babydoll model). <b>Selling on socials mostly</b> → IG/Facebook Shops + a payment link; the platform IS the store. <b>Real catalogue, real volume, shipping daily</b> → Shopify. <b>Food</b> → Square/Toast online ordering, never generic ecommerce. Charging $200 to tell someone which rung they are on — and saving them $1,000/year of wrong platform — is legitimate consulting.</p>',
+            '<h3>Names to hold</h3>',
+            '<p>WooCommerce (WordPress\'s store — free-ish, self-maintained, how agencies bill maintenance forever), Squarespace/Wix commerce (fine for tiny catalogues welded to their sites), Etsy (a marketplace, not a store — fees for discovery, same trade as Booksy), Amazon (volume, brutal margins, someone else\'s customer). The pattern from the platforms campus repeats: <b>marketplaces rent you demand; stores you own keep the customer.</b> Say that sentence to an owner and watch them get it instantly.</p>',
+            '<h3>Where you make money</h3>',
+            '<p>Store setup ($500–2,000), product-page copy from the copywriting campus, the abandoned-cart and post-purchase email flows (Klaviyo + the email lesson), and the monthly care plan. Ecommerce clients churn less than service clients — the store is infrastructure, and you run it.</p>'
+          ].join(''),
+          mission: 'Take one real product business and place it on the decision ladder in writing — with the yearly cost of each rung for THEIR volume. Recommend one and defend it.',
+          ask: 'The business, the three costed options, and your recommendation.'
+        },
+        {
+          id: 'tr6', title: 'Payments & POS — how the money actually moves', min: 9,
+          body: [
+            '<p>Every card tap in every shop pays a toll, and almost no owner knows to whom or how much. Understanding the toll booth makes you dangerous in the best way: you can read a merchant statement and find money in it.</p>',
+            '<h3>The toll, decomposed</h3>',
+            '<div class="ex">A $35 haircut on card: <b>interchange</b> (~1.5–2.2%, set by Visa/Mastercard, goes to the customer\'s bank) + <b>network fee</b> (small, to Visa/MC) + <b>processor markup</b> (the only negotiable part). Square/Stripe-style flat pricing: ~2.6% + 10¢ in person, ~2.9% + 30¢ online (check current) — simple, slightly expensive at volume. Traditional processors: "interchange-plus" — cheaper at scale, wrapped in statements designed to be unreadable, sometimes with termination fees. The service: <b>read the statement, compute the effective rate, compare. Over ~3% effective in person, they are being farmed.</b></div>',
+            '<h3>POS systems, by trade</h3>',
+            '<p><b>Square</b> — the local default: free basic POS, honest pricing, appointments, loyalty add-on (theirs costs monthly; yours is white-label — a talking point). <b>Clover</b> — sold through banks, hardware-first, watch the third-party service contracts riding on it. <b>Toast</b> — restaurants, deep but with fees everywhere. <b>Booksy/Fresha</b> — the POS is inside the booking app for beauty. The POS matters to YOU because it holds the customer data and the sales numbers — the raw material of every report you write and every list you import.</p>',
+            '<h3>Payment links, invoices, and getting YOURSELF paid</h3>',
+            '<p>Stripe and Square payment links are how you take your own retainers: auto-billing on the 1st, no chasing (the money lesson\'s "no net-30" made real). Same links work for clients: deposits for appointments (no-show cure, chair-booking already supports it), invoices for big jobs. Cash-discount/surcharge programs exist (passing fees to card users) — legal in most states with rules; know the words, recommend carefully, it can annoy customers more than it saves.</p>',
+            '<h3>The audit product</h3>',
+            '<p>"Bring me one month\'s merchant statement, I\'ll find what you\'re overpaying" — $150 flat, ten minutes with a calculator once you\'ve done three, and it either finds money (hero) or confirms they\'re fine (trusted). Both outcomes sell the next service.</p>'
+          ].join(''),
+          mission: 'Get one real merchant statement (any business, even a relative\'s) and compute the effective rate: total fees ÷ total volume. Compare to the flat-rate benchmark.',
+          ask: 'The effective rate you found, the benchmark, and what you would tell the owner.'
+        },
+        {
+          id: 'tr7', title: 'CRMs & pipelines — the machinery of follow-up', min: 8,
+          body: [
+            '<p>You have used a CRM all through this school. This lesson is the industry view: what the market sells, what the words mean, and how to run a pipeline so no money dies of forgetting — for you or for clients.</p>',
+            '<h3>The vocabulary, precisely</h3>',
+            '<div class="ex"><b>Lead → contact → opportunity/deal</b>: a name → a name you can reach → a name with money attached.<br><b>Pipeline</b>: the named stages a deal walks through (New → Contacted → Call booked → Proposal → Won/Lost).<br><b>Stage conversion</b>: what % survives each hop — the law-of-averages tracker, formalised.<br><b>Velocity</b>: how long a deal sits per stage; deals rot, and stage-age is the smell.<br><b>Next action + date</b>: the one field that matters. A deal without a dated next action is not in your pipeline, it is in your imagination.</div>',
+            '<h3>The market, mapped</h3>',
+            '<p><b>HubSpot</b> — the free tier is genuinely good and the upsells are relentless; the safe corporate answer. <b>Pipedrive</b> — pipeline-first, clean, ~$15–25/seat. <b>GHL</b> — the CRM inside the agency machine (lesson one). <b>Salesforce</b> — enterprise; know the name, never install it for a barbershop. <b>Spreadsheet</b> — where every small business actually starts, and honestly fine until follow-up volume breaks it. Your own estate CRM — free, yours, already wired to the capture forms and Loop. For clients: the best CRM is the one attached to where their leads already arrive, which is why "your form now writes into a pipeline and texts you" beats "please adopt this new app you must remember to open".</p>',
+            '<h3>Running the discipline (the part that is actually hard)</h3>',
+            '<p>Software never closed a deal. The discipline: every conversation gets a next-date before the app closes; the pipeline is walked every Friday oldest-first; Lost gets a reason (the reasons, aggregated quarterly, are a mirror: "price" means wrong niche or weak anchor, "ghosted" means weak close); and won customers move to a SECOND pipeline — the retention one — because the money campus taught you where LTV lives. Sell this as a service: "I set up your pipeline and run your follow-up" is the invisible half of every retainer you already offer.</p>'
+          ].join(''),
+          mission: 'Formalise your own pipeline: stages, current deals placed honestly, a dated next action on every one, and last quarter\'s Lost reasons if you have them.',
+          ask: 'Your stages, deal count per stage, and the oldest deal\'s age + next action.'
+        },
+        {
+          id: 'tr8', title: 'SEO, GEO, AEO — being found in three eras at once', min: 10,
+          body: [
+            '<p>Three acronyms, three eras of the same question — "when someone asks, are you the answer?" — and all three are live simultaneously. Fluency in the trio is the single most in-demand knowledge in local marketing right now, which makes this lesson directly sellable.</p>',
+            '<h3>SEO — the classic era (still most of the money)</h3>',
+            '<div class="ex">Google ranks pages by relevance, authority and experience. For LOCAL, it collapses to a shortlist you already partly know: the Google Business Profile (categories, reviews, photos, posts — the map pack IS local SEO), honest pages per service and per town (never thin duplicates), site speed and mobile, consistent name/address/phone everywhere (citations), and links from real local places — the paper, the school, the supplier. Vocabulary: keywords, intent, SERP, map pack, backlinks, domain authority, title tags. Timeline honesty: months, not weeks — which is why it is a retainer, not a project.</div>',
+            '<h3>AEO — answer engine optimisation</h3>',
+            '<p>Voice assistants and featured snippets answer questions directly: "what does a skin fade cost in West Chester" gets ONE answer read aloud. Winning it: pages that ask the exact question as a heading and answer it in the first sentence, FAQ schema (structured data — code that labels your content so machines parse it), and Q&As seeded on the Google profile. Mechanically small, disproportionately visible.</p>',
+            '<h3>GEO — generative engine optimisation (the new one)</h3>',
+            '<p>A growing share of "who should I call" never touches a results page — it is asked to ChatGPT, Claude, Perplexity, or Google\'s AI overviews, and the model composes ONE recommendation from what it has read. Getting recommended: be unambiguous about who/where/what across the whole web (models triangulate), be present in the sources models read (reviews, local press, directories, Reddit/forum mentions), publish pages that answer questions plainly (models quote the quotable), and llms.txt — an emerging convention for telling AI crawlers what your site is. Nobody is an expert yet, <b>which is exactly the opportunity: "is your business visible to AI?" is a pitch no local competitor is making, and this estate already practises it on itself.</b></p>',
+            '<h3>Selling the trio</h3>',
+            '<p>The audit: search the client\'s trade+town on Google (SEO), ask a voice assistant (AEO), ask two AI chatbots (GEO) — screenshot all three, mark where they appear and don\'t. That one-pager is the most modern-looking sales document in this school, it takes twenty minutes, and the gaps write the retainer. Price the ongoing work as the visibility retainer: $300–600/month covering profile, pages, reviews, citations and the AI-era checks — reported monthly with the same three screenshots so the owner literally watches himself appear.</p>'
+          ].join(''),
+          mission: 'Run the three-era audit on one real business: Google search, a voice assistant, and two AI chatbots. Screenshot everything and mark presence/absence.',
+          ask: 'Where they appeared, where they were invisible, and the retainer the gaps justify.'
         }
       ]
     },
@@ -1306,6 +1579,12 @@
      reachable, and the path can be rewritten the day the goal changes.
      -------------------------------------------------------------------------- */
   w.TBU_GOALS = [
+    { id: 'closer', icon: '🎤', label: 'Close deals for a product I believe in',
+      text: 'Get paid to close — Loop, the University, or any product',
+      lessons: ['u1','u7','sa1','sa2','sa3','sa4','sa5','c1','c2','sa10','c3','sa7','sa11','c4','sa8','c6','sa6','sa9','l2','l6'] },
+    { id: 'stack_expert', icon: '🔧', label: 'Master every platform & tool',
+      text: 'Become the person who knows every app the client is bad at',
+      lessons: ['u1','pl1','pl2','pl3','pl4','pl5','pl6','tr1','tr2','tr3','tr4','tr5','tr6','tr7','tr8','u6','c5'] },
     { id: 'first_client', icon: '🎯', label: 'Land my first paying client',
       text: 'Get one shop paying me',
       lessons: ['u1','u7','f1','f2','f4','f5','c1','c2','sa1','sa4','c3','c4','sa2','c5','c6','sa6','c7','l2','u2'] },
@@ -1314,10 +1593,10 @@
       lessons: ['u1','u7','f2','f4','f5','c1','c2','c4','c5','c7','l1','l2','l4','l5','p12','s1','s2','p13'] },
     { id: 'more_clients', icon: '📈', label: 'Grow the thing I already run',
       text: 'More clients, higher prices, less chaos',
-      lessons: ['p3','p13','p5','sa8','c5','s2','l1','l5','p12','sa9','s4','s1','s3','p1'] },
+      lessons: ['p3','p13','p5','sa8','c5','s2','l1','l5','pl6','tr7','p12','sa9','s4','s1','s3','p1'] },
     { id: 'build_ai', icon: '⚡', label: 'Build and sell AI products',
       text: 'Build AI products local businesses pay for',
-      lessons: ['x0','x11','x1','x2','x3','x4','x6','x7','x8','x9','c1','c2','c4','x10'] },
+      lessons: ['x0','x11','x1','x2','x3','x4','tr4','x6','x7','x8','x9','c1','c2','c4','x10'] },
     { id: 'master_craft', icon: '🧠', label: 'Actually master marketing',
       text: 'Get genuinely good at marketing and copy',
       lessons: ['u3','u4','u5','p1','p2','p7','p8','p9','p3','p5','p6','p10','p11','p12','p13'] }

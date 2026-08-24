@@ -28,8 +28,8 @@ after the migration, their local progress is replayed into their account.
 
 **$50/month.** Free for the founding cohort while it fills out. The public site
 stays priceless by design — the number is said on the application call and in
-the welcome email. What justifies it: 70 lessons with a check after each (140 questions), 9
-campus exams, 9 builds whose 51 saved steps become the student's own business
+the welcome email. What justifies it: 86 lessons with a check after each (172 questions), 11
+campus exams, 11 builds whose 62 saved steps become the student's own business
 documents (the workbook), the money tracker (log a client once, the earned
 figure grows monthly — the honest path produces ~$5,400 in six months at 4
 clients × $300), live calls, the case-file library, and the toolstack licensed
@@ -47,6 +47,15 @@ From `/university/admin/` you can now also:
 - **Edit a student** — name, email, plan, and PIN reset (which also clears any
   lockout the old PIN accumulated). The × button permanently deletes — for test
   rows only; leaving members get the status dropdown.
+
+
+## Video on lessons
+
+Admin → **Edit a lesson** → paste a share link into **Video URL** (YouTube
+unlisted, Loom, or Vimeo — or a direct .mp4) → Save. The player embeds above
+that lesson's text for every student. Clearing the field (or Restore) removes
+it. The flow for recording: Loom or phone → upload unlisted → paste. No
+storage bill, no transcoding, and the player is theirs to maintain.
 
 ## Logging in
 
@@ -113,7 +122,7 @@ attendance, XP and the schedule are all server-side already.
   ever locked.
 - **Home** — rank, XP, streak, their next three moves *on their own path*, this
   week's build brief, today's checklist, recent wins.
-- **Campuses** — 9 campuses, 70 lessons (incl. the Sales Academy: five steps,
+- **Campuses** — 11 campuses, 86 lessons (incl. the Sales Academy: five steps,
   KISS, the nine-year-old test, law of averages, transfer of feeling, referrals,
   in-person craft, high-ticket closing, commission closing), each ending in a
   written answer before it counts as done.
@@ -186,8 +195,8 @@ card — recalculates on its own.
 | `university/lessons/` | The free mini-course (the funnel) |
 | `university/campus/index.html` | The app shell, styles, the enrol/sign-in gate |
 | `university/campus/campus.js` | The app: auth, state, views, live calls |
-| `university/campus/curriculum.js` | All 70 lessons, the daily checklist, the ranks |
-| `university/campus/vocab.js` | 4 vocabulary decks, 64 terms, three registers each |
+| `university/campus/curriculum.js` | All 86 lessons, the daily checklist, the ranks |
+| `university/campus/vocab.js` | 6 vocabulary decks, 150 terms, three registers each |
 | `university/admin/index.html` | Codes, students, live calls |
 | `university/campus/curriculum.js` | Also holds the paths, the daily list, the ranks and the weekly build briefs |
 | `kit/storefront/` | The resellable ecommerce template + its builder |

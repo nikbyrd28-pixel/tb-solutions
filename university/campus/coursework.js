@@ -619,6 +619,139 @@
       c: 1, why: 'Each step sells only the next step. Closing a retainer in a doorway is amateur hour.' }
   ];
 
+  Q.sa10 = [
+    { q: 'Why does naming the cold call ("this is a cold call, thirty seconds, fair?") work?',
+      a: ['It lowers expectations', 'It disarms the pattern they hang up on and returns control to them', 'It is legally required', 'It fills the silence'],
+      c: 1, why: 'They have hung up on a hundred robocalls that pretended not to be calls. Honesty is the pattern-break.' },
+    { q: 'What is the actual job of a voicemail?',
+      a: ['Getting a callback', 'A branding impression that makes the follow-up text familiar instead of spam', 'Delivering the pitch', 'Proving you called'],
+      c: 1, why: 'The callback comes from the text sent right after. Missed call + text reads as a person; missed call alone reads as spam.' }
+  ];
+  Q.sa11 = [
+    { q: 'What drags a shop owner onto a video call that "quick chat" never would?',
+      a: ['A shorter meeting', 'Curiosity about THEIR data — "I\'ll have your shop\'s numbers up"', 'Free consultation framing', 'A calendar link'],
+      c: 1, why: 'People skip chats about you; they show up to see themselves. The reminder text carries that clause on purpose.' },
+    { q: 'On video, prospects say "looks great" more and mean it less. The fix is…',
+      a: ['More enthusiasm', 'Testing commitment instead of reading enthusiasm — a date, access, a deposit link sent on-call', 'Longer calls', 'A follow-up email'],
+      c: 1, why: 'Screens make people polite. Paying while together is the video floor\'s handshake.' }
+  ];
+
+  /* --- Platforms --- */
+  Q.pl1 = [
+    { q: 'Which platform type gets fixed first, and why?',
+      a: ['Attention (Instagram, TikTok) — visibility compounds', 'Intent (Google, Yelp) — people arrive already wanting the thing today', 'Community — it is free', 'Operations — the money is there'],
+      c: 1, why: 'Fixing a Google profile pays this month; growing an Instagram pays next quarter. Intent before attention, always.' },
+    { q: 'What is the twenty-minute platform audit for?',
+      a: ['Internal research', 'It is simultaneously the diagnosis, the free sample, and the proposal — the reds become the retainer', 'Competitive analysis', 'A checklist for the owner'],
+      c: 1, why: 'One page, no access needed, and it converts a stranger into a prospect who has seen you work.' }
+  ];
+  Q.pl2 = [
+    { q: 'How do customers actually use a shop\'s Instagram?',
+      a: ['To follow for updates', 'To VERIFY — checking the work like they check reviews, in about four seconds', 'For booking', 'For offers'],
+      c: 1, why: 'The grid is a shop window, not a diary. Nine squares must answer: good work, my kind of place, can I act now.' },
+    { q: 'Which metric matters for a local account?',
+      a: ['Follower count', 'Profile visits, link taps and DMs started', 'Likes per post', 'Posting frequency'],
+      c: 1, why: '400 locals beat 40,000 randoms. Report the funnel numbers, not the vanity ones.' }
+  ];
+  Q.pl3 = [
+    { q: 'Where do local referrals actually happen on Facebook?',
+      a: ['The business page', 'Groups — "anyone know a good barber?" gets asked weekly', 'Marketplace', 'Ads'],
+      c: 1, why: 'Whoever gets three comment-mentions wins the customer. Being present there is unfakeable and free.' },
+    { q: 'When do you sell Meta ads management?',
+      a: ['First, for fast results', 'Only after organic works — ads amplify a message, they cannot invent one', 'Never for local', 'When the client asks'],
+      c: 1, why: 'A $5/day radius boost on a proven post works. Ads on an unproven message is paying to be ignored faster.' }
+  ];
+  Q.pl4 = [
+    { q: 'The honest TikTok pitch to a shop is…',
+      a: ['"We will make you go viral"', '"One in thirty pops, the pop fills the books for two weeks, and the other twenty-nine cost fifteen minutes each"', '"Everyone is on TikTok now"', '"It replaces your other marketing"'],
+      c: 1, why: 'A slot machine where the coins are content you already made from shoot-day footage.' },
+    { q: 'Why is one vertical video pipeline enough for four platforms?',
+      a: ['The platforms share an algorithm', 'The same file posts to TikTok, Reels, Shorts and Facebook with adjusted captions', 'Cross-posting is against the rules', 'It is not — each needs native content'],
+      c: 1, why: 'You are not running four platforms; you are running one pipeline with four outlets. That is also the pitch.' }
+  ];
+  Q.pl5 = [
+    { q: 'Why does the classic "ask regulars to make Yelp accounts" move backfire?',
+      a: ['Yelp charges for reviews', 'The filter hides reviews from accounts with no history — exactly what those new accounts look like', 'Regulars refuse', 'It violates the terms'],
+      c: 1, why: 'Route Yelp asks to regulars who ALREADY use Yelp. Know which ones they are — just ask.' },
+    { q: 'Claiming a shop\'s Yelp matters even if the owner hates Yelp because…',
+      a: ['It stops the sales calls', 'Yelp data feeds Apple Maps — every iPhone\'s default navigation', 'It improves Google rankings', 'Ads require it'],
+      c: 1, why: 'An unclaimed listing with a wrong number sends iPhone customers to voicemail. Twenty minutes fixes it forever.' }
+  ];
+  Q.pl6 = [
+    { q: 'What is the pattern across Booksy, Fresha and every booking marketplace?',
+      a: ['They are all subscription-only', 'They charge most for NEW clients — so let the marketplace bring strangers and move regulars to a direct channel', 'They own the customer data forever', 'They are cheaper than websites'],
+      c: 1, why: 'The pitch is never "leave Booksy" — it is "stop paying new-client prices for your own regulars".' },
+    { q: 'What happens in week one of any booking-platform engagement?',
+      a: ['Renegotiate their plan', 'Export the client list — the list is the business, and a shop that cannot leave its app does not own its customers', 'Turn off Boost', 'Redesign the profile'],
+      c: 1, why: 'Own the export first. Everything else is adjustable later.' }
+  ];
+
+  /* --- Tools of the Trade --- */
+  Q.tr1 = [
+    { q: 'Why did GoHighLevel win the agency market?',
+      a: ['Best-in-class email tools', 'White-label SaaS mode — agencies rebrand it and resell it at their own price', 'Lowest price', 'Superior funnels'],
+      c: 1, why: 'The $297 unlimited-sub-accounts tier resold at $99–297 per client is the margin engine that built it.' },
+    { q: 'Your position on GHL, owning this school\'s stack, is…',
+      a: ['Never touch it', 'Use your stack for outcomes; know GHL fluently because half your future clients arrive FROM an agency that had them in it', 'Move everything to GHL', 'Resell both at once'],
+      c: 1, why: '"I can read your GHL and tell you what you are actually using" is a paid audit.' }
+  ];
+  Q.tr2 = [
+    { q: 'Unregistered A2P traffic fails how?',
+      a: ['With an error message', 'Silently — messages "send" and never arrive, and nobody tells you', 'With an account ban', 'With higher fees'],
+      c: 1, why: 'Filtered-silent is worse than an error. Registration is the difference between texting and pretending to.' },
+    { q: 'Which number type is right for almost every local business?',
+      a: ['A shortcode', 'A registered 10DLC local number', 'A toll-free number', 'The owner\'s cell'],
+      c: 1, why: 'Local caller ID, low cost, proper registration. Shortcodes are enterprise money; toll-free trades local trust away.' }
+  ];
+  Q.tr3 = [
+    { q: 'Why must transactional and marketing email never share a sender?',
+      a: ['Different laws', 'Marketing tanks the sender\'s reputation and then the RECEIPTS start going to spam', 'Cost', 'Different tools cannot integrate'],
+      c: 1, why: 'Separate senders, always. The confirmation email is too important to ride with the newsletter.' },
+    { q: 'SPF, DKIM and DMARC are…',
+      a: ['Email marketing metrics', 'DNS records that authenticate a domain\'s mail — missing them, Gmail quietly bins it', 'Spam filter brands', 'Encryption standards'],
+      c: 1, why: 'A fifteen-minute, four-record fix most local businesses have never done — a $150 job that makes you look like a wizard.' }
+  ];
+  Q.tr4 = [
+    { q: 'The single highest-ROI automation in local services is…',
+      a: ['The weekly report', 'Speed-to-lead: form lands → instant text-back + owner alert', 'Review requests', 'Social scheduling'],
+      c: 1, why: 'The lead that gets answered in one minute books; the one answered tomorrow already booked elsewhere.' },
+    { q: 'What are you actually selling with automations?',
+      a: ['Software licences', 'The end of forgetting — each one replaces a human remembering to do something', 'Time tracking', 'AI'],
+      c: 1, why: 'Setup fee + small monthly "keep it running", templated once, resold to every shop in the niche.' }
+  ];
+  Q.tr5 = [
+    { q: 'A candle maker selling ~40 candles a year asks for Shopify. You say…',
+      a: ['Yes — it is the standard', 'No — the one-file storefront with orders into the CRM costs nothing monthly and fits the volume', 'Etsy instead', 'WooCommerce'],
+      c: 1, why: 'The decision ladder is the service: charging $200 to place them on the right rung saves them $1,000 a year.' },
+    { q: '"Marketplaces rent you demand; stores you own keep the customer" applies to…',
+      a: ['Only ecommerce', 'Etsy, Amazon, Booksy, Yelp — the same trade everywhere: discovery for fees, ownership for keeps', 'Only Shopify vs Etsy', 'Physical retail'],
+      c: 1, why: 'One pattern across the whole estate: let platforms bring strangers, move repeats to owned rails.' }
+  ];
+  Q.tr6 = [
+    { q: 'The only negotiable slice of card-processing cost is…',
+      a: ['Interchange', 'The processor markup', 'The network fee', 'None of it'],
+      c: 1, why: 'Interchange goes to the customer\'s bank, the network fee to Visa/MC. The markup is where statements get creative.' },
+    { q: 'The merchant-statement audit works as a product because…',
+      a: ['Owners love spreadsheets', 'Either you find money (hero) or confirm they are fine (trusted) — both outcomes sell the next service', 'It is legally required', 'Processors pay referral fees'],
+      c: 1, why: '$150 flat, ten minutes once you have done three, and an effective rate over ~3% in person means they are being farmed.' }
+  ];
+  Q.tr7 = [
+    { q: 'A deal with no dated next action is…',
+      a: ['In the pipeline', 'In your imagination', 'A cold lead', 'Lost'],
+      c: 1, why: 'Next action + date is the one field that matters. Everything else is decoration on that discipline.' },
+    { q: 'For a small client, the best CRM is…',
+      a: ['HubSpot — the free tier', 'The one attached to where their leads already arrive', 'GHL', 'Whichever is cheapest'],
+      c: 1, why: '"Your form now writes into a pipeline and texts you" beats "please adopt this new app you must remember to open".' }
+  ];
+  Q.tr8 = [
+    { q: 'GEO differs from classic SEO because…',
+      a: ['It targets Google Maps', 'The answer is composed by an AI from what it read — one recommendation, no results page', 'It is paid placement', 'It only affects voice assistants'],
+      c: 1, why: 'A growing share of "who should I call" never touches a SERP. Be unambiguous everywhere the models read.' },
+    { q: 'The three-era audit (Google, voice assistant, two AI chatbots) is powerful because…',
+      a: ['It is thorough', 'No local competitor is making the "are you visible to AI?" pitch yet — the gaps write the retainer', 'It is free', 'Clients understand SEO'],
+      c: 1, why: 'Twenty minutes, three screenshots, and the most modern-looking sales document in the school.' }
+  ];
+
   w.TBU_CHECKS = Q;
 
   /* ---- EXAMS: one per campus. 8 questions, 6 to pass, retake forever. ------
@@ -789,6 +922,61 @@
     ]},
 
 
+
+    platforms: { title: 'Platforms', pass: 6, title_earned: 'Platform operator', questions: [
+      { q: 'A shop has a dead Instagram, an unclaimed Yelp, a wrong-hours Google profile and no TikTok. Order of work?',
+        a: ['TikTok first — growth', 'Google, then Yelp, then Instagram — intent before attention', 'Instagram first — it is the portfolio', 'All at once'], c: 1,
+        why: 'Intent platforms convert this month. The unclaimed Yelp also feeds Apple Maps a wrong number.' },
+      { q: 'The nine-grid of a barbershop Instagram must answer…',
+        a: ['What is trending', 'Is the work good, is it my kind of place, can I act now', 'How often they post', 'Who the barbers are'], c: 1,
+        why: 'Customers verify, they do not follow. Four seconds, nine squares, three questions.' },
+      { q: 'Fifteen minutes a day in local Facebook groups beats an ad budget because…',
+        a: ['It is free', 'Recommendation threads are where the referral actually happens, and presence there is unfakeable', 'Groups have more users', 'Ads are banned in groups'], c: 1,
+        why: 'The digital version of sponsoring the little-league team.' },
+      { q: 'Boost on Booksy charged $340; $190 was customers who searched the shop\'s name. Your move?',
+        a: ['Cancel Booksy', 'Measure and show the owner, keep the marketplace for strangers, move regulars to direct booking', 'Complain to Booksy', 'Raise the shop\'s prices'], c: 1,
+        why: 'Never "leave the platform" — "stop paying new-client prices for your own regulars".' },
+      { q: 'Which client should NOT be sold TikTok?',
+        a: ['A barbershop with young clientele', 'A shop whose customers are 55+ contractors', 'A nail salon', 'A sneaker store'], c: 1,
+        why: 'The platform map decides. Selling everyone everything is how you become the agency people warn each other about.' },
+      { q: 'The review engine counts once in the retainer but reports as four lines because…',
+        a: ['It sounds bigger', 'The same ask-right-moment machinery feeds Google, Yelp, Facebook and Booksy at once', 'Each platform needs its own system', 'Reviews syndicate automatically'], c: 1,
+        why: 'One service, four surfaces. Same mechanics everywhere: right moment, one tap, reply to all.' },
+      { q: 'Meta radius ads work locally when…',
+        a: ['Budget exceeds $50/day', 'They boost an already-proven post to a 3-mile radius', 'They run before organic exists', 'They target nationally'], c: 1,
+        why: 'Ads amplify a message. $5/day on proof that already works beats $50/day on a guess.' },
+      { q: 'The platform audit is your best opener because…',
+        a: ['It is fast', 'It requires no access, produces a scorecard, and the reds ARE the proposal', 'Owners request it', 'It is proprietary'], c: 1,
+        why: 'Twenty minutes, one page: diagnosis, free sample and pitch in a single artifact.' }
+    ]},
+
+    trade: { title: 'Tools of the Trade', pass: 6, title_earned: 'Stack fluent', questions: [
+      { q: 'An owner pays an agency $297/month for "their proprietary marketing system". It is probably…',
+        a: ['Custom software', 'A GHL sub-account from a niche snapshot, rebranded', 'HubSpot', 'Not knowable'], c: 1,
+        why: 'SaaS mode is the agency margin engine. "I can read your GHL and tell you what you actually use" is a paid audit.' },
+      { q: 'A client\'s win-back texts stopped arriving but show as sent. First suspect?',
+        a: ['The phone carrier is down', 'Unregistered A2P traffic being silently filtered', 'Wrong numbers', 'Message length'], c: 1,
+        why: 'Silent filtering is the signature failure of unregistered traffic — no error, no delivery, no warning.' },
+      { q: 'Podium quotes a shop $400/month for texting. The rails underneath cost roughly…',
+        a: ['About the same', 'Pennies per message plus ~$1/month for the number — the rest is software margin', '$200', 'It cannot be known'], c: 1,
+        why: 'Know the toll booth. Sometimes the platform is worth it; the owner deserves the decomposed number either way.' },
+      { q: 'Booking confirmations go to spam. The twenty-minute fix is…',
+        a: ['A new email provider', 'SPF, DKIM and DMARC records on the domain', 'Shorter subject lines', 'Asking customers to whitelist'], c: 1,
+        why: 'Unauthenticated domains get binned quietly. Four DNS records, and you look like a wizard.' },
+      { q: 'The five-automation bundle sells at $1,500 + $99/month because…',
+        a: ['Software is expensive', 'Each one ends a category of forgetting, and breakage becomes your problem instead of a new invoice', 'It takes weeks to build', 'Owners compare to hiring'], c: 1,
+        why: 'Templated once per niche, delivered in a weekend, resold to every shop like it.' },
+      { q: 'Effective rate on a merchant statement = 3.8% in person. That means…',
+        a: ['Normal', 'They are being farmed — flat-rate benchmarks sit near 2.6% + 10¢', 'Illegal', 'They should stop taking cards'], c: 1,
+        why: 'Total fees ÷ total volume, compared to the benchmark. Over ~3% in person, there is money in the statement.' },
+      { q: 'Lost-deal reasons aggregated quarterly are a mirror because…',
+        a: ['They show market trends', '"Price" means wrong niche or weak anchor; "ghosted" means weak close', 'They predict revenue', 'CRMs require them'], c: 1,
+        why: 'The pipeline diagnoses the seller, not just the deals.' },
+      { q: 'The GEO opportunity exists right now because…',
+        a: ['Google deprecated SEO', 'AI assistants compose one recommendation, nobody is an expert yet, and no local competitor is making the pitch', 'It is cheaper than SEO', 'Regulation requires it'], c: 1,
+        why: '"Is your business visible to AI?" — twenty minutes, three screenshots, a retainer no one else is selling.' }
+    ]},
+
     academy: { title: 'Sales Academy', pass: 6, title_earned: 'Field-trained', questions: [
       { q: 'You approach a shop cold. What comes out of your mouth first?',
         a: ['Your offer and price', 'Your name, one specific true thing about THEM, and why you are here — in one breath', 'A question about their revenue', 'A compliment'], c: 1,
@@ -951,6 +1139,30 @@
         { id: 'hire', t: 'Your first hire, briefed', p: 'The role, the deliverables, the price per client per month, and the hours it gives back.', ph: 'Editor. 12 clips a month per client, $150/client. Saves me ~6h a week.' }
       ]},
 
+
+
+    platforms: { title: 'The platform takeover', mins: 120,
+      why: 'One real business, every platform they live on, taken from red to green — the audit, the fixes, and the retainer that prices it.',
+      deliverable: 'A platform audit and a priced management retainer',
+      steps: [
+        { id: 'audit', t: 'The twenty-minute audit', p: 'One real business. Score Google, Instagram, Facebook, TikTok, Yelp and their booking platform red/yellow/green, with one line of evidence each.', ph: 'Google: yellow — claimed, 11 reviews, no posts. Yelp: red — unclaimed, old number…' },
+        { id: 'intent', t: 'Fix the intent layer', p: 'What you did (or would do, step by step) to the Google profile and Yelp listing. The map-pack items: categories, hours, photos, services, booking link, review path.', ph: 'Fixed primary category, added 22 photos, wired the review QR, claimed Yelp and corrected the phone.' },
+        { id: 'attention', t: 'The attention plan', p: 'The nine-grid plan for Instagram, the group-presence routine for Facebook, and the honest TikTok verdict for THIS business.', ph: 'Nine squares: 5 proof, 3 personality, 1 offer pinned. Two town groups, 15 min/day. TikTok: yes — young clientele.' },
+        { id: 'ops', t: 'The operations read', p: 'Their booking platform, what it costs, where the leak is, and the direct-channel move for regulars.', ph: 'Booksy, ~$70/mo + Boost. Leak: ~$190/mo of name-searchers. Direct link now on GBP + IG + loyalty card.' },
+        { id: 'retainer', t: 'Price the takeover', p: 'The monthly retainer, written as countable outcomes per platform — what arrives each month, at what price.', ph: '$450/mo: GBP run weekly, 12 IG posts + stories, groups presence, review engine on 4 surfaces, quarterly platform audit.' }
+      ]},
+
+    trade: { title: 'The stack audit', mins: 120,
+      why: 'The tools campus turned into money: audit a real business\'s whole stack — messaging, email, payments, automations, visibility — and hand them the findings.',
+      deliverable: 'A five-part stack audit with priced fixes',
+      steps: [
+        { id: 'comms', t: 'Messaging & email rails', p: 'Their texting setup (registered? through what?) and email authentication (SPF/DKIM/DMARC checked). What is broken and what the fix costs.', ph: 'Texts via Booksy only. Domain unauthenticated — confirmations in spam. Fix: 4 DNS records, $150.' },
+        { id: 'payments', t: 'The money toll', p: 'Their processor and effective rate versus benchmark, from a statement or their settings screen.', ph: 'Clover through the bank: 3.6% effective. Square benchmark: ~2.7%. ~$110/mo overpaid.' },
+        { id: 'autos', t: 'The forgetting audit', p: 'Which of the five automations they lack (speed-to-lead, missed-call, review ask, review reply, weekly numbers), and the bundle price for the missing ones.', ph: 'Has none. Bundle of five: $1,200 setup + $99/mo.' },
+        { id: 'software', t: 'The subscription pile', p: 'Every tool they currently pay for, monthly total, and what is redundant or unused.', ph: '$340/mo across 7 tools; the GHL sub-account uses 2 of its 14 features; $180/mo cancellable.' },
+        { id: 'visibility', t: 'The three-era check', p: 'Google search, a voice assistant, two AI chatbots — screenshots, presence marked, and the visibility retainer the gaps justify.', ph: 'Map pack: absent. Siri: reads the competitor. ChatGPT: not mentioned. Retainer: $400/mo.' },
+        { id: 'report', t: 'The findings, delivered', p: 'The one-page audit as you would hand it over: what you found, what it costs them today, what each fix costs, in their language.', ph: 'You are overpaying $290/mo and invisible to AI. Three fixes pay for themselves in 60 days…' }
+      ]},
 
     academy: { title: 'Your field kit', mins: 90,
       why: 'The Academy is drills, not theory. This kit is what you carry into every conversation from now on — and every piece of it gets tested on a live human before it counts.',
