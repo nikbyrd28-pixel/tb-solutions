@@ -752,6 +752,15 @@
       c: 1, why: 'Twenty minutes, three screenshots, and the most modern-looking sales document in the school.' }
   ];
 
+  Q.x12 = [
+    { q: 'In vibe coding, an error message is…',
+      a: ['A sign to start over', 'The next prompt — paste it back verbatim and let the AI fix its own work', 'Something to Google first', 'A reason to hire a developer'],
+      c: 1, why: 'The loop is the craft: describe, run, paste what happened, repeat until boring. Each loop is minutes.' },
+    { q: 'Which two things should you never vibe-code from scratch for a client?',
+      a: ['Forms and calculators', 'Payments and auth — use Stripe links and managed login instead', 'Dashboards and reports', 'Anything mobile'],
+      c: 1, why: 'The predictable failure spots: secrets, money, login, the last 20%. Managed services exist precisely so you never hand-roll those.' }
+  ];
+
   w.TBU_CHECKS = Q;
 
   /* ---- EXAMS: one per campus. 8 questions, 6 to pass, retake forever. ------

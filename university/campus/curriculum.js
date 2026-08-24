@@ -1179,6 +1179,24 @@
           ].join(''),
           mission: 'Take three real chores from businesses you know and map each to the right animal (or combination) — then note which one you could ship with the skills you already have.',
           ask: 'The three chores, the type of AI each maps to, and the one you could ship this month.'
+        },
+        {
+          id: 'x12', title: 'Vibe coding — building software by talking', min: 10,
+          body: [
+            '<p>The newest skill in this campus is also the most levelling one: <b>vibe coding</b> — building working software by describing it to an AI and iterating on what comes back, instead of writing the code yourself. The term went mainstream in 2025, the tools matured fast, and the honest headline for you is this: <b>the wall between "people who can code" and "people who can\'t" now has a door in it.</b> This school you are sitting in was largely built that way — the campus, the storefront builder, the lead forms. That is not a confession; it is the proof of concept.</p>',
+            '<h3>What it actually is (and is not)</h3>',
+            '<p>You describe the thing — what it does, who uses it, what happens when they tap — and an AI writes the code, runs into problems, and fixes them as you steer. You are not "learning to code by shortcut"; you are doing a different job: <b>product direction at conversation speed.</b> The skill is knowing what to ask for, noticing what is wrong, and describing the gap. What it is not: magic. The AI builds what you said, which is rarely what you meant on the first pass — the craft is in the loop, not the first prompt.</p>',
+            '<h3>The tools, in the order a non-coder should meet them</h3>',
+            '<div class="ex"><b>App-from-a-prompt builders</b> (v0, Bolt, Lovable, Replit) — describe an app, get a running app in the browser, no setup. Start here; ship your first real tool the same afternoon.<br><b>AI-first editors</b> (Cursor, Windsurf) — a code editor where the AI edits the project with you. The middle step, when your tools outgrow one file.<br><b>Agentic CLIs</b> (Claude Code and its kin) — an AI that works in your project like a contractor: reads everything, makes plans, edits many files, runs the tests. The deep end, and where this estate was built.<br><b>The chat window</b> (Claude, ChatGPT) — still underrated: "write me a single-file HTML page that does X" then paste it into a host. Zero tooling, real results.</div>',
+            '<h3>The loop that does all the work</h3>',
+            '<p><b>1. Spec in plain words</b> — who uses it, on what device, the three things it must do, the one thing it must never do. (Notice: this is the nine-year-old drill from the Academy, pointed at a machine.) <b>2. Ask for the smallest whole thing</b> — one page that works beats a plan for ten. <b>3. Run it, use it like a hostile customer</b> — the attack drill from lesson x4. <b>4. Paste what happened back</b> — errors verbatim, screenshots, "the button does nothing on my phone". The error message is not a wall; it is the next prompt. <b>5. Repeat until boring.</b> Ten loops is a normal afternoon; each loop is minutes, not days.</p>',
+            '<h3>Where the wall still stands</h3>',
+            '<p>Vibe-coded software fails in predictable places, and knowing them is what separates you from the tourists: <b>secrets</b> (the API-key rules from x8 apply double — AIs will cheerfully put keys in the page if you let them; ask "is anything secret exposed to the browser?" every time); <b>payments and auth</b> — never hand-roll these, use Stripe links and managed login, exactly as this school\'s own stack does; <b>the last 20%</b> — demos come easy, edge cases don\'t, so keep client promises sized to what you tested; and <b>maintenance</b> — code nobody understands is fine until it breaks, which is why you always ask the AI to explain what it built and keep everything in Git so any Tuesday is restorable.</p>',
+            '<h3>What this is worth in money</h3>',
+            '<div class="ex">Every "I wish I had a little tool that…" sentence from a business owner is now a $300–1,500 weekend: a quote calculator for the fence company, a shift-swap board for the café, a waitlist page for the barber, a job-photo uploader for the roofer. The products campus gave you five; vibe coding makes the menu infinite — because now the answer to "can you build something that…" is yes before you know how.</div>'
+          ].join(''),
+          mission: 'Vibe-code one real tool for one real business — a calculator, a form, a mini-dashboard — using any tool from the list. Run the five-step loop at least five times, attack it, and put it on a live URL.',
+          ask: 'What you built, which tool you used, how many loops it took, and the live link.'
         }
       ]
     },
@@ -1596,7 +1614,7 @@
       lessons: ['p3','p13','p5','sa8','c5','s2','l1','l5','pl6','tr7','p12','sa9','s4','s1','s3','p1'] },
     { id: 'build_ai', icon: '⚡', label: 'Build and sell AI products',
       text: 'Build AI products local businesses pay for',
-      lessons: ['x0','x11','x1','x2','x3','x4','tr4','x6','x7','x8','x9','c1','c2','c4','x10'] },
+      lessons: ['x0','x11','x12','x1','x2','x3','x4','tr4','x6','x7','x8','x9','c1','c2','c4','x10'] },
     { id: 'master_craft', icon: '🧠', label: 'Actually master marketing',
       text: 'Get genuinely good at marketing and copy',
       lessons: ['u3','u4','u5','p1','p2','p7','p8','p9','p3','p5','p6','p10','p11','p12','p13'] }
