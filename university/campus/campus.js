@@ -209,6 +209,17 @@
       return Store.rpc('uni_win_post', { p_email: email, p_pin: pin, p_body: body, p_amount: amount });
     },
 
+    setPath: function (email, pin, path) {
+      if (Store.mode === 'local') {
+        var st = Store._local() || Store._blank('', email, '');
+        st.student.path = path;
+        st.student.goal = path.goalText || st.student.goal;
+        Store._saveLocal(st);
+        return Promise.resolve({ ok: true, local: true, state: Store._state(st) });
+      }
+      return Store.rpc('uni_path_set', { p_email: email, p_pin: pin, p_path: path });
+    },
+
     events: function (email, pin) {
       if (Store.mode === 'local') return Promise.resolve({ ok: true, upcoming: [], past: [], local: true });
       return Store.rpc('uni_events_list', { p_email: email, p_pin: pin });
@@ -409,7 +420,12 @@
     }
     el('gate').classList.add('hide');
     el('shell').classList.remove('hide');
-    if (!location.hash || location.hash === '#') location.hash = '#/home';
+    /* Somebody who has not said what they are here for gets asked before they
+       get handed a curriculum. One screen, and it is the difference between a
+       course and a plan. */
+    var hasPath = S.student && S.student.path && S.student.path.lessons && S.student.path.lessons.length;
+    if (!hasPath) location.hash = '#/path';
+    else if (!location.hash || location.hash === '#') location.hash = '#/home';
     route();
   }
 
@@ -500,7 +516,22 @@
       + '</div></div>';
 
     /* the one thing to do next */
-    if (nl) {
+    var mine = pathNext(3);
+    if (mine && mine.length) {
+      var path = S.student.path;
+      html += '<div class="sechead"><h2>Your next moves</h2><button class="more" data-go="#/path">Change path</button></div>';
+      mine.forEach(function (m, i) {
+        html += '<button class="crow" data-go="#/lesson/' + m.lesson.id + '"'
+          + (i === 0 ? ' style="border-color:var(--line2)"' : '') + '>'
+          + '<div class="ic">' + m.icon + '</div>'
+          + '<div class="bd"><b>' + esc(m.lesson.title) + '</b><span>' + esc(m.campusName) + ' &middot; ' + m.lesson.min + ' min</span></div>'
+          + '<div class="go">' + (i === 0 ? '&rarr;' : '&middot;') + '</div></button>';
+      });
+      var leftOnPath = path.lessons.filter(function (id) { return !doneSet[id]; }).length;
+      html += '<p class="fine" style="text-align:center">' + esc(path.goalText || 'your path') + ' &middot; '
+        + leftOnPath + ' left &middot; about ' + Math.max(1, Math.ceil(leftOnPath / (path.perWeek || 4)))
+        + ' weeks at your pace &middot; <a href="#/learn">or go anywhere</a></p>';
+    } else if (nl) {
       html += '<div class="sechead"><h2>Pick up here</h2><button class="more" data-go="#/learn">All campuses</button></div>'
         + '<button class="crow" data-go="#/lesson/' + nl.lesson.id + '">'
         + '<div class="ic">' + nl.icon + '</div>'
@@ -521,6 +552,15 @@
     });
     html += '<div id="dailyFoot">' + dailyFootHtml() + '</div>';
 
+    var brief = w.TBU_briefForWeek();
+    html += '<div class="sechead"><h2>This week&rsquo;s build</h2></div>'
+      + '<div class="card" style="border-color:rgba(185,139,255,.35)">'
+      + '<div class="eyebrow" style="color:var(--vio)">Nobody asked you for this</div>'
+      + '<h2>' + esc(brief.t) + '</h2>'
+      + '<p class="muted" style="font-size:14.5px;margin:6px 0 0">' + esc(brief.d) + '</p>'
+      + '<p class="fine" style="margin:10px 0 0">Every mission here is somebody else&rsquo;s idea. This one is not &mdash; '
+      + 'post it in <a href="#/wins">Wins</a> when it exists.</p></div>';
+
     html += '<button class="crow" data-go="#/tools" style="margin-top:16px">'
       + '<div class="ic">🧰</div><div class="bd"><b>The toolstack</b>'
       + '<span>Loop, Content Studio, CRM, booking, reviews — licensed for your clients</span></div>'
@@ -538,6 +578,90 @@
         ? wins.slice(0, 3).map(winHtml).join('')
         : '<div class="empty">No wins posted yet. Be the first — a booked call counts.</div>';
     });
+  }
+
+  /* --------------------------------------------------------------------- path
+     The first thing a new student meets, and deliberately not lesson one. Three
+     questions, answered in about twenty seconds, and the campus rearranges
+     itself around the answers. It is a suggestion with a spine — nothing is
+     locked, everything stays reachable from Campuses — but it means nobody
+     opens this app and finds a syllabus starting at somebody else's beginning. */
+  function viewPath(force) {
+    var cur = (S.student && S.student.path) || null;
+    var pick = { goal: (cur && cur.goal) || null, have: (cur && cur.have) || null, hours: (cur && cur.hours) || null };
+
+    function row(kind, id, icon, title, sub, on) {
+      return '<button class="crow" data-pick="' + kind + '" data-val="' + id + '"'
+        + (on ? ' style="border-color:var(--line2);background:rgba(255,212,90,.06)"' : '') + '>'
+        + (icon ? '<div class="ic">' + icon + '</div>' : '')
+        + '<div class="bd"><b>' + esc(title) + '</b><span>' + esc(sub) + '</span></div>'
+        + '<div class="go">' + (on ? '&#10003;' : '&rsaquo;') + '</div></button>';
+    }
+
+    function draw() {
+      var html = '<div class="card tight"><div class="eyebrow">Your path</div>'
+        + '<h2>' + ((cur && !force) ? 'Change what you are aiming at' : 'What are you actually here to do?') + '</h2>'
+        + '<p class="muted" style="font-size:14px;margin:4px 0 0">Three questions. The campus builds your order out of your answers — '
+        + 'and you can rewrite it whenever the plan changes, which it will.</p></div>';
+
+      html += '<div class="sechead"><h2>1 &middot; In the next 90 days</h2></div>';
+      w.TBU_GOALS.forEach(function (g) {
+        html += row('goal', g.id, g.icon, g.label, g.lessons.length + ' lessons on this line', pick.goal === g.id);
+      });
+
+      html += '<div class="sechead"><h2>2 &middot; Where you are now</h2></div>';
+      w.TBU_HAVE.forEach(function (h) {
+        var sub = h.skip.length ? 'skips ' + h.skip.length + ' lesson' + (h.skip.length === 1 ? '' : 's') + ' you do not need'
+                                : 'nothing skipped';
+        html += row('have', h.id, '', h.label, sub, pick.have === h.id);
+      });
+
+      html += '<div class="sechead"><h2>3 &middot; Hours a week, honestly</h2></div>';
+      w.TBU_HOURS.forEach(function (h) {
+        html += row('hours', h.id, '', h.label, h.note, pick.hours === h.id);
+      });
+
+      var ready = pick.goal && pick.have && pick.hours;
+      html += '<button class="btn wide" id="pathGo" style="margin-top:18px"' + (ready ? '' : ' disabled') + '>'
+        + (ready ? 'Build my path' : 'Answer all three') + '</button>';
+      if (cur) html += '<button class="btn plain wide" style="margin-top:10px" data-go="#/home">Keep the path I have</button>';
+      html += '<p class="fine" style="text-align:center;margin-top:14px">Nothing is ever locked — '
+        + '<a href="#/learn">all eight campuses stay open</a> whatever you pick.</p>';
+
+      el('view').innerHTML = html;
+      w.scrollTo(0, 0);
+      wire();
+      [].forEach.call(d.querySelectorAll('[data-pick]'), function (b) {
+        b.addEventListener('click', function () {
+          pick[b.getAttribute('data-pick')] = b.getAttribute('data-val');
+          draw();
+        });
+      });
+      var go = el('pathGo');
+      if (go) go.addEventListener('click', function () {
+        go.disabled = true; go.textContent = 'Saving...';
+        var path = w.TBU_buildPath(pick.goal, pick.have, pick.hours);
+        Store.setPath(SESSION.email, SESSION.pin, path).then(function (r) {
+          var st = stateOf(r);
+          if (st) absorb(st);
+          else if (S.student) S.student.path = path;      /* local mode keeps it in memory */
+          toast('Path set - ' + path.lessons.length + ' lessons, yours', 'good');
+          location.hash = '#/home';
+          route();
+        });
+      });
+    }
+    draw();
+  }
+
+  /* The next moves on the student's own path, not the next row in a list. */
+  function pathNext(n) {
+    var path = S.student && S.student.path;
+    if (!path || !path.lessons) return null;
+    return path.lessons.filter(function (id) { return !doneSet[id]; })
+      .slice(0, n || 3)
+      .map(function (id) { return lessonById(id); })
+      .filter(Boolean);
   }
 
   function viewLearn() {
@@ -860,7 +984,9 @@
      student is not buying lessons, they are buying software they can resell
      to a shop on Monday. Every link here is a live tool on this estate. */
   var TOOLS = [
-    { ic: '🔁', name: 'Loop Rewards', desc: 'Loyalty programme you set up for a shop in 20 minutes.', href: '/rewards/' },
+    { ic: '🔁', name: 'Loop Rewards', desc: 'Loyalty you run for a shop in 20 minutes — white-label, at your own price.', href: '/rewards/' },
+    { ic: '🛍️', name: 'Storefront builder', desc: 'A full store for a client in ten minutes. One file, any host.', href: '/kit/storefront/' },
+    { ic: '📩', name: 'Compliant lead forms', desc: 'Lead capture whose SMS opt-in passes A2P review first time.', href: '/kit/leadform/' },
     { ic: '🎬', name: 'Content Studio', desc: 'Batch a client month of posts and captions.', href: '/content-studio/' },
     { ic: '📇', name: 'The CRM', desc: 'Your walk list, joined to what the platform knows.', href: '/crm/' },
     { ic: '📅', name: 'Booking', desc: 'Give a shop a booking page and chair calendar.', href: '/booking/' },
@@ -875,7 +1001,8 @@
     var html = '<div class="card tight"><div class="eyebrow">Included with your membership</div>'
       + '<h2>The toolstack</h2>'
       + '<p class="muted" style="font-size:14px;margin:4px 0 0">This is the part a course cannot give you. Every tool below is live software '
-      + 'you can put in front of a paying client this week — under your own name, at your own price.</p></div>';
+      + 'you can put in front of a paying client this week. Loop, the storefront and the lead forms are all '
+      + 'white-label — the shop never sees this school, they see your business.</p></div>';
     TOOLS.forEach(function (t) {
       html += '<a class="tool" href="' + t.href + '"><div class="ic">' + t.ic + '</div>'
         + '<div class="bd"><b>' + esc(t.name) + '</b><span>' + esc(t.desc) + '</span></div><div class="go">→</div></a>';
@@ -937,6 +1064,7 @@
     if (view === 'campus') return viewCampus(parts[1]);
     if (view === 'lesson') return viewLesson(parts[1]);
     if (view === 'daily') return viewDaily();
+    if (view === 'path') return viewPath(true);
     if (view === 'live') return viewLive();
     if (view === 'wins') return viewWins();
     if (view === 'tools') return viewTools();

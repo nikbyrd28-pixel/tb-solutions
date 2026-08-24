@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Compliant lead form builder · TB Solutions</title>
+<meta name="description" content="Build a lead capture form whose SMS opt-in passes A2P 10DLC review the first time — with the consent wording, the stored proof, and the registration pack written for you." />
+<meta name="robots" content="noindex,follow" />
+<meta name="theme-color" content="#05060c" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet"></noscript>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2306070e'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-size='34'%3E%F0%9F%93%A9%3C/text%3E%3C/svg%3E" />
+<style>
+:root{--bg:#05060c;--line:rgba(255,255,255,.09);--line2:rgba(255,212,90,.28);--text:#f3f5ff;--muted:#a2abc7;
+  --gold:#ffd45a;--amber:#ff9a3d;--good:#43f0b0;--bad:#ff7a7a;--acc:#7aa2ff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;line-height:1.6}
+h1,h2,h3{font-family:Poppins,Inter,sans-serif;margin:0;letter-spacing:-.02em}
+a{color:var(--gold);text-decoration:none}
+code{background:rgba(255,255,255,.07);border-radius:5px;padding:1px 5px;font-size:12.5px}
+.top{position:sticky;top:0;z-index:20;background:rgba(5,6,12,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.top .in{max-width:1400px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.top h1{font-size:17px}.top .sp{flex:1}
+.layout{max-width:1400px;margin:0 auto;padding:18px;display:grid;grid-template-columns:minmax(340px,460px) 1fr;gap:18px;align-items:start}
+@media(max-width:980px){.layout{grid-template-columns:1fr}}
+.panel{border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.03);padding:16px;margin-bottom:14px}
+.panel h2{font-size:15px;margin-bottom:4px}
+.panel .hint{color:var(--muted);font-size:13px;margin:0 0 12px}
+label{display:block;font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:10px 0 5px}
+input,select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.04);color:var(--text);padding:10px 12px;font:inherit;font-size:14.5px}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--line2)}
+textarea{min-height:64px;resize:vertical}
+input[type=color]{padding:4px;height:42px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{font:inherit;cursor:pointer;border:0;border-radius:999px;padding:11px 18px;font-weight:800;font-size:14px;
+  background:linear-gradient(135deg,var(--gold),var(--amber));color:#241800}
+button.plain{background:transparent;border:1px solid var(--line);color:var(--muted);padding:8px 14px;font-size:13px}
+.kinds{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.kinds label{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;padding:7px 13px;
+  margin:0;font-size:13px;text-transform:none;letter-spacing:0;color:var(--text);cursor:pointer;font-weight:600}
+.kinds label.on{border-color:var(--line2);background:rgba(255,212,90,.08)}
+.kinds input{width:auto;accent-color:var(--gold)}
+.check{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;padding:7px 0;border-bottom:1px solid var(--line)}
+.check:last-child{border-bottom:0}
+.check .m{flex:0 0 18px;font-weight:900}
+.check.ok .m{color:var(--good)}.check.no .m{color:var(--bad)}
+.check.no span{color:#ffc9c9}
+.consentbox{border:1px solid var(--line2);border-radius:12px;padding:13px;background:rgba(255,212,90,.06);font-size:13px;color:#ffeec2;line-height:1.6}
+.pack{border:1px solid var(--line);border-radius:12px;padding:12px;background:rgba(255,255,255,.02);margin-bottom:10px}
+.pack b{font-size:12.5px;display:block;margin-bottom:5px}
+.pack p{margin:0;font-size:12.5px;color:var(--muted);white-space:pre-wrap;line-height:1.55}
+.pack button{margin-top:8px}
+.preview{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#000;position:sticky;top:76px;height:calc(100vh - 110px);min-height:560px}
+.preview .bar{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.03);font-size:12.5px;color:var(--muted)}
+.preview .dot{width:9px;height:9px;border-radius:50%;background:#ff5f57}.preview .dot.y{background:#febc2e}.preview .dot.g{background:#28c840}
+.preview iframe{width:100%;height:calc(100% - 37px);border:0;background:#fff}
+.warn{border:1px solid rgba(255,122,122,.4);background:rgba(255,122,122,.08);border-radius:12px;padding:12px 14px;font-size:13px;color:#ffd0d0}
+.note{border:1px solid rgba(122,162,255,.35);background:rgba(122,162,255,.08);border-radius:12px;padding:12px 14px;font-size:13px;color:#cfe0ff}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;background:rgba(12,14,24,.96);border:1px solid var(--line2);
+  border-radius:999px;padding:11px 20px;font-weight:700;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:40}
+#toast.on{opacity:1}
+</style>
+</head>
+<body>
+
+<div class="top"><div class="in">
+  <h1>📩 Compliant lead form</h1>
+  <span style="color:var(--muted);font-size:12px">unticked box · stored proof · registration pack</span>
+  <div class="sp"></div>
+  <button class="plain" id="resetBtn">Reset</button>
+  <button id="dlBtn">Download form.html</button>
+</div></div>
+
+<div class="layout">
+  <div>
+    <div class="panel">
+      <h2>Why this exists</h2>
+      <p class="hint">Nearly every local lead form fails an A2P 10DLC review for the same reasons: no consent wording next to the phone field, a pre-ticked box, or no record of what the customer was actually shown. This builds the version that passes, and writes the registration text carriers ask for.</p>
+      <div class="note">📋 Every submission stores the <b>exact consent wording</b>, the page URL and the timestamp against the shop's slug — which is the evidence that matters if anyone ever asks.</div>
+    </div>
+
+    <div class="panel">
+      <h2>The business</h2>
+      <div class="row">
+        <div><label for="fBiz">Business name</label><input id="fBiz"></div>
+        <div><label for="fSlug">CRM slug</label><input id="fSlug"></div>
+      </div>
+      <label for="fProgram">Program name <span style="text-transform:none;font-weight:600">(what the campaign is called)</span></label><input id="fProgram">
+      <label>What will you actually send?</label>
+      <div class="kinds" id="kinds"></div>
+      <div class="row">
+        <div><label for="fFreq">Message frequency</label><input id="fFreq" placeholder="up to 4 msgs/month"></div>
+        <div><label for="fHelp">Phone that answers HELP</label><input id="fHelp"></div>
+      </div>
+      <div class="row">
+        <div><label for="fPriv">Privacy policy URL</label><input id="fPriv"></div>
+        <div><label for="fTerms">SMS terms URL</label><input id="fTerms"></div>
+      </div>
+      <label for="fUrl">Where this form will live <span style="text-transform:none;font-weight:600">(for the registration text)</span></label><input id="fUrl" placeholder="https://raysbarbers.com/book">
+    </div>
+
+    <div class="panel">
+      <h2>The form itself</h2>
+      <label for="fHead">Headline</label><input id="fHead">
+      <label for="fSub">Sub-line</label><textarea id="fSub"></textarea>
+      <label for="fServices">Options in the dropdown <span style="text-transform:none;font-weight:600">(comma separated)</span></label>
+      <input id="fServices" placeholder="Haircut, Skin fade, Beard trim">
+      <div class="row">
+        <div><label for="fMode">Theme</label><select id="fMode"><option value="dark">Dark</option><option value="light">Light</option></select></div>
+        <div><label for="fAccent">Accent</label><input id="fAccent" type="color"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>The consent line</h2>
+      <p class="hint">Assembled from the fields above. This exact text appears beside the checkbox and is stored with every submission.</p>
+      <div class="consentbox" id="consentOut"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Compliance check</h2>
+      <div id="auditOut"></div>
+      <div class="warn" style="margin-top:12px" id="privWarn">⚠️ Your client's privacy policy must also say that mobile opt-in data is never sold or shared with third parties for marketing. Carriers open that page and look. The exact clause to paste is in the pack below.</div>
+    </div>
+
+    <div class="panel">
+      <h2>A2P registration pack</h2>
+      <p class="hint">Paste these into the Twilio campaign registration. Vague opt-in descriptions are the most common rejection.</p>
+      <div id="packOut"></div>
+    </div>
+
+    <div class="panel">
+      <h2>After you download</h2>
+      <p class="hint">1. Put <code>form.html</code> on any host, or drop the markup into an existing page. 2. Register the campaign with the pack above. 3. Leads land in <a href="/crm/">the CRM</a> under the slug, with consent recorded. 4. Never text a number whose latest consent record says false — that check is one call: <code>sms_consent_check</code>.</p>
+      <p class="hint">Not legal advice. It is the working checklist that gets a small local campaign approved in the US; rules differ elsewhere.</p>
+    </div>
+  </div>
+
+  <div class="preview">
+    <div class="bar"><span class="dot"></span><span class="dot y"></span><span class="dot g"></span><span id="pvName">preview</span></div>
+    <iframe id="pv" title="Lead form preview"></iframe>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="/kit/leadform/template.js"></script>
+<script>
+var KEY='tb_leadform_cfg';
+var KINDS=['appointment reminders','occasional offers','order updates','waitlist alerts','account notifications'];
+function el(i){return document.getElementById(i)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function toast(m){var t=el('toast');t.textContent=m;t.classList.add('on');setTimeout(function(){t.classList.remove('on')},1800)}
+function load(){ try{var s=localStorage.getItem(KEY); if(s) return JSON.parse(s);}catch(e){} return JSON.parse(JSON.stringify(window.LEADFORM.DEMO)); }
+var CFG=load();
+
+function bind(id,get,set){
+  var e=el(id); if(!e) return;
+  e.value=get()==null?'':get();
+  var h=function(){ set(e.value); save(); };
+  e.addEventListener('input',h); e.addEventListener('change',h);
+}
+function renderKinds(){
+  var box=el('kinds'); box.innerHTML='';
+  KINDS.forEach(function(k){
+    var on=(CFG.kinds||[]).indexOf(k)>=0;
+    var l=document.createElement('label'); l.className=on?'on':'';
+    l.innerHTML='<input type="checkbox"'+(on?' checked':'')+' data-kind="'+esc(k)+'">'+esc(k);
+    box.appendChild(l);
+  });
+}
+document.addEventListener('change',function(ev){
+  var t=ev.target; if(!t.hasAttribute||!t.hasAttribute('data-kind')) return;
+  var k=t.getAttribute('data-kind'); CFG.kinds=CFG.kinds||[];
+  var i=CFG.kinds.indexOf(k);
+  if(t.checked&&i<0) CFG.kinds.push(k); else if(!t.checked&&i>=0) CFG.kinds.splice(i,1);
+  t.parentNode.classList.toggle('on',t.checked);
+  save();
+});
+
+function renderAudit(){
+  var rows=window.LEADFORM.audit(CFG);
+  el('auditOut').innerHTML=rows.map(function(r){
+    return '<div class="check '+(r.ok?'ok':'no')+'"><span class="m">'+(r.ok?'✓':'✕')+'</span><span>'+esc(r.t)+'</span></div>';
+  }).join('');
+}
+function renderPack(){
+  var p=window.LEADFORM.a2pPack(CFG);
+  var blocks=[
+    ['Opt-in description', p.optInDescription],
+    ['Sample message 1', p.sampleMessages[0]],
+    ['Sample message 2', p.sampleMessages[1]],
+    ['HELP reply', p.helpMessage],
+    ['STOP reply', p.stopMessage],
+    ['Clause for their privacy policy', p.privacyClause]
+  ];
+  el('packOut').innerHTML=blocks.map(function(b,i){
+    return '<div class="pack"><b>'+esc(b[0])+'</b><p id="pk'+i+'">'+esc(b[1])+'</p>'+
+      '<button class="plain" data-copy="pk'+i+'">Copy</button></div>';
+  }).join('');
+}
+document.addEventListener('click',function(ev){
+  var b=ev.target.closest?ev.target.closest('[data-copy]'):null; if(!b) return;
+  var txt=el(b.getAttribute('data-copy')).textContent;
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(function(){toast('Copied')});
+  else window.prompt('Copy:',txt);
+});
+
+var t=null;
+function save(){
+  try{ localStorage.setItem(KEY,JSON.stringify(CFG)); }catch(e){}
+  el('consentOut').textContent=window.LEADFORM.consentText(CFG);
+  el('pvName').textContent=CFG.business||'preview';
+  renderAudit(); renderPack();
+  clearTimeout(t); t=setTimeout(function(){ el('pv').srcdoc=window.LEADFORM.render(CFG); },250);
+}
+
+function wire(){
+  CFG.theme=CFG.theme||{};
+  bind('fBiz',     function(){return CFG.business},  function(v){CFG.business=v; if(!CFG.slug) CFG.slug=window.LEADFORM.slugify(v);});
+  bind('fSlug',    function(){return CFG.slug},      function(v){CFG.slug=window.LEADFORM.slugify(v)});
+  bind('fProgram', function(){return CFG.program},   function(v){CFG.program=v});
+  bind('fFreq',    function(){return CFG.frequency}, function(v){CFG.frequency=v});
+  bind('fHelp',    function(){return CFG.helpPhone}, function(v){CFG.helpPhone=v});
+  bind('fPriv',    function(){return CFG.privacyUrl},function(v){CFG.privacyUrl=v});
+  bind('fTerms',   function(){return CFG.termsUrl},  function(v){CFG.termsUrl=v});
+  bind('fUrl',     function(){return CFG.formUrl},   function(v){CFG.formUrl=v});
+  bind('fHead',    function(){return CFG.headline},  function(v){CFG.headline=v});
+  bind('fSub',     function(){return CFG.sub},       function(v){CFG.sub=v});
+  bind('fServices',function(){return (CFG.services||[]).join(', ')},
+                   function(v){CFG.services=v.split(',').map(function(s){return s.trim()}).filter(Boolean)});
+  bind('fMode',    function(){return CFG.theme.mode||'dark'},   function(v){CFG.theme.mode=v});
+  bind('fAccent',  function(){return CFG.theme.accent||'#ffd45a'}, function(v){CFG.theme.accent=v});
+  renderKinds(); save();
+}
+
+el('dlBtn').addEventListener('click',function(){
+  var bad=window.LEADFORM.audit(CFG).filter(function(a){return !a.ok});
+  if(bad.length && !confirm(bad.length+' compliance item'+(bad.length===1?'':'s')+' still failing:\n\n· '+
+      bad.map(function(a){return a.t}).join('\n· ')+'\n\nDownload anyway?')) return;
+  var html=window.LEADFORM.render(CFG);
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));
+  a.download=(window.LEADFORM.slugify(CFG.slug||CFG.business)||'leadform')+'-form.html';
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1000);
+  toast('Downloaded');
+});
+el('resetBtn').addEventListener('click',function(){
+  if(!confirm('Start again from the example?')) return;
+  CFG=JSON.parse(JSON.stringify(window.LEADFORM.DEMO));
+  try{localStorage.removeItem(KEY)}catch(e){}
+  wire(); toast('Reset');
+});
+
+wire();
+</script>
+</body>
+</html>

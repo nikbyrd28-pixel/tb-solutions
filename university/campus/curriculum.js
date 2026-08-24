@@ -59,6 +59,135 @@
      -------------------------------------------------------------------------- */
   w.TBU_CAMPUSES = [
     {
+      id: 'unschool',
+      name: 'Unschool',
+      icon: '🔓',
+      tag: 'Read this first',
+      blurb: 'How to learn here — which is nothing like how you were taught. Identity, first principles, the shipping loop, and the resistance that stops most people.',
+      lessons: [
+        {
+          id: 'u1', title: 'This is not a school', min: 8,
+          body: [
+            '<p>You have spent between eleven and twenty years in a system that trained one skill above all others: <b>doing what you are told, on time, in the format requested.</b> It was not designed to make you inventive. It was designed to make you sortable.</p>',
+            '<h3>Where that design came from</h3>',
+            '<p>Mass schooling was built for an industrial economy that needed people who would sit still, follow a bell, and produce uniform output. It worked — that is the uncomfortable part. It worked so well that most adults cannot start anything without someone telling them what the assignment is.</p>',
+            '<p>At its worst the same machinery was used deliberately to erase people. In 1892 Richard Henry Pratt, running the Carlisle boarding school, described the aim of Native American schooling as <i>"kill the Indian, save the man"</i> — take the child, strip the language, the name, the hair, the family, and return something the institution found acceptable. That was not a metaphor and it should never be used as one; it was a real policy that did real, lasting harm to real families, and it is remembered as one of the darker things done in the name of education.</p>',
+            '<p>It is named here for one narrow reason: it is the clearest statement ever written of what a school does when it decides the student is the problem. Milder versions of that instinct ran through your own education. Stop talking like that. Stop drawing in the margin. Stop asking why. There is one right answer and it is not yours.</p>',
+            '<h3>What we do instead</h3>',
+            '<div class="ex"><b>No grades.</b> Nobody is scoring you. There is nobody to please.<br><b>No seat time.</b> Reading a lesson is not an achievement. Doing the mission is.<br><b>No order.</b> Start wherever the money is for you. Nothing is locked.<br><b>No sanding down.</b> Your accent, your town, your trade, the years you think you wasted — those are the assets. They are the reason a shop owner trusts you and not an agency in another city.<br><b>No permission.</b> Nobody here is going to tell you that you are ready. You will not feel ready. Go anyway.</div>',
+            '<h3>The only thing being measured</h3>',
+            '<p>Did something real happen outside this screen? A message sent, a door opened, a thing built, a price said out loud. That is why every lesson ends in a mission with a box to write in — not to be marked, but because writing down what actually happened is how you find out whether it did.</p>',
+            '<h3>The trade</h3>',
+            '<p>Freedom costs structure. Nobody will chase you, so the checklist and the streak are there instead — not to police you, but because self-directed people still need a rhythm, and you are choosing this one rather than being handed it.</p>'
+          ].join(''),
+          mission: 'Write down one thing school taught you about yourself that you have never questioned — "I am not creative", "I am bad at maths", "I am not a salesperson". Then write what evidence you actually have.',
+          ask: 'The belief, and the honest evidence for and against it.'
+        },
+        {
+          id: 'u2', title: 'How people actually learn this', min: 9,
+          body: [
+            '<p>Watch anyone who is genuinely good at a trade and you will not find a curriculum in their history. You will find the same loop, run a few thousand times.</p>',
+            '<h3>The loop</h3>',
+            '<div class="ex"><b>Attempt → contact with reality → notice the gap → adjust → attempt again.</b><br><br>The middle step is the whole thing. Reality is the teacher; everything else is preparation to meet it.</div>',
+            '<p>School inverts this. It front-loads years of theory and defers contact with reality until the exam — an exam graded by the same institution, which is not reality at all. That inversion is why people can hold a marketing degree and freeze at the door of a barbershop.</p>',
+            '<h3>Learn just enough to move</h3>',
+            '<p>The right amount of theory is the smallest amount that lets you take the next real action. Read the outreach lesson, send ten messages, come back with three replies you did not know how to answer — <i>now</i> the objections lesson means something, because you have been hit by the thing it describes. Knowledge lands on top of experience. Poured out first, it runs off.</p>',
+            '<h3>The 48-hour rule</h3>',
+            '<p>Anything you learn here that has not been used within 48 hours is gone. Not weakened — gone, and worse than gone, because it leaves behind a feeling of competence you have not earned. That feeling is the single most expensive thing a course can give someone.</p>',
+            '<h3>Volume beats perfection early</h3>',
+            '<p>Your first hundred outreach messages are not a campaign, they are a data set. Your first three shop sites are not a portfolio, they are reps. Aim for a quantity of contact with reality, and quality arrives as a by-product. Aim for quality first and you will still be redesigning your logo in March.</p>',
+            '<h3>Get feedback from people who can hurt you</h3>',
+            '<p>Not friends. Not the wins feed. Owners who can say no, customers who can walk out, and numbers that do not care about your feelings. Comfortable feedback is entertainment.</p>'
+          ].join(''),
+          mission: 'Take the last useful thing you learned — from any lesson here, today — and use it in the real world within 48 hours. Then write what reality said back.',
+          ask: 'What you used, what you expected, and what actually happened.'
+        },
+        {
+          id: 'u3', title: 'You are the part they cannot copy', min: 9,
+          body: [
+            '<p>Everything in this school can be copied. The scripts, the tools, the AI, the offers — all of it is available to whoever else reads it. One thing is not: you.</p>',
+            '<h3>The sanding-down instinct</h3>',
+            '<p>Most people, starting out, try to sound like a company. They write "we provide comprehensive digital solutions" while the actual sentence in their head was "your Google page is a mess and I can fix it in an hour". They put on a voice that belongs to nobody, because school taught them their own voice was the thing getting marked down.</p>',
+            '<div class="ex">The owner you are messaging has been pitched by four agencies that all sound identical. The thing that gets you the reply is the thing you were told to hide: that you are local, that you are direct, that you actually know what a Tuesday looks like in that trade.</div>',
+            '<h3>Your unfair inventory</h3>',
+            '<p>Write these down properly, because you have almost certainly discounted all of them:</p>',
+            '<p>• <b>Where you are from.</b> Same town, same accent, same schools as the owner. Impossible to fake.<br>• <b>What you used to do.</b> Worked in kitchens? You understand service businesses better than any marketing graduate. Ex-trades? You know why nobody answers the phone at 3pm.<br>• <b>Who you already know.</b> Every warm door is worth fifty cold ones.<br>• <b>What you are strange about.</b> The thing you can talk about for an hour unprompted — that obsessive streak is the engine of every specialist.<br>• <b>What you have survived.</b> It is the reason you can sit across from a stressed owner without flinching.</p>',
+            '<h3>Positioning is just the truth, aimed</h3>',
+            '<p>"I cut hair for six years, now I do the marketing for shops like the one I worked in" beats any credential. Not because it is a clever angle — because it is true, and true things are told with a confidence that cannot be manufactured.</p>',
+            '<h3>The test</h3>',
+            '<p>Read your own website or your last outreach message. Could a hundred other people have sent it? Then it is not yours yet, and it will not be answered.</p>'
+          ].join(''),
+          mission: 'Write your unfair inventory — all five categories, honestly. Then rewrite one piece of your copy so that only you could have written it.',
+          ask: 'Two items from your inventory and the rewritten line.'
+        },
+        {
+          id: 'u4', title: 'Take it to the studs', min: 9,
+          body: [
+            '<p>Copying a template gets you a business that works until the template stops working, and leaves you with no idea why. First-principles thinking is the alternative, and it is much simpler than it sounds.</p>',
+            '<h3>The method</h3>',
+            '<div class="ex"><b>1.</b> Write the problem as plainly as a child would. "The shop is empty on Tuesdays."<br><b>2.</b> List what is actually, physically true. Six chairs. Four barbers. 400 past customers. Most people get cut every 3–6 weeks. Tuesday is a work day. The shop has no way to contact anyone.<br><b>3.</b> Cross out every assumption that is only a convention. "You need ads." "Tuesdays are just quiet." "Customers would find a text annoying."<br><b>4.</b> Ask what the facts alone permit. 400 people, cut every four weeks, means roughly 100 are due about now. The shop cannot reach a single one of them. That is not a marketing problem. That is a <i>contact</i> problem.<br><b>5.</b> Build the smallest thing that attacks it. Capture numbers at the counter. Text the people who are due.</div>',
+            '<p>Nobody gave you that answer. You derived it, which means you can defend it in a meeting, adapt it when it half-works, and apply it to a gym next week without starting from zero.</p>',
+            '<h3>Why this matters more than any tactic</h3>',
+            '<p>Tactics have a shelf life. The platform changes, the trick gets saturated, the template circulates until it is invisible. The ability to look at a business and see what is physically true does not expire — it is the thing that lets you invent the next tactic instead of waiting for someone to publish it.</p>',
+            '<h3>The question to keep in your pocket</h3>',
+            '<p><b>"Why is it done that way — and what would happen if it were not?"</b> Ask it about every convention in your niche. Most of them are not laws. They are habits nobody has examined since before the internet.</p>'
+          ].join(''),
+          mission: 'Take one real problem in a business you know and run all five steps in writing. Find one convention that turns out to be only a habit.',
+          ask: 'The problem, the assumption you crossed out, and what the facts alone allowed.'
+        },
+        {
+          id: 'u5', title: 'Steal like an operator', min: 8,
+          body: [
+            '<p>Nothing you make will be original, and chasing originality is a way of avoiding the work. Everything good is a recombination — the trick is stealing widely, from outside your lane, and metabolising it instead of photocopying it.</p>',
+            '<h3>Build the swipe file today</h3>',
+            '<p>One folder. Every message, ad, subject line, poster, packaging design or shopfront that makes <i>you</i> stop. Screenshot it and write one line: <b>why did that work?</b> That sentence is the whole exercise — a folder of screenshots with no reasons is a mood board, and mood boards teach nothing.</p>',
+            '<h3>Steal from far away</h3>',
+            '<div class="ex">Everyone in local marketing steals from other local marketers, which is why it all looks the same. Steal from a boxing gym\'s membership card, an airline\'s boarding email, a dentist\'s reminder text, the way a good pub handles a regular. Distance is where the advantage is: nobody in your niche has seen it, so in your niche it is new.</div>',
+            '<h3>Copy the mechanism, not the surface</h3>',
+            '<p>Bad theft: reusing someone\'s exact caption. Good theft: noticing that their hook works because it names a specific time of day, then building your own around Tuesday at 2pm. The surface is theirs. The mechanism is everyone\'s.</p>',
+            '<h3>Remix in public</h3>',
+            '<p>Take three influences and force them into one thing — the loyalty card of a coffee shop, the language of a boxing gym, the follow-up discipline of a dentist. What comes out is not any of them, and it is yours.</p>'
+          ].join(''),
+          mission: 'Start the swipe file with ten entries, each with a one-line reason. At least four must come from outside your niche entirely.',
+          ask: 'Your best out-of-niche steal and what the mechanism actually is.'
+        },
+        {
+          id: 'u6', title: 'Teach it to learn it', min: 8,
+          body: [
+            '<p>The fastest way to learn something is to explain it to somebody who will notice if you are bluffing. It is also, conveniently, marketing.</p>',
+            '<h3>The gap only shows when you speak</h3>',
+            '<p>Reading feels like understanding. Explaining exposes exactly where the understanding stops — the sentence you cannot finish is the thing you do not actually know. Nothing else finds that boundary as fast.</p>',
+            '<h3>Build in public, from day one</h3>',
+            '<div class="ex">Post what you did this week, with the numbers. "Fixed a shop\'s Google profile — 41 photos, hours corrected, first Google post in two years. Will report views in 30 days."<br><br>Three things happen at once: you learn it by writing it, you build a public record that becomes your portfolio, and owners in your niche start watching a person who obviously does this for a living.</div>',
+            '<h3>You do not need to be an expert</h3>',
+            '<p>You need to be a month ahead of the person reading. The most useful teacher is not the master — it is someone who solved this recently and still remembers what was confusing.</p>',
+            '<h3>Explain it to one real person a week</h3>',
+            '<p>A friend, a client, a barber in the chair. Out loud, no notes, in under two minutes. If they glaze over, that is not their failure; it means you are still holding it as jargon instead of as understanding.</p>'
+          ].join(''),
+          mission: 'Teach one thing you learned this week — post it, or explain it out loud to a real person. Note the exact sentence where you got stuck.',
+          ask: 'What you taught, to whom, and where you got stuck.'
+        },
+        {
+          id: 'u7', title: 'The resistance', min: 9,
+          body: [
+            '<p>You already know almost everything you need to send ten messages today. You will probably not send them. This lesson is about why, because nothing else in this school matters if this part is not handled.</p>',
+            '<h3>It never announces itself as fear</h3>',
+            '<div class="ex">It arrives as reasonable-sounding admin: <i>I should finish the branding first. I need to learn a bit more before I reach out. I will start properly on Monday. Let me redo the website. I need a better laptop.</i><br><br>Every one of those is fear wearing a to-do list. The tell is simple: <b>does this task involve another human being who could say no?</b> If not, it is probably avoidance dressed as progress.</div>',
+            '<h3>What is actually happening</h3>',
+            '<p>School spent years teaching you that being wrong in public is the worst available outcome. Cold outreach is a machine for being wrong in public, repeatedly, on purpose. Of course you do not want to do it. The discomfort is not a signal that you are not cut out for this — it is the exact sensation of leaving the sorting machine.</p>',
+            '<h3>Make the unit small enough to be stupid</h3>',
+            '<p>Not "get clients". <b>One message. Now.</b> The resistance can defend against a project; it cannot defend against something that takes ninety seconds. Start before you feel ready, because readiness is manufactured by starting, never before it.</p>',
+            '<h3>Rejection is throughput, not verdict</h3>',
+            '<p>At a 15% reply rate, each ignored message is not a judgement — it is one of the six you have to send to get an answer. Count them. People who count get to the end of the list; people who feel their way through stop at seven.</p>',
+            '<h3>The two-day rule</h3>',
+            '<p>Never miss twice. One bad day is life. Two is the beginning of a new identity, and the identity is what you are actually building here — not a skill set, a person who does the thing whether or not the day was good. That is what the streak is for. Not points: evidence.</p>'
+          ].join(''),
+          mission: 'Find the thing you have been avoiding for more than a week. Cut it to a ninety-second version and do that version in the next ten minutes.',
+          ask: 'What you were avoiding, the ninety-second version, and whether you did it.'
+        }
+      ]
+    },
+    {
       id: 'foundations',
       name: 'Foundations',
       icon: '🧱',
@@ -978,6 +1107,95 @@
       ]
     }
   ];
+
+
+  /* --------------------------------------------------------------------------
+     PATHS
+     A school hands everyone the same order and calls the ones who fall behind
+     slow. Nobody self-taught has ever learned that way — they learn the thing
+     the next real problem needs. So the campus asks three questions and builds
+     an order out of the student's own answers, drawing from any campus. It is a
+     suggestion with a spine, not a syllabus: nothing is locked, everything is
+     reachable, and the path can be rewritten the day the goal changes.
+     -------------------------------------------------------------------------- */
+  w.TBU_GOALS = [
+    { id: 'first_client', icon: '🎯', label: 'Land my first paying client',
+      text: 'Get one shop paying me',
+      lessons: ['u1','u7','f1','f2','f4','f5','c1','c2','c3','c4','c5','c6','c7','l2','u2'] },
+    { id: 'replace_job', icon: '🚪', label: 'Replace my job',
+      text: 'Replace my income with client work',
+      lessons: ['u1','u7','f2','f4','f5','c1','c2','c4','c5','c7','l1','l2','l4','l5','p12','s1','s2','p13'] },
+    { id: 'more_clients', icon: '📈', label: 'Grow the thing I already run',
+      text: 'More clients, higher prices, less chaos',
+      lessons: ['p3','p13','p5','c5','s2','l1','l5','p12','s4','s1','s3','p1'] },
+    { id: 'build_ai', icon: '⚡', label: 'Build and sell AI products',
+      text: 'Build AI products local businesses pay for',
+      lessons: ['x0','x1','x2','x3','x4','x6','x7','x8','x9','c1','c2','c4','x10'] },
+    { id: 'master_craft', icon: '🧠', label: 'Actually master marketing',
+      text: 'Get genuinely good at marketing and copy',
+      lessons: ['u3','u4','u5','p1','p2','p7','p8','p9','p3','p5','p6','p10','p11','p12','p13'] }
+  ];
+
+  /* What they already have removes the lessons they do not need. Making someone
+     sit through "pick a niche" when they picked one two years ago is exactly
+     the disrespect this school exists to avoid. */
+  w.TBU_HAVE = [
+    { id: 'nothing',  label: 'Starting from nothing',        skip: [] },
+    { id: 'niche',    label: 'I know my niche',              skip: ['f2'] },
+    { id: 'one',      label: 'I have one client',            skip: ['f2','f4','f5','c1'] },
+    { id: 'several',  label: 'I have several clients',       skip: ['f1','f2','f4','f5','c1','c2','c3'] }
+  ];
+
+  w.TBU_HOURS = [
+    { id: 'few',  label: '5 hours a week',    lessons: 2, reach: 5,  note: 'Two lessons a week, five conversations a day. Slow is fine; stopping is not.' },
+    { id: 'some', label: '10 hours a week',   lessons: 4, reach: 10, note: 'Four lessons a week and the full daily ten. This is the pace most first clients arrive at.' },
+    { id: 'lots', label: '20+ hours a week',  lessons: 8, reach: 20, note: 'Eight lessons a week and twenty conversations a day. At this pace the limit is your nerve, not your time.' }
+  ];
+
+  /* --------------------------------------------------------------------------
+     THE WEEKLY BUILD
+     Missions attach to lessons and are therefore always someone else's idea.
+     One thing a week has to be nobody's idea but theirs — because the students
+     who get good are the ones who make things nobody asked for, and that muscle
+     does not develop by following instructions well.
+     -------------------------------------------------------------------------- */
+  w.TBU_BRIEFS = [
+    { t: 'Make the thing you wish existed', d: 'Build one small thing for a business in your niche that nobody has asked you for. A one-page site, a poster, a text sequence, a calculator. Send it to them with no pitch attached.' },
+    { t: 'Steal from another industry', d: 'Take one mechanism from a business in a completely different trade and rebuild it for your niche. A gym\'s referral card in a barbershop. An airline\'s reminder email for a dentist.' },
+    { t: 'Teach it publicly', d: 'Post one thing you learned this month with the real numbers in it. Not advice — a record of something that actually happened, including what did not work.' },
+    { t: 'Break your own offer', d: 'Write the most convincing possible argument for why a shop should NOT hire you. Then fix whichever of those objections is genuinely true.' },
+    { t: 'Do it in an hour', d: 'Take something you normally spend a day on and force it into sixty minutes. Keep whatever survived — that is the actual work, and the rest was decoration.' },
+    { t: 'Go and stand in it', d: 'Spend an hour physically inside a business in your niche. Watch what happens at the counter. Write down five things you could not have learned from a screen.' },
+    { t: 'Make one thing beautiful', d: 'Take the ugliest asset you have shipped and remake it properly. Craft is a signal clients read long before they read your copy.' },
+    { t: 'Ask the question you are avoiding', d: 'Ask one client or prospect the thing you have been too nervous to ask. Why did you nearly say no? What would make you leave? What are you actually paying me for?' }
+  ];
+
+  /* Same brief for everyone in a given week, so it can be talked about on the
+     calls. Week number, not a random pick. */
+  w.TBU_briefForWeek = function (dt) {
+    var d0 = dt || new Date();
+    var start = new Date(d0.getFullYear(), 0, 1);
+    var week = Math.floor(((d0 - start) / 86400000 + start.getDay() + 1) / 7);
+    return w.TBU_BRIEFS[week % w.TBU_BRIEFS.length];
+  };
+
+  /* Build the ordered lesson list for a set of answers. Unschool's opener is
+     always first: someone who has not read "this is not a school" will read
+     everything after it as homework. */
+  w.TBU_buildPath = function (goalId, haveId, hoursId) {
+    var goal = (w.TBU_GOALS.filter(function (g) { return g.id === goalId; })[0]) || w.TBU_GOALS[0];
+    var have = (w.TBU_HAVE.filter(function (h) { return h.id === haveId; })[0]) || w.TBU_HAVE[0];
+    var hours = (w.TBU_HOURS.filter(function (h) { return h.id === hoursId; })[0]) || w.TBU_HOURS[1];
+    var skip = have.skip || [];
+    var lessons = goal.lessons.filter(function (id) { return skip.indexOf(id) < 0; });
+    if (lessons.indexOf('u1') < 0) lessons.unshift('u1');
+    return {
+      goal: goal.id, have: have.id, hours: hours.id,
+      goalText: goal.text, hoursNote: hours.note,
+      perWeek: hours.lessons, reach: hours.reach,
+      lessons: lessons, made: new Date().toISOString()
+    };
+  };
 
   /* Flat index — used everywhere the app needs "lesson 14 of 28" or "what
      comes next" without caring which campus it lives in. */

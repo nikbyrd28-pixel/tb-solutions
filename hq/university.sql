@@ -32,10 +32,10 @@
 create or replace function public.uni_xp_lesson()   returns int language sql immutable as $$ select 40 $$;
 create or replace function public.uni_xp_mission()  returns int language sql immutable as $$ select 40 $$;
 create or replace function public.uni_xp_daily()    returns int language sql immutable as $$ select 10 $$;
-create or replace function public.uni_xp_dailyall() returns int language sql immutable as $$ select 40 $$;
+create or replace function public.uni_xp_dailyall() returns int language sql immutable set search_path='public','pg_temp' as $$ select 40 $$;
 create or replace function public.uni_xp_win()      returns int language sql immutable as $$ select 30 $$;
 create or replace function public.uni_xp_streak7()  returns int language sql immutable as $$ select 150 $$;
-create or replace function public.uni_daily_count() returns int language sql immutable as $$ select 6 $$;
+create or replace function public.uni_daily_count() returns int language sql immutable set search_path='public','pg_temp' as $$ select 6 $$;
 
 -- ------------------------------------------------------------------- tables
 create table if not exists public.uni_invites(
@@ -64,6 +64,7 @@ create table if not exists public.uni_students(
   plan          text,
   paid_until    date,
   invite_code   text references public.uni_invites(code),
+  path          jsonb,                              -- the student's own plan; see uni_path_set
   created_at    timestamptz not null default now(),
   last_seen_at  timestamptz not null default now()
 );
@@ -139,7 +140,7 @@ end $$;
 
 -- ------------------------------------------------------------------ helpers
 create or replace function public.uni_rank(p_xp int)
-returns text language sql immutable as $$
+returns text language sql immutable set search_path='public','pg_temp' as $$
   select case
     when p_xp >= 7500 then 'Operator X'
     when p_xp >= 4000 then 'Rainmaker'
@@ -152,7 +153,7 @@ $$;
 -- First name + last initial. The leaderboard and the wins feed are seen by
 -- every other student, and nobody enrolled to have their full name published.
 create or replace function public.uni_display_name(p_name text)
-returns text language sql immutable as $$
+returns text language sql immutable set search_path='public','pg_temp' as $$
   select case
     when position(' ' in btrim(coalesce(p_name,''))) = 0 then btrim(coalesce(p_name,'Student'))
     else split_part(btrim(p_name),' ',1) || ' ' || upper(left(split_part(btrim(p_name),' ',2),1)) || '.'
@@ -212,7 +213,7 @@ begin
       'name', s.name, 'email', s.email, 'goal', s.goal, 'xp', s.xp,
       'streak', s.streak, 'best_streak', s.best_streak, 'last_full_day', s.last_full_day,
       'status', s.status, 'plan', s.plan, 'paid_until', s.paid_until, 'joined', s.created_at,
-      'rank', public.uni_rank(s.xp)),
+      'rank', public.uni_rank(s.xp), 'path', s.path),
     'done', v_done,
     'today', to_json(v_today),
     'wins', v_wins);
@@ -497,10 +498,17 @@ grant execute on function public.uni_leaderboard(text)                   to anon
 grant execute on function public.uni_invite_mint(int,text,text,int)      to authenticated;
 grant execute on function public.uni_admin_students()                    to authenticated;
 grant execute on function public.uni_set_status(text,text,date)          to authenticated;
-revoke execute on function public.uni_auth(text,text)                    from public;
-revoke execute on function public.uni_award(uuid,text,int,text)          from public;
-revoke execute on function public.uni_gate(text,text,text)               from public;
-revoke execute on function public.uni_state_of(public.uni_students)      from public;
+-- Supabase's default privileges grant EXECUTE on new functions to anon and
+-- authenticated DIRECTLY, not only through PUBLIC — so revoking from PUBLIC
+-- alone leaves the internal helpers callable with the anon key that ships in
+-- every page. All three roles, or none of it counts.
+revoke execute on function public.uni_auth(text,text)                    from public, anon, authenticated;
+revoke execute on function public.uni_award(uuid,text,int,text)          from public, anon, authenticated;
+revoke execute on function public.uni_gate(text,text,text)               from public, anon, authenticated;
+revoke execute on function public.uni_state_of(public.uni_students)      from public, anon, authenticated;
+revoke execute on function public.uni_invite_mint(int,text,text,int)     from public, anon;
+revoke execute on function public.uni_admin_students()                   from public, anon;
+revoke execute on function public.uni_set_status(text,text,date)         from public, anon;
 
 -- --------------------------------------------------------------- first codes
 -- Five founding codes so the campus is usable the minute this file is run.
@@ -529,7 +537,7 @@ insert into public.uni_invites(code, plan, max_uses, note)
 -- "tbu-office-hours". Swap the embed for Daily/Whereby/LiveKit later if
 -- recording or a waiting room becomes worth paying for; nothing else changes.
 -- ============================================================================
-create or replace function public.uni_xp_live() returns int language sql immutable as $$ select 60 $$;
+create or replace function public.uni_xp_live() returns int language sql immutable set search_path='public','pg_temp' as $$ select 60 $$;
 
 create table if not exists public.uni_events(
   id          uuid primary key default gen_random_uuid(),
@@ -671,5 +679,118 @@ end $$;
 
 grant execute on function public.uni_events_list(text,text)                        to anon, authenticated;
 grant execute on function public.uni_event_attend(text,text,uuid)                  to anon, authenticated;
+revoke execute on function public.uni_event_upsert(uuid,text,timestamptz,int,text,text,text,boolean) from public, anon;
+revoke execute on function public.uni_events_admin()                               from public, anon;
 grant execute on function public.uni_event_upsert(uuid,text,timestamptz,int,text,text,text,boolean) to authenticated;
 grant execute on function public.uni_events_admin()                                to authenticated;
+
+-- ============================================================================
+-- PERSONAL PATHS
+-- ----------------------------------------------------------------------------
+-- A fixed syllabus is the one thing this school said it would not be, and the
+-- app was quietly doing it anyway — "next lesson" meant "next in my order",
+-- which is a curriculum with extra steps. A path is the student's own answer to
+-- three questions, stored so it follows them across devices and so the campus
+-- opens on THEIR next move.
+--
+-- Deliberately jsonb and deliberately unvalidated: the shape of a path will
+-- change as the curriculum grows, and a student halfway through one should
+-- never be broken by that.
+-- ============================================================================
+alter table public.uni_students add column if not exists path jsonb;
+
+create or replace function public.uni_path_set(p_email text, p_pin text, p_path jsonb)
+returns json language plpgsql security definer set search_path='public','pg_temp' as $$
+declare s public.uni_students;
+begin
+  s := public.uni_auth(p_email, p_pin);
+  if s.id is null then return json_build_object('ok',false,'error','Wrong email or PIN.'); end if;
+  -- A path can always be rewritten. Changing your mind about what you are
+  -- building is not a failure state and must never be treated as one.
+  update public.uni_students
+     set path = p_path,
+         goal = coalesce(nullif(btrim(coalesce(p_path->>'goalText','')),''), goal)
+   where id = s.id;
+  select * into s from public.uni_students where id = s.id;
+  return public.uni_state_of(s);
+end $$;
+
+grant execute on function public.uni_path_set(text,text,jsonb) to anon, authenticated;
+
+-- NOTE: uni_state_of() gains 'path' in its student object. It is redefined in
+-- the migration that adds the column; if you are running this file fresh, the
+-- definition above already includes it.
+
+-- ============================================================================
+-- APPLICATIONS → ENROLMENT
+-- ----------------------------------------------------------------------------
+-- University applications land in `intakes` with every other lead on the
+-- estate, which is right — one inbox, not five. What was missing is the last
+-- step: seeing the University ones on their own, knowing whether that person is
+-- already a student, and minting their code without copying an email address
+-- between two tabs. That gap is where applicants go cold.
+-- ============================================================================
+create or replace function public.uni_applications(p_limit int default 100)
+returns json language plpgsql security definer set search_path='public','pg_temp' as $$
+declare v json;
+begin
+  if coalesce(auth.jwt()->>'email','') <> 'nikbyrd28@gmail.com' then
+    return json_build_object('ok',false,'error','Not allowed.'); end if;
+  select coalesce(json_agg(x order by x.created_at desc), '[]'::json) into v from (
+    select i.id, i.name, i.email, i.phone, i.goal, i.timeline, i.notes, i.status, i.created_at,
+           exists(select 1 from public.uni_students st
+                   where lower(btrim(st.email)) = lower(btrim(coalesce(i.email,'')))) as enrolled,
+           (select st.status from public.uni_students st
+             where lower(btrim(st.email)) = lower(btrim(coalesce(i.email,''))) limit 1) as student_status
+      from public.intakes i
+     where i.interest ilike '%University%' or i.about ilike '%University%' or i.notes ilike '%University%'
+     order by i.created_at desc
+     limit greatest(1, least(coalesce(p_limit,100), 500))) x;
+  return json_build_object('ok', true, 'applications', v);
+end $$;
+
+-- Mint a code AND tie it to the applicant in one call. The note is what makes
+-- an unredeemed code chaseable a week later instead of an anonymous string.
+create or replace function public.uni_invite_for(p_email text, p_name text default null, p_plan text default 'monthly', p_expires_days int default 30)
+returns json language plpgsql security definer set search_path='public','pg_temp' as $$
+declare v_code text; v_exists boolean;
+begin
+  if coalesce(auth.jwt()->>'email','') <> 'nikbyrd28@gmail.com' then
+    return json_build_object('ok',false,'error','Not allowed.'); end if;
+  if coalesce(btrim(p_email),'') = '' then
+    return json_build_object('ok',false,'error','No email on that application.'); end if;
+
+  select exists(select 1 from public.uni_students where lower(btrim(email)) = lower(btrim(p_email))) into v_exists;
+  if v_exists then return json_build_object('ok',false,'error','That person is already enrolled.'); end if;
+
+  -- An unused code already minted for this person is reused rather than
+  -- stacking up spares that all still work.
+  select code into v_code from public.uni_invites
+   where note = 'applicant: ' || lower(btrim(p_email)) and uses < max_uses
+     and (expires_at is null or expires_at > now())
+   order by created_at desc limit 1;
+
+  if v_code is null then
+    loop
+      v_code := 'TBU-' || upper(substr(replace(gen_random_uuid()::text,'-',''), 1, 6));
+      exit when not exists (select 1 from public.uni_invites where code = v_code);
+    end loop;
+    insert into public.uni_invites(code, plan, note, expires_at)
+      values (v_code, coalesce(nullif(btrim(coalesce(p_plan,'')),''),'monthly'),
+              'applicant: ' || lower(btrim(p_email)),
+              case when p_expires_days is null then null else now() + make_interval(days => p_expires_days) end);
+  end if;
+
+  update public.intakes set status = 'invited'
+   where lower(btrim(coalesce(email,''))) = lower(btrim(p_email))
+     and (interest ilike '%University%' or about ilike '%University%' or notes ilike '%University%')
+     and coalesce(status,'') <> 'invited';
+
+  return json_build_object('ok', true, 'code', v_code, 'name', coalesce(nullif(btrim(coalesce(p_name,'')),''),'there'),
+                           'link', 'https://tbsol.net/university/campus/?code=' || v_code);
+end $$;
+
+revoke execute on function public.uni_applications(int)              from public, anon;
+revoke execute on function public.uni_invite_for(text,text,text,int) from public, anon;
+grant  execute on function public.uni_applications(int)              to authenticated;
+grant  execute on function public.uni_invite_for(text,text,text,int) to authenticated;

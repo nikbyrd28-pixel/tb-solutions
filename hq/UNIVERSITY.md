@@ -5,6 +5,9 @@ the school, and `/university/admin/` is how you run it. This is the operator's
 guide: what to switch on, what one sale costs you in effort, and where each
 piece lives.
 
+**Status: live.** `hq/university.sql` and `hq/sms-consent.sql` are applied to the
+Supabase project. The steps below are for a rebuild or a second environment.
+
 ## Switch it on (once, ~2 minutes)
 
 1. Supabase → SQL Editor → paste **all** of `hq/university.sql` → Run.
@@ -14,7 +17,8 @@ piece lives.
    run. The campus calls `pin_gate()` when it exists and skips it when it does
    not, so the order does not matter — but until it is there, student PINs have
    no brute-force protection.
-3. Open `/university/admin/`, sign in with your HQ login, and mint a code.
+3. Run `hq/sms-consent.sql` if you want the compliant lead forms in `/kit/leadform/`.
+4. Open `/university/admin/`, sign in with your HQ login, and mint a code.
 
 Until step 1 is done the campus still runs — it falls back to storing progress
 on the student's own device and says so in a banner. The first time they sign in
@@ -22,9 +26,15 @@ after the migration, their local progress is replayed into their account.
 
 ## Selling one seat
 
+Applications from `/university/#apply` land in the `intakes` table with every
+other lead on the estate, and appear at the top of `/university/admin/` under
+**Applications** — with a flag for whether that person is already a student.
+
 1. Take the money however you take money (Stripe payment link is fine).
-2. `/university/admin/` → **Mint enrolment codes** → 1 → copy the block it gives
-   you. It already contains the welcome message and their link.
+2. `/university/admin/` → **Applications** → **Mint code** on their row. That
+   ties the code to their email, marks the application invited, and writes the
+   message to send. (For someone who never applied, **Mint enrolment codes**
+   makes a loose one.)
 3. Paste it into an email. That is the whole fulfilment.
 
 The link is `/university/campus/?code=TBU-XXXXXX`. They land on the enrol form
@@ -59,14 +69,36 @@ attendance, XP and the schedule are all server-side already.
 
 ## What the students see
 
-- **Home** — rank, XP, streak, the next lesson, today's checklist, recent wins.
-- **Campuses** — 7 campuses, 52 lessons, each ending in a mission that needs a
+- **Path** — the first screen a new student meets, before any lesson. Three
+  questions (what they want in 90 days, what they already have, hours a week)
+  and the campus builds their order out of the answers, drawing from any
+  campus and skipping what they do not need. Rewritable any time; nothing is
+  ever locked.
+- **Home** — rank, XP, streak, their next three moves *on their own path*, this
+  week's build brief, today's checklist, recent wins.
+- **Campuses** — 8 campuses, 59 lessons, each ending in a mission that needs a
   written answer before it counts as done.
 - **Daily** — six checklist items and the leaderboard. All six lifts the streak;
   a missed day sends it to zero.
 - **Live** — the calls above, and the replays.
 - **Wins** — the feed. Five posts a day maximum, XP for the first two.
-- **Tools** — the toolstack, which is the part a course cannot give them.
+- **Tools** — the toolstack, which is the part a course cannot give them,
+  including the two generators below.
+
+## The kits (`/kit/`)
+
+Both are white-label: the client never sees this school.
+
+- **`/kit/storefront/`** — the Hubs & Babydoll store with the client pulled out
+  of it. Fill the form, download one self-contained HTML file, host it
+  anywhere. Orders land in `client_leads` under the shop's slug, which is what
+  turns a one-off build into a retainer.
+- **`/kit/leadform/`** — lead capture whose SMS opt-in passes an A2P 10DLC
+  review: unticked checkbox, disclosure assembled from the shop's own facts,
+  consent wording stored verbatim with every submission (`sms_consents`), and
+  the registration pack — opt-in description, sample messages, HELP/STOP
+  replies, and the privacy-policy clause carriers check — written for you.
+  `sms_consent_check(client, phone)` answers "may we text this number".
 
 ## The economy
 
@@ -85,6 +117,12 @@ but fix the drift rather than living with it.
 | Every 7th consecutive day | +150 |
 | Win posted (first two a day) | 30 |
 | Live call attended | 60 |
+
+## Two things that are deliberately not a syllabus
+
+The Unschool campus is first for a reason, and the path builder runs before
+lesson one for the same reason: the students who succeed here are not the ones
+who complete things in order. If you add campuses, do not add gating.
 
 Ranks: Rookie → Prospector (300) → Operator (900) → Closer (2,000) →
 Rainmaker (4,000) → Operator X (7,500).
@@ -107,7 +145,11 @@ card — recalculates on its own.
 | `university/campus/campus.js` | The app: auth, state, views, live calls |
 | `university/campus/curriculum.js` | All 52 lessons, the daily checklist, the ranks |
 | `university/admin/index.html` | Codes, students, live calls |
-| `hq/university.sql` | Every table and RPC behind all of it |
+| `university/campus/curriculum.js` | Also holds the paths, the daily list, the ranks and the weekly build briefs |
+| `kit/storefront/` | The resellable ecommerce template + its builder |
+| `kit/leadform/` | The A2P-compliant lead form generator |
+| `hq/university.sql` | Every table and RPC behind the campus |
+| `hq/sms-consent.sql` | Consent records + `lead_capture_with_consent` |
 
 ## Two things not to change casually
 

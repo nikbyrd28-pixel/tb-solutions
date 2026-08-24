@@ -76,6 +76,13 @@ td{padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
     </div>
 
     <div class="card">
+      <h2>Applications</h2>
+      <p class="muted" style="font-size:13.5px;margin:0 0 12px">Everyone who applied from the University page. Minting a code here ties it to their email, marks the application invited, and writes the message you send.</p>
+      <div id="appsBox" class="muted">Loading…</div>
+      <div id="mintForOut"></div>
+    </div>
+
+    <div class="card">
       <h2>Live calls</h2>
       <p class="muted" style="font-size:13.5px;margin:0 0 12px">Scheduled calls open inside the campus — students join without leaving the site, and attendance is recorded. Times are your local time.</p>
       <div class="row">
@@ -139,6 +146,7 @@ el('outBtn').addEventListener('click',function(){ try{sessionStorage.removeItem(
 function open_(){
   el('loginCard').classList.add('hide');
   el('app').classList.remove('hide');
+  loadApps();
   loadStudents();
   loadEvents();
 }
@@ -176,6 +184,43 @@ el('evBtn').addEventListener('click',function(){
     loadEvents();
   });
 });
+
+function loadApps(){
+  rpc('uni_applications',{p_limit:100}).then(function(r){
+    var box=el('appsBox');
+    if(!r||!r.ok){ box.innerHTML='<div class="err">'+esc((r&&r.error)||'Could not load applications.')+'</div>'; return; }
+    var rows=r.applications||[];
+    if(!rows.length){ box.innerHTML='<p class="muted" style="font-size:13.5px">No University applications yet.</p>'; return; }
+    box.innerHTML='<div style="overflow-x:auto"><table><thead><tr><th>Who</th><th>Wants</th><th>Applied</th><th>State</th><th></th></tr></thead><tbody>'+
+      rows.map(function(a){
+        var when=a.created_at?new Date(a.created_at).toLocaleDateString():'—';
+        var state=a.enrolled?('<span class="tag active">enrolled'+(a.student_status&&a.student_status!=='active'?' · '+esc(a.student_status):'')+'</span>')
+          :(a.status==='invited'?'<span class="tag paused">code sent</span>':'<span class="tag">new</span>');
+        return '<tr><td><b>'+esc(a.name||'—')+'</b><br><span class="muted" style="font-size:12px">'+esc(a.email||'')+
+              (a.phone?' · '+esc(a.phone):'')+'</span></td>'+
+          '<td style="max-width:240px"><span class="muted" style="font-size:12.5px">'+esc(a.goal||a.timeline||'—')+'</span></td>'+
+          '<td class="muted" style="font-size:12px">'+esc(when)+'</td>'+
+          '<td>'+state+'</td>'+
+          '<td>'+(a.enrolled?'':'<button class="plain mintfor" data-email="'+esc(a.email||'')+'" data-name="'+esc(a.name||'')+'">Mint code</button>')+'</td></tr>';
+      }).join('')+'</tbody></table></div>';
+    [].forEach.call(document.querySelectorAll('.mintfor'),function(b){
+      b.addEventListener('click',function(){
+        b.disabled=true; b.textContent='Minting…';
+        rpc('uni_invite_for',{p_email:b.getAttribute('data-email'),p_name:b.getAttribute('data-name'),p_plan:'monthly',p_expires_days:30})
+         .then(function(rr){
+          b.disabled=false; b.textContent='Mint code';
+          if(!rr||!rr.ok){ alert((rr&&rr.error)||'Could not mint that.'); return; }
+          el('mintForOut').innerHTML='<div class="note"><span class="code">'+esc(rr.code)+'</span>\n\n'+
+            'Hi '+esc(rr.name)+' — you are in. Your campus is open here:\n'+esc(rr.link)+'\n\n'+
+            'Set a 4-digit PIN when you land. It will ask you three questions and build your path from your answers — '+
+            'first lesson takes about eight minutes and ends in something you actually do today.</div>';
+          el('mintForOut').scrollIntoView({behavior:'smooth',block:'nearest'});
+          loadApps();
+        });
+      });
+    });
+  });
+}
 
 function loadEvents(){
   rpc('uni_events_admin').then(function(r){
