@@ -1271,6 +1271,130 @@
     wire();
   }
 
+  /* ------------------------------------------------------------------ vocab
+     Study mode shows the whole deck — the precise definition, the
+     nine-year-old version, and a sentence to steal. The drill samples ten,
+     quizzes both directions, and saves through the same machinery as lesson
+     checks (lesson id "vocab:<deck>"), so XP pays once on the first perfect
+     run and retakes are free forever. */
+  function vocabState(deckId) {
+    var got = WORK.checks['vocab:' + deckId];
+    return { passed: !!(got && got.total && got.best >= got.total), best: got ? got.best : null };
+  }
+
+  function viewVocab() {
+    var html = '<div class="card tight"><div class="eyebrow">Vocabulary</div>'
+      + '<h2>Talk the trade</h2>'
+      + '<p class="muted" style="font-size:14px;margin:4px 0 0">Every term three ways: the precise version, the nine-year-old '
+      + 'version, and a sentence to steal. Sound fluent with developers so you are not overcharged; sound simple with owners '
+      + 'so you are not tuned out. Ten questions per drill — a perfect run pays XP once.</p></div>';
+    (w.TBU_VOCAB || []).forEach(function (deck) {
+      var vs = vocabState(deck.id);
+      html += '<button class="crow" data-go="#/vocab/' + deck.id + '"' + (vs.passed ? ' style="border-color:rgba(67,240,176,.4)"' : '') + '>'
+        + '<div class="ic">' + deck.icon + '</div>'
+        + '<div class="bd"><b>' + esc(deck.name) + '</b><span>' + deck.terms.length + ' terms &middot; ' + esc(deck.blurb) + '</span></div>'
+        + '<div class="go">' + (vs.passed ? '&#10003;' : '&rarr;') + '</div></button>';
+    });
+    el('view').innerHTML = html;
+    wire();
+  }
+
+  function viewVocabDeck(deckId, mode) {
+    var deck = (w.TBU_VOCAB || []).filter(function (x) { return x.id === deckId; })[0];
+    if (!deck) { location.hash = '#/vocab'; return; }
+    if (mode === 'drill') return vocabDrill(deck);
+
+    var vs = vocabState(deck.id);
+    var html = '<button class="btn plain sm" data-go="#/vocab">&larr; All decks</button>'
+      + '<div class="card" style="margin-top:14px"><div class="eyebrow">' + deck.icon + ' Deck</div>'
+      + '<h2>' + esc(deck.name) + '</h2>'
+      + '<p class="muted" style="font-size:14px;margin:6px 0 12px">' + esc(deck.blurb)
+      + (vs.passed ? ' <b style="color:var(--good)">Deck passed.</b>' : '') + '</p>'
+      + '<button class="btn wide" id="startDrill">' + (vs.passed ? 'Drill it again' : 'Start the drill &middot; 10 questions') + '</button></div>';
+    deck.terms.forEach(function (t) {
+      html += '<div class="card vterm"><b class="vt">' + esc(t.t) + '</b>'
+        + '<p class="vd">' + esc(t.d) + '</p>'
+        + '<p class="vk"><b>To a nine-year-old:</b> ' + esc(t.kid) + '</p>'
+        + '<p class="vu"><b>Steal this:</b> ' + esc(t.use) + '</p></div>';
+    });
+    el('view').innerHTML = html;
+    w.scrollTo(0, 0);
+    wire();
+    el('startDrill').addEventListener('click', function () { vocabDrill(deck); });
+  }
+
+  function vocabDrill(deck) {
+    /* Ten random terms, direction alternating; distractors drawn from the
+       same deck so the wrong answers are plausible rather than silly. */
+    var pool = deck.terms.slice();
+    for (var i = pool.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp; }
+    var qs = pool.slice(0, 10).map(function (term, i) {
+      var others = deck.terms.filter(function (x) { return x.t !== term.t; });
+      for (var k = others.length - 1; k > 0; k--) { var m = Math.floor(Math.random() * (k + 1)); var t2 = others[k]; others[k] = others[m]; others[m] = t2; }
+      var dir = i % 2 === 0 ? 'def' : 'term';   // def: show term, pick meaning; term: show meaning, pick term
+      var opts, correct;
+      if (dir === 'def') { opts = [term].concat(others.slice(0, 3)).map(function (x) { return x.d; }); correct = term.d; }
+      else { opts = [term].concat(others.slice(0, 3)).map(function (x) { return x.t; }); correct = term.t; }
+      for (var n = opts.length - 1; n > 0; n--) { var r = Math.floor(Math.random() * (n + 1)); var o = opts[n]; opts[n] = opts[r]; opts[r] = o; }
+      return { term: term, dir: dir, opts: opts, c: opts.indexOf(correct) };
+    });
+    var idx = 0, correct = 0, picked = null, revealed = false;
+
+    function draw() {
+      if (idx >= qs.length) {
+        var perfect = correct === qs.length;
+        Store.checkSave(SESSION.email, SESSION.pin, 'vocab:' + deck.id, correct, qs.length).then(function (r) {
+          var s2 = stateOf(r); if (s2) absorb(s2);
+          WORK.checks['vocab:' + deck.id] = { best: Math.max((WORK.checks['vocab:' + deck.id] || {}).best || 0, correct), total: qs.length };
+          if (perfect) toast('Deck passed', 'good');
+        });
+        el('view').innerHTML = '<div class="card" style="text-align:center;padding:34px 20px">'
+          + '<div style="font-size:44px">' + (perfect ? '&#127942;' : '&#128218;') + '</div>'
+          + '<h2 style="margin:10px 0 6px">' + correct + ' of ' + qs.length + '</h2>'
+          + '<p class="muted" style="font-size:14.5px;margin:0 0 18px">'
+          + (perfect ? 'Fluent. Now use three of these in a real conversation this week.'
+                     : 'Read the ones you missed in study mode, then run it again — the drill is free forever.')
+          + '</p>'
+          + '<div class="navrow"><button class="btn ghost" data-go="#/vocab/' + deck.id + '">Study the deck</button>'
+          + '<button class="btn" id="againBtn">Drill again</button></div></div>';
+        wire();
+        el('againBtn').addEventListener('click', function () { vocabDrill(deck); });
+        return;
+      }
+      var q = qs[idx];
+      var html = '<button class="btn plain sm" data-go="#/vocab/' + deck.id + '">&larr; ' + esc(deck.name) + '</button>'
+        + '<div class="card" style="margin-top:14px"><div class="barlab" style="margin:0 0 10px"><span>Question ' + (idx + 1)
+        + ' of ' + qs.length + '</span><span>' + correct + ' right</span></div>'
+        + '<div class="q"><b>' + (q.dir === 'def'
+            ? 'What is <span class="shimmer">' + esc(q.term.t) + '</span>?'
+            : 'Which term means: &ldquo;' + esc(q.term.d) + '&rdquo;') + '</b>';
+      q.opts.forEach(function (opt, j) {
+        var cls = '';
+        if (revealed) { if (j === q.c) cls = ' right'; else if (picked === j) cls = ' wrong'; }
+        html += '<button class="opt' + cls + '" data-o="' + j + '"' + (revealed ? ' disabled' : '') + '>' + esc(opt) + '</button>';
+      });
+      if (revealed) {
+        html += '<div class="why' + (picked === q.c ? ' ok' : '') + '"><b>' + esc(q.term.t) + ':</b> ' + esc(q.term.kid) + '</div>'
+          + '<button class="btn wide" id="nextQ" style="margin-top:12px">' + (idx + 1 >= qs.length ? 'See the result' : 'Next') + '</button>';
+      }
+      html += '</div></div>';
+      el('view').innerHTML = html;
+      wire();
+      [].forEach.call(d.querySelectorAll('.opt'), function (b) {
+        b.addEventListener('click', function () {
+          if (revealed) return;
+          picked = +b.getAttribute('data-o');
+          revealed = true;
+          if (picked === qs[idx].c) correct++;
+          draw();
+        });
+      });
+      var nx = el('nextQ');
+      if (nx) nx.addEventListener('click', function () { idx++; picked = null; revealed = false; draw(); });
+    }
+    draw();
+  }
+
   function viewLearn() {
     var totalDone = Object.keys(doneSet).length;
     var html = localBanner()
@@ -1281,6 +1405,13 @@
       + Math.round((totalDone / w.TBU_TOTAL) * 100) + '% complete</span></div>'
       + '<p class="fine" style="margin:12px 0 0">Every lesson ends in a mission and a check. Every campus ends in a build and an exam. '
       + '<a href="#/workbook">Your workbook</a> is where the builds collect.</p></div>';
+
+    var vocabPassed = (w.TBU_VOCAB || []).filter(function (dk) { return vocabState(dk.id).passed; }).length;
+    html += '<button class="crow" data-go="#/vocab">'
+      + '<div class="ic">&#128483;&#65039;</div>'
+      + '<div class="bd"><b>Vocabulary decks</b><span>' + (w.TBU_VOCAB || []).reduce(function (a, dk) { return a + dk.terms.length; }, 0)
+      + ' terms &middot; sound like you have done this for years &middot; ' + vocabPassed + '/' + (w.TBU_VOCAB || []).length + ' passed</span></div>'
+      + '<div class="go">&rarr;</div></button>';
 
     CAMPUSES.forEach(function (c) {
       var p = campusProgress(c);
@@ -1705,6 +1836,7 @@
     if (view === 'workbook') return viewWorkbook();
     if (view === 'money') return viewMoney();
     if (view === 'library') return viewLibrary();
+    if (view === 'vocab') return parts[1] ? viewVocabDeck(parts[1]) : viewVocab();
     if (view === 'case') return viewCase(parts[1]);
     if (view === 'live') return viewLive();
     if (view === 'wins') return viewWins();

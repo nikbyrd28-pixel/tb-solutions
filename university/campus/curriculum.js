@@ -667,6 +667,154 @@
     },
 
     {
+      id: 'academy',
+      name: 'Sales Academy',
+      icon: '🎤',
+      tag: 'Old-school training',
+      blurb: 'The door-to-door classics that still run every great sales floor: the five steps, KISS, the law of averages, the transfer of feeling, and never leaving without names.',
+      lessons: [
+        {
+          id: 'sa1', title: 'The five steps of a sale', min: 9,
+          body: [
+            '<p>Every door-to-door company that ever built an army of teenagers into closers taught some version of the same five steps — because a sale is not a talent, it is a sequence, and sequences can be drilled. Here is the sequence, tuned for a local operator.</p>',
+            '<div class="ex"><b>1. OPEN</b> — earn ten seconds. Name, one specific true thing about THEM, and why you are here in one breath. Not a pitch; a reason to keep listening.<br><b>2. ASK</b> — questions before claims. Which days are dead, where customers come from, what a regular is worth. You cannot prescribe before you diagnose, and people believe their own answers.<br><b>3. SHOW</b> — demonstrate, never describe. The loyalty card on your own phone, the before/after of another shop\'s Google profile, the sample you already made with THEIR name on it. Show beats tell by a mile, every time, forever.<br><b>4. CLOSE</b> — ask a real question that has a yes in it. "Want me to set it up while I\'m here?" Then stop talking. The step most people skip entirely — they show, chat, and leave, and call it "planting seeds".<br><b>5. MULTIPLY</b> — win or lose, leave with more than you came with: two names, a referral, a come-back date. The list must grow at every door.</div>',
+            '<h3>Why steps beat talent</h3>',
+            '<p>A "natural" has good days and bad days and no idea why. A five-step operator knows exactly which step went wrong: no conversations means the OPEN is broken; conversations but no interest, the ASK; interest but no yes, the CLOSE. You cannot fix "I\'m bad at sales". You can absolutely fix step four.</p>',
+            '<h3>The order is the discipline</h3>',
+            '<p>Every beginner instinct violates the order: pitching before asking (3 before 2), describing instead of showing, leaving without closing, closing without multiplying. When a conversation feels wrong, you are almost always doing a later step too early. Go back one step.</p>',
+            '<h3>Run it everywhere</h3>',
+            '<p>The five steps are not just for doors. A DM sequence is the five steps in slow motion. A discovery call is steps 2–4 with a calendar invite. The monthly report is step 5 pointed at an existing client. One skeleton, every channel.</p>'
+          ].join(''),
+          mission: 'Run all five steps in one real conversation — in person or on a call. Afterwards, name the step that was weakest and why.',
+          ask: 'Who it was, what happened at each step, and which step broke.'
+        },
+        {
+          id: 'sa2', title: 'KISS — keep it simple', min: 7,
+          body: [
+            '<p>KISS — "Keep It Simple, Stupid" — started as a 1960s engineering principle at Lockheed\'s Skunk Works: design planes a mechanic could fix in the field with basic tools. Sales floors adopted it for the same reason. The field does not reward clever; it rewards clear.</p>',
+            '<h3>Confusion kills more sales than price</h3>',
+            '<p>A confused prospect never says "I\'m confused" — that would be admitting it. They say "let me think about it", and they never think about it, because thinking about it means re-entering the confusion. Every extra option, feature, acronym and caveat you add is another reason to defer. <b>The confused mind says no.</b></p>',
+            '<div class="ex"><b>Complicated:</b> "We offer tiered engagement models across content, reputation management, and retention automation with flexible add-ons."<br><b>KISS:</b> "Three hundred a month. I keep your chairs full. Cancel whenever."<br><br>The second one can be repeated by the owner to his wife tonight. That matters more than you think — most local sales are actually closed at the kitchen table, hours after you left, by your prospect badly paraphrasing you. Give them a sentence that survives the retelling.</div>',
+            '<h3>One offer, one price, one action</h3>',
+            '<p>In the first conversation: one product, one number, one next step. The three-tier menu belongs in the written proposal, after interest exists. Presenting choices too early converts a buying decision into a comparison project, and comparison projects get postponed indefinitely.</p>',
+            '<h3>Simple is not dumbed down</h3>',
+            '<p>Simple is the expensive version — it means you did the complexity yourself so they do not have to. Anyone can make things sound complicated; complicated is what confusion looks like from the inside. When someone explains a hard thing simply, you trust them more, not less. That is the whole trick of expertise.</p>'
+          ].join(''),
+          mission: 'Take your current pitch and cut it to three sentences a stranger could repeat accurately after hearing it once. Test it: say it to someone, wait an hour, ask them to repeat it back.',
+          ask: 'Your three sentences, and how the repeat-back went.'
+        },
+        {
+          id: 'sa3', title: 'Explain it like they\'re nine', min: 8,
+          body: [
+            '<p>Richard Feynman, the Nobel physicist, had a rule for finding out whether he understood something: prepare a lesson on it for freshmen. If he couldn\'t, that meant the field didn\'t really understand it yet. Your version of the test is harsher and more useful: <b>can you explain what you sell to a nine-year-old?</b></p>',
+            '<h3>Why this is a sales skill, not a party trick</h3>',
+            '<p>Your prospect is a barber, a baker, a mechanic — brilliant at their trade, zero patience for yours. When you say "we leverage AI-driven retention automation", they hear noise, and people do not buy noise. When you say "your customers scan a card, and when they disappear, the computer texts them and they come back" — they can SEE it. Purchases happen in pictures, never in abstractions.</p>',
+            '<div class="ex"><b>The translation drill, three moves:</b><br><b>1. Ban the nouns.</b> No jargon noun survives — no "platform", "solution", "automation", "engagement". They are hiding places.<br><b>2. Make somebody DO something.</b> Every sentence gets a person doing a visible action: scans, texts, walks in, pays.<br><b>3. End in money or time.</b> The last sentence says what it puts in their pocket or gives back of their week.<br><br>Before: "An integrated loyalty and win-back platform."<br>After: "People scan a card when they pay. When someone stops coming, it texts them. They come back. That\'s about $700 a month you\'re currently not getting."</div>',
+            '<h3>Every vocab deck has a "kid" line for a reason</h3>',
+            '<p>The vocabulary campus teaches you the precise term AND the nine-year-old version, because fluency is being able to slide between them on demand — precise with the developer so you don\'t get overcharged, simple with the owner so you don\'t get tuned out. One register is knowledge. Two registers is power.</p>',
+            '<h3>The test that never lies</h3>',
+            '<p>Explain your offer to an actual kid, or the least tech-interested adult you know. Where their eyes drift, you were hiding behind a word. That drift-point is exactly where your sales conversations have been dying too — you just couldn\'t see it, because adults are polite enough to keep nodding.</p>'
+          ].join(''),
+          mission: 'Run the translation drill on your entire offer, then explain it out loud to a real kid or a determinedly non-technical adult. Mark exactly where you lost them.',
+          ask: 'Your before, your after, who you tested it on, and where their eyes drifted.'
+        },
+        {
+          id: 'sa4', title: 'The law of averages', min: 8,
+          body: [
+            '<p>The oldest law on every sales floor: <b>outcomes per attempt are roughly stable, so outcomes are a function of attempts.</b> If one sale falls out of every ten real conversations, then a sale costs ten conversations — and the only question left each morning is how many conversations you will pay today.</p>',
+            '<h3>What it does to rejection</h3>',
+            '<p>Under the law of averages, a "no" changes its meaning entirely. It is no longer a verdict on you; it is one of the nine you must collect to reach the one. Old sales floors literally taught: figure out your ratio, and every no is worth its fraction of a commission — at one-in-ten on a $300 close, each no just paid you thirty dollars. Nobody who genuinely believes that sentence fears the next door.</p>',
+            '<div class="ex"><b>The math that ends the drama:</b> 10 contacts a day, 5 days a week = 200 a month. At 15% replies that is 30 conversations. At 25% of conversations becoming calls, ~8 calls. At 1-in-4 closing, 2 clients a month — every month, like a machine, from numbers alone.<br><br>Notice what is NOT in that math: talent, mood, luck, or how Tuesday felt.</div>',
+            '<h3>Know your ratios or you know nothing</h3>',
+            '<p>The law only works if you count. Contacts → replies → conversations → closes, tracked weekly on one page. Then improvement gets surgical: raising reply rate from 10% to 15% is worth exactly as much as sending 50% more messages, and it is usually easier. Without the counts, every slow week is a mystery and every good week is a mood.</p>',
+            '<h3>The averages need volume to average</h3>',
+            '<p>The law fails people in one way only: sample size. Ten attempts is not a ratio, it is an anecdote. The one-in-ten does not promise a sale in EVERY ten — it promises ten in every hundred. People who quit at attempt seventeen never find out what their ratio was. Commit to the hundred before you judge the ratio.</p>'
+          ].join(''),
+          mission: 'Compute your actual ratios from whatever history you have (even rough), then write the sentence: "A client costs me __ conversations, so a no is worth $__ to me."',
+          ask: 'Your ratios, and your no-is-worth sentence.'
+        },
+        {
+          id: 'sa5', title: 'The transfer of feeling', min: 7,
+          body: [
+            '<p>An old sales floor saying, and it holds: <b>a sale is a transfer of feeling.</b> Certainty passes from one side of the table to the other — the side with more of it wins. If you are more certain it will work than he is certain it won\'t, he buys. If his doubt outweighs your conviction, he doesn\'t — and no script survives that arithmetic.</p>',
+            '<h3>Why conviction can\'t be faked (for long)</h3>',
+            '<p>Owners run on people-radar; it is how they survived. Pumped-up fake enthusiasm reads instantly as commission breath and triggers the exact defensiveness you were trying to talk past. Real conviction has a different signature: calm, specific, unhurried, happy to say what the product does NOT do. It comes from one source only — <b>having seen the thing work.</b></p>',
+            '<div class="ex"><b>Which is why the order of operations in this school is what it is:</b> run Loop for one shop — even free, even your cousin\'s — BEFORE selling it hard. After you have watched one dead Tuesday fill up from a win-back text, you stop performing belief and start reporting it. "His Tuesdays went from four cuts to eleven" is not enthusiasm. It is testimony, and testimony transfers.</div>',
+            '<h3>Guard the tank</h3>',
+            '<p>Feeling-transfer runs both ways: prospects can drain you faster than you convince them. Three rules the old floors enforced: <b>never end the day on a no</b> — make one more attempt, even tiny, so tomorrow starts clean; <b>wins go in writing</b> — the wins feed exists because re-reading your own evidence refills the tank; <b>protect your inputs</b> — an hour of doom-scrolling before outreach shows up in your close rate, and the prospect will feel what you brought in the door.</p>',
+            '<h3>Enthusiasm for THEM, not for it</h3>',
+            '<p>The amateur is excited about the product. The professional is excited about what Tuesday looks like for this specific shop in ninety days. Same energy, different direction — and only one of them makes the owner lean in.</p>'
+          ].join(''),
+          mission: 'Get one unit of real conviction: make the product work once, anywhere, and write down the specific result you can now say out loud without performing.',
+          ask: 'The result you witnessed, in the exact words you\'ll use in the next pitch.'
+        },
+        {
+          id: 'sa6', title: 'Never leave without names', min: 7,
+          body: [
+            '<p>The fifth step deserves its own lesson because it is the one that turns a sales grind into a compounding machine. The old door-to-door rule: <b>the list must be longer when you leave than when you arrived — every time, win or lose.</b></p>',
+            '<h3>The math of the multiply</h3>',
+            '<div class="ex">Cold outreach closes maybe 1 in 10 conversations. Referred introductions close 1 in 3, because trust arrives pre-installed. So two names from every conversation doesn\'t just grow the list — it steadily REPLACES your cold list with a warm one. Run it for six months and you are no longer a cold-caller who sometimes gets referrals; you are a referred operator who occasionally goes cold. Same effort, triple yield.</div>',
+            '<h3>How to ask so people actually answer</h3>',
+            '<p>"Do you know anyone who needs marketing?" produces a shrug — it asks them to run a search on their whole life. Narrow the search space and you get names: <b>"Who cuts hair two towns over that you rate?" "Which shop around here is good but always empty?"</b> Specific questions hit specific memories. And ask everyone — the shop that said NO still knows every other shop, and giving you a name costs them nothing while easing the mild guilt of the no.</p>',
+            '<h3>Then do the thing almost nobody does</h3>',
+            '<p>Use the name within 48 hours ("Ray said I should talk to you" is the strongest cold-open in existence — it isn\'t cold), and <b>close the loop with the person who gave it</b>: "Talked to Marcus, good guy, we\'re starting Monday — appreciate that." Loop-closing is what turns a one-time name-giver into a standing scout who thinks of you every time a shop owner complains within earshot.</p>',
+            '<h3>Referrals are step five of every relationship, not just every sale</h3>',
+            '<p>The monthly report to an existing client ends with the multiply too — right after a visible win: "Who else do you know running a shop who\'d want this?" A client who has referred twice is also a client who almost never churns; they have publicly staked their judgment on you. The multiply retains while it acquires.</p>'
+          ].join(''),
+          mission: 'End your next three conversations — any outcome — with a narrowed referral question. Collect at least two names and use one within 48 hours.',
+          ask: 'The names you got, the question that got them, and what the 48-hour follow-up produced.'
+        },
+        {
+          id: 'sa7', title: 'In-person selling — the room is the pitch', min: 9,
+          body: [
+            '<p>DMs get ignored, calls get screened, but a person standing in the shop being useful is a category the owner has no filter for. In-person is the highest-converting channel in local sales, and it is a physical craft with physical rules.</p>',
+            '<h3>Before you speak</h3>',
+            '<div class="ex"><b>Timing is half the sale.</b> Mid-morning Tuesday–Thursday, never during their money hours — interrupting a paying customer makes you the enemy before your first word.<br><b>Read the room in three seconds.</b> Owner mid-cut: hand the printed thing to whoever is free, name-drop, leave. Owner sweeping an empty shop at 2pm: that is your conversation, and the empty shop is your opening evidence.<br><b>Buy something when you can.</b> A haircut, a coffee. A customer who mentions marketing is a completely different species from a marketer who walks in cold.</div>',
+            '<h3>The physical layer nobody teaches</h3>',
+            '<p>Stand at an angle, not square-on — square-on reads as confrontation. Hands visible, one thing in them (the sample), not a folder of stuff. Match the room\'s volume and pace: barbershops are loud and quick, salons are softer. And <b>the demo happens on YOUR phone in THEIR hand</b> — the moment the owner is holding the loyalty card on your phone, scanning the QR, the product has physically entered his shop. Possession sells.</p>',
+            '<h3>The forty-second visit</h3>',
+            '<p>First visits are for becoming a real person with a face, not for closing. Say the open, hand over the printed thing, one line of the pitch, and leave before they want you to. "I\'ll swing by Thursday" beats "do you have five minutes" — you are a busy person on a route, not a pleader with a quota. The SECOND visit, where he remembers you and the flyer is still on the counter, is where conversations happen.</p>',
+            '<h3>Leave physical evidence</h3>',
+            '<p>Paper survives on a counter for weeks; a DM survives four seconds. The best leave-behind is genuinely useful with their name on it — a mock loyalty card for THEIR shop, a printed audit of THEIR Google profile. It gets shown to the other barbers at closing time, which means your pitch runs again, without you, all week.</p>'
+          ].join(''),
+          mission: 'Do a five-door route with printed, personalised leave-behinds and the forty-second discipline. Log the timing, the reaction, and which door earned a second visit.',
+          ask: 'The five doors, what happened at each, and your Thursday list.'
+        },
+        {
+          id: 'sa8', title: 'High-ticket closing', min: 10,
+          body: [
+            '<p>Selling a $150/month product and a $1,500/month engagement are different sports. Small tickets are sold on impulse and simplicity; high tickets are sold on <b>diagnosis, authority, and the cost of the problem</b>. Learn both, because the second one is where your income stops being linear.</p>',
+            '<h3>The frame decides it before the price does</h3>',
+            '<p>High-ticket buyers are not buying effort, they are buying certainty — and certainty does not beg. The frame: <b>you are a specialist deciding whether to take the case.</b> "Let me ask you a few things and I\'ll tell you straight whether I can help" outsells any pitch, because it is the shape of how their doctor, their lawyer and their accountant talk. Desperation is smelled at any price; at high ticket it is fatal.</p>',
+            '<h3>Sell the cost of the problem, not the price of the fix</h3>',
+            '<div class="ex">The anchor is never your fee — it is what the problem costs while it lives. "Two dead days a week, forty customers you never see again a month, no way to reach any of them — call it $2,500 a month walking past the window." Said BEFORE any price, from HIS numbers (you asked in discovery). Against a $2,500 monthly bleed, $1,200 to stop it is not expensive; it is the only cheap thing in the conversation.<br><br>This is why discovery questions come first, always: question five — "what\'s a regular worth to you over a year?" — is you loading the anchor with his own ammunition.</div>',
+            '<h3>The mechanics of the close itself</h3>',
+            '<p><b>Price, then silence</b> — at high ticket the silence gets longer and matters more; the first voice concedes. <b>Deliver it flat</b>: "It\'s twelve hundred a month" in the same tone you\'d say the time. A price said with ceremony sounds negotiable. <b>Never unpack the fee into hours</b> — hours invite arithmetic, outcomes invite comparison to the problem. <b>De-risk instead of discounting</b>: a narrow guarantee, a 60-day out, or a phased start ("first month is the audit and quick wins at $600, then we go full") protects the price while removing the fear. A discount says the price was fiction; a de-risk says the price is real and the risk is yours.</p>',
+            '<h3>"Send me a proposal" — the high-ticket brush-off</h3>',
+            '<p>Half the time it means "I want this conversation to end". Test it before you spend the evening writing: <b>"Happy to. If the proposal says what I just said, what happens next?"</b> A real buyer answers with a process. A brush-off gets vague — and now you know to close the gap in the room instead of by email. Proposals confirm decisions; they do not make them.</p>'
+          ].join(''),
+          mission: 'Build the cost-of-problem anchor for one real prospect from their own numbers, then deliver a four-figure price out loud to a human — role-play counts — flat, followed by silence.',
+          ask: 'The anchor you built, the price you said, and what the silence felt like.'
+        },
+        {
+          id: 'sa9', title: 'Closing for others — the commission craft', min: 9,
+          body: [
+            '<p>There is a role in every industry that pays better than almost any job and has no entry requirements: <b>the closer</b> — the person who sells someone else\'s product for a cut. Every skill in this campus is exactly that trade. And the nearest place to practise it is selling Loop itself.</p>',
+            '<h3>Why closers out-earn builders</h3>',
+            '<p>Products are everywhere; distribution is scarce. The person who can reliably turn conversations into signed clients is the bottleneck of every business on earth, and bottlenecks set prices. A closer with proven ratios can walk into almost any company and name their percentage — the ratios ARE the CV. This is why the law-of-averages tracker matters beyond your own business: it is a portable, provable asset.</p>',
+            '<div class="ex"><b>The three ways to sell Loop, as a closer:</b><br><b>Refer</b> — commission per shop that starts. Zero delivery, pocket money, good training wheels.<br><b>Resell</b> — you close the shop at YOUR price, deliver with the white-label software, keep the whole fee. Closing plus a margin engine.<br><b>Close for another reseller</b> — a student with delivery skills but no stomach for doors pays a closer 20–30% of month one, or a slice of the retainer. Two students, one deal, both richer. The /earn/ page lays the structures out.</div>',
+            '<h3>The commission mindset shifts</h3>',
+            '<p><b>Pipeline is payroll.</b> Nobody pays you to wait; the list and the follow-up dates are your salary in larval form. <b>Activity standards are self-imposed</b> — the ten-a-day happens whether or not anyone is watching, because the law of averages only pays the people who feed it. <b>Protect the product\'s promises</b>: a closer who oversells creates refunds and burns the very reputation their next commission depends on. The great ones under-promise slightly and let delivery over-perform — that is where referral chains come from.</p>',
+            '<h3>Sell the appointment, then the product</h3>',
+            '<p>Commission selling runs on a two-step: the doorstep sells the fifteen-minute sit-down, the sit-down sells the product. Trying to close a retainer standing in a doorway is amateur hour; the ask at the door is small and easy — "fifteen minutes Thursday, I\'ll bring the numbers for your shop specifically." Each step sells only the next step. That is the five steps, nested inside themselves.</p>'
+          ].join(''),
+          mission: 'Pick your lane — refer, resell, or close for a reseller — and book one fifteen-minute sit-down this week using the two-step. The doorstep ask sells only the appointment.',
+          ask: 'Your lane, how the doorstep ask went, and when the sit-down is.'
+        }
+      ]
+    },
+
+    {
       id: 'stack',
       name: 'AI & Infrastructure',
       icon: '⚡',
@@ -876,6 +1024,24 @@
           ].join(''),
           mission: 'Write, in a paragraph, which layer your business sits on and what would happen to it if the model you use got twice as good and half the price tomorrow. If the answer is "I would be in trouble", change the business, not the answer.',
           ask: 'Your paragraph.'
+        },
+        {
+          id: 'x11', title: 'The AI zoo — every type and what it\'s for', min: 10,
+          body: [
+            '<p>"AI" is not one thing, and the fastest way to sound like a tourist is to talk as if it were. Here is the whole zoo — what each animal is, what it is FOR, and which ones make a local operator money.</p>',
+            '<h3>The text ones (your bread and butter)</h3>',
+            '<div class="ex"><b>LLMs / chat models</b> — predict text; power everything conversational: front desks, review replies, lead qualifiers, caption drafts. This is 80% of your sellable products.<br><b>Reasoning modes</b> — the same models "thinking" longer before answering. Slower, costlier, better on hard multi-step problems. Overkill for a receptionist; right for a monthly strategy write-up.<br><b>Embeddings</b> — turn text into numbers so similar meanings sit near each other. The machinery behind "search that understands what you meant" and behind RAG. You never sell embeddings; you sell "the bot answers from YOUR documents", which is built on them.</div>',
+            '<h3>The media ones (the content engine)</h3>',
+            '<div class="ex"><b>Image generation</b> — text to picture. Ad creative, post backgrounds, mockups. Careful with client work: real shop photos beat generated ones for local trust, every time.<br><b>Video generation</b> — text or image to short video. Moving fast; useful for ads and b-roll, not yet a substitute for the owner talking to camera.<br><b>Speech-to-text (STT)</b> — transcription. Turns a rambling voice note from the owner into next month\'s captions. Quietly one of the most useful tools you have.<br><b>Text-to-speech (TTS)</b> — natural voices from text. Phone answering, video voiceovers.<br><b>Music generation</b> — background tracks without licensing headaches.</div>',
+            '<h3>The classic ones (older than the hype, still everywhere)</h3>',
+            '<div class="ex"><b>Recommendation systems</b> — "people who bought X…" — running every feed and store you\'ve ever used.<br><b>Computer vision</b> — classifying and detecting things in images: counting cars, reading receipts, spotting defects.<br><b>Forecasting / classic ML</b> — predicting numbers from history: demand, churn risk, no-show probability. No chat involved; it was called "machine learning" before 2022 made everything "AI".</div>',
+            '<h3>The composite ones (where it\'s heading)</h3>',
+            '<div class="ex"><b>Agents</b> — a model in a loop with tools: it checks the calendar, books the slot, sends the text, then decides what\'s next. A chatbot answers; an agent finishes the job.<br><b>Multimodal models</b> — one model that reads text AND sees images AND hears audio. The shop photographs the price board; the model writes the post. This is collapsing several zoo cages into one animal.<br><b>Automation glue</b> (n8n, Make, Zapier) — not AI itself, but the plumbing that connects the AI to the calendar, the CRM and the phone. Half your sellable products are one model plus this glue.</div>',
+            '<h3>How to choose, forever</h3>',
+            '<p>Never start from the animal; start from the sentence <b>"the owner hates doing ___"</b>. Answering after-hours texts → LLM. Turning his rambling into posts → STT + LLM. Knowing who\'s about to lapse → classic forecasting. Actually booking the appointment → an agent. The customer never needs to hear which animal you used — they are buying the chore\'s disappearance, not the zoo tour. But YOU knowing the whole map is why your solution costs half as much and works twice as well as the agency guessing with the only tool they know.</p>'
+          ].join(''),
+          mission: 'Take three real chores from businesses you know and map each to the right animal (or combination) — then note which one you could ship with the skills you already have.',
+          ask: 'The three chores, the type of AI each maps to, and the one you could ship this month.'
         }
       ]
     },
@@ -1142,16 +1308,16 @@
   w.TBU_GOALS = [
     { id: 'first_client', icon: '🎯', label: 'Land my first paying client',
       text: 'Get one shop paying me',
-      lessons: ['u1','u7','f1','f2','f4','f5','c1','c2','c3','c4','c5','c6','c7','l2','u2'] },
+      lessons: ['u1','u7','f1','f2','f4','f5','c1','c2','sa1','sa4','c3','c4','sa2','c5','c6','sa6','c7','l2','u2'] },
     { id: 'replace_job', icon: '🚪', label: 'Replace my job',
       text: 'Replace my income with client work',
       lessons: ['u1','u7','f2','f4','f5','c1','c2','c4','c5','c7','l1','l2','l4','l5','p12','s1','s2','p13'] },
     { id: 'more_clients', icon: '📈', label: 'Grow the thing I already run',
       text: 'More clients, higher prices, less chaos',
-      lessons: ['p3','p13','p5','c5','s2','l1','l5','p12','s4','s1','s3','p1'] },
+      lessons: ['p3','p13','p5','sa8','c5','s2','l1','l5','p12','sa9','s4','s1','s3','p1'] },
     { id: 'build_ai', icon: '⚡', label: 'Build and sell AI products',
       text: 'Build AI products local businesses pay for',
-      lessons: ['x0','x1','x2','x3','x4','x6','x7','x8','x9','c1','c2','c4','x10'] },
+      lessons: ['x0','x11','x1','x2','x3','x4','x6','x7','x8','x9','c1','c2','c4','x10'] },
     { id: 'master_craft', icon: '🧠', label: 'Actually master marketing',
       text: 'Get genuinely good at marketing and copy',
       lessons: ['u3','u4','u5','p1','p2','p7','p8','p9','p3','p5','p6','p10','p11','p12','p13'] }

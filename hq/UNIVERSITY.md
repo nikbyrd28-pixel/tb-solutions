@@ -28,8 +28,8 @@ after the migration, their local progress is replayed into their account.
 
 **$50/month.** Free for the founding cohort while it fills out. The public site
 stays priceless by design — the number is said on the application call and in
-the welcome email. What justifies it: 60 lessons with a check after each, 8
-campus exams, 8 builds whose 45 saved steps become the student's own business
+the welcome email. What justifies it: 70 lessons with a check after each (140 questions), 9
+campus exams, 9 builds whose 51 saved steps become the student's own business
 documents (the workbook), the money tracker (log a client once, the earned
 figure grows monthly — the honest path produces ~$5,400 in six months at 4
 clients × $300), live calls, the case-file library, and the toolstack licensed
@@ -113,7 +113,9 @@ attendance, XP and the schedule are all server-side already.
   ever locked.
 - **Home** — rank, XP, streak, their next three moves *on their own path*, this
   week's build brief, today's checklist, recent wins.
-- **Campuses** — 8 campuses, 59 lessons, each ending in a mission that needs a
+- **Campuses** — 9 campuses, 70 lessons (incl. the Sales Academy: five steps,
+  KISS, the nine-year-old test, law of averages, transfer of feeling, referrals,
+  in-person craft, high-ticket closing, commission closing), each ending in a
   written answer before it counts as done.
 - **Daily** — six checklist items and the leaderboard. All six lifts the streak;
   a missed day sends it to zero.
@@ -184,7 +186,8 @@ card — recalculates on its own.
 | `university/lessons/` | The free mini-course (the funnel) |
 | `university/campus/index.html` | The app shell, styles, the enrol/sign-in gate |
 | `university/campus/campus.js` | The app: auth, state, views, live calls |
-| `university/campus/curriculum.js` | All 52 lessons, the daily checklist, the ranks |
+| `university/campus/curriculum.js` | All 70 lessons, the daily checklist, the ranks |
+| `university/campus/vocab.js` | 4 vocabulary decks, 64 terms, three registers each |
 | `university/admin/index.html` | Codes, students, live calls |
 | `university/campus/curriculum.js` | Also holds the paths, the daily list, the ranks and the weekly build briefs |
 | `kit/storefront/` | The resellable ecommerce template + its builder |

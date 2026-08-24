@@ -535,6 +535,90 @@
       c: 2, why: 'Nothing else is worth optimising while the bucket leaks.' }
   ];
 
+  /* --- Sales Academy --- */
+  Q.sa1 = [
+    { q: 'You had a good conversation, showed the product, chatted, and left. Which step did you skip?',
+      a: ['Open', 'Ask', 'Close', 'Multiply'],
+      c: 2, why: 'Show-chat-leave is the most common failure. The close is a real question with a yes in it — then silence.' },
+    { q: 'Lots of conversations, plenty of interest, almost no yeses. Which step is broken?',
+      a: ['Open', 'Ask', 'Show', 'Close'],
+      c: 3, why: 'The steps make failure diagnosable: interest without yeses means you are not asking a closing question.' }
+  ];
+  Q.sa2 = [
+    { q: 'A prospect says "let me think about it". What did they most likely mean?',
+      a: ['They need time to decide', 'They are confused and will not re-enter the confusion', 'The price is too high', 'They are comparing competitors'],
+      c: 1, why: 'The confused mind says no — politely, as "let me think about it". Simplify before you discount.' },
+    { q: 'Why must your pitch survive being repeated by the prospect to someone else?',
+      a: ['It builds word of mouth', 'Most local sales are actually closed later, at the kitchen table, by your prospect paraphrasing you', 'It proves it is memorable', 'It tests their attention'],
+      c: 1, why: 'Give them a sentence that survives the retelling, because you will not be in the room where the decision happens.' }
+  ];
+  Q.sa3 = [
+    { q: 'What does the translation drill ban first?',
+      a: ['Long sentences', 'Jargon nouns like "platform" and "solution"', 'Numbers', 'Adjectives'],
+      c: 1, why: 'Jargon nouns are hiding places. Replace them with a person doing a visible action.' },
+    { q: 'Why learn both the precise term AND the nine-year-old version?',
+      a: ['To pass the vocab decks', 'Precise with the developer so you are not overcharged; simple with the owner so you are not tuned out', 'Simple versions are more accurate', 'Clients prefer technical language'],
+      c: 1, why: 'One register is knowledge. Two registers is power — fluency is sliding between them on demand.' }
+  ];
+  Q.sa4 = [
+    { q: 'Under the law of averages, what is a "no" worth at 1-in-10 conversations and a $300 close?',
+      a: ['Nothing — it is a failed attempt', 'About $30 — one tenth of the way to the close', 'A lesson', 'It depends on the prospect'],
+      c: 1, why: 'Each no is one of the nine you must collect to reach the one. Believe that arithmetic and doors stop being scary.' },
+    { q: 'When does the law of averages fail people?',
+      a: ['When the product is weak', 'When the sample is too small — ten attempts is an anecdote, not a ratio', 'In small towns', 'When prices are high'],
+      c: 1, why: 'It promises ten in a hundred, not one in every ten. People who quit at seventeen never learn their ratio.' }
+  ];
+  Q.sa5 = [
+    { q: 'A sale is a transfer of feeling. Where does real conviction come from?',
+      a: ['Practice and affirmations', 'Having seen the thing work at least once', 'Product knowledge', 'Confidence training'],
+      c: 1, why: 'After you watch one dead Tuesday fill up, you stop performing belief and start reporting it. Testimony transfers.' },
+    { q: 'Why never end the day on a no?',
+      a: ['You might miss a sale', 'So tomorrow starts clean instead of starting in yesterday\'s drain', 'To hit your numbers', 'It looks bad in the tracker'],
+      c: 1, why: 'Feeling-transfer runs both ways — prospects can drain you. One more attempt, even tiny, resets the tank.' }
+  ];
+  Q.sa6 = [
+    { q: 'Which referral question actually produces names?',
+      a: ['"Do you know anyone who needs marketing?"', '"Who cuts hair two towns over that you rate?"', '"Can you refer me to your network?"', '"Would you recommend me?"'],
+      c: 1, why: 'Narrow the search space. Specific questions hit specific memories; broad ones produce shrugs.' },
+    { q: 'Why ask the shop that said NO for names?',
+      a: ['To salvage the visit emotionally', 'They still know every other shop, and giving a name costs nothing while easing the guilt of the no', 'To stay top of mind', 'You should not — it looks desperate'],
+      c: 1, why: 'The list must be longer when you leave than when you arrived — win or lose, every time.' }
+  ];
+
+  Q.x11 = [
+    { q: 'A shop owner hates turning his rambling voice notes into posts. Which animals solve it?',
+      a: ['An agent with booking tools', 'Speech-to-text feeding an LLM', 'Image generation', 'A recommendation system'],
+      c: 1, why: 'Start from the chore, then pick the animal. Transcribe the ramble, draft the captions from it.' },
+    { q: 'What is the difference between a chatbot and an agent?',
+      a: ['Agents use bigger models', 'A chatbot answers; an agent takes actions in a loop with tools until the job is done', 'Agents are multimodal', 'There is no real difference'],
+      c: 1, why: 'The agent checks the calendar, books the slot, sends the text — it finishes the job rather than describing it.' }
+  ];
+
+  Q.sa7 = [
+    { q: 'The owner is mid-cut when you walk in. What do you do?',
+      a: ['Wait by the chair until he finishes', 'Hand the printed thing to whoever is free, name-drop, and leave', 'Come back after closing', 'Pitch the customer in the chair'],
+      c: 1, why: 'Read the room in three seconds. His money hours are not your minutes — the leave-behind pitches for you all week.' },
+    { q: 'Why does the demo happen on YOUR phone in THEIR hand?',
+      a: ['It protects your equipment', 'Possession sells — once he is holding it, the product has physically entered his shop', 'It looks more professional', 'It avoids app installs'],
+      c: 1, why: 'The moment the owner is scanning the QR himself, you have stopped describing and he has started using.' }
+  ];
+  Q.sa8 = [
+    { q: 'What is the correct anchor for a $1,200/month engagement?',
+      a: ['Competitor prices', 'What the problem costs him monthly, built from his own numbers', 'The hours you will work', 'Your smallest package'],
+      c: 1, why: 'Against a $2,500 monthly bleed, $1,200 is the only cheap thing in the room. Hours invite arithmetic; problems invite urgency.' },
+    { q: '"Send me a proposal." Your best response is…',
+      a: ['Write it that evening', '"Happy to. If it says what I just said, what happens next?"', 'Offer a discount for deciding today', 'Ask what to include'],
+      c: 1, why: 'A real buyer answers with a process; a brush-off goes vague. Proposals confirm decisions — they do not make them.' }
+  ];
+  Q.sa9 = [
+    { q: 'Why do closers out-earn most builders?',
+      a: ['They work longer hours', 'Products are everywhere, distribution is scarce — the reliable closer is the bottleneck, and bottlenecks set prices', 'They take equity', 'They avoid delivery costs'],
+      c: 1, why: 'Proven ratios are a portable CV. The tracker you keep for yourself is also your asking price.' },
+    { q: 'What does the doorstep ask sell in the two-step?',
+      a: ['The product at a discount', 'Only the fifteen-minute sit-down', 'The monthly retainer', 'A free trial'],
+      c: 1, why: 'Each step sells only the next step. Closing a retainer in a doorway is amateur hour.' }
+  ];
+
   w.TBU_CHECKS = Q;
 
   /* ---- EXAMS: one per campus. 8 questions, 6 to pass, retake forever. ------
@@ -704,6 +788,34 @@
         why: 'Everything else in this school is downstream of that.' }
     ]},
 
+
+    academy: { title: 'Sales Academy', pass: 6, title_earned: 'Field-trained', questions: [
+      { q: 'You approach a shop cold. What comes out of your mouth first?',
+        a: ['Your offer and price', 'Your name, one specific true thing about THEM, and why you are here — in one breath', 'A question about their revenue', 'A compliment'], c: 1,
+        why: 'The open buys ten seconds. It is a reason to keep listening, not a pitch.' },
+      { q: 'Lots of interest across many conversations, almost no signed clients. Diagnosis?',
+        a: ['The market is weak', 'Your close — you are not asking a question with a yes in it, then stopping', 'Your prices', 'Your product'], c: 1,
+        why: 'The five steps make failure diagnosable. Interest without yeses is a step-four problem, always.' },
+      { q: 'Which pitch survives the kitchen-table retelling?',
+        a: ['"Tiered engagement models across content and retention automation"', '"Three hundred a month. I keep your chairs full. Cancel whenever."', '"A comprehensive omnichannel growth solution"', '"AI-driven marketing for the modern barbershop"'], c: 1,
+        why: 'The decision usually happens hours later, in your absence, via their paraphrase. Arm the paraphrase.' },
+      { q: 'The nine-year-old test exists because…',
+        a: ['Kids are the future market', 'People buy pictures, not abstractions — if you cannot make them see it, they cannot buy it', 'Simple language is more polite', 'It is a fun party trick'], c: 1,
+        why: 'Where a kid\'s eyes drift is exactly where your sales conversations have been dying.' },
+      { q: 'At 200 contacts a month, 15% reply, a quarter of replies become calls, 1-in-4 calls close. Clients per month?',
+        a: ['One', 'About two', 'About five', 'About eight'], c: 1,
+        why: '30 replies → ~8 calls → 2 clients. From arithmetic alone — no talent, mood or luck in the formula.' },
+      { q: 'You have made 17 attempts with no sale and your ratio "should" be 1-in-10. What do you actually know?',
+        a: ['The product does not work', 'Almost nothing yet — the law of averages needs a hundred before the ratio means anything', 'Your pitch is broken', 'You are unlucky'], c: 1,
+        why: 'Ten in every hundred, not one in every ten. Commit to the sample before judging the ratio.' },
+      { q: 'The most convincing thing you can bring into a pitch is…',
+        a: ['Enthusiasm and energy', 'A specific result you personally witnessed', 'A polished deck', 'Industry statistics'], c: 1,
+        why: '"His Tuesdays went from four cuts to eleven" is testimony, not performance — and testimony transfers.' },
+      { q: 'A shop says no. Before you leave you should…',
+        a: ['Leave a card and go gracefully', 'Ask a narrowed referral question — the list must grow at every door, win or lose', 'Offer a discount', 'Ask what you did wrong'], c: 1,
+        why: 'The no still knows every other shop, and referred introductions close at triple the cold rate.' }
+    ]},
+
     stack: { title: 'AI & Infrastructure', pass: 6, title_earned: 'Builder', questions: [
       { q: 'A client bot quoted a price that does not exist. What went wrong?',
         a: ['The model is faulty', 'The prompt never gave it the real prices or a rule for not knowing', 'Temperature was too high', 'It needed a bigger model'], c: 1,
@@ -837,6 +949,19 @@
         { id: 'capacity', t: 'Your capacity', p: 'Hours per client per month, how many you can hold, and the number at which you raise prices or hire.', ph: '~5h. Ten is full. At eight I raise new-client pricing to $700.' },
         { id: 'numbers', t: 'Last week’s six numbers', p: 'Contacts, replies, calls, clients won, clients lost, money in. Estimate honestly if you must.', ph: '42 contacts, 7 replies, 2 calls, 1 won, 0 lost, $1,100 in.' },
         { id: 'hire', t: 'Your first hire, briefed', p: 'The role, the deliverables, the price per client per month, and the hours it gives back.', ph: 'Editor. 12 clips a month per client, $150/client. Saves me ~6h a week.' }
+      ]},
+
+
+    academy: { title: 'Your field kit', mins: 90,
+      why: 'The Academy is drills, not theory. This kit is what you carry into every conversation from now on — and every piece of it gets tested on a live human before it counts.',
+      deliverable: 'A drilled, field-tested conversation kit',
+      steps: [
+        { id: 'open', t: 'Your ten-second open', p: 'Name, one specific true thing about them, why you are here — one breath. Write the version you would say at a counter, then say it out loud ten times until it stops sounding read.', ph: 'Hey — Nick, I do the marketing for Ray\'s up the street. Saw your reviews are great but there\'s only nine of them…' },
+        { id: 'kiss', t: 'The KISS pitch', p: 'Three sentences a stranger could repeat accurately an hour later. One offer, one number, one action.', ph: 'Three hundred a month. I keep your chairs full — loyalty, win-backs, your Google page. Cancel whenever.' },
+        { id: 'kid', t: 'The nine-year-old version', p: 'Your whole offer with jargon banned, a person doing a visible action in every sentence, ending in money or time.', ph: 'People scan a card when they pay. When someone stops coming, it texts them. They come back — about $700 a month you\'re missing.' },
+        { id: 'ratios', t: 'Your law-of-averages card', p: 'Your real (or best-estimate) ratios at every stage, and the sentence: a client costs me __ conversations, so a no is worth $__.', ph: '200 contacts → 30 replies → 8 calls → 2 clients. A client costs 15 conversations; a no is worth ~$40.' },
+        { id: 'proof', t: 'Your conviction line', p: 'The one result you have personally witnessed, in the exact words you will say — testimony, not enthusiasm.', ph: 'I watched Ray\'s Tuesday go from four cuts to eleven off one win-back text.' },
+        { id: 'names', t: 'Your multiply questions', p: 'Three narrowed referral questions for your niche, and proof you used one this week on a live human.', ph: '"Who cuts hair two towns over that you rate?" — used it Thursday; got two names, texted one Friday.' }
       ]},
 
     stack: { title: 'Ship an AI product', mins: 180,
