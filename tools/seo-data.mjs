@@ -220,7 +220,7 @@ export const TOWNS = [
 export const GUIDES = [
   {
     slug: 'what-is-ai-marketing',
-    title: 'What Is AI Marketing? A Plain-English Answer for Local Businesses',
+    title: 'What Is AI Marketing? A Plain-English Answer',
     h1: 'What AI marketing actually is (and what it is not)',
     desc:
       'AI marketing explained without the buzzwords: what the tools actually do for a small local business, what they cost, what they cannot do, and how to tell a real system from a rebranded chatbot.',
@@ -247,7 +247,7 @@ export const GUIDES = [
   },
   {
     slug: 'cost',
-    title: 'What AI Marketing Costs for a Small Business in Chester County',
+    title: 'What AI Marketing Costs in Chester County, PA',
     h1: 'What this actually costs',
     desc:
       'Real pricing for AI marketing, websites, local SEO and lead follow-up for small businesses in Chester County, PA — what each piece costs, what it is worth, and what to buy first on a small budget.',
@@ -274,7 +274,7 @@ export const GUIDES = [
   },
   {
     slug: 'ai-chatbot-for-local-business',
-    title: 'AI Chat Agent for a Local Business Website — How It Works',
+    title: 'AI Chat Agent for a Local Business Website',
     h1: 'The AI growth agent, explained',
     desc:
       'How an AI chat agent works on a local business website: what it knows, how it qualifies leads, how it hands off to you, and why response speed is the highest-return marketing fix most small businesses have left.',
@@ -301,7 +301,7 @@ export const GUIDES = [
   },
   {
     slug: 'get-found-by-chatgpt-and-ai-search',
-    title: 'How to Get Your Business Recommended by ChatGPT and AI Search',
+    title: 'How to Get Recommended by ChatGPT & AI Search',
     h1: 'Getting found when the customer asks an AI instead of Google',
     desc:
       'A practical guide to AI search visibility for local businesses: how ChatGPT, Google AI Overviews, Perplexity and Copilot decide which local business to name, and what to change on your site so it is yours.',
@@ -394,7 +394,7 @@ export const SERVICES = [
   },
   {
     slug: 'affordable-marketing-agency-chester-county',
-    title: 'Affordable Marketing Agency in Chester County, PA — Real Prices',
+    title: 'Affordable Marketing Agency — Chester County, PA',
     h1: 'Affordable marketing in Chester County — with the prices printed',
     desc:
       'What affordable marketing actually costs in Chester County, PA: published prices for websites, local SEO, ads and lead follow-up, what to buy first on a small budget, and how to tell cheap from a waste of money.',
@@ -423,7 +423,7 @@ export const SERVICES = [
   },
   {
     slug: 'how-to-choose-a-marketing-agency',
-    title: 'How to Choose a Marketing Agency in Chester County (Buyer’s Guide)',
+    title: 'How to Choose a Marketing Agency in Chester County, PA',
     h1: 'How to choose a marketing agency without getting burned',
     desc:
       'A buyer’s guide for Chester County business owners: the questions to ask any marketing agency, the contract terms that trap you, the metrics that mean nothing, and how to run a fair trial before committing.',
@@ -452,7 +452,7 @@ export const SERVICES = [
   },
   {
     slug: 'local-seo-chester-county',
-    title: 'Local SEO in Chester County, PA — Get Into the Map Pack',
+    title: 'Local SEO in Chester County, PA | Map Pack',
     h1: 'Local SEO for Chester County businesses',
     desc:
       'Local SEO for Chester County, PA: how the Google map pack actually decides who ranks, what to fix on your Google Business Profile, how reviews and location pages work, and what it costs.',
@@ -481,7 +481,7 @@ export const SERVICES = [
   },
   {
     slug: 'web-design-chester-county',
-    title: 'Web Design in Chester County, PA — Fast Sites That Convert',
+    title: 'Web Design in Chester County, PA | From $300',
     h1: 'Web design for Chester County businesses',
     desc:
       'Website design and build for Chester County, PA businesses: fast, mobile-first sites that state the offer, take a booking, and are built to convert rather than to win design awards. From $300.',
@@ -510,7 +510,7 @@ export const SERVICES = [
   },
   {
     slug: 'google-business-profile-chester-county',
-    title: 'Google Business Profile Setup & Cleanup — Chester County, PA',
+    title: 'Google Business Profile Help — Chester County, PA',
     h1: 'Google Business Profile, finished properly',
     desc:
       'Google Business Profile setup, cleanup and optimization for Chester County, PA businesses — categories, services, photos, hours, Q&A, reviews and posts, done the way the map pack actually rewards.',
@@ -539,7 +539,7 @@ export const SERVICES = [
   },
   {
     slug: 'google-ads-chester-county',
-    title: 'Google Ads Management for Chester County, PA Businesses',
+    title: 'Google Ads Management — Chester County, PA',
     h1: 'Google Ads that stop wasting money',
     desc:
       'Google Ads setup and management for Chester County, PA: local campaign structure, the negative keywords nobody adds, honest reporting, and why the landing page decides more than the bid. Setup from $350.',
@@ -566,7 +566,7 @@ export const SERVICES = [
   },
   {
     slug: 'meta-ads-chester-county',
-    title: 'Facebook & Instagram Ads for Chester County, PA Businesses',
+    title: 'Facebook & Instagram Ads — Chester County, PA',
     h1: 'Meta Ads for local businesses',
     desc:
       'Facebook and Instagram ads for Chester County, PA: local targeting, creative that works for small businesses, offer design, and how to measure what actually turns into customers. Setup from $250.',
@@ -589,6 +589,272 @@ export const SERVICES = [
        'Yes, for demand creation and for local awareness — but the bar on creative is much higher than it was, and the follow-up speed matters more than the targeting. Set-and-forget boosting stopped working years ago.'],
       ['Can you make the creative too?',
        'Yes. Creative direction is part of the setup, and a Creative Proof Pack ($150) exists for businesses that need assets before running anything.'],
+    ],
+  },
+];
+
+// Round two: the southern and western county, plus the Main Line edge. Added
+// 2026-08-24. These append to TOWNS at build time — see EXTRA_TOWNS usage below.
+export const EXTRA_TOWNS = [
+  {
+    slug: 'west-grove-pa',
+    name: 'West Grove',
+    full: 'West Grove, PA',
+    zips: ['19390'],
+    geo: { lat: 39.8226, lng: -75.8280 },
+    blurb: 'the Avon Grove hub, a small borough absorbing a lot of new households',
+    intro:
+      'West Grove has been quietly growing for a decade. New developments along the Route 1 corridor keep adding families who have no history here, no neighbor to ask, and no idea which plumber or which salon the people down the road have used for twenty years. They search instead.',
+    local:
+      'That is the whole opportunity. The established businesses in West Grove have deep referral networks and almost no online presence, and the new arrivals cannot access the referral network. Whoever shows up correctly in search gets the entire new-household market by default — and right now, in most categories, nobody is showing up correctly.',
+    faqs: [
+      ['Why would a business that is busy on referrals bother with this?',
+       'Because referrals only reach people who know someone. Every new household in West Grove is a customer your referral network cannot touch, and there are a lot of them arriving. Search is how you reach the half of the town that has not met anyone yet.'],
+      ['Is West Grove big enough to justify local SEO?',
+       'The borough is small; the market is not. Avon Grove, Penn Township, London Grove and the surrounding area all search the same way, and one properly built profile covers all of it.'],
+      ['What is the single first thing to do?',
+       'Finish the Google Business Profile and start asking for reviews automatically. In a market this size that alone can put you at the top of the map pack for your category.'],
+    ],
+  },
+  {
+    slug: 'avondale-pa',
+    name: 'Avondale',
+    full: 'Avondale, PA',
+    zips: ['19311'],
+    geo: { lat: 39.8237, lng: -75.7827 },
+    blurb: 'mushroom country, small, and genuinely bilingual',
+    intro:
+      'Avondale sits in the middle of the mushroom industry, and its customer base reflects that: a large, established Spanish-speaking community alongside longtime local families, in a town small enough that everyone recognizes everyone. Marketing here that only speaks English is marketing to half the town.',
+    local:
+      'Very few businesses in the area run bilingual marketing properly — not translated-once-and-forgotten, but a listing, a site and a reply system that work in both languages. That is a real, cheap advantage sitting unclaimed. An AI agent handles it natively, answering in whichever language the customer wrote in, at any hour, without needing a bilingual staff member to be free.',
+    faqs: [
+      ['Do I really need Spanish-language marketing in Avondale?',
+       'If you want the whole market, yes. A large share of the local customer base speaks Spanish at home, and the businesses that answer in Spanish get chosen by those customers with very little competition.'],
+      ['How does the AI agent handle two languages?',
+       'It replies in the language the customer used, with your real prices and hours, and hands off to you with the conversation translated if a human is needed. No bilingual staff required to be sitting there.'],
+      ['Is a town this small worth building for?',
+       'The town is small and the surrounding service area is not. Avondale, Chatham, London Grove and the Kennett fringe search together, and a single properly built presence covers all of them.'],
+    ],
+  },
+  {
+    slug: 'honey-brook-pa',
+    name: 'Honey Brook',
+    full: 'Honey Brook, PA',
+    zips: ['19344'],
+    geo: { lat: 40.0937, lng: -75.9124 },
+    blurb: 'the far western edge, farm country, and a long drive from anywhere',
+    intro:
+      'Honey Brook is the western edge of the county, where Chester runs into Lancaster. It is agricultural, spread out, and the distances are real — which changes what "local" means. A customer here will drive twenty minutes without thinking about it, and will not drive forty.',
+    local:
+      'For a service business that means your true competitive radius is bigger than your township and smaller than the county, and almost nobody targets it correctly. The other thing that matters here is trust: this is a market where a business is chosen because it looks like it will show up and do what it said. Reviews and clear, plain information do more than any clever campaign.',
+    faqs: [
+      ['How far out should I be targeting from Honey Brook?',
+       'Usually twenty to twenty-five minutes, which pulls in Elverson, Morgantown, parts of Lancaster County and out toward Coatesville. Targeting the whole county wastes money; targeting the township leaves work on the table.'],
+      ['Does anyone out here actually search online?',
+       'Yes, and increasingly for the things that are hard to get a referral for — an emergency repair, a specialty service, a new business in the area. Those are the high-value searches, and they are wide open.'],
+      ['I serve customers in Lancaster County too. Does that complicate things?',
+       'No. The service area is defined by where you actually work, county lines included, and the pages and targeting follow that rather than an administrative boundary.'],
+    ],
+  },
+  {
+    slug: 'parkesburg-pa',
+    name: 'Parkesburg',
+    full: 'Parkesburg, PA',
+    zips: ['19365'],
+    geo: { lat: 39.9587, lng: -75.9188 },
+    blurb: 'a small working borough on the western Route 30 stretch, with a train station',
+    intro:
+      'Parkesburg is a compact borough on the western end of the county with a rail stop, an older housing stock and a steady population that mostly works elsewhere. Businesses here serve people at the beginning and end of the day, and the surrounding townships more than the borough itself.',
+    local:
+      'The competitive picture is thin, which is good news. Most categories have two or three businesses and none of them have done the basic work — a finished listing, real photos, current hours, a phone that gets answered when someone calls at 5:15pm on the way home. Any one of those, done properly, is enough to take the top position here.',
+    faqs: [
+      ['What does "the basic work" actually mean?',
+       'A complete Google Business Profile with correct categories, current photos and accurate hours; reviews being asked for automatically; and a way for a customer to get an answer instantly instead of leaving a voicemail. That is most of the game in a market this size.'],
+      ['My customers call, they do not fill out forms. Does this still apply?',
+       'More so. Missed-call text-back is the highest-return thing a phone-driven business can install — every missed call turns into an automatic text within seconds, which is how you stop losing the caller to whoever they dial next.'],
+      ['Should I target Coatesville and Atglen too?',
+       'If you serve them, yes. The western stretch of Route 30 works as one market, and the targeting should follow the drive time rather than the borough line.'],
+    ],
+  },
+  {
+    slug: 'spring-city-pa',
+    name: 'Spring City',
+    full: 'Spring City, PA',
+    zips: ['19475'],
+    geo: { lat: 40.1762, lng: -75.5471 },
+    blurb: 'the northern tip of the county, on the Schuylkill, sharing a market with Royersford',
+    intro:
+      'Spring City sits at the top corner of Chester County, across the river from Royersford and close enough to Phoenixville and Pottstown that the customer base overlaps all of them. People here do not think in county lines; they think in bridges and a ten-minute drive.',
+    local:
+      'That means targeting by county is exactly wrong for a Spring City business. The market is a river corridor spanning three counties, and the businesses that treat it that way pick up customers that their competitors, who set their radius by administrative boundary, never see. The area has also been steadily gentrifying along with Phoenixville, which is bringing in customers who search before they ask.',
+    faqs: [
+      ['Should I target Montgomery County customers too?',
+       'If Royersford and Limerick are a ten-minute drive, yes. The customer does not care which county they are in, and neither should your ad radius or your service pages.'],
+      ['How does Spring City compare to Phoenixville for competition?',
+       'Much thinner. Phoenixville is crowded; Spring City is not. A business that ranks well in Spring City and targets the corridor gets Phoenixville-adjacent customers without fighting Bridge Street head-on.'],
+      ['Is the growth here worth building for now?',
+       'Yes, and early is the point. Presence built before an area fills in is far cheaper than presence built after, because reviews and rankings compound over time.'],
+    ],
+  },
+  {
+    slug: 'berwyn-pa',
+    name: 'Berwyn',
+    full: 'Berwyn, PA',
+    zips: ['19312'],
+    geo: { lat: 40.0442, lng: -75.4432 },
+    blurb: 'Main Line, Tredyffrin–Easttown, affluent and quietly demanding',
+    intro:
+      'Berwyn and Devon sit in the middle of the Main Line, where the customer base is affluent, well-served, and unusually quick to judge a business by how it presents itself. Price is rarely the objection here. Doubt is.',
+    local:
+      'What that means practically: your website is doing reputation work before it does sales work. A dated site, a listing with no photos, or a form that goes unanswered for a day reads as a business that is not quite serious — and there is always another option a mile down Lancaster Avenue. The winning combination in Berwyn is presentation that looks expensive paired with a response that arrives in seconds.',
+    faqs: [
+      ['Do I need to compete on price in Berwyn?',
+       'Rarely. This market buys on confidence — clear information, real proof, fast response and a presentation that matches the price. Discounting here often does the opposite of what you intend.'],
+      ['Is the Main Line too competitive for a small business?',
+       'Competitive on quality, not on effort. Most local competitors still have half-finished listings and slow response. Doing the unglamorous parts well is enough to stand out even here.'],
+      ['Can you cover Devon, Paoli and Wayne together?',
+       'Yes. They function as one customer base along the same corridor, and the targeting and content are built for the corridor rather than a single ZIP code.'],
+    ],
+  },
+];
+
+// Vertical pages. Only for the industries actually being sold to, and only where
+// there is something specific to say — a mad-libbed industry page is a doorway
+// page with a different variable swapped.
+export const INDUSTRIES = [
+  {
+    slug: 'barbershop-marketing-chester-county',
+    title: 'Barbershop & Salon Marketing — Chester County, PA',
+    h1: 'Marketing for barbershops and salons',
+    desc:
+      'Marketing for barbershops and salons in Chester County, PA: filling the chair on slow days, getting found for "barber near me", turning walk-ins into regulars, and the rebooking texts that actually work.',
+    lead:
+      'A chair that sits empty at 2pm on a Tuesday is revenue that does not come back. Almost everything worth doing in this business is about the gap between appointments, not about getting more attention.',
+    sections: [
+      ['The math nobody runs',
+       'Most shops focus on new clients when the expensive problem is the ones who stopped coming. A client who came every three weeks and has not been in for nine is not gone — they are busy, and nobody reminded them. A win-back text to that list is the highest-return thirty minutes in the whole business, and it costs nothing.'],
+      ['Getting found for "barber near me"',
+       'This is a map-pack fight, and it is decided by your Google Business Profile and your reviews. Primary category set correctly, current photos of actual cuts, hours that are right including the day you close early, and a steady stream of reviews asked for by text right after the cut. Shops that do this beat shops with better haircuts. That is unfair and it is how it works.'],
+      ['Turning a walk-in into a regular',
+       'The first visit is the only cheap one. Everything after depends on whether they rebook before they leave and whether anything reminds them. Booking that takes ten seconds on a phone, a rewards card they actually open, and a text at the right interval — that is the entire retention system, and most shops have none of it.'],
+      ['Slow days are a scheduling problem, not a marketing problem',
+       'A promotion blasted to everyone devalues your price for the people who would have paid it. A message sent only to clients who are overdue, offering a specific slot on a specific slow day, fills the chair without training anyone to wait for a discount.'],
+    ],
+    faqs: [
+      ['How do I get more clients into my barbershop?',
+       'In order of return: text your lapsed clients, finish your Google Business Profile, ask every client for a review by text after the cut, then make rebooking take ten seconds. Paid ads come after all four — a shop that runs ads before fixing retention is renting customers it cannot keep.'],
+      ['Do barbershops need a website?',
+       'A fast one-page site with prices, hours, photos and a booking link, yes. A ten-page site, no. Most clients are checking three things: are you open, what does it cost, and can I book right now.'],
+      ['What about the Loop app?',
+       'Loop is the shop-side product — booking, a rewards card clients actually open, win-back texts and a shop website in one. It exists because these four things are what fills chairs, and running them separately is why most shops do none of them.'],
+    ],
+  },
+  {
+    slug: 'restaurant-marketing-chester-county',
+    title: 'Restaurant Marketing — Chester County, PA',
+    h1: 'Marketing for restaurants and food businesses',
+    desc:
+      'Restaurant marketing for Chester County, PA: winning the "restaurants near me" decision, getting your hours and menu right where it counts, review recovery, and filling the tables that are actually empty.',
+    lead:
+      'Restaurant decisions get made in about ninety seconds, on a phone, by someone who is already hungry and already nearby. Nearly all of your marketing either helps in that ninety seconds or does nothing.',
+    sections: [
+      ['The ninety-second decision',
+       'They search, they scan the map pack, they look at photos, they check whether you are open, they glance at the last two reviews, they pick. If your hours are wrong you lose. If your photos are dark and four years old you lose. If your last review is a two-star with no reply, you lose. None of this requires a campaign — it requires an hour with your listing.'],
+      ['Photos do the selling',
+       'Food photos on your Google profile get looked at more than anything else you publish anywhere. They should be recent, well lit, and of what people actually order. Uploading a few every week reads as an active restaurant and gets you shown more, which is a rare case of the effort and the reward being directly connected.'],
+      ['Reviews, and the reply that matters more than the review',
+       'You cannot avoid bad reviews. You can make them cost less. A calm, specific, non-defensive reply converts readers better than an unbroken row of fives, because it shows a real person runs the place. Ask for reviews systematically at the end of the meal and the average takes care of itself.'],
+      ['Fill the empty night, not every night',
+       'Blanket discounting trains your regulars to wait for a deal. Targeted offers — to a list, for a specific slow night, with a real reason — fill seats without teaching anyone that your prices are negotiable.'],
+    ],
+    faqs: [
+      ['How do restaurants show up higher on Google Maps?',
+       'Complete profile with the right primary category, accurate hours including holidays, fresh photos weekly, menu linked and current, questions answered, and a steady flow of recent reviews. Recency counts — a restaurant with twenty reviews from this month often outranks one with two hundred from three years ago.'],
+      ['Is social media worth it for a restaurant?',
+       'For regulars and for staying top of mind, yes. For new customers, search does the heavy lifting — people rarely discover a restaurant on Instagram and drive there that night, but they do search "near me" and pick from what they see.'],
+      ['What about the delivery platforms?',
+       'They are a channel, not a strategy, and an expensive one. They work best as a supplement to direct orders, which is why the site should make ordering directly easy enough that regulars stop paying the platform tax on your behalf.'],
+    ],
+  },
+  {
+    slug: 'contractor-marketing-chester-county',
+    title: 'Contractor Marketing — Chester County, PA',
+    h1: 'Marketing for contractors and home services',
+    desc:
+      'Marketing for contractors, trades and home services in Chester County, PA: winning emergency searches, missed-call text-back, quoting faster than the competition, and getting off the lead-selling platforms.',
+    lead:
+      'You lose more jobs to a full voicemail box than to a competitor’s marketing. Everything below is downstream of that one fact.',
+    sections: [
+      ['The missed call is the whole problem',
+       'Your hands are busy. The phone rings, goes to voicemail, and the homeowner calls the next number. Missed-call text-back fixes this in one step: every missed call fires an automatic text within seconds saying you are on a job and asking what they need. That single automation typically recovers more work in a month than any campaign, and it costs less than one lost job.'],
+      ['Emergency searches are a speed contest',
+       '"Burst pipe", "no heat", "tree down" — these searches convert to a call within minutes and go to whoever answers first with a real answer. Being in the map pack matters, but being answerable matters more. An AI agent that can qualify the job, confirm you cover their town and book a slot while you are up a ladder wins these outright.'],
+      ['Quote speed beats quote price more often than you think',
+       'Homeowners collect two or three quotes and a surprising share hire the first one that arrives, because waiting is unpleasant and the first quote sets the anchor. Anything that shortens the gap between the call and the number is worth more than shaving your margin.'],
+      ['Getting off the lead platforms',
+       'Buying shared leads means paying to compete with three other contractors on price, for a customer who is not yours. Your own map-pack position and your own review base produce leads that cost less each year instead of more. The platforms are a bridge, not a business.'],
+    ],
+    faqs: [
+      ['How do contractors get more leads without buying them?',
+       'Rank in the map pack for your service plus your towns, answer instantly including missed calls, and build reviews systematically after every job. That combination produces leads you own, at a cost that falls over time rather than rising.'],
+      ['Do I need a website if I get work from Facebook groups?',
+       'Yes — because the first thing someone does after seeing your name in a group is search it. If that search turns up nothing, the recommendation cools. The site is what converts the referral you already earned.'],
+      ['I work out of a truck with no storefront. Can I still rank?',
+       'Yes, as a service-area business: address hidden, service area defined, and a real page for each town you genuinely work in. Plenty of trades hold top map positions this way.'],
+    ],
+  },
+  {
+    slug: 'professional-services-marketing-chester-county',
+    title: 'Professional Services Marketing in Chester County, PA',
+    h1: 'Marketing for professional services',
+    desc:
+      'Marketing for law firms, accountants, consultants, medical and other professional services in Chester County, PA: lead response time, trust signals, intake automation and content that earns the call.',
+    lead:
+      'A professional service is bought on trust and lost on response time. The firms that win locally are rarely the best-credentialed ones; they are the ones that got back to the person while the person was still worried.',
+    sections: [
+      ['Response time is the conversion rate',
+       'Someone with a legal problem, a tax notice or a symptom is anxious, and anxious people contact two or three firms and go with whoever responds first with a human answer. An intake agent that replies in seconds, gathers the relevant details and books the consultation converts at a completely different rate to a form that lands in an inbox until Monday.'],
+      ['Trust is built before the call, in public',
+       'Credentials, real photos, plain-language answers to the questions people are embarrassed to ask, and reviews that read like real clients. Stock imagery and jargon do the opposite of what they are meant to. In this category, sounding like a person is a competitive advantage.'],
+      ['Content that earns the call',
+       'Answer the actual questions your clients ask in the first meeting — what this costs, how long it takes, what happens first, whether they even need you. Firms are strangely reluctant to publish this, which is exactly why publishing it works. It is also what AI assistants quote when someone asks them the same question.'],
+      ['Intake without the friction',
+       'Every extra field on a form, every "we will get back to you within two business days", every phone tree costs you clients who were ready. Booking that takes thirty seconds and a confirmation that arrives immediately are worth more than another five thousand impressions.'],
+    ],
+    faqs: [
+      ['Does SEO work for law firms and accountants locally?',
+       'Yes, and local intent is where it pays. Broad terms are dominated by national directories; "estate attorney West Chester PA" or "CPA near Exton" are winnable with a complete profile, real reviews and pages that answer the practical questions.'],
+      ['Is an AI agent appropriate for a professional practice?',
+       'For intake and scheduling, yes — it gathers the facts, answers process and fee questions, and books the consult. It should never give advice, and it is scoped so it does not. It makes the first contact instant, which is the part that decides whether they call you or someone else.'],
+      ['How do I compete with the big regional firms?',
+       'On responsiveness and specificity. They have budget; they also have intake queues and generic content. A local firm that answers immediately and writes plainly about the exact situation a local client is in beats scale more often than you would expect.'],
+    ],
+  },
+  {
+    slug: 'gym-and-fitness-marketing-chester-county',
+    title: 'Gym & Fitness Marketing — Chester County, PA',
+    h1: 'Marketing for gyms, studios and trainers',
+    desc:
+      'Marketing for gyms, fitness studios and personal trainers in Chester County, PA: trial-to-member conversion, the follow-up that stops leads going cold, retention, and January without the churn.',
+    lead:
+      'Getting someone to enquire is the easy part of this business. Everything expensive happens in the two weeks after.',
+    sections: [
+      ['The lead goes cold in hours, not days',
+       'Fitness enquiries are emotional and perishable. Someone decides at 9pm that this is the week they start; if nobody replies until tomorrow afternoon, the feeling has passed. Instant reply, a booked trial in the same conversation, and a reminder before it — that sequence is most of the difference between a full floor and an empty one.'],
+      ['Trial to member is a follow-up problem',
+       'Most studios get people through the door and then leave the conversion to chance. A structured follow-up — after the first session, after the third, before the trial ends, and once more after — converts substantially better than hoping someone asks at the desk. It is entirely automatable and almost nobody does it.'],
+      ['Retention beats acquisition, and it is cheaper',
+       'A member who stops showing up cancels about six weeks later. The attendance drop is visible long before the cancellation, and a message at the right moment saves a meaningful share of them. Winning back a lapsed member costs a fraction of finding a new one.'],
+      ['January, honestly',
+       'The January rush is real and mostly wasted, because the people who sign up in January are the people most likely to churn by March. The businesses that profit from it are the ones with an onboarding sequence that gets someone to their fourth session, which is roughly where a habit starts holding.'],
+    ],
+    faqs: [
+      ['How do gyms get more members locally?',
+       'Rank for "gym near me" and your town, reply to every enquiry within minutes, book a trial in that first conversation, then follow up on a schedule through the trial. Ads work here, but only once the follow-up exists — otherwise you are paying for leads that go cold.'],
+      ['What is the best offer for a fitness studio?',
+       'A low-friction first step with a real end date — a free week, a three-session intro — paired with a follow-up sequence that converts it. The offer is not the hard part; the two weeks after it are.'],
+      ['Does social media bring in members?',
+       'It builds trust and shows the room, which matters in this category more than most. But the enquiry usually comes through search or a direct message, and it lives or dies on how fast someone replies.'],
     ],
   },
 ];

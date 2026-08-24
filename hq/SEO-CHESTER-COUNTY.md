@@ -61,7 +61,12 @@ now, because nobody local has optimized for it, and it feeds the same customer.
 
 ## Shipped (on `claude/chester-county-marketing-ai-b0llm5`)
 
-- `/ai-marketing/` — pillar + 10 town pages + 5 intent guides.
+**Day 1 — 2026-08-24**
+
+- `/ai-marketing/` — pillar + 16 town pages + 5 intent guides.
+- `/marketing-for/` — hub + 5 vertical pages (barbershops & salons, restaurants,
+  contractors & trades, professional services, gyms & studios).
+- Titles cut to under 62 characters so Google stops truncating the brand off.
 - `/services/` — hub + 8 commercial pages, including the exact-match agency page
   and the "affordable" page.
 - Full schema on every page: BreadcrumbList, FAQPage, Service/Article,
@@ -142,12 +147,31 @@ Monthly, same day each month, logged out:
 
 ---
 
-## Next build, when the above is underway
+## The daily loop
 
-- More towns: West Grove, Avondale, Honey Brook, Parkesburg, Spring City,
-  Berwyn, Devon, Wayne, Thorndale, Lionville. (Data edit + rerun the builder.)
-- Industry × town pages for the verticals actually being sold to
-  (barbershops, salons, trades, restaurants) — only where there is real content
-  to write, never as mad-libs.
-- A genuinely useful free tool that earns links (local presence checker).
-- Case studies with real numbers, as soon as there are results to publish.
+A routine runs each morning and does one focused batch. The rule: never publish
+a page there is nothing real to say on. When the backlog below is empty, the
+loop switches to auditing and improving what is already live rather than
+manufacturing filler.
+
+### Backlog, in order
+
+1. Towns still missing: Thorndale, Lionville, Devon, Wayne, Atglen, Elverson,
+   Landenberg, Toughkenamon, Modena, Sadsburyville. (Data edit + rerun.)
+2. Long-tail question pages from real search behaviour — "how much does a
+   website cost in West Chester", "best time to post for a local business",
+   "why is my Google listing not showing up".
+3. Town × industry pages, but only for the combinations actually being sold to
+   (barbershops in West Chester, contractors in Downingtown), never as a matrix.
+4. A free tool that earns links: a local presence checker that grades a business
+   on the things this site says matter.
+5. Case studies with real numbers, the moment there are results to publish.
+6. Refresh pass: re-read the oldest pages, update anything that has aged, cut
+   anything that reads like filler.
+
+### Every Monday
+
+Run the measurement block below and append the results to
+`hq/seo-rank-log.md`. If a page has had impressions for four weeks and no
+clicks, the title and description are wrong — rewrite them rather than adding
+another page.

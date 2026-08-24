@@ -3,7 +3,9 @@
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SITE, TOWNS, GUIDES, SERVICES } from './seo-data.mjs';
+import { SITE, TOWNS as CORE_TOWNS, EXTRA_TOWNS, GUIDES, SERVICES, INDUSTRIES } from './seo-data.mjs';
+
+const TOWNS = [...CORE_TOWNS, ...EXTRA_TOWNS];
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TODAY = new Date().toISOString().slice(0, 10);
@@ -155,7 +157,7 @@ const SYSTEM_BLOCK = `  <h2>What the system is made of</h2>
 
 function townPage(t, all) {
   const url = `/ai-marketing/${t.slug}/`;
-  const title = `AI Marketing in ${t.full} | Local SEO, Websites & AI Agents — TB Solutions`;
+  const title = `AI Marketing in ${t.full} | TB Solutions`;
   const desc = `AI marketing for ${t.full} businesses: an AI growth agent that answers customers instantly, local SEO and Google Business Profile work, fast websites, and lead follow-up that never forgets. Free marketing plan call.`;
   const nearby = all.filter((x) => x.slug !== t.slug).slice(0, 6);
   const body = `  <div class="crumb"><a href="/">Home</a> › <a href="/ai-marketing/">AI Marketing</a> › ${esc(t.name)}</div>
@@ -246,7 +248,7 @@ ${ctaBlock('Bring your website, your Google listing and your worst month.')}`;
 
 function pillarPage() {
   const url = '/ai-marketing/';
-  const title = 'AI Marketing in Chester County, PA | AI Agents, Local SEO & Websites — TB Solutions';
+  const title = 'AI Marketing in Chester County, PA | TB Solutions';
   const desc =
     'AI marketing for Chester County businesses: an AI growth agent that answers customers in seconds, local SEO and Google Business Profile work, fast converting websites, and follow-up that never forgets a lead. Serving West Chester, Exton, Malvern, Downingtown, Kennett Square, Phoenixville and the Main Line.';
   const body = `  <div class="crumb"><a href="/">Home</a> › AI Marketing</div>
@@ -343,7 +345,7 @@ ${ctaBlock('Bring your website, your Google listing and the number you wish were
 
 function servicesHub() {
   const url = '/services/';
-  const title = 'Marketing Services in Chester County, PA | Web Design, SEO, Ads — TB Solutions';
+  const title = 'Marketing Services in Chester County, PA | TB Solutions';
   const desc = 'Marketing services for Chester County, PA businesses: websites from $300, local SEO and Google Business Profile work, Google and Meta Ads, AI growth agents and lead follow-up. Published prices, no long-term contracts.';
   const body = `  <div class="crumb"><a href="/">Home</a> › Marketing services</div>
   <div class="eyebrow">Chester County · Pennsylvania</div>
@@ -423,6 +425,57 @@ ${ctaBlock('Bring your website, your Google listing and the number you wish were
   return { url, html: page({ url, title, desc, schema, body }) };
 }
 
+
+function industriesHub() {
+  const url = '/marketing-for/';
+  const title = 'Marketing by Industry — Chester County, PA | TB Solutions';
+  const desc = 'Marketing built for what you actually sell: barbershops and salons, restaurants, contractors and home services, professional services, gyms and studios — across Chester County, PA.';
+  const body = `  <div class="crumb"><a href="/">Home</a> › Marketing by industry</div>
+  <div class="eyebrow">Chester County · Pennsylvania</div>
+  <h1>Marketing built for what you actually sell</h1>
+  <p class="lead">A barbershop loses money to empty chairs; a contractor loses it to a full voicemail box; a studio loses it in the two weeks after the trial. Same tools, completely different order of operations.</p>
+
+  <h2>Pick your industry</h2>
+  <div class="grid">
+${INDUSTRIES.map((x) => `    <a href="/marketing-for/${x.slug}/">${esc(x.h1)}<small>${esc(x.title.split('|')[0].split('—')[0].trim())}</small></a>`).join('\n')}
+  </div>
+
+  <h2>What stays the same</h2>
+  <p>Underneath every one of these sits the same four-part system — instant response, a finished Google Business Profile, a fast site, and follow-up that never forgets. What changes is which part you build first, and that is decided entirely by where your particular business leaks money. <a href="/ai-marketing/">How the system works →</a> · <a href="/services/">What each piece costs →</a></p>
+
+${faqBlock([
+    ['Do you specialise in one industry?',
+     'Barbershops and salons are where the deepest product work is — Loop, the booking and rewards platform, was built for them. But the underlying system is the same for any local business that gets enquiries and loses some of them, which is all of them.'],
+    ['My industry is not listed. Does that matter?',
+     'No. The pages above exist where there is something specific worth writing. If your trade is not there, the free call covers it properly rather than a generic page pretending to.'],
+    ['What is the first thing you would look at in my business?',
+     'Where enquiries come in and how long they wait. In nearly every local business, that gap is the largest and cheapest thing to fix.'],
+  ])}
+
+${ctaBlock('Tell us what you sell and where you sell it.')}`;
+
+  const schema = [
+    crumbs([['Home', '/'], ['Marketing by industry', url]]),
+    faqSchema([
+      ['Do you specialise in one industry?',
+       'Barbershops and salons are where the deepest product work is, but the underlying system suits any local business that gets enquiries and loses some of them.'],
+      ['My industry is not listed. Does that matter?',
+       'No. The pages exist where there is something specific worth writing; the free call covers anything else properly.'],
+      ['What is the first thing you would look at in my business?',
+       'Where enquiries come in and how long they wait. That gap is usually the largest and cheapest thing to fix.'],
+    ]),
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Marketing by industry — Chester County, PA',
+      itemListElement: INDUSTRIES.map((x, i) => ({
+        '@type': 'ListItem', position: i + 1, name: x.h1, url: SITE.origin + '/marketing-for/' + x.slug + '/',
+      })),
+    },
+  ];
+  return { url, html: page({ url, title, desc, schema, body }) };
+}
+
 // ---- write pages ----
 const pages = [
   pillarPage(),
@@ -430,6 +483,8 @@ const pages = [
   ...GUIDES.map((g) => contentPage(g, { base: '/ai-marketing/', siblings: GUIDES, hubName: 'AI Marketing', hubUrl: '/ai-marketing/' })),
   servicesHub(),
   ...SERVICES.map((g) => contentPage(g, { base: '/services/', siblings: SERVICES, hubName: 'Marketing services', hubUrl: '/services/' })),
+  industriesHub(),
+  ...INDUSTRIES.map((g) => contentPage(g, { base: '/marketing-for/', siblings: INDUSTRIES, hubName: 'Marketing by industry', hubUrl: '/marketing-for/' })),
 ];
 for (const p of pages) {
   const dir = join(ROOT, p.url);
@@ -449,8 +504,8 @@ const PUBLIC = [
   '/university/lessons/outreach/', '/university/lessons/loop-pitch/', '/university/lessons/scale/',
   '/crm/demo/', '/rewards/signup/', '/command/',
 ];
-const priority = (u) => (u === '/' ? '1.0' : u === '/ai-marketing/' || u === '/services/' ? '0.95' : u.startsWith('/services/') ? '0.85' : u.startsWith('/ai-marketing/') ? '0.85' : u.startsWith('/learn/') || u.startsWith('/guides/') ? '0.7' : '0.6');
-const freq = (u) => (u === '/' || u.startsWith('/ai-marketing/') || u.startsWith('/services/') ? 'weekly' : 'monthly');
+const priority = (u) => (u === '/' ? '1.0' : u === '/ai-marketing/' || u === '/services/' || u === '/marketing-for/' ? '0.95' : u.startsWith('/services/') || u.startsWith('/marketing-for/') ? '0.85' : u.startsWith('/ai-marketing/') ? '0.85' : u.startsWith('/learn/') || u.startsWith('/guides/') ? '0.7' : '0.6');
+const freq = (u) => (u === '/' || u.startsWith('/ai-marketing/') || u.startsWith('/services/') || u.startsWith('/marketing-for/') ? 'weekly' : 'monthly');
 const urls = [...new Set([...PUBLIC, ...pages.map((p) => p.url)])]
   .filter((u) => existsSync(join(ROOT, u, 'index.html')))
   .sort((a, b) => (a === '/' ? -1 : b === '/' ? 1 : a.localeCompare(b)));
@@ -481,6 +536,9 @@ ${GUIDES.map((g) => `- [${g.h1}](${SITE.origin}/ai-marketing/${g.slug}/): ${g.de
 
 ## Services
 ${SERVICES.map((x) => `- [${x.h1}](${SITE.origin}/services/${x.slug}/): ${x.desc}`).join('\n')}
+
+## By industry
+${INDUSTRIES.map((x) => `- [${x.h1}](${SITE.origin}/marketing-for/${x.slug}/): ${x.desc}`).join('\n')}
 
 ## Town pages
 ${TOWNS.map((t) => `- [AI marketing in ${t.full}](${SITE.origin}/ai-marketing/${t.slug}/): AI marketing, local SEO and web design for businesses in ${t.full} (${t.zips.join(', ')})`).join('\n')}
