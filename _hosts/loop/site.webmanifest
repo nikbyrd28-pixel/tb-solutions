@@ -1,0 +1,14 @@
+{
+  "name": "Loop for Barbershops",
+  "short_name": "Loop",
+  "description": "Booking, rewards, websites and the texts that bring clients back — for barbershops.",
+  "start_url": "/build/",
+  "display": "standalone",
+  "background_color": "#07080c",
+  "theme_color": "#07080c",
+  "icons": [
+    { "src": "/brand/loop/png/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/brand/loop/png/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/brand/loop/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

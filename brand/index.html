@@ -7,7 +7,6 @@
 <meta name="description" content="The Loop barbershop logo: mark, app icon and wordmark. Download SVG or PNG for posters, socials and shop windows." />
 <meta name="theme-color" content="#05060d" />
 <meta name="robots" content="noindex" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305060d'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-size='34'%3E%F0%9F%92%88%3C/text%3E%3C/svg%3E" />
 <style>
   :root{--text:#f2f4ff;--muted:#8f97b8;--line:rgba(122,162,255,.3);--acc:#7aa2ff;--acc2:#5ad0f0;--vio:#b98bff;--gold:#ffcf5a}
   *{box-sizing:border-box}
@@ -46,6 +45,10 @@
   .foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:10px}
   .foot a{color:var(--acc);text-decoration:none}
 </style>
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
 </head>
 <body>
 <div class="wrap">
@@ -112,6 +115,45 @@
       <b>It survives being tiny.</b> No thin lines, no text inside — it holds up as a favicon, a phone icon, an embroidered
       hat, or a sticker on a mirror.
     </p>
+  </div>
+
+  <div class="card">
+    <h2>The files</h2>
+    <p class="note">Static, versioned, and generated from one source — <code>tools/brand-build.mjs</code>. Redraw everything with <code>node tools/brand-build.mjs &amp;&amp; node tools/brand-raster.mjs</code>.</p>
+    <div class="btns" style="gap:8px">
+      <a class="btn ghost" style="flex:0 0 auto;min-width:0" href="/brand/loop/mark.svg" download>Mark (transparent)</a>
+      <a class="btn ghost" style="flex:0 0 auto;min-width:0" href="/brand/loop/mark-mono-black.svg" download>Mark — one colour, black</a>
+      <a class="btn ghost" style="flex:0 0 auto;min-width:0" href="/brand/loop/mark-mono-white.svg" download>Mark — one colour, white</a>
+      <a class="btn ghost" style="flex:0 0 auto;min-width:0" href="/brand/loop/icon.svg" download>App icon</a>
+      <a class="btn ghost" style="flex:0 0 auto;min-width:0" href="/brand/loop/icon-light.svg" download>App icon — light</a>
+      <a class="btn ghost" style="flex:0 0 auto;min-width:0" href="/brand/loop/lockup-dark-bg.svg" download>Lockup — for dark backgrounds</a>
+      <a class="btn ghost" style="flex:0 0 auto;min-width:0" href="/brand/loop/lockup-light-bg.svg" download>Lockup — for light backgrounds</a>
+      <a class="btn ghost" style="flex:0 0 auto;min-width:0" href="/brand/loop/lockup-dark-bg-plain.svg" download>Lockup — no tagline</a>
+      <a class="btn ghost" style="flex:0 0 auto;min-width:0" href="/brand/loop/stacked-dark-bg.svg" download>Stacked</a>
+      <a class="btn ghost" style="flex:0 0 auto;min-width:0" href="/brand/loop/wordmark-dark-bg.svg" download>Wordmark</a>
+      <a class="btn ghost" style="flex:0 0 auto;min-width:0" href="/brand/loop/png/icon-1024.png" download>PNG 1024 — icon</a>
+      <a class="btn ghost" style="flex:0 0 auto;min-width:0" href="/brand/loop/png/mark-1024.png" download>PNG 1024 — mark</a>
+      <a class="btn ghost" style="flex:0 0 auto;min-width:0" href="/brand/loop/png/lockup-dark-1600.png" download>PNG 1600 — lockup</a>
+      <a class="btn ghost" style="flex:0 0 auto;min-width:0" href="/brand/loop/png/og.png" download>Social card 1200×630</a>
+      <a class="btn ghost" style="flex:0 0 auto;min-width:0" href="/brand/loop/png/favicon.ico" download>favicon.ico</a>
+      <a class="btn ghost" style="flex:0 0 auto;min-width:0" href="/brand/loop/png/apple-touch-icon.png" download>Apple touch icon</a>
+    </div>
+    <p class="why" style="margin-top:16px"><b>Why static files matter:</b> Google's favicon crawler will not index a <code>data:</code> URI. Every page used one, which is why the search result showed a globe instead of the pole. The pages now point at <code>/favicon.ico</code> and <code>/favicon.svg</code>, and the Loop domain gets the Loop mark through host redirects in <code>vercel.json</code>.</p>
+  </div>
+
+  <div class="card">
+    <h2>Product icons</h2>
+    <p class="note">One geometry, one container, a colour and a glyph each — so a row of them reads as one suite. The parent loop sits behind every glyph at 22% opacity.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:12px">
+      <a href="/brand/loop/modules/rewards.svg" download style="text-decoration:none;text-align:center"><img src="/brand/loop/modules/rewards.svg" width="72" height="72" alt="Loop Rewards icon" style="border-radius:16px"><div style="color:var(--muted);font-size:11.5px;margin-top:6px">Rewards</div></a>
+      <a href="/brand/loop/modules/booking.svg" download style="text-decoration:none;text-align:center"><img src="/brand/loop/modules/booking.svg" width="72" height="72" alt="Loop Booking icon" style="border-radius:16px"><div style="color:var(--muted);font-size:11.5px;margin-top:6px">Booking</div></a>
+      <a href="/brand/loop/modules/crm.svg" download style="text-decoration:none;text-align:center"><img src="/brand/loop/modules/crm.svg" width="72" height="72" alt="Loop CRM icon" style="border-radius:16px"><div style="color:var(--muted);font-size:11.5px;margin-top:6px">CRM</div></a>
+      <a href="/brand/loop/modules/arcade.svg" download style="text-decoration:none;text-align:center"><img src="/brand/loop/modules/arcade.svg" width="72" height="72" alt="Loop Arcade icon" style="border-radius:16px"><div style="color:var(--muted);font-size:11.5px;margin-top:6px">Arcade</div></a>
+      <a href="/brand/loop/modules/studio.svg" download style="text-decoration:none;text-align:center"><img src="/brand/loop/modules/studio.svg" width="72" height="72" alt="Loop Content Studio icon" style="border-radius:16px"><div style="color:var(--muted);font-size:11.5px;margin-top:6px">Content Studio</div></a>
+      <a href="/brand/loop/modules/university.svg" download style="text-decoration:none;text-align:center"><img src="/brand/loop/modules/university.svg" width="72" height="72" alt="Loop University icon" style="border-radius:16px"><div style="color:var(--muted);font-size:11.5px;margin-top:6px">University</div></a>
+      <a href="/brand/loop/modules/ambassadors.svg" download style="text-decoration:none;text-align:center"><img src="/brand/loop/modules/ambassadors.svg" width="72" height="72" alt="Loop Ambassadors icon" style="border-radius:16px"><div style="color:var(--muted);font-size:11.5px;margin-top:6px">Ambassadors</div></a>
+      <a href="/brand/loop/modules/shop.svg" download style="text-decoration:none;text-align:center"><img src="/brand/loop/modules/shop.svg" width="72" height="72" alt="Loop Shop icon" style="border-radius:16px"><div style="color:var(--muted);font-size:11.5px;margin-top:6px">Shop</div></a>
+    </div>
   </div>
 
   <p class="foot">Loop by <a href="https://tbsol.net">TB Solutions</a> · <a href="/barbers/">the barber pitch</a> · <a href="/share/">share kit</a></p>

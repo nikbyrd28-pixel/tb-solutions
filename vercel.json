@@ -753,6 +753,160 @@
       ],
       "destination": "/build/",
       "permanent": false
+    },
+    {
+      "source": "/favicon.ico",
+      "has": [
+        {
+          "type": "host",
+          "value": "thebarberloop.com"
+        }
+      ],
+      "destination": "/brand/loop/png/favicon.ico",
+      "permanent": false
+    },
+    {
+      "source": "/favicon.svg",
+      "has": [
+        {
+          "type": "host",
+          "value": "thebarberloop.com"
+        }
+      ],
+      "destination": "/brand/loop/favicon.svg",
+      "permanent": false
+    },
+    {
+      "source": "/apple-touch-icon.png",
+      "has": [
+        {
+          "type": "host",
+          "value": "thebarberloop.com"
+        }
+      ],
+      "destination": "/brand/loop/png/apple-touch-icon.png",
+      "permanent": false
+    },
+    {
+      "source": "/apple-touch-icon-precomposed.png",
+      "has": [
+        {
+          "type": "host",
+          "value": "thebarberloop.com"
+        }
+      ],
+      "destination": "/brand/loop/png/apple-touch-icon.png",
+      "permanent": false
+    },
+    {
+      "source": "/icon-192.png",
+      "has": [
+        {
+          "type": "host",
+          "value": "thebarberloop.com"
+        }
+      ],
+      "destination": "/brand/loop/png/icon-192.png",
+      "permanent": false
+    },
+    {
+      "source": "/icon-512.png",
+      "has": [
+        {
+          "type": "host",
+          "value": "thebarberloop.com"
+        }
+      ],
+      "destination": "/brand/loop/png/icon-512.png",
+      "permanent": false
+    },
+    {
+      "source": "/site.webmanifest",
+      "has": [
+        {
+          "type": "host",
+          "value": "thebarberloop.com"
+        }
+      ],
+      "destination": "/_hosts/loop/site.webmanifest",
+      "permanent": false
+    },
+    {
+      "source": "/favicon.ico",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thebarberloop.com"
+        }
+      ],
+      "destination": "/brand/loop/png/favicon.ico",
+      "permanent": false
+    },
+    {
+      "source": "/favicon.svg",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thebarberloop.com"
+        }
+      ],
+      "destination": "/brand/loop/favicon.svg",
+      "permanent": false
+    },
+    {
+      "source": "/apple-touch-icon.png",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thebarberloop.com"
+        }
+      ],
+      "destination": "/brand/loop/png/apple-touch-icon.png",
+      "permanent": false
+    },
+    {
+      "source": "/apple-touch-icon-precomposed.png",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thebarberloop.com"
+        }
+      ],
+      "destination": "/brand/loop/png/apple-touch-icon.png",
+      "permanent": false
+    },
+    {
+      "source": "/icon-192.png",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thebarberloop.com"
+        }
+      ],
+      "destination": "/brand/loop/png/icon-192.png",
+      "permanent": false
+    },
+    {
+      "source": "/icon-512.png",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thebarberloop.com"
+        }
+      ],
+      "destination": "/brand/loop/png/icon-512.png",
+      "permanent": false
+    },
+    {
+      "source": "/site.webmanifest",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.thebarberloop.com"
+        }
+      ],
+      "destination": "/_hosts/loop/site.webmanifest",
+      "permanent": false
     }
   ]
 }
