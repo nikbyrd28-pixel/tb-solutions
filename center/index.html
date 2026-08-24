@@ -42,6 +42,12 @@
   .panel.on{display:block}
   @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   h2{font-size:16px;margin:0 0 12px}
+  .smsway{border:1px solid var(--line);border-radius:13px;padding:13px 14px;margin-bottom:10px}
+  .smsway>b{display:block;font-size:14px;margin-bottom:5px}
+  .smsway p{margin:0;font-size:13.5px}
+  .smsway .warn{color:var(--gold)}
+  .smsfield{margin-top:9px}
+  .smsfield label{margin:9px 0 4px}
   .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
   @media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
   .stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 14px}
@@ -202,7 +208,8 @@
           <button class="btn" onclick="sendFirst()">💬 Open first text</button>
           <button class="btn ghost" onclick="copyBlast()">📋 Copy message</button>
         </div>
-        <p class="hint">Want automated bulk SMS &amp; email blasts (no tapping per person)? That needs a Twilio/Resend key — tell your Loop rep and I'll switch it on.</p>
+        <p class="hint">Want these to go out without you tapping each one? That needs a texting
+          number of your own — ask for one under <a href="#" onclick="showTab('tools');return false">Tools</a>.</p>
       </div>
     </div>
 
@@ -241,12 +248,24 @@
 
     <div class="panel" id="p-tools">
       <div class="card"><h2>🛠️ Shop tools</h2><div id="toolLinks"></div></div>
+      <!-- Two ways to text, and the free one is not a lesser version: it is what
+           most shops should use. The old copy here promised "when your Twilio
+           number is switched on" to barbers who had no Twilio account, no way
+           to get one, and no idea what Twilio was. -->
       <div class="card">
-        <h2>📱 Automated texting</h2>
-        <p class="muted" style="margin:2px 0 12px">When your Twilio number is switched on, Loop automatically texts customers who've drifted away (31+ days) to win them back — no tapping. Send yourself a test to confirm it's live.</p>
-        <div class="linkbox"><input id="smsTestNum" placeholder="Your mobile, e.g. 555-123-4567" inputmode="tel"></div>
-        <button class="btn" id="smsTestBtn" style="margin-top:10px" onclick="testSms()">📲 Send me a test text</button>
-        <div id="smsTestMsg" class="muted" style="margin-top:10px"></div>
+        <h2>📱 Texting your customers</h2>
+
+        <div class="smsway">
+          <b>From your own phone — free, working now</b>
+          <p class="muted">Loop works out who is due a message and writes it. You tap, your Messages app
+            opens with the words already in it, and it sends from your shop's own number. Nothing to set
+            up and nothing to pay. It is under <a href="#" onclick="showTab('autos');return false">Automations</a>.</p>
+        </div>
+
+        <div class="smsway" id="smsOwn">
+          <b>From a Loop number — sends on its own</b>
+          <div id="smsBody"><p class="muted">Loading…</p></div>
+        </div>
       </div>
     </div>
 
@@ -309,6 +328,7 @@
     if(t==='messages'&&!loaded.msg){ loaded.msg=1; initMsg(); }
     if(t==='autos'&&!loaded.autos){ loaded.autos=1; loadAutos(); }
     if(t==='dm'&&!loaded.dm){ loaded.dm=1; loadDm(); }
+    if(t==='tools'&&!loaded.sms){ loaded.sms=1; loadSms(); }
     window.scrollTo(0,0);
   };
 
@@ -501,6 +521,74 @@
     }).join('') : '<p class="muted">No members yet — share your join link to get started.</p>';
   }
 
+  /* ── the Loop number ─────────────────────────────────────────────────────
+     Four states and each one says the next thing to do, because "not switched
+     on yet" told a barber nothing he could act on. The registration questions
+     are the carriers', not ours: A2P 10DLC will reject a number without them,
+     and being rejected two weeks later is worse than being asked now. */
+  var SMS=null;
+  window.loadSms=function(){
+    rpc('sms_status',{p_client:CODE,p_pin:PIN}).then(function(d){
+      if(!d||d.ok===false){ el('smsBody').innerHTML='<p class="muted">'+esc((d&&d.error)||'Could not load.')+'</p>'; return; }
+      SMS=d; drawSms();
+    }).catch(function(){ el('smsBody').innerHTML='<p class="muted">Network error.</p>'; });
+  };
+  function day(t){ return t? new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : ''; }
+  function pretty(n){ var d=(n||'').replace(/[^0-9]/g,''); return d.length===11
+      ? '('+d.slice(1,4)+') '+d.slice(4,7)+'-'+d.slice(7) : (n||''); }
+
+  function drawSms(){
+    var d=SMS, h='';
+    if(d.state==='live'){
+      h='<p class="muted">Sending as <b>'+esc(pretty(d.number))+'</b> since '+esc(day(d.live_at))+'. '
+        +'Loop texts customers who have drifted away, on its own, between 9am and 8pm — '
+        +'and never anyone who replied STOP.</p>'
+        +'<p class="muted" style="margin-top:8px"><b>'+d.reachable+'</b> customer'+(+d.reachable===1?'':'s')
+        +' can be reached'+(+d.opted_out? ' · <b>'+d.opted_out+'</b> opted out':'')+'.</p>'
+        +'<div class="smsfield"><div class="linkbox"><input id="smsTestNum" placeholder="Your mobile, e.g. 555-123-4567" inputmode="tel"></div>'
+        +'<button class="btn" id="smsTestBtn" style="margin-top:10px" onclick="testSms()">📲 Send me a test text</button>'
+        +'<div id="smsTestMsg" class="muted" style="margin-top:10px"></div></div>';
+    } else if(d.state==='requested'){
+      h='<p class="muted">Asked for on '+esc(day(d.asked_at))+'. The carriers have to approve a business '
+        +'before it can text customers — that usually takes about a week, and there is nothing more for '
+        +'you to do. Keep using your own phone until then; we will let you know the day it goes live.</p>';
+    } else if(d.state==='paused'){
+      h='<p class="warn">Paused'+(d.note?' — '+esc(d.note):'')+'. Your own phone still works as normal.</p>';
+    } else {
+      h='<p class="muted">A number of your own, and the win-backs go out without you tapping anything. '
+        +'Before a carrier will let any business text customers it wants four things about the shop — '
+        +'that is the law, not us, and it is the whole of the setup.</p>'
+        +'<div id="smsForm" class="hide">'
+        +'<div class="smsfield"><label for="smsLegal">Registered business name</label>'
+        +'<input id="smsLegal" placeholder="As it appears on the EIN letter"></div>'
+        +'<div class="smsfield"><label for="smsEin">EIN</label>'
+        +'<input id="smsEin" inputmode="numeric" placeholder="12-3456789"></div>'
+        +'<div class="smsfield"><label for="smsAddr">Business address</label>'
+        +'<input id="smsAddr" placeholder="Street, town, state, ZIP"></div>'
+        +'<div class="smsfield"><label for="smsWho">Who to contact</label>'
+        +'<input id="smsWho" placeholder="Your name"></div>'
+        +'<div class="smsfield"><label for="smsEmail">Contact email</label>'
+        +'<input id="smsEmail" inputmode="email" placeholder="you@shop.com"></div>'
+        +'<button class="btn" id="smsSend" style="margin-top:12px" onclick="askSms()">Ask for my number</button>'
+        +'<div id="smsMsg" class="muted" style="margin-top:10px"></div></div>'
+        +'<button class="btn" id="smsStart" style="margin-top:10px" onclick="document.getElementById(\'smsForm\').classList.remove(\'hide\');this.classList.add(\'hide\')">Turn it on</button>';
+    }
+    el('smsBody').innerHTML=h;
+  }
+
+  window.askSms=function(){
+    var b=el('smsSend'), m=el('smsMsg');
+    b.disabled=true; var old=b.textContent; b.textContent='Sending…'; m.style.color=''; m.textContent='';
+    rpc('sms_request',{p_client:CODE,p_pin:PIN,p_biz:{
+      legal:(el('smsLegal').value||'').trim(), ein:(el('smsEin').value||'').trim(),
+      address:(el('smsAddr').value||'').trim(), contact:(el('smsWho').value||'').trim(),
+      email:(el('smsEmail').value||'').trim()}}).then(function(d){
+      b.disabled=false; b.textContent=old;
+      if(d&&d.ok){ toast('Asked for — we will be in touch 👍'); loadSms(); }
+      else { m.style.color='#ff8a8a'; m.textContent=(d&&d.error)||'Could not send that.'; }
+    });
+  };
+
   window.testSms=function(){
     var b=el('smsTestBtn'), m=el('smsTestMsg'), num=(el('smsTestNum').value||'').trim();
     if(!b||b.disabled) return;
@@ -509,7 +597,7 @@
     rpc('send_test_sms',{p_client:CODE,p_pin:PIN,p_to:num}).then(function(d){
       if(d&&d.ok){ m.style.color='#4caf82'; m.textContent='✅ Text sent to '+(d.sent_to||num)+' — check your phone.'; b.textContent='📲 Sent!'; setTimeout(function(){ b.disabled=false; b.textContent=old; },4000); }
       else { m.style.color='#ff8a8a'; m.textContent=(d&&d.error)||'Could not send.'; b.disabled=false; b.textContent=old; }
-    }).catch(function(){ m.style.color='#ff8a8a'; m.textContent='Network error — try again.'; b.disabled=false; b.textContent=old; });
+    });
   };
 
   window.emailReport=function(){

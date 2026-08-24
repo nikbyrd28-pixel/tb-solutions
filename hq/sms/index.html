@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Loop SMS numbers</title>
+<meta name="robots" content="noindex,nofollow" />
+<meta name="theme-color" content="#07080c" />
+<link rel="preconnect" href="https://qgbjiqdwzgkjkmqyjsmc.supabase.co" crossorigin>
+<style>
+  /* The other half of a barber tapping "Turn it on". He gave the carriers what
+     they ask for; this is where the number gets bought and handed over. */
+  :root{--bg:#07080c;--panel:rgba(255,255,255,.05);--line:rgba(150,190,255,.16);
+        --ink:#f0f2f8;--muted:#9aa3ba;--acc:#5df2e0;--acc2:#6f9dff;--warn:#f0b100;--bad:#ff8b8b}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-text-size-adjust:100%;
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif}
+  .wrap{max-width:680px;margin:0 auto;padding:22px 14px 70px}
+  h1{font-size:22px;font-weight:900;margin:0 0 3px}
+  .sub{color:var(--muted);font-size:13.5px;margin:0 0 16px}
+  input,select{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--line);
+    color:var(--ink);border-radius:11px;padding:11px 12px;font:inherit;font-size:16px}
+  .btn{border:0;cursor:pointer;font:inherit;background:linear-gradient(135deg,var(--acc),var(--acc2));
+    color:#05060d;font-weight:900;border-radius:11px;padding:11px 15px;font-size:15px}
+  .btn.sm{padding:8px 12px;font-size:13px;border-radius:9px}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:800}
+  .btn[disabled]{opacity:.45}
+  .row{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:13px;margin-bottom:10px}
+  .row.ask{border-color:rgba(240,177,0,.5)}
+  .row.live{border-color:rgba(93,242,224,.45)}
+  .rname{font-size:16px;font-weight:800;margin:0}
+  .pill{display:inline-block;font-size:10.5px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;
+    border-radius:999px;padding:3px 8px;white-space:nowrap;margin-left:6px}
+  .p-requested{background:rgba(240,177,0,.18);color:var(--warn)}
+  .p-live{background:rgba(93,242,224,.18);color:var(--acc)}
+  .p-paused{background:rgba(255,139,139,.16);color:var(--bad)}
+  .meta{font-size:12.5px;color:var(--muted);margin-top:6px}
+  .meta b{color:var(--ink)}
+  .facts{margin-top:10px;font-size:13px;background:rgba(255,255,255,.03);border:1px solid var(--line);
+    border-radius:11px;padding:10px 11px}
+  .facts div{padding:2px 0}
+  .facts span{color:var(--muted);display:inline-block;min-width:86px}
+  .acts{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px;align-items:center}
+  .acts input{flex:1;min-width:150px}
+  .lab{font-size:11px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:16px 0 6px}
+  .msg{margin-top:9px;font-size:13.5px}
+  .msg.err{color:var(--bad)} .msg.ok{color:var(--acc)}
+  .hide{display:none}
+  .foot{margin-top:26px;color:var(--muted);font-size:12.5px}
+  .foot a{color:var(--acc2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Loop SMS numbers</h1>
+  <p class="sub">Shops that asked for a number of their own, and the ones already running on one.</p>
+
+  <div id="gate">
+    <input id="key" type="password" placeholder="Admin key" autocomplete="off">
+    <button class="btn" id="go" style="width:100%;margin-top:10px">Open</button>
+    <div class="msg err hide" id="gerr"></div>
+  </div>
+
+  <div id="app" class="hide">
+    <div id="list"></div>
+    <p class="foot">Buy the number in Twilio first, then paste it here — pg_net posts and never sees
+      the reply, so a "buy" button in this page could not tell you which number it had bought.<br>
+      CRM: <a href="/hq/crm/">/hq/crm/</a> · PIN queue: <a href="/hq/pins/">/hq/pins/</a></p>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var SUPA='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+  var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+  function el(i){ return document.getElementById(i); }
+  function esc(s){ return String(s==null?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+  function rpc(fn,body){
+    return fetch(SUPA+'/rest/v1/rpc/'+fn,{method:'POST',
+      headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},
+      body:JSON.stringify(body||{})}).then(function(r){ return r.json(); })
+      .catch(function(){ return null; });
+  }
+
+  // Same posture as the CRM and the PIN queue: the key lives in memory, so a
+  // reload puts the gate back up.
+  var ADMIN='', SHOPS=[];
+
+  el('go').addEventListener('click', function(){
+    var k=(el('key').value||'').trim(); if(!k) return;
+    var b=this; b.disabled=true; b.textContent='Checking…';
+    rpc('sms_queue',{p_key:k}).then(function(d){
+      b.disabled=false; b.textContent='Open';
+      if(!d || d.ok===false){
+        el('gerr').textContent=(d&&d.error)||'Could not reach it.';
+        el('gerr').classList.remove('hide'); return;
+      }
+      ADMIN=k; el('gate').classList.add('hide'); el('app').classList.remove('hide');
+      SHOPS=d.shops||[]; draw();
+    });
+  });
+  el('key').addEventListener('keydown',function(e){ if(e.key==='Enter') el('go').click(); });
+
+  function load(){ return rpc('sms_queue',{p_key:ADMIN}).then(function(d){
+    if(d&&d.ok){ SHOPS=d.shops||[]; draw(); } }); }
+
+  function day(t){ return t? new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : '—'; }
+  function pretty(n){ var d=String(n||'').replace(/[^0-9]/g,'');
+    return d.length===11 ? '('+d.slice(1,4)+') '+d.slice(4,7)+'-'+d.slice(7) : (n||''); }
+
+  function draw(){
+    if(!SHOPS.length){
+      el('list').innerHTML='<p class="sub">Nobody has asked for a number yet.</p>'; return;
+    }
+    el('list').innerHTML=SHOPS.map(card).join('');
+    Array.prototype.forEach.call(el('list').querySelectorAll('[data-act]'),function(b){
+      b.addEventListener('click',function(){ act(b); });
+    });
+  }
+
+  function card(s){
+    var st=s.sms_state, b=s.sms_biz||{};
+    var h='<div class="row '+(st==='requested'?'ask':st==='live'?'live':'')+'" id="r-'+esc(s.client)+'">'
+      +'<p class="rname">'+esc(s.biz_name||s.client)
+      +'<span class="pill p-'+esc(st)+'">'+esc(st)+'</span></p>'
+      +'<div class="meta"><code>'+esc(s.client)+'</code>'
+      +(s.sms_from?' · <b>'+esc(pretty(s.sms_from))+'</b>':'')
+      +' · asked '+esc(day(s.asked_at))
+      +(s.live_at?' · live '+esc(day(s.live_at)):'')
+      +' · <b>'+s.reachable+'</b> reachable</div>';
+
+    // Everything the carrier registration will ask for, in one block to copy from.
+    if(b.legal||b.ein){
+      h+='<div class="facts">'
+        +'<div><span>Legal name</span>'+esc(b.legal||'—')+'</div>'
+        +'<div><span>EIN</span>'+esc(b.ein||'—')+'</div>'
+        +'<div><span>Address</span>'+esc(b.address||'—')+'</div>'
+        +'<div><span>Contact</span>'+esc(b.contact||'—')+(b.email?' · '+esc(b.email):'')+'</div>'
+        +'</div>';
+    }
+    if(s.sms_note) h+='<div class="meta">📝 '+esc(s.sms_note)+'</div>';
+
+    h+='<div class="acts">'
+      +'<input id="n-'+esc(s.client)+'" placeholder="+16105551234" value="'+esc(s.sms_from||'')+'">'
+      +'<button class="btn sm" data-act="attach" data-c="'+esc(s.client)+'">'
+      +(st==='live'?'Change number':'Attach & go live')+'</button>';
+    if(st==='live')   h+='<button class="btn sm ghost" data-act="paused" data-c="'+esc(s.client)+'">Pause</button>';
+    if(st==='paused') h+='<button class="btn sm ghost" data-act="live" data-c="'+esc(s.client)+'">Resume</button>';
+    h+='<button class="btn sm ghost" data-act="off" data-c="'+esc(s.client)+'">Give the number back</button>';
+    h+='</div><div class="msg hide" id="m-'+esc(s.client)+'"></div>';
+    return h+'</div>';
+  }
+
+  function say(c,txt,bad){
+    var m=el('m-'+c); if(!m) return;
+    m.className='msg '+(bad?'err':'ok'); m.textContent=txt; m.classList.remove('hide');
+    setTimeout(function(){ if(m) m.classList.add('hide'); },3000);
+  }
+
+  function act(b){
+    var c=b.getAttribute('data-c'), what=b.getAttribute('data-act');
+    // Handing the number back is the one that cannot be undone by tapping again:
+    // the shop stops sending and the number goes to whoever asks next.
+    if(what==='off' && !confirm('Take the number off this shop? Their automatic texts stop.')) return;
+    b.disabled=true;
+    var p = what==='attach'
+      ? rpc('sms_attach',{p_key:ADMIN,p_client:c,p_from:(el('n-'+c)||{}).value||''})
+      : rpc('sms_set_state',{p_key:ADMIN,p_client:c,p_state:what});
+    p.then(function(d){
+      b.disabled=false;
+      if(!(d&&d.ok)){ say(c,(d&&d.error)||'Did not work.',true); return; }
+      return load().then(function(){ say(c, what==='attach'?'Live.':'Done.'); });
+    });
+  }
+})();
+</script>
+</body>
+</html>

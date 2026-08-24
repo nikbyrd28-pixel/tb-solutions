@@ -167,6 +167,7 @@ door, so no page advertises them.
 |------|------------|-------------|
 | `/hq/pins/` | Barbers locked out of their own shop. Verify by ringing the shop's listed number, then set a new PIN. | migration `loop_admin_panel`, `pin_recovery_*` |
 | `/hq/crm/` | The Loop sales pipeline: the 45 researched Chester County shops, every touch, and the platform's own numbers for the ones that signed. Opens on **the run** — today's work, in order. | `hq/crm.sql`, `hq/crm-outreach.sql` |
+| `/hq/sms/` | Shops that asked for a texting number of their own: what the carriers will want about each one, and the one tap that attaches a bought number and takes it live. | `hq/sms-numbers.sql` |
 
 The CRM deliberately does not let a status be typed into existence. Each row is
 joined live to `reward_settings`, so "signed" means a Loop account exists, and
@@ -204,3 +205,33 @@ it spoke a different language: it wrote `contacted`, `demo_sent`, `replied`,
 of "Still open" — the shops being worked hardest would have been the ones that
 vanished. Both halves now speak the board's five words, `loop_crm_mark`
 translates at the door, and a check constraint stops a sixth appearing.
+
+## Texting: two tiers, and only one of them needs setting up
+
+`/center/` used to say "when your Twilio number is switched on" to barbers who
+had no Twilio account, no way to get one, and no idea what Twilio was. There was
+no per-shop Twilio to switch on either: `loop_send_sms` read one global key set
+out of `app_config`, so every shop on Loop would have texted from the same
+number — and only `twilio_sid` was ever filled in, so it could not text at all.
+
+**Free, and already built.** `automations_due` (hq/automations.sql) works out who
+is due a message and writes it; the owner taps and their own Messages app opens
+with the words in it. No number, no cost, no registration. Most shops want this.
+
+**Paid.** `hq/sms-numbers.sql` gives a shop its own number. The barber taps once
+and fills in the four things A2P 10DLC registration demands — legal name, EIN,
+address, contact — which is the whole of the setup on his side. `/hq/sms/` shows
+the request with those details ready to copy, and one tap attaches the bought
+number and takes the shop live. The number is bought in Twilio rather than from
+a button here, because `pg_net` posts and never sees the reply: a "buy" call
+from Postgres could not tell you which number it had just bought.
+
+`sms_gate(client, code)` is the one place that decides whether a person may be
+texted — the shop has a live number, the member has a usable phone, they have
+not replied STOP, they consented, and it is between 9am and 8pm in the shop's
+own timezone. `run_sms_automations` previously checked none of those:
+`reward_members.sms_opt_out_at` and `sms_consent` had existed the whole time and
+nothing read them, so a customer who replied STOP kept getting win-backs, at any
+hour, from a number they had never agreed to hear from. Every message now
+carries the STOP line that makes the opt-out work, and `sms_opt_out` records it
+on the Loop side so the rest of the product stops counting someone who has left.
