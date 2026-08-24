@@ -1,39 +1,100 @@
 # Google Business Profile — paste kit
 
-The profile is claimed. This is everything that goes *into* it, written to paste
-straight in. Character limits are Google's, and every price matches what is
-published on the site.
+Profile is claimed and **verified**. This is everything that goes *into* it,
+written to paste straight in. Character limits are Google's, and every price
+matches what is published on the site.
 
-Do it in this order — the first two sections move rankings more than the rest
-combined.
+## Current state (from the dashboard, 2026-08-24)
+
+| | |
+|---|---|
+| Name | TB SOLUTIONS |
+| Verified | Yes |
+| Profile strength | 74% |
+| Location | Chester County, PA, USA (service-area business) |
+| Opened | January 2026 |
+| Primary category | Marketing agency ✅ correct |
+| Other categories | Website designer, Web hosting company, Marketing consultant |
+| **Reviews** | **0** |
+| Performance, Mar–Aug 2026 | 50 searches · 57 views · 1 interaction |
+| Attribute set | Identifies as Black-owned · Offers online appointments |
+
+**Read on those numbers:** 50 searches in six months means the profile is
+essentially not appearing. That is what a listing with zero reviews and a
+generic description does — Google has nothing to rank and nothing to show. It
+is not a sign anything is broken; it is the starting line.
+
+The fixes below are ordered by how much each one moves that number.
 
 ---
 
-## 1. Categories
+## 1. Categories — two to add
 
-**Primary category (this field is close to a ranking switch — it decides which
-searches you are eligible for at all):**
+The primary is already right. **Marketing agency** is correct, leave it.
 
-> Marketing agency
+**Add these two — you are currently ineligible for the searches they cover:**
 
-Test note: the West Chester businesses currently holding the map pack sit under
-*Internet marketing service* and *Marketing agency*. Start on **Marketing
-agency**. If after 6–8 weeks you are showing for "marketing agency" but not
-"internet marketing" or "digital marketing", swap the primary and watch for
-four weeks. Change it one at a time, never both.
+- **Internet marketing service** ← this is the category two of the three
+  businesses in the map pack sit under. Missing it is the single most concrete
+  gap on the profile right now.
+- **Advertising agency**
 
-**Secondary categories — add all of these:**
+Keep what is there (Website designer, Web hosting company, Marketing
+consultant). Google allows up to nine secondaries; you are using three.
 
-- Website designer
-- Internet marketing service
-- Advertising agency
-- Marketing consultant
-- Web hosting company *(only if you actually host — you do)*
-- Software company *(only once Loop is being sold as a product)*
+Test note: if after 6–8 weeks you are showing for "marketing agency" but not
+"internet marketing" or "digital marketing", swap the primary to *Internet
+marketing service* and watch for four weeks. Change one thing at a time.
+
+---
+
+## 1b. Fix the business name
+
+It currently reads **TB SOLUTIONS**. Change it to **TB Solutions**.
+
+Google's guidelines say the name must match how the business is represented in
+the real world. All-caps is a common trigger for a name edit or a suspension
+flag, and it does not match the site, the logo or anything else. It costs
+nothing to fix and removes a small risk.
+
+---
+
+## 1c. Service area
+
+The listing shows "Chester County, PA, USA", which is correct as a
+service-area business — but set the individual areas explicitly rather than the
+whole county. Google uses these directly:
+
+> West Chester, Exton, Malvern, Downingtown, Kennett Square, Phoenixville,
+> Coatesville, Paoli, Berwyn, Chadds Ford, Oxford, West Grove, Avondale,
+> Parkesburg, Spring City, Honey Brook
+
+Every one of those has a matching page on the site, which is exactly the
+consistency Google is looking for.
+
+---
+
+## 1d. Ignore "Finish your ad" for now
+
+Google is pushing a Google Ads promo in Recommended Actions. Dismiss it. Paying
+to send traffic to a profile with zero reviews is the leaky-bucket problem —
+the ads work *after* the reviews and the landing pages, not before. This is the
+same advice on `/services/affordable-marketing-agency-chester-county/`; take
+your own.
 
 ---
 
 ## 2. Business description (750 char limit — this is 738)
+
+**Replace what is there.** The current description is generic web-agency
+boilerplate: it leads with "expert web design and web development", sells
+Shopify and WordPress development and e-commerce stores, never says Chester
+County or names a single town, never mentions the AI agents or the follow-up
+systems that are actually the product, never states a price, and ends with a
+stray quotation mark. It describes a company that is not this one, in language
+that is not yours, to customers who are not searching for it.
+
+Paste this instead:
 
 > TB Solutions is a digital marketing and web design studio in West Chester, PA,
 > serving small businesses across Chester County and the Main Line. We build
@@ -190,6 +251,22 @@ Send within an hour of the work going live, while the feeling is fresh.
 > That's great to hear. Any chance you'd put that in a Google review? It's the
 > single most useful thing for a small shop like mine: [short link]
 
+### Where the first ten come from
+
+The profile opened in January 2026 and has zero reviews, so the first batch is
+not going to come from new customers — it comes from work already done. Go
+back through:
+
+- Every client site already built (the client work in this repo: Hubs &
+  Babydoll, Voomlux, and any shop running Loop).
+- Anyone you built or fixed something for as a favour.
+- Anyone you audited, advised or set up a listing for, paid or not.
+
+Ask each one directly, by text, one at a time — not a group blast. A review
+from someone you genuinely helped six months ago is completely legitimate; a
+review from someone who was never a customer is not, and Google filters those
+anyway.
+
 Target: **10 reviews in the first 60 days, then 3–5 a month, forever.** Rate and
 recency beat raw volume in the medium term — which is how you get past a
 competitor sitting on 309 reviews without waiting years.
@@ -230,3 +307,65 @@ specific reply converts better than an unbroken row of fives.
 - Add any new service to the services list
 - Confirm name, address and phone still match exactly on Bing Places, Apple
   Business Connect, Yelp, Facebook, LinkedIn and the chamber listings
+
+---
+
+## 11. Citations — where the name, address and phone go next
+
+Every one of these is a listing Google cross-checks. Same name (**TB
+Solutions**, not all-caps), same phone, same service area, same website, every
+time. Contradictions cost prominence — and increasingly they make AI assistants
+skip you, because a model has to commit to one answer.
+
+**Do these first, they carry the most weight:**
+
+- Bing Places for Business
+- Apple Business Connect (feeds Apple Maps and Siri)
+- Yelp for Business
+- Facebook Business Page
+- LinkedIn Company Page
+- Nextdoor Business (unusually strong for local service businesses)
+
+**Local, and worth real money beyond the link:**
+
+- Greater West Chester Chamber of Commerce
+- Chester County Chamber of Business & Industry
+- Downingtown, Phoenixville and Kennett Square chambers, if you work those towns
+
+**The Black-owned attribute is already set on the profile — use it.**
+It puts a badge on the listing and lets people filter for it in Maps, which is
+a genuine discovery channel. It also opens directories that most competitors
+cannot list in at all:
+
+- African American Chamber of Commerce of PA, NJ & DE (Philadelphia-based —
+  a real network, not just a link)
+- Official Black Wall Street
+- Support Black Owned
+- Blackbusiness.com
+
+Treat these as business development first and citations second. The chamber
+memberships in particular put you in a room with the exact owner-operators the
+site is written for.
+
+**Trade-specific, once there is work to show:**
+
+- Clutch and UpCity (agency directories — real referral traffic, and both rank)
+- Google Partner status, once ad spend under management qualifies
+
+---
+
+## 12. What to expect
+
+Reviews and profile fields move things in this order, roughly:
+
+- **Week 1–2:** description, categories and service areas in. Expect the search
+  count to start moving as Google works out what to show you for.
+- **Week 3–8:** first five to ten reviews. This is where map-pack impressions
+  usually begin, because a listing with zero reviews is rarely shown at all.
+- **Month 3–6:** consistent review rate plus the site's town pages start
+  compounding. Map-pack positions for specific towns come before county-wide
+  terms, always.
+
+The 50 searches over six months is the number to watch. If it has not roughly
+doubled within eight weeks of doing the above, something is wrong and it is
+worth digging into rather than adding more.

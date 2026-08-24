@@ -3,7 +3,7 @@
 Goal: own the Chester County marketing search, starting with the AI-marketing
 queries nobody has claimed and expanding into the head-on agency terms.
 
-Last updated: 2026-08-24 (GBP confirmed claimed)
+Last updated: 2026-08-24 (GBP verified — 74% strength, 0 reviews, 50 searches in 6 months)
 
 ---
 
@@ -89,38 +89,46 @@ Rebuild the logos: `node tools/brand-build.mjs && node tools/brand-raster.mjs`
 
 Ranked by impact. Items 1–3 matter more than every page above combined.
 
-### 1. Google Business Profile — finish it (claimed 2026-08-24)
-The profile exists. Claimed is not the same as competitive — an unfinished
-profile ranks like a half-built one, because Google has nothing to match against.
+### 1. Google Business Profile — verified, 74%, zero reviews
+Confirmed from the dashboard on 2026-08-24. Verified, primary category already
+correct (*Marketing agency*), opened January 2026, service-area business set to
+Chester County. Performance Mar–Aug 2026: **50 searches, 57 views, 1
+interaction** — i.e. the listing is barely appearing, which is exactly what a
+zero-review profile with a generic description does.
 
-**Everything below is written out ready to paste in `hq/gbp-paste-kit.md`** —
-categories, the 738-character description, all 11 services with descriptions,
-product tiles with prices, 8 seeded Q&As, a photo shot list, 12 weeks of posts,
-review request texts and reply templates.
+**Everything is written ready to paste in `hq/gbp-paste-kit.md`.** The concrete
+gaps, in order of leverage:
 
-Order of work, highest leverage first:
-- **Categories.** Primary → *Marketing agency*. Secondaries: Website designer,
-  Internet marketing service, Advertising agency, Marketing consultant. This
-  single field decides which searches you are eligible for at all.
-- **Description + services + products.** All written; paste them.
-- **10 photos**, then a few weekly. Never stock.
-- **Seed the Q&A** yourself — ask from a second account, answer from the
-  business. Free real estate that shows in the profile and nobody uses it.
-- **Website link** → `https://tbsol.net/services/`.
-- **Hours and service area**, including holiday hours.
-- **Post weekly.** Twelve are written.
+- **Add two categories: *Internet marketing service* and *Advertising agency*.**
+  Two of the three businesses in the map pack sit under Internet marketing
+  service. Not having it means being ineligible for those searches entirely.
+  This is the most concrete single gap on the profile.
+- **Replace the description.** The current one is generic web-agency
+  boilerplate — it sells Shopify and WordPress e-commerce development, never
+  says Chester County or names a town, never mentions the AI agents or the
+  follow-up systems that are the actual product, and never states a price. A
+  738-character replacement is written.
+- **Rename TB SOLUTIONS → TB Solutions.** All-caps does not match real-world
+  usage and is a common trigger for a name edit or suspension flag.
+- **Set service areas explicitly** to the 16 towns that have pages on the site,
+  rather than the county as a whole.
+- **Services and products** — all 11 services and 7 product tiles written.
+- **Photos** — 10 to start, then a few weekly. Shot list in the kit.
+- **Seed the Q&A** — 8 questions and answers written.
+- **Ignore "Finish your ad."** Google is pushing an ads promo in Recommended
+  Actions. Paying to send traffic to a zero-review profile is the leaky-bucket
+  problem the site itself warns about.
 
-### 2. Reviews — this is now the top blocker
-With the profile claimed, reviews are the thing standing between TB Solutions
-and the map pack. Padula Media has 309. You do not beat that on volume this
-year — you beat it on **rate and recency**, which Google weighs heavily.
+### 2. Reviews — zero, and this is the whole game
+The profile has no reviews at all, which is why it is not being shown. Padula
+Media has 309; that is not a volume fight worth having. Rate and recency are,
+and Google weighs both.
 
-- Ask every client by text within an hour of the work going live. Templates are
-  in the paste kit.
-- **Target: 10 in the first 60 days, then 3–5/month, forever.**
+- The first ten come from work already done, not new customers — past client
+  builds, favours, anyone audited or advised. Ask individually, by text.
+- **Target: 10 in 60 days, then 3–5/month, forever.**
 - Reply to every one within a day, naming the specific thing.
-- The Loop review flow at `/review/` already exists — point it at TB's profile
-  and the asking becomes automatic instead of remembered.
+- Point the existing `/review/` flow at TB's profile so asking is automatic.
 
 ### 3. Citations — same name, address, phone, everywhere
 - Bing Places, Apple Business Connect, Yelp, Facebook, Nextdoor, LinkedIn,
