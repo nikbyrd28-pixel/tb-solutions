@@ -985,6 +985,7 @@
      to a shop on Monday. Every link here is a live tool on this estate. */
   var TOOLS = [
     { ic: '🔁', name: 'Loop Rewards', desc: 'Loyalty you run for a shop in 20 minutes — white-label, at your own price.', href: '/rewards/' },
+    { ic: '💼', name: 'Resell Loop', desc: 'Your book of business: claim the shops you run, set prices, see what you bill.', href: '/kit/loop-resell/' },
     { ic: '🛍️', name: 'Storefront builder', desc: 'A full store for a client in ten minutes. One file, any host.', href: '/kit/storefront/' },
     { ic: '📩', name: 'Compliant lead forms', desc: 'Lead capture whose SMS opt-in passes A2P review first time.', href: '/kit/leadform/' },
     { ic: '🎬', name: 'Content Studio', desc: 'Batch a client month of posts and captions.', href: '/content-studio/' },

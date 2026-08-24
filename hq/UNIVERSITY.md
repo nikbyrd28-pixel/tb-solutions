@@ -24,6 +24,19 @@ Until step 1 is done the campus still runs — it falls back to storing progress
 on the student's own device and says so in a banner. The first time they sign in
 after the migration, their local progress is replayed into their account.
 
+## Logging in
+
+- **Students** — `/university/campus/`. First time: **Enrol**, an enrolment code
+  (`TBU-FOUND1`…`TBU-FOUND5` are live and unused), their name, email, and a
+  4-digit PIN they choose. After that it is email + PIN, and the session is
+  remembered on the device for 30 days.
+- **You** — `/university/admin/`, with your existing HQ Supabase email and
+  password. The admin RPCs check the JWT email server-side, so nobody else's
+  login opens it.
+- **Resellers** — `/kit/loop-resell/`, with the reseller code and its PIN.
+
+Every PIN check on the estate, these included, sits behind `pin_gate()`.
+
 ## Selling one seat
 
 Applications from `/university/#apply` land in the `intakes` table with every
@@ -93,6 +106,10 @@ Both are white-label: the client never sees this school.
   of it. Fill the form, download one self-contained HTML file, host it
   anywhere. Orders land in `client_leads` under the shop's slug, which is what
   turns a one-off build into a retainer.
+- **`/kit/loop-resell/`** — Loop sold as the student's own product, not an
+  affiliate link. They get a reseller code, claim the shops they set up (the
+  shop's PIN is the proof), set their own price per shop, and see one honest
+  book of business: shops, members managed, monthly billing. `hq/loop-reseller.sql`.
 - **`/kit/leadform/`** — lead capture whose SMS opt-in passes an A2P 10DLC
   review: unticked checkbox, disclosure assembled from the shop's own facts,
   consent wording stored verbatim with every submission (`sms_consents`), and
@@ -150,6 +167,7 @@ card — recalculates on its own.
 | `kit/leadform/` | The A2P-compliant lead form generator |
 | `hq/university.sql` | Every table and RPC behind the campus |
 | `hq/sms-consent.sql` | Consent records + `lead_capture_with_consent` |
+| `hq/loop-reseller.sql` | Reseller codes, claimed shops, the book of business |
 
 ## Two things not to change casually
 

@@ -562,6 +562,25 @@
           ].join(''),
           mission: 'Build your one-page report template and fill it in with real numbers for one business.',
           ask: 'Paste the top three numbers from your filled-in report.'
+        },
+        {
+          id: 'l6', title: 'Resell Loop as your own product', min: 8,
+          body: [
+            '<p>There are two ways to make money from software you did not build. One of them is a hobby and the other is a business.</p>',
+            '<h3>The hobby</h3>',
+            '<p>An affiliate link. You refer a shop, somebody else onboards them, bills them and owns them, and you get a slice of a small subscription. It pays once and it never compounds, because you are not the person the shop calls.</p>',
+            '<h3>The business</h3>',
+            '<div class="ex">You set the shop up. You set the price. You bill them. You are the one they text when the counter tablet plays up — and the software you are delivering costs you nothing per shop, so the whole fee is yours.<br><br>Six shops at $300 is <b>$1,800 a month</b> for work that, once set up, is a couple of hours a week.</div>',
+            '<h3>They never see this school</h3>',
+            '<p>The programme is yours. Your name on the poster, your number on the report, your agency in the email. The shop is buying a person who handles their loyalty, not a login to somebody else\'s platform — and that is exactly why they stay with you rather than going direct.</p>',
+            '<h3>What you charge</h3>',
+            '<p>$200 is fine for a one-chair shop. $300–$400 is the normal number for a busy one. Do not go below $150 — a client at that price treats you as an afterthought and you will resent them by March. Raise it once you can point at a month of win-back numbers.</p>',
+            '<h3>Claim what you set up</h3>',
+            '<p>Every shop you run goes in your book at <a href="/kit/loop-resell/">the reseller page</a> — you need the shop\'s PIN, which is the proof it is genuinely your client. The book then shows you what you already suspected but could not see: how many members you manage, how many are still active, and what you are billing across all of it.</p>',
+            '<div class="ex">That number is the one that changes how you behave. "I have six shops and 940 members" is a business you protect. "I set some shops up at some point" is a hobby you drift out of.</div>'
+          ].join(''),
+          mission: 'Get your reseller code, then claim one shop you already run — or set one up this week and claim that. Write down the price you are charging and why.',
+          ask: 'Your first shop in the book, and the monthly price you set.'
         }
       ]
     },
