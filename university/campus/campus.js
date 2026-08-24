@@ -39,6 +39,8 @@
   var SESSION_KEY = 'tbu_session';     // {email, pin, name}
   var LOCAL_KEY   = 'tbu_local';       // the offline mirror of a student's state
   var XP = w.TBU_XP, DAILY = w.TBU_DAILY, RANKS = w.TBU_RANKS, CAMPUSES = w.TBU_CAMPUSES;
+  /* coursework XP lives in its own file so the two data files stay independent */
+  if (w.TBU_XP_WORK) { for (var k in w.TBU_XP_WORK) XP[k] = w.TBU_XP_WORK[k]; }
 
   /* ---------------------------------------------------------------- helpers */
   function el(id) { return d.getElementById(id); }
@@ -218,6 +220,66 @@
         return Promise.resolve({ ok: true, local: true, state: Store._state(st) });
       }
       return Store.rpc('uni_path_set', { p_email: email, p_pin: pin, p_path: path });
+    },
+
+    /* ---- coursework ----------------------------------------------------- */
+    work: function (email, pin) {
+      if (Store.mode === 'local') {
+        var s = Store._local() || Store._blank('', email, '');
+        return Promise.resolve({ ok: true, local: true,
+          checks: s.checks || {}, exams: s.exams || [], builds: s.builds || {} });
+      }
+      return Store.rpc('uni_work', { p_email: email, p_pin: pin });
+    },
+
+    checkSave: function (email, pin, lesson, correct, total) {
+      if (Store.mode === 'local') {
+        var s = Store._local() || Store._blank('', email, '');
+        s.checks = s.checks || {};
+        var prev = s.checks[lesson] ? s.checks[lesson].best : -1;
+        s.checks[lesson] = { best: Math.max(prev, correct), total: total,
+                             attempts: ((s.checks[lesson] || {}).attempts || 0) + 1 };
+        if (correct >= total && prev < total) s.student.xp += XP.check;
+        Store._saveLocal(s);
+        return Promise.resolve({ ok: true, local: true, state: Store._state(s) });
+      }
+      return Store.rpc('uni_check_save', { p_email: email, p_pin: pin, p_lesson: lesson, p_correct: correct, p_total: total });
+    },
+
+    examSubmit: function (email, pin, campus, score, total, pass) {
+      if (Store.mode === 'local') {
+        var s = Store._local() || Store._blank('', email, '');
+        s.exams = s.exams || [];
+        var had = s.exams.some(function (e) { return e.campus === campus && e.passed; });
+        var passed = score >= pass;
+        s.exams.unshift({ campus: campus, score: score, total: total, passed: passed, at: new Date().toISOString() });
+        if (passed && !had) s.student.xp += XP.exam;
+        Store._saveLocal(s);
+        return Promise.resolve({ ok: true, local: true, passed: passed, score: score, total: total,
+                                 first_pass: (passed && !had), state: Store._state(s) });
+      }
+      return Store.rpc('uni_exam_submit', { p_email: email, p_pin: pin, p_campus: campus,
+                                            p_score: score, p_total: total, p_pass: pass });
+    },
+
+    buildSave: function (email, pin, build, step, content, stepsTotal) {
+      if (Store.mode === 'local') {
+        var s = Store._local() || Store._blank('', email, '');
+        s.builds = s.builds || {}; s.builds[build] = s.builds[build] || {};
+        var isNew = !s.builds[build][step];
+        if (!content) { delete s.builds[build][step]; Store._saveLocal(s); return Promise.resolve({ ok: true, cleared: true }); }
+        s.builds[build][step] = content;
+        if (isNew) s.student.xp += XP.buildStep;
+        var done = Object.keys(s.builds[build]).length;
+        s.paidBuilds = s.paidBuilds || {};
+        if (stepsTotal && done >= stepsTotal && !s.paidBuilds[build]) {
+          s.paidBuilds[build] = true; s.student.xp += XP.buildDone;
+        }
+        Store._saveLocal(s);
+        return Promise.resolve({ ok: true, saved: true, state: Store._state(s) });
+      }
+      return Store.rpc('uni_build_save', { p_email: email, p_pin: pin, p_build: build,
+                                           p_step: step, p_content: content, p_steps_total: stepsTotal || null });
     },
 
     events: function (email, pin) {
@@ -411,6 +473,7 @@
 
   function enter(state) {
     absorb(state);
+    loadWork().then(function () { if (S) route(); });
     if (Store.mode === 'cloud' && SESSION) {
       Store.syncUp(SESSION.email, SESSION.pin).then(function (moved) {
         if (!moved) return;
@@ -552,6 +615,13 @@
     });
     html += '<div id="dailyFoot">' + dailyFootHtml() + '</div>';
 
+    var wt = workTotals();
+    html += '<button class="crow" data-go="#/workbook" style="margin-top:16px">'
+      + '<div class="ic">&#128214;</div>'
+      + '<div class="bd"><b>Your workbook</b><span>' + wt.buildSteps + '/' + wt.buildStepsTotal + ' sections &middot; '
+      + wt.examsPassed + '/' + wt.examsTotal + ' exams &middot; ' + wt.checksPassed + '/' + wt.checksTotal + ' checks</span></div>'
+      + '<div class="go">&rarr;</div></button>';
+
     var brief = w.TBU_briefForWeek();
     html += '<div class="sechead"><h2>This week&rsquo;s build</h2></div>'
       + '<div class="card" style="border-color:rgba(185,139,255,.35)">'
@@ -664,13 +734,310 @@
       .filter(Boolean);
   }
 
+  /* ------------------------------------------------------------- coursework
+     WORK holds checks, exam results and saved build steps. It is fetched once
+     on the way in and patched locally after every save, so opening a lesson
+     never waits on a round trip to find out whether the check was already
+     passed. */
+  var WORK = { checks: {}, exams: [], builds: {} };
+
+  function loadWork() {
+    if (!SESSION) return Promise.resolve();
+    return Store.work(SESSION.email, SESSION.pin).then(function (r) {
+      if (r && r.ok) WORK = { checks: r.checks || {}, exams: r.exams || [], builds: r.builds || {} };
+    });
+  }
+  function checkState(lessonId) {
+    var qs = w.TBU_checksFor(lessonId);
+    if (!qs) return null;
+    var got = WORK.checks[lessonId];
+    return { qs: qs, passed: !!(got && got.best >= qs.length), best: got ? got.best : null, total: qs.length };
+  }
+  function examState(campusId) {
+    var ex = w.TBU_examFor(campusId);
+    if (!ex) return null;
+    var mine = (WORK.exams || []).filter(function (e) { return e.campus === campusId; });
+    var best = mine.reduce(function (a, e) { return Math.max(a, e.score || 0); }, 0);
+    return { ex: ex, passed: mine.some(function (e) { return e.passed; }), attempts: mine.length, best: best };
+  }
+  function buildState(campusId) {
+    var b = w.TBU_buildFor(campusId);
+    if (!b) return null;
+    var saved = WORK.builds[campusId] || {};
+    var done = b.steps.filter(function (st) { return saved[st.id]; }).length;
+    return { b: b, saved: saved, done: done, total: b.steps.length, complete: done >= b.steps.length };
+  }
+  function workTotals() {
+    var checksPassed = 0, examsPassed = 0, buildSteps = 0, buildStepsTotal = 0;
+    w.TBU_LESSONS.forEach(function (l) { var c = checkState(l.lesson.id); if (c && c.passed) checksPassed++; });
+    CAMPUSES.forEach(function (c) {
+      var e = examState(c.id); if (e && e.passed) examsPassed++;
+      var b = buildState(c.id); if (b) { buildSteps += b.done; buildStepsTotal += b.total; }
+    });
+    return { checksPassed: checksPassed, checksTotal: w.TBU_LESSONS.length,
+             examsPassed: examsPassed, examsTotal: CAMPUSES.length,
+             buildSteps: buildSteps, buildStepsTotal: buildStepsTotal };
+  }
+
+  /* ---- the check, rendered under a lesson ---- */
+  function mountCheck(lessonId, box) {
+    var st = checkState(lessonId);
+    if (!st || !box) return;
+    var answers = {}, revealed = {};
+
+    function draw() {
+      var done = Object.keys(revealed).length === st.qs.length;
+      var correct = st.qs.filter(function (q, i) { return revealed[i] && answers[i] === q.c; }).length;
+      var html = '<div class="check"><div class="eyebrow" style="color:var(--acc2)">Check yourself</div>'
+        + '<p class="muted" style="font-size:13.5px;margin:4px 0 14px">Two questions. Nobody is grading you — but reading feels like understanding '
+        + 'right up until you have to choose.' + (st.passed ? ' <b style="color:var(--good)">You have passed this one.</b>' : '') + '</p>';
+      st.qs.forEach(function (q, i) {
+        html += '<div class="q"><b>' + (i + 1) + '. ' + esc(q.q) + '</b>';
+        q.a.forEach(function (opt, j) {
+          var cls = '';
+          if (revealed[i]) {
+            if (j === q.c) cls = ' right';
+            else if (answers[i] === j) cls = ' wrong';
+          } else if (answers[i] === j) cls = ' picked';
+          html += '<button class="opt' + cls + '" data-q="' + i + '" data-o="' + j + '"' + (revealed[i] ? ' disabled' : '') + '>'
+            + esc(opt) + '</button>';
+        });
+        if (revealed[i]) {
+          html += '<div class="why' + (answers[i] === q.c ? ' ok' : '') + '">'
+            + (answers[i] === q.c ? '<b>Right.</b> ' : '<b>Not quite.</b> ') + esc(q.why) + '</div>';
+        }
+        html += '</div>';
+      });
+      if (done) {
+        html += '<div class="done-note" style="margin-top:4px">' + correct + ' of ' + st.qs.length
+          + (correct === st.qs.length ? ' — clean.' + (st.passed ? '' : ' <b>+' + XP.check + ' XP</b>') : ' — read the explanations and go again.')
+          + (correct < st.qs.length ? ' <button class="btn plain sm" id="retryCheck" style="margin-left:8px">Try again</button>' : '')
+          + '</div>';
+      }
+      html += '</div>';
+      box.innerHTML = html;
+
+      [].forEach.call(box.querySelectorAll('.opt'), function (b) {
+        b.addEventListener('click', function () {
+          var i = +b.getAttribute('data-q');
+          if (revealed[i]) return;
+          answers[i] = +b.getAttribute('data-o');
+          revealed[i] = true;
+          if (Object.keys(revealed).length === st.qs.length) {
+            var got = st.qs.filter(function (q, k) { return answers[k] === q.c; }).length;
+            Store.checkSave(SESSION.email, SESSION.pin, lessonId, got, st.qs.length).then(function (r) {
+              var s2 = stateOf(r); if (s2) absorb(s2);
+              WORK.checks[lessonId] = { best: Math.max((WORK.checks[lessonId] || {}).best || 0, got), total: st.qs.length };
+              if (got === st.qs.length && !st.passed) { toast('+' + XP.check + ' XP', 'good'); st.passed = true; }
+            });
+          }
+          draw();
+        });
+      });
+      var retry = el('retryCheck');
+      if (retry) retry.addEventListener('click', function () { answers = {}; revealed = {}; draw(); });
+    }
+    draw();
+  }
+
+  /* ---- the exam ---- */
+  function viewExam(campusId) {
+    var st = examState(campusId), c = campusById(campusId);
+    if (!st || !c) { location.hash = '#/learn'; return; }
+    var picks = {}, submitted = false, result = null;
+
+    function draw() {
+      var html = '<button class="btn plain sm" data-go="#/campus/' + c.id + '">&larr; ' + esc(c.name) + '</button>'
+        + '<div class="card" style="margin-top:14px;border-color:var(--line2)">'
+        + '<div class="eyebrow">Campus exam</div><h2>' + esc(st.ex.title) + '</h2>'
+        + '<p class="muted" style="font-size:14px;margin:6px 0 0">' + st.ex.questions.length + ' questions, '
+        + st.ex.pass + ' to pass. Retake as many times as you like — this is a diagnostic, not a record. '
+        + 'Pass it and you carry the title <b>' + esc(st.ex.title_earned) + '</b>.</p>'
+        + (st.passed ? '<p style="margin:10px 0 0"><span class="chip gold">&#10003; Passed</span></p>'
+                     : (st.attempts ? '<p class="fine" style="margin:10px 0 0">' + st.attempts + ' attempt'
+                          + (st.attempts === 1 ? '' : 's') + ' · best ' + st.best + '/' + st.ex.questions.length + '</p>' : ''))
+        + '</div>';
+
+      st.ex.questions.forEach(function (q, i) {
+        html += '<div class="card q"><b>' + (i + 1) + '. ' + esc(q.q) + '</b>';
+        q.a.forEach(function (opt, j) {
+          var cls = '';
+          if (submitted) {
+            if (j === q.c) cls = ' right';
+            else if (picks[i] === j) cls = ' wrong';
+          } else if (picks[i] === j) cls = ' picked';
+          html += '<button class="opt' + cls + '" data-q="' + i + '" data-o="' + j + '"' + (submitted ? ' disabled' : '') + '>'
+            + esc(opt) + '</button>';
+        });
+        if (submitted) html += '<div class="why' + (picks[i] === q.c ? ' ok' : '') + '">' + esc(q.why) + '</div>';
+        html += '</div>';
+      });
+
+      if (!submitted) {
+        var answered = Object.keys(picks).length;
+        html += '<button class="btn wide" id="examGo"' + (answered < st.ex.questions.length ? ' disabled' : '') + '>'
+          + (answered < st.ex.questions.length ? (st.ex.questions.length - answered) + ' left' : 'Submit the exam') + '</button>';
+      } else {
+        html += '<div class="' + (result.passed ? 'done-note' : 'banner') + '" style="margin-top:6px">'
+          + '<b>' + result.score + ' of ' + result.total + '.</b> '
+          + (result.passed ? ('Passed' + (result.first_pass ? ' — +' + XP.exam + ' XP and the title is yours.' : ' again.'))
+                           : ('You needed ' + st.ex.pass + '. Read the explanations above, then go again — it costs nothing.'))
+          + '</div>'
+          + '<div class="navrow"><button class="btn ghost" id="examAgain">Take it again</button>'
+          + '<button class="btn ghost" data-go="#/campus/' + c.id + '">Back to ' + esc(c.name) + '</button></div>';
+      }
+
+      el('view').innerHTML = html;
+      w.scrollTo(0, 0);
+      wire();
+      [].forEach.call(d.querySelectorAll('.opt'), function (b) {
+        b.addEventListener('click', function () {
+          if (submitted) return;
+          picks[+b.getAttribute('data-q')] = +b.getAttribute('data-o');
+          draw();
+        });
+      });
+      var go = el('examGo');
+      if (go) go.addEventListener('click', function () {
+        var score = st.ex.questions.filter(function (q, i) { return picks[i] === q.c; }).length;
+        go.disabled = true; go.textContent = 'Marking…';
+        Store.examSubmit(SESSION.email, SESSION.pin, c.id, score, st.ex.questions.length, st.ex.pass)
+          .then(function (r) {
+            if (!r || !r.ok) { go.disabled = false; go.textContent = 'Submit the exam'; toast((r && r.error) || 'Could not submit.', 'bad'); return; }
+            result = r; submitted = true;
+            var s2 = stateOf(r); if (s2) absorb(s2);
+            WORK.exams.unshift({ campus: c.id, score: r.score, total: r.total, passed: r.passed, at: new Date().toISOString() });
+            if (r.first_pass) toast('Passed — +' + XP.exam + ' XP', 'good');
+            draw();
+          });
+      });
+      var again = el('examAgain');
+      if (again) again.addEventListener('click', function () {
+        picks = {}; submitted = false; result = null; st = examState(c.id); draw();
+      });
+    }
+    draw();
+  }
+
+  /* ---- the build ---- */
+  function viewBuild(campusId) {
+    var st = buildState(campusId), c = campusById(campusId);
+    if (!st || !c) { location.hash = '#/learn'; return; }
+    var b = st.b;
+
+    var html = '<button class="btn plain sm" data-go="#/campus/' + c.id + '">&larr; ' + esc(c.name) + '</button>'
+      + '<div class="card" style="margin-top:14px;border-color:rgba(185,139,255,.4)">'
+      + '<div class="eyebrow" style="color:var(--vio)">The build &middot; ' + b.mins + ' min</div>'
+      + '<h2>' + esc(b.title) + '</h2>'
+      + '<p class="muted" style="font-size:14.5px;margin:6px 0 10px">' + esc(b.why) + '</p>'
+      + '<div class="bar"><i style="width:' + Math.max(2, (st.done / st.total) * 100) + '%"></i></div>'
+      + '<div class="barlab"><span>' + st.done + ' of ' + st.total + ' written</span><span>You end up with: '
+      + esc(b.deliverable) + '</span></div></div>';
+
+    b.steps.forEach(function (step, i) {
+      var saved = st.saved[step.id] || '';
+      html += '<div class="card build-step' + (saved ? ' filled' : '') + '">'
+        + '<div class="sh"><span class="n">' + (i + 1) + '</span><b>' + esc(step.t) + '</b>'
+        + (saved ? '<span class="chip gold">saved</span>' : '') + '</div>'
+        + '<p class="muted" style="font-size:14px;margin:8px 0 10px">' + esc(step.p) + '</p>'
+        + '<textarea data-step="' + esc(step.id) + '" placeholder="' + esc(step.ph) + '">' + esc(saved) + '</textarea>'
+        + '<div class="saverow"><button class="btn sm" data-save="' + esc(step.id) + '">Save</button>'
+        + '<span class="fine" data-flag="' + esc(step.id) + '"></span></div></div>';
+    });
+
+    html += st.complete
+      ? '<div class="done-note">&#10003; <b>Build finished.</b> It lives in <a href="#/workbook">your workbook</a> and you can edit it forever.</div>'
+      : '<p class="fine" style="text-align:center">+' + XP.buildStep + ' XP a step, +' + XP.buildDone + ' when the last one is written.</p>';
+    html += '<div class="navrow"><button class="btn ghost" data-go="#/workbook">Open the workbook</button></div>';
+
+    el('view').innerHTML = html;
+    w.scrollTo(0, 0);
+    wire();
+
+    [].forEach.call(d.querySelectorAll('[data-save]'), function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-save');
+        var ta = d.querySelector('textarea[data-step="' + id + '"]');
+        var flag = d.querySelector('[data-flag="' + id + '"]');
+        var val = (ta.value || '').trim();
+        btn.disabled = true; btn.textContent = 'Saving…';
+        Store.buildSave(SESSION.email, SESSION.pin, campusId, id, val, b.steps.length).then(function (r) {
+          btn.disabled = false; btn.textContent = 'Save';
+          if (!r || !r.ok) { toast((r && r.error) || 'Could not save.', 'bad'); return; }
+          WORK.builds[campusId] = WORK.builds[campusId] || {};
+          if (val) WORK.builds[campusId][id] = val; else delete WORK.builds[campusId][id];
+          var s2 = stateOf(r); if (s2) absorb(s2);
+          if (flag) { flag.textContent = val ? 'Saved' : 'Cleared'; setTimeout(function () { flag.textContent = ''; }, 2200); }
+          var now = buildState(campusId);
+          if (now.complete && !st.complete) { toast('Build finished — +' + XP.buildDone + ' XP', 'good'); viewBuild(campusId); }
+        });
+      });
+    });
+  }
+
+  /* ---- the workbook: every build, in one place ---- */
+  function viewWorkbook() {
+    var t = workTotals();
+    var html = localBanner()
+      + '<div class="card tight"><div class="eyebrow">Your workbook</div>'
+      + '<h2>Your business, written down</h2>'
+      + '<p class="muted" style="font-size:14px;margin:4px 0 10px">Everything you have written in the builds, collected. '
+      + 'This is the actual deliverable of this school — not a certificate, a set of documents only you could have written.</p>'
+      + '<div class="bar blue"><i style="width:' + Math.max(2, (t.buildSteps / Math.max(1, t.buildStepsTotal)) * 100) + '%"></i></div>'
+      + '<div class="barlab"><span>' + t.buildSteps + ' of ' + t.buildStepsTotal + ' sections</span>'
+      + '<span>' + t.examsPassed + '/' + t.examsTotal + ' exams · ' + t.checksPassed + '/' + t.checksTotal + ' checks</span></div></div>';
+
+    var any = false;
+    CAMPUSES.forEach(function (c) {
+      var bs = buildState(c.id);
+      if (!bs) return;
+      html += '<div class="sechead"><h2>' + c.icon + ' ' + esc(bs.b.title) + '</h2>'
+        + '<button class="more" data-go="#/build/' + c.id + '">' + (bs.done ? 'Edit' : 'Start') + '</button></div>';
+      if (!bs.done) {
+        html += '<div class="card"><div class="empty">Not started. ' + esc(bs.b.deliverable) + '.</div></div>';
+        return;
+      }
+      any = true;
+      html += '<div class="card wb">';
+      bs.b.steps.forEach(function (step) {
+        var v = bs.saved[step.id];
+        if (!v) return;
+        html += '<div class="wbstep"><b>' + esc(step.t) + '</b><p>' + esc(v) + '</p></div>';
+      });
+      html += '</div>';
+    });
+
+    if (any) html += '<button class="btn plain wide" id="copyWb" style="margin-top:6px">Copy the whole workbook</button>';
+    el('view').innerHTML = html;
+    wire();
+    var cp = el('copyWb');
+    if (cp) cp.addEventListener('click', function () {
+      var out = [];
+      CAMPUSES.forEach(function (c) {
+        var bs = buildState(c.id);
+        if (!bs || !bs.done) return;
+        out.push('## ' + bs.b.title);
+        bs.b.steps.forEach(function (step) {
+          if (bs.saved[step.id]) out.push(step.t + '\n' + bs.saved[step.id] + '\n');
+        });
+      });
+      var text = (S.student.name || '') + ' — TB University workbook\n\n' + out.join('\n');
+      if (w.navigator.clipboard && w.navigator.clipboard.writeText) {
+        w.navigator.clipboard.writeText(text).then(function () { toast('Copied', 'good'); });
+      } else { w.prompt('Copy your workbook:', text); }
+    });
+  }
+
   function viewLearn() {
     var totalDone = Object.keys(doneSet).length;
     var html = localBanner()
       + '<div class="card tight"><div class="eyebrow">Your degree</div>'
       + '<h2>' + totalDone + ' of ' + w.TBU_TOTAL + ' lessons</h2>'
       + '<div class="bar blue"><i style="width:' + Math.max(2, (totalDone / w.TBU_TOTAL) * 100) + '%"></i></div>'
-      + '<div class="barlab"><span>5 campuses</span><span>' + Math.round((totalDone / w.TBU_TOTAL) * 100) + '% complete</span></div></div>';
+      + '<div class="barlab"><span>' + CAMPUSES.length + ' campuses</span><span>'
+      + Math.round((totalDone / w.TBU_TOTAL) * 100) + '% complete</span></div>'
+      + '<p class="fine" style="margin:12px 0 0">Every lesson ends in a mission and a check. Every campus ends in a build and an exam. '
+      + '<a href="#/workbook">Your workbook</a> is where the builds collect.</p></div>';
 
     CAMPUSES.forEach(function (c) {
       var p = campusProgress(c);
@@ -698,10 +1065,31 @@
       var done = !!doneSet[l.id];
       html += '<button class="lrow' + (done ? ' done' : '') + '" data-go="#/lesson/' + l.id + '">'
         + '<div class="tick">' + (done ? '✓' : (i + 1)) + '</div>'
-        + '<div class="bd"><b>' + esc(l.title) + '</b><span>' + l.min + ' min · mission included</span></div>'
+        + '<div class="bd"><b>' + esc(l.title) + '</b><span>' + l.min + ' min · mission'
+        + (checkState(l.id) ? (checkState(l.id).passed ? ' · check passed' : ' · check') : '') + '</span></div>'
         + '<div class="go">→</div></button>';
     });
     html += '</div>';
+
+    var bs = buildState(c.id), es = examState(c.id);
+    if (bs) {
+      html += '<div class="sechead"><h2>The build</h2></div>'
+        + '<button class="crow" data-go="#/build/' + c.id + '" style="border-color:rgba(185,139,255,.4)">'
+        + '<div class="ic">&#128296;</div>'
+        + '<div class="bd"><b>' + esc(bs.b.title) + '</b><span>' + bs.done + '/' + bs.total
+        + ' written &middot; ' + esc(bs.b.deliverable) + '</span></div>'
+        + '<div class="go">' + (bs.complete ? '&#10003;' : '&rarr;') + '</div></button>';
+    }
+    if (es) {
+      html += '<div class="sechead"><h2>The exam</h2></div>'
+        + '<button class="crow" data-go="#/exam/' + c.id + '"' + (es.passed ? ' style="border-color:rgba(67,240,176,.4)"' : '') + '>'
+        + '<div class="ic">' + (es.passed ? '&#127894;' : '&#128221;') + '</div>'
+        + '<div class="bd"><b>' + (es.passed ? 'Passed &mdash; ' + esc(es.ex.title_earned) : esc(es.ex.title) + ' exam') + '</b>'
+        + '<span>' + es.ex.questions.length + ' questions, ' + es.ex.pass + ' to pass'
+        + (es.attempts ? ' &middot; best ' + es.best + '/' + es.ex.questions.length : '') + '</span></div>'
+        + '<div class="go">&rarr;</div></button>';
+    }
+
     el('view').innerHTML = html;
     wire();
   }
@@ -737,6 +1125,8 @@
         + '<button class="btn wide" id="doneBtn">Mark complete · +' + (XP.lesson + XP.mission) + ' XP</button></div>';
     }
 
+    html += '<div id="checkBox"></div>';
+
     html += '<div class="navrow">'
       + (prev ? '<button class="btn ghost" data-go="#/lesson/' + prev.id + '">← Previous</button>' : '')
       + (next ? '<button class="btn ghost" data-go="#/lesson/' + next.id + '">Next lesson →</button>'
@@ -746,6 +1136,7 @@
     el('view').innerHTML = html;
     w.scrollTo(0, 0);
     wire();
+    mountCheck(l.id, el('checkBox'));
 
     var db = el('doneBtn');
     if (db) db.addEventListener('click', function () {
@@ -1058,7 +1449,7 @@
     var view = parts[0] || 'home';
     [].forEach.call(d.querySelectorAll('#tabs a'), function (a) {
       var v = a.getAttribute('data-view');
-      a.classList.toggle('on', v === view || (view === 'campus' && v === 'learn') || (view === 'lesson' && v === 'learn'));
+      a.classList.toggle('on', v === view || (v === 'learn' && ['campus','lesson','exam','build','workbook'].indexOf(view) >= 0));
     });
     if (view === 'home') return viewHome();
     if (view === 'learn') return viewLearn();
@@ -1066,6 +1457,9 @@
     if (view === 'lesson') return viewLesson(parts[1]);
     if (view === 'daily') return viewDaily();
     if (view === 'path') return viewPath(true);
+    if (view === 'exam') return viewExam(parts[1]);
+    if (view === 'build') return viewBuild(parts[1]);
+    if (view === 'workbook') return viewWorkbook();
     if (view === 'live') return viewLive();
     if (view === 'wins') return viewWins();
     if (view === 'tools') return viewTools();

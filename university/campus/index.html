@@ -205,6 +205,35 @@ button{font:inherit}
 pre.code{background:rgba(0,0,0,.42);border:1px solid var(--line);border-left:2px solid var(--acc2);border-radius:12px;
   padding:14px;overflow-x:auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;line-height:1.65;color:#d7e3ff;margin:0 0 14px}
 .reader .body code{background:rgba(255,255,255,.07);border-radius:5px;padding:1px 5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+
+/* coursework */
+.check,.q{border:1px solid var(--line);border-radius:16px;padding:18px;background:linear-gradient(160deg,rgba(255,255,255,.045),rgba(255,255,255,.012));margin-top:22px}
+.q{margin-bottom:12px}
+.check .q{border:0;padding:0;margin:0 0 20px;background:0}
+.q > b{display:block;font-size:15.5px;font-weight:700;margin-bottom:11px;line-height:1.45}
+.opt{display:block;width:100%;text-align:left;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;
+  background:rgba(255,255,255,.02);color:var(--text);font:inherit;font-size:14.5px;cursor:pointer;transition:border-color .14s,background .14s}
+.opt:hover:not([disabled]){border-color:var(--line2)}
+.opt.picked{border-color:var(--line2);background:rgba(255,212,90,.08)}
+.opt.right{border-color:rgba(67,240,176,.55);background:rgba(67,240,176,.12);color:#cdf5e6}
+.opt.wrong{border-color:rgba(255,122,122,.5);background:rgba(255,122,122,.1);color:#ffd0d0}
+.opt[disabled]{cursor:default}
+.why{border-left:2px solid var(--line2);border-radius:0 10px 10px 0;padding:10px 14px;margin-top:4px;background:rgba(255,255,255,.03);
+  font-size:13.5px;color:var(--muted);line-height:1.55}
+.why.ok{border-left-color:var(--good)}
+.why b{color:var(--text)}
+.build-step .sh{display:flex;align-items:center;gap:10px;margin:0}
+.build-step .sh .n{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+  font-family:Poppins;font-weight:900;font-size:13px;background:rgba(185,139,255,.16);border:1px solid rgba(185,139,255,.35);color:var(--vio)}
+.build-step .sh b{flex:1;font-size:16px}
+.build-step.filled .sh .n{background:rgba(67,240,176,.14);border-color:rgba(67,240,176,.4);color:var(--good)}
+.build-step textarea{min-height:104px}
+.saverow{display:flex;align-items:center;gap:12px;margin-top:10px}
+.saverow .fine{color:var(--good)}
+.wb .wbstep{border-bottom:1px solid var(--line);padding:13px 0}
+.wb .wbstep:last-child{border-bottom:0}
+.wb .wbstep b{display:block;font-size:13px;color:var(--gold);letter-spacing:.02em;margin-bottom:5px}
+.wb .wbstep p{margin:0;font-size:14.5px;color:#dde2f3;white-space:pre-wrap;overflow-wrap:anywhere}
 #toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--tabh) + 16px);z-index:60;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
 @media(min-width:860px){#toasts{bottom:24px}}
 .toast{background:rgba(12,14,24,.96);border:1px solid var(--line2);color:var(--text);border-radius:999px;padding:11px 18px;font-size:14px;font-weight:700;box-shadow:var(--shadow);animation:pop .28s}
@@ -274,6 +303,7 @@ pre.code{background:rgba(0,0,0,.42);border:1px solid var(--line);border-left:2px
 <div id="toasts"></div>
 
 <script src="/university/campus/curriculum.js"></script>
+<script src="/university/campus/coursework.js"></script>
 <script src="/university/campus/campus.js"></script>
 </body>
 </html>
