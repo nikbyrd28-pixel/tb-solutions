@@ -282,6 +282,50 @@
                                            p_step: step, p_content: content, p_steps_total: stepsTotal || null });
     },
 
+    /* Announcements + lesson overrides, same for every student, no auth. */
+    content: function () {
+      if (Store.mode === 'local') return Promise.resolve({ ok: true, announcements: [], overrides: {} });
+      return Store.rpc('uni_content', {});
+    },
+
+    /* ---- money ---------------------------------------------------------- */
+    money: function (email, pin) {
+      if (Store.mode === 'local') {
+        var s = Store._local() || Store._blank('', email, '');
+        var cs = s.clients || [];
+        var earned = cs.reduce(function (a, c) { return a + localEarned(c); }, 0);
+        var mrr = cs.filter(function (c) { return !c.ended_on; }).reduce(function (a, c) { return a + (+c.monthly || 0); }, 0);
+        return Promise.resolve({ ok: true, local: true, clients: cs.map(function (c) {
+          return { id: c.id, name: c.name, monthly: c.monthly, setup: c.setup, started_on: c.started_on,
+                   ended_on: c.ended_on, earned: localEarned(c), active: !c.ended_on };
+        }), mrr: mrr, earned: earned, active: cs.filter(function (c) { return !c.ended_on; }).length, total: cs.length });
+      }
+      return Store.rpc('uni_money', { p_email: email, p_pin: pin });
+    },
+
+    clientAdd: function (email, pin, name, monthly, setup, started, note) {
+      if (Store.mode === 'local') {
+        var s = Store._local() || Store._blank('', email, '');
+        s.clients = s.clients || [];
+        s.clients.push({ id: 'l' + Date.now(), name: name, monthly: monthly || 0, setup: setup || 0,
+                         started_on: started || today(), ended_on: null, note: note || '' });
+        Store._saveLocal(s);
+        return Store.money(email, pin);
+      }
+      return Store.rpc('uni_client_add', { p_email: email, p_pin: pin, p_name: name,
+        p_monthly: monthly, p_setup: setup, p_started: started, p_note: note });
+    },
+
+    clientEnd: function (email, pin, id) {
+      if (Store.mode === 'local') {
+        var s = Store._local() || Store._blank('', email, '');
+        (s.clients || []).forEach(function (c) { if (c.id === id) c.ended_on = today(); });
+        Store._saveLocal(s);
+        return Store.money(email, pin);
+      }
+      return Store.rpc('uni_client_end', { p_email: email, p_pin: pin, p_id: id });
+    },
+
     events: function (email, pin) {
       if (Store.mode === 'local') return Promise.resolve({ ok: true, upcoming: [], past: [], local: true });
       return Store.rpc('uni_events_list', { p_email: email, p_pin: pin });
@@ -473,7 +517,7 @@
 
   function enter(state) {
     absorb(state);
-    loadWork().then(function () { if (S) route(); });
+    loadWork().then(loadMoney).then(loadContent).then(function () { if (S) route(); });
     if (Store.mode === 'cloud' && SESSION) {
       Store.syncUp(SESSION.email, SESSION.pin).then(function (moved) {
         if (!moved) return;
@@ -562,8 +606,14 @@
     var hour = new Date().getHours();
     var hi = hour < 12 ? 'Morning' : hour < 18 ? 'Afternoon' : 'Evening';
 
-    var html = localBanner()
-      + '<div class="rankcard"><div class="top2">'
+    var html = localBanner();
+    (CONTENT.announcements || []).slice(0, 2).forEach(function (an) {
+      html += '<div class="card" style="border-color:var(--line2);background:radial-gradient(circle at 8% 0%,rgba(255,212,90,.1),transparent 45%),linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015))">'
+        + '<div class="eyebrow">&#128227; From Nick &middot; ' + esc(ago(an.at)) + '</div>'
+        + '<h2 style="font-size:17px;margin:4px 0 4px">' + esc(an.title) + '</h2>'
+        + '<p class="muted" style="font-size:14px;margin:0;white-space:pre-wrap">' + esc(an.body) + '</p></div>';
+    });
+    html += '<div class="rankcard"><div class="top2">'
       +   '<div class="badge">' + r.icon + '</div>'
       +   '<div class="who"><b>' + hi + ', ' + esc((st.name || '').split(' ')[0]) + '</b>'
       +     '<span>' + esc(r.name) + ' · ' + esc(r.blurb) + '</span></div>'
@@ -615,6 +665,15 @@
     });
     html += '<div id="dailyFoot">' + dailyFootHtml() + '</div>';
 
+    if (MONEY) {
+      html += '<button class="crow" data-go="#/money" style="margin-top:16px;border-color:rgba(67,240,176,.35)">'
+        + '<div class="ic">&#128176;</div>'
+        + '<div class="bd"><b>' + money(MONEY.earned) + ' earned</b><span>'
+        + (MONEY.active ? money(MONEY.mrr) + '/mo from ' + MONEY.active + ' client' + (MONEY.active === 1 ? '' : 's')
+                        : 'No clients logged yet — log the first one the day it happens')
+        + '</span></div><div class="go">&rarr;</div></button>';
+    }
+
     var wt = workTotals();
     html += '<button class="crow" data-go="#/workbook" style="margin-top:16px">'
       + '<div class="ic">&#128214;</div>'
@@ -630,6 +689,15 @@
       + '<p class="muted" style="font-size:14.5px;margin:6px 0 0">' + esc(brief.d) + '</p>'
       + '<p class="fine" style="margin:10px 0 0">Every mission here is somebody else&rsquo;s idea. This one is not &mdash; '
       + 'post it in <a href="#/wins">Wins</a> when it exists.</p></div>';
+
+    var cs = w.TBU_caseForWeek && w.TBU_caseForWeek();
+    if (cs) {
+      html += '<div class="sechead"><h2>This week&rsquo;s case file</h2><button class="more" data-go="#/library">All ' + w.TBU_CASES.length + '</button></div>'
+        + '<button class="crow" data-go="#/case/' + cs.id + '">'
+        + '<div class="ic">&#128213;</div>'
+        + '<div class="bd"><b>' + esc(cs.title) + '</b><span>' + esc(cs.lesson) + '</span></div>'
+        + '<div class="go">&rarr;</div></button>';
+    }
 
     html += '<button class="crow" data-go="#/tools" style="margin-top:16px">'
       + '<div class="ic">🧰</div><div class="bd"><b>The toolstack</b>'
@@ -1026,6 +1094,181 @@
         w.navigator.clipboard.writeText(text).then(function () { toast('Copied', 'good'); });
       } else { w.prompt('Copy your workbook:', text); }
     });
+  }
+
+  /* ------------------------------------------------------------------ money
+     Every school claims its students make money and almost none of them can
+     show it, because they never asked and never counted. This counts: a client
+     is logged once and the earned figure grows on its own every month.
+
+     It is deliberately an ESTIMATE from fee times elapsed months, not a
+     receipt ledger, and it says so on the screen. A student who has to
+     reconcile invoices to see their number will stop looking at it, and a
+     number nobody looks at changes nothing. */
+  var MONEY = null;
+  var CONTENT = { announcements: [], overrides: {} };
+
+  /* Overrides are patched straight into the lesson objects once, so every
+     screen that renders a lesson gets the edited version with no further
+     bookkeeping. Only the four content fields can be touched — ids, order and
+     campus membership stay in code, which is what keeps progress safe. */
+  function applyOverrides() {
+    var ov = CONTENT.overrides || {};
+    w.TBU_LESSONS.forEach(function (entry) {
+      var patch = ov[entry.lesson.id];
+      if (!patch) return;
+      if (patch.title) entry.lesson.title = patch.title;
+      if (patch.body) entry.lesson.body = patch.body;
+      if (patch.mission) entry.lesson.mission = patch.mission;
+      if (patch.ask) entry.lesson.ask = patch.ask;
+    });
+  }
+  function loadContent() {
+    return Store.content().then(function (r) {
+      if (r && r.ok) { CONTENT = { announcements: r.announcements || [], overrides: r.overrides || {} }; applyOverrides(); }
+    });
+  }
+
+  var GOAL = 5000;
+
+  function localEarned(c) {
+    var start = Date.parse((c.started_on || today()) + 'T00:00:00');
+    var end = c.ended_on ? Date.parse(c.ended_on + 'T00:00:00') : Date.now();
+    var months = Math.max(0, Math.floor((end - start) / (30.44 * 86400000)));
+    return (+c.setup || 0) + (+c.monthly || 0) * months;
+  }
+  function money(n) {
+    return '$' + Math.round(+n || 0).toLocaleString();
+  }
+  function loadMoney() {
+    if (!SESSION) return Promise.resolve();
+    return Store.money(SESSION.email, SESSION.pin).then(function (r) {
+      if (r && r.ok) MONEY = r;
+    });
+  }
+
+  function viewMoney() {
+    var m = MONEY || { clients: [], mrr: 0, earned: 0, active: 0, total: 0 };
+    var pct = Math.min(100, (m.earned / GOAL) * 100);
+
+    var html = localBanner()
+      + '<div class="rankcard"><div class="top2">'
+      + '<div class="badge">&#128176;</div>'
+      + '<div class="who"><b>' + money(m.earned) + ' earned</b>'
+      + '<span>' + money(m.mrr) + ' a month recurring &middot; ' + m.active + ' active client'
+      + (m.active === 1 ? '' : 's') + '</span></div></div>'
+      + '<div class="bar"><i style="width:' + Math.max(2, pct) + '%"></i></div>'
+      + '<div class="barlab"><span>' + Math.round(pct) + '% of the first ' + money(GOAL) + '</span>'
+      + '<span>' + (m.earned >= GOAL ? 'Target passed' : money(GOAL - m.earned) + ' to go') + '</span></div>'
+      + '<p class="fine" style="margin:12px 0 0">Estimated from what you told us: setup fees plus the monthly fee for each whole '
+      + 'month since the client started. Nothing here is sent to anyone.</p></div>';
+
+    html += '<div class="card"><div class="eyebrow">Log a client</div>'
+      + '<h2>Who is paying you?</h2>'
+      + '<p class="muted" style="font-size:14px;margin:4px 0 12px">Log it once. The number grows by itself every month, '
+      + 'so you never have to come back and update it.</p>'
+      + '<div class="field"><label for="clName">Business</label><input id="clName" placeholder="Ray\'s Barbershop" maxlength="80"></div>'
+      + '<div class="two2"><div class="field"><label for="clMonthly">Monthly ($)</label>'
+      + '<input id="clMonthly" type="number" inputmode="numeric" min="0" step="10" placeholder="300"></div>'
+      + '<div class="field"><label for="clSetup">Setup fee ($)</label>'
+      + '<input id="clSetup" type="number" inputmode="numeric" min="0" step="10" placeholder="300"></div></div>'
+      + '<div class="field"><label for="clStart">Started</label><input id="clStart" type="date" value="' + today() + '"></div>'
+      + '<button class="btn wide" id="clAdd">Add to my book</button>'
+      + '<div class="err hide" id="clErr" style="margin-top:10px"></div></div>';
+
+    if (m.clients && m.clients.length) {
+      html += '<div class="sechead"><h2>Your clients</h2></div>';
+      m.clients.forEach(function (c) {
+        html += '<div class="shoprow' + (c.active ? '' : ' done') + '">'
+          + '<div class="bd"><b>' + esc(c.name) + '</b><span>'
+          + money(c.monthly) + '/mo' + (+c.setup ? ' &middot; ' + money(c.setup) + ' setup' : '')
+          + ' &middot; since ' + esc(String(c.started_on || '').slice(0, 10))
+          + (c.active ? '' : ' &middot; ended') + '</span></div>'
+          + '<div class="amt">' + money(c.earned) + '</div>'
+          + (c.active ? '<button class="btn plain sm" data-end="' + esc(c.id) + '">End</button>' : '')
+          + '</div>';
+      });
+    } else {
+      html += '<div class="card"><div class="empty">Nothing logged yet. The first one is usually smaller than you expected '
+        + 'and matters more than you expected.</div></div>';
+    }
+
+    html += '<div class="sechead"><h2>What the path is built to produce</h2></div>'
+      + '<div class="card"><p class="muted" style="font-size:14.5px;margin:0 0 10px">Four clients at $300 a month, '
+      + 'signed across three months, with a $300 setup each:</p>'
+      + '<div class="lb"><div class="nm">Setup fees<em>4 &times; $300</em></div><div class="xp">$1,200</div></div>'
+      + '<div class="lb"><div class="nm">Months 1&ndash;6 of retainers<em>as each one starts</em></div><div class="xp">$4,200</div></div>'
+      + '<div class="lb me"><div class="nm">Six months in<em>and $1,200 a month still arriving</em></div><div class="xp">$5,400</div></div>'
+      + '<p class="fine" style="margin:12px 0 0">That is arithmetic, not a promise. It happens if you do the outreach; '
+      + 'it does not if you do not. Nobody here will pretend otherwise.</p></div>';
+
+    el('view').innerHTML = html;
+    wire();
+
+    el('clAdd').addEventListener('click', function () {
+      var name = (el('clName').value || '').trim();
+      var monthly = parseFloat(el('clMonthly').value) || 0;
+      var setup = parseFloat(el('clSetup').value) || 0;
+      var started = el('clStart').value || today();
+      var e = el('clErr');
+      if (name.length < 2) { e.textContent = 'Name the client.'; e.classList.remove('hide'); return; }
+      if (!monthly && !setup) { e.textContent = 'A monthly fee or a setup fee — otherwise there is nothing to count.'; e.classList.remove('hide'); return; }
+      e.classList.add('hide');
+      var b = el('clAdd'); b.disabled = true; b.textContent = 'Saving…';
+      Store.clientAdd(SESSION.email, SESSION.pin, name, monthly, setup, started, null).then(function (r) {
+        b.disabled = false; b.textContent = 'Add to my book';
+        if (!r || !r.ok) { e.textContent = (r && r.error) || 'Could not save that.'; e.classList.remove('hide'); return; }
+        MONEY = r;
+        toast('Logged — ' + money(r.earned) + ' earned so far', 'good');
+        viewMoney();
+      });
+    });
+
+    [].forEach.call(d.querySelectorAll('[data-end]'), function (b) {
+      b.addEventListener('click', function () {
+        if (!w.confirm('End this client? What they already paid stays counted.')) return;
+        Store.clientEnd(SESSION.email, SESSION.pin, b.getAttribute('data-end')).then(function (r) {
+          if (!r || !r.ok) { toast((r && r.error) || 'Could not do that.', 'bad'); return; }
+          MONEY = r; viewMoney();
+        });
+      });
+    });
+  }
+
+  /* ---------------------------------------------------------------- library
+     Five-minute true stories, each ending in a move. Kept apart from the
+     lessons because they do different work: lessons teach the system, stories
+     teach the instinct. */
+  function viewLibrary() {
+    var html = '<div class="card tight"><div class="eyebrow">The library</div>'
+      + '<h2>Case files</h2>'
+      + '<p class="muted" style="font-size:14px;margin:4px 0 0">True, documented episodes from business and tech — '
+      + 'five minutes each, and each one ends in a move you can make this week. No legends, no misattributed quotes.</p></div>';
+    (w.TBU_CASES || []).forEach(function (c) {
+      html += '<button class="crow" data-go="#/case/' + c.id + '">'
+        + '<div class="ic">&#128213;</div>'
+        + '<div class="bd"><b>' + esc(c.title) + '</b><span>' + esc(c.tag) + ' &middot; ' + esc(c.lesson) + '</span></div>'
+        + '<div class="go">&rarr;</div></button>';
+    });
+    el('view').innerHTML = html;
+    wire();
+  }
+
+  function viewCase(id) {
+    var c = (w.TBU_CASES || []).filter(function (x) { return x.id === id; })[0];
+    if (!c) { location.hash = '#/library'; return; }
+    el('view').innerHTML = '<button class="btn plain sm" data-go="#/library">&larr; Case files</button>'
+      + '<div class="reader" style="margin-top:14px">'
+      + '<div class="meta"><span class="chip">&#128213; ' + esc(c.tag) + '</span><span class="chip">5 min</span></div>'
+      + '<h1>' + esc(c.title) + '</h1>'
+      + '<div class="body"><p>' + esc(c.story) + '</p>'
+      + '<div class="ex"><b>The lesson:</b> ' + esc(c.lesson) + '</div></div>'
+      + '<div class="mission"><div class="eyebrow">The move</div>'
+      + '<p>' + esc(c.move) + '</p>'
+      + '<p class="fine" style="margin:0">No box to fill here — do it, and post what happened in <a href="#/wins">Wins</a> if it worked.</p></div>'
+      + '</div>';
+    w.scrollTo(0, 0);
+    wire();
   }
 
   function viewLearn() {
@@ -1460,6 +1703,9 @@
     if (view === 'exam') return viewExam(parts[1]);
     if (view === 'build') return viewBuild(parts[1]);
     if (view === 'workbook') return viewWorkbook();
+    if (view === 'money') return viewMoney();
+    if (view === 'library') return viewLibrary();
+    if (view === 'case') return viewCase(parts[1]);
     if (view === 'live') return viewLive();
     if (view === 'wins') return viewWins();
     if (view === 'tools') return viewTools();

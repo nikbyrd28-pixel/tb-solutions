@@ -24,6 +24,30 @@ Until step 1 is done the campus still runs — it falls back to storing progress
 on the student's own device and says so in a banner. The first time they sign in
 after the migration, their local progress is replayed into their account.
 
+## Pricing (decided 2026-08-24)
+
+**$50/month.** Free for the founding cohort while it fills out. The public site
+stays priceless by design — the number is said on the application call and in
+the welcome email. What justifies it: 60 lessons with a check after each, 8
+campus exams, 8 builds whose 45 saved steps become the student's own business
+documents (the workbook), the money tracker (log a client once, the earned
+figure grows monthly — the honest path produces ~$5,400 in six months at 4
+clients × $300), live calls, the case-file library, and the toolstack licensed
+for their clients. At $50, one client's first WEEK covers a year of membership.
+
+## Running it day to day
+
+From `/university/admin/` you can now also:
+- **Message the campus** — posts show at the top of every student's home until
+  they expire. A noticeboard, not a chat.
+- **Edit any lesson** — pick it, change title/body/mission/ask, save; live for
+  every student on their next visit. Restore returns the original; an edit can
+  never permanently destroy a lesson (overrides live in `uni_lesson_overrides`,
+  originals stay in `curriculum.js`).
+- **Edit a student** — name, email, plan, and PIN reset (which also clears any
+  lockout the old PIN accumulated). The × button permanently deletes — for test
+  rows only; leaving members get the status dropdown.
+
 ## Logging in
 
 - **Students** — `/university/campus/`. First time: **Enrol**, an enrolment code

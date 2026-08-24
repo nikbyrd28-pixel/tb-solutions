@@ -83,6 +83,35 @@ td{padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
     </div>
 
     <div class="card">
+      <h2>Message the campus</h2>
+      <p class="muted" style="font-size:13.5px;margin:0 0 12px">Shows at the top of every student's home screen until it expires. A noticeboard, not a chat — use it for call announcements, new lessons, and wins worth pointing at.</p>
+      <div class="row">
+        <div style="flex:2"><label for="anTitle">Title</label><input id="anTitle" placeholder="Live call Sunday 7pm"></div>
+        <div><label for="anDays">Shows for (days)</label><input id="anDays" type="number" value="14" min="1" max="365"></div>
+      </div>
+      <div class="row"><div style="flex:1"><label for="anBody">Message</label><textarea id="anBody" style="min-height:70px" placeholder="Bring one stuck deal. Replay goes up after."></textarea></div></div>
+      <button id="anBtn">Post it</button>
+      <div id="anOut" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card">
+      <h2>Edit a lesson</h2>
+      <p class="muted" style="font-size:13.5px;margin:0 0 12px">Changes go live for every student the next time they open the campus. Leave a field blank to keep the original; save with everything blank to restore the original completely. Body is HTML — <code>&lt;p&gt;</code>, <code>&lt;h3&gt;</code> and <code>&lt;div class="ex"&gt;</code> boxes.</p>
+      <label for="lsPick">Lesson</label><select id="lsPick"></select>
+      <label for="lsTitle">Title</label><input id="lsTitle">
+      <label for="lsBody">Body (HTML)</label><textarea id="lsBody" style="min-height:180px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px"></textarea>
+      <div class="row">
+        <div><label for="lsMission">Mission</label><textarea id="lsMission" style="min-height:60px"></textarea></div>
+        <div><label for="lsAsk">Proof placeholder</label><textarea id="lsAsk" style="min-height:60px"></textarea></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+        <button id="lsSave">Save changes</button>
+        <button class="plain" id="lsRestore">Restore original</button>
+        <span class="muted" id="lsFlag" style="font-size:13px;align-self:center"></span>
+      </div>
+    </div>
+
+    <div class="card">
       <h2>Live calls</h2>
       <p class="muted" style="font-size:13.5px;margin:0 0 12px">Scheduled calls open inside the campus — students join without leaving the site, and attendance is recorded. Times are your local time.</p>
       <div class="row">
@@ -105,6 +134,7 @@ td{padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
   </div>
 </div>
 
+<script src="/university/campus/curriculum.js"></script>
 <script>
 var SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
 var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
@@ -149,6 +179,8 @@ function open_(){
   loadApps();
   loadStudents();
   loadEvents();
+  loadAnnouncements();
+  loadOverrides();
 }
 
 el('mintBtn').addEventListener('click',function(){
@@ -184,6 +216,129 @@ el('evBtn').addEventListener('click',function(){
     loadEvents();
   });
 });
+
+/* ---- announcements ---- */
+el('anBtn').addEventListener('click',function(){
+  var t=el('anTitle').value.trim(), body=el('anBody').value.trim();
+  if(!t||!body){ alert('A title and a message.'); return; }
+  el('anBtn').disabled=true; el('anBtn').textContent='Posting…';
+  rpc('uni_announce',{p_title:t,p_body:body,p_days:parseInt(el('anDays').value,10)||14}).then(function(r){
+    el('anBtn').disabled=false; el('anBtn').textContent='Post it';
+    if(!r||!r.ok){ alert((r&&r.error)||'Could not post.'); return; }
+    el('anTitle').value=''; el('anBody').value='';
+    loadAnnouncements();
+  });
+});
+function loadAnnouncements(){
+  rpc('uni_content').then(function(r){
+    var box=el('anOut'); if(!box) return;
+    var list=(r&&r.announcements)||[];
+    box.innerHTML = list.length ? list.map(function(a){
+      return '<div class="note" style="margin-top:8px;display:flex;gap:10px;align-items:flex-start">'+
+        '<div style="flex:1"><b>'+esc(a.title)+'</b><br><span style="white-space:pre-wrap">'+esc(a.body)+'</span></div>'+
+        '<button class="plain" data-anx="'+esc(a.id)+'">Take down</button></div>';
+    }).join('') : '<p class="muted" style="font-size:13px">Nothing on the board.</p>';
+    [].forEach.call(document.querySelectorAll('[data-anx]'),function(b){
+      b.addEventListener('click',function(){
+        rpc('uni_announce_delete',{p_id:b.getAttribute('data-anx')}).then(function(rr){
+          if(!rr||!rr.ok) alert((rr&&rr.error)||'Could not remove it.'); else loadAnnouncements();
+        });
+      });
+    });
+  });
+}
+
+/* ---- lesson editor ---- */
+/* The originals ship in curriculum.js; the picker loads it so blanks can show
+   the current text, and saving writes only what changed. */
+var OVERRIDES={};
+function lessonList(){
+  var out=[]; (window.TBU_CAMPUSES||[]).forEach(function(c){
+    c.lessons.forEach(function(l){ out.push({id:l.id, label:c.icon+' '+c.name+' — '+l.title, l:l}); });
+  });
+  return out;
+}
+function fillLessonPicker(){
+  var sel=el('lsPick'); if(!sel||!window.TBU_CAMPUSES) return;
+  sel.innerHTML='';
+  lessonList().forEach(function(x){
+    var o=document.createElement('option'); o.value=x.id;
+    o.textContent=x.label+(OVERRIDES[x.id]?' •edited':'');
+    sel.appendChild(o);
+  });
+  loadLessonFields();
+}
+function loadLessonFields(){
+  var id=el('lsPick').value;
+  var x=lessonList().filter(function(y){return y.id===id})[0]; if(!x) return;
+  var ov=OVERRIDES[id]||{};
+  el('lsTitle').value=ov.title||x.l.title||'';
+  el('lsBody').value=ov.body||x.l.body||'';
+  el('lsMission').value=ov.mission||x.l.mission||'';
+  el('lsAsk').value=ov.ask||x.l.ask||'';
+  el('lsFlag').textContent=OVERRIDES[id]?'This lesson has live edits.':'';
+}
+el('lsPick').addEventListener('change',loadLessonFields);
+el('lsSave').addEventListener('click',function(){
+  var id=el('lsPick').value;
+  var x=lessonList().filter(function(y){return y.id===id})[0]; if(!x) return;
+  function diff(v,orig){ v=(v||'').trim(); return (v && v!==orig)?v:null; }
+  var payload={p_lesson:id,
+    p_title:diff(el('lsTitle').value,x.l.title),
+    p_body:diff(el('lsBody').value,x.l.body),
+    p_mission:diff(el('lsMission').value,x.l.mission),
+    p_ask:diff(el('lsAsk').value,x.l.ask)};
+  if(!payload.p_title&&!payload.p_body&&!payload.p_mission&&!payload.p_ask){
+    el('lsFlag').textContent='Nothing differs from the original.'; return;
+  }
+  el('lsSave').disabled=true; el('lsSave').textContent='Saving…';
+  rpc('uni_lesson_override_set',payload).then(function(r){
+    el('lsSave').disabled=false; el('lsSave').textContent='Save changes';
+    if(!r||!r.ok){ alert((r&&r.error)||'Could not save.'); return; }
+    OVERRIDES[id]={title:payload.p_title,body:payload.p_body,mission:payload.p_mission,ask:payload.p_ask};
+    el('lsFlag').textContent='Live. Students see it on their next visit.';
+    fillLessonPicker(); el('lsPick').value=id; loadLessonFields();
+  });
+});
+el('lsRestore').addEventListener('click',function(){
+  var id=el('lsPick').value;
+  if(!confirm('Remove your edits and restore the original lesson?')) return;
+  rpc('uni_lesson_override_set',{p_lesson:id}).then(function(r){
+    if(!r||!r.ok){ alert((r&&r.error)||'Could not restore.'); return; }
+    delete OVERRIDES[id];
+    el('lsFlag').textContent='Original restored.';
+    fillLessonPicker(); el('lsPick').value=id; loadLessonFields();
+  });
+});
+function loadOverrides(){
+  rpc('uni_content').then(function(r){
+    OVERRIDES=(r&&r.overrides)||{};
+    fillLessonPicker();
+  });
+}
+
+/* ---- student edit ---- */
+function editStudent(email, name){
+  var field=prompt('Edit '+name+' — what?\n\n1 = name\n2 = email\n3 = reset PIN\n4 = plan\n\nType a number:');
+  if(!field) return;
+  var payload={p_email:email};
+  if(field==='1'){ var v=prompt('New name:',name); if(!v)return; payload.p_name=v; }
+  else if(field==='2'){ var v2=prompt('New email:',email); if(!v2)return; payload.p_new_email=v2; }
+  else if(field==='3'){ var v3=prompt('New 4-digit PIN:'); if(!v3)return; payload.p_new_pin=v3; }
+  else if(field==='4'){ var v4=prompt('Plan (monthly / founding / scholarship / team):'); if(!v4)return; payload.p_plan=v4; }
+  else return;
+  rpc('uni_student_edit',payload).then(function(r){
+    if(!r||!r.ok){ alert((r&&r.error)||'Could not save.'); return; }
+    alert('Saved.'); loadStudents();
+  });
+}
+function deleteStudent(email, name){
+  if(!confirm('Permanently delete '+name+' ('+email+')?\n\nThis erases their progress, builds and history. For a paying member who is leaving, use the status dropdown instead — this is for test rows.')) return;
+  rpc('uni_student_delete',{p_email:email}).then(function(r){
+    if(!r||!r.ok){ alert((r&&r.error)||'Could not delete.'); return; }
+    loadStudents();
+  });
+}
 
 function loadApps(){
   rpc('uni_applications',{p_limit:100}).then(function(r){
@@ -276,10 +431,17 @@ function loadStudents(){
           '<td>'+(+x.xp||0).toLocaleString()+'<br><span class="muted" style="font-size:12px">'+esc(x.rank)+'</span></td>'+
           '<td>'+(+x.lessons||0)+'/28</td><td>'+(+x.streak||0)+'</td>'+
           '<td class="muted" style="font-size:12px">'+(x.last_seen_at?new Date(x.last_seen_at).toLocaleDateString():'—')+'</td>'+
-          '<td><select data-email="'+esc(x.email)+'" class="st" style="font-size:12.5px;padding:6px">'+
+          '<td style="white-space:nowrap"><select data-email="'+esc(x.email)+'" class="st" style="font-size:12.5px;padding:6px">'+
             ['active','paused','cancelled'].map(function(s){return '<option'+(s===x.status?' selected':'')+'>'+s+'</option>';}).join('')+
-          '</select></td></tr>';
+          '</select> <button class="plain sted" data-em="'+esc(x.email)+'" data-nm="'+esc(x.name)+'">Edit</button>'+
+          ' <button class="plain stdel" data-em="'+esc(x.email)+'" data-nm="'+esc(x.name)+'">&times;</button></td></tr>';
       }).join('')+'</tbody></table></div>';
+    [].forEach.call(document.querySelectorAll('.sted'),function(b){
+      b.addEventListener('click',function(){ editStudent(b.getAttribute('data-em'), b.getAttribute('data-nm')); });
+    });
+    [].forEach.call(document.querySelectorAll('.stdel'),function(b){
+      b.addEventListener('click',function(){ deleteStudent(b.getAttribute('data-em'), b.getAttribute('data-nm')); });
+    });
     [].forEach.call(document.querySelectorAll('select.st'),function(sel){
       sel.addEventListener('change',function(){
         sel.disabled=true;
