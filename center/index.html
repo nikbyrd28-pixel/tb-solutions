@@ -536,7 +536,12 @@
     }).catch(function(){ el('calBody').innerHTML='<p class="muted">Network error.</p>'; });
   };
   function renderCal(list){
-    if(!list.length){ el('calBody').innerHTML='<p class="muted" style="padding:20px 0">No appointments in this range. When customers book from their card, they appear here.</p>'; return; }
+    if(!list.length){
+      el('calBody').innerHTML='<p class="muted" style="padding:20px 0">No appointments in this range. When customers book from their card, they appear here.</p>'
+        +(DASH && !(+DASH.members) ? '<p class="muted" style="padding:0 0 20px">Nobody has joined yet. '
+          +'<a href="/shop/import/?c='+encodeURIComponent(CODE)+'">Bring your clients in</a> from Booksy, Square or a list and they can book from day one.</p>' : '');
+      return;
+    }
     var byDay={}, order=[];
     list.forEach(function(a){
       var dt=a.at||a.date||a.created_at||a.when; var day = dt? new Date(dt).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'}) : 'Scheduled';
@@ -577,7 +582,15 @@
     }).catch(function(){ el('crmBody').innerHTML='<p class="muted">Network error.</p>'; });
   };
   function renderCrm(list){
-    if(!list.length){ el('crmBody').innerHTML='<p class="muted" style="padding:20px 0">No customers here yet.</p>'; return; }
+    if(!list.length){
+      var filtered=(el('crmSearch').value||'').trim() || crmSegVal!=='all';
+      el('crmBody').innerHTML= filtered
+        ? '<p class="muted" style="padding:20px 0">Nothing matches that.</p>'
+        : '<p class="muted" style="padding:20px 0">No customers yet. '
+          +'<a href="/shop/import/?c='+encodeURIComponent(CODE)+'">Bring your clients in</a> — export from Booksy, Square or your phone and paste the list in. '
+          +'They keep the visits they already had.</p>';
+      return;
+    }
     el('crmBody').innerHTML=list.map(function(m){
       var ph=tel(m.phone);
       return '<div class="cust"><div class="av">'+esc(initials(m.name))+'</div>'
@@ -618,7 +631,8 @@
 
   function buildTools(){
     var base=location.origin;
-    var links=[['🌐 Your website + Google listing',base+'/shop/edit/'],
+    var links=[['📥 Bring your clients in (Booksy, Square, a list)',base+'/shop/import/?c='+CODE],
+      ['🌐 Your website + Google listing',base+'/shop/edit/'],
       ['⚙️ Rewards & settings',base+'/rewards/owner/?c='+CODE],['📣 Loop Blast (bulk SMS)',base+'/rewards/blast/?c='+CODE],
       ['💔 Win back lapsed',base+'/rewards/winback/?c='+CODE],['⭐ Reviews wall',base+'/rewards/wall/?c='+CODE],
       ['🖨️ Counter poster',base+'/rewards/poster/?c='+CODE],['🎮 Arcade',base+'/arcade/?c='+CODE]];
