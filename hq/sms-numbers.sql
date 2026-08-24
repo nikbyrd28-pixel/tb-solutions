@@ -47,12 +47,36 @@ alter table public.reward_settings
 
 alter table public.reward_settings drop constraint if exists reward_settings_sms_state;
 alter table public.reward_settings add constraint reward_settings_sms_state
-  check (sms_state in ('off','requested','live','paused'));
+  check (sms_state in ('off','wanted','requested','live','paused'));
 
 -- One number belongs to one shop. Without this a copy-paste in the admin panel
 -- puts two shops on the same number and one shop's STOP silences the other's.
 create unique index if not exists reward_settings_sms_from_uniq
   on public.reward_settings(sms_from) where sms_from is not null;
+
+-- ----------------------------------------------------------------------------
+-- WHO IS ALLOWED TO ASK
+--
+-- A number costs money every month whether the shop texts anybody or not, so a
+-- shop that has never paid for anything cannot be allowed to summon one by
+-- tapping a button. But a barber who wants it is the most qualified lead there
+-- is, and refusing him with a locked door loses that.
+--
+-- So there are two taps, not one. 'wanted' costs nothing and asks nothing: he
+-- says he wants texting, it shows up on Loop's side, somebody rings him. Only
+-- once he is actually paying does the registration form appear, and only then
+-- can a number be attached. The paperwork is never collected from someone who
+-- has not agreed to pay for what it is for.
+--
+-- Every shop in the database is 'trial' today and nothing anywhere moves one
+-- off it, so sms_mark_paid exists as well — a gate nothing can open is just a
+-- feature that does not work.
+-- ----------------------------------------------------------------------------
+create or replace function public.sms_paid(p_client text)
+returns boolean language sql stable security definer set search_path to 'public','pg_temp' as $$
+  select coalesce(plan_status, '') in ('paid','active','pro')
+    from public.reward_settings where client = lower(p_client)
+$$;
 
 -- ----------------------------------------------------------------------------
 -- sms_num — a real number, or nothing.
@@ -233,6 +257,7 @@ begin
    where m.client = s.client and m.sms_opt_out_at is not null;
 
   return jsonb_build_object('ok', true,
+    'paid',      public.sms_paid(s.client),
     'state',     s.sms_state,
     'number',    s.sms_from,
     'asked_at',  s.sms_asked_at,
@@ -240,6 +265,27 @@ begin
     'note',      s.sms_note,
     'reachable', reach,
     'opted_out', quiet);
+end $$;
+
+create or replace function public.sms_interest(p_client text, p_pin text)
+returns jsonb language plpgsql security definer set search_path to 'public','pg_temp' as $$
+declare s public.reward_settings;
+begin
+  select * into s from public.reward_settings where client = lower(p_client);
+  if not found then return jsonb_build_object('ok', false, 'error', 'Shop not found.'); end if;
+  perform public.pin_gate(p_client, p_pin, s.pin);
+  if coalesce(s.pin,'') <> coalesce(p_pin,'') then
+    return jsonb_build_object('ok', false, 'error', 'Wrong PIN.');
+  end if;
+  -- Never walks a shop backwards: one that is already registered or live has
+  -- said something stronger than "interested".
+  if s.sms_state <> 'off' then
+    return jsonb_build_object('ok', true, 'state', s.sms_state);
+  end if;
+  update public.reward_settings
+     set sms_state = 'wanted', sms_asked_at = coalesce(sms_asked_at, now())
+   where client = s.client;
+  return jsonb_build_object('ok', true, 'state', 'wanted');
 end $$;
 
 create or replace function public.sms_request(p_client text, p_pin text, p_biz jsonb)
@@ -254,6 +300,9 @@ begin
   end if;
   if s.sms_state = 'live' then
     return jsonb_build_object('ok', false, 'error', 'This shop already has a number.');
+  end if;
+  if not public.sms_paid(s.client) then
+    return jsonb_build_object('ok', false, 'error', 'A number of your own comes with the paid plan.');
   end if;
 
   v_legal := left(btrim(coalesce(p_biz->>'legal','')), 120);
@@ -298,8 +347,9 @@ begin
       from (
         select s.client, s.biz_name, s.sms_state, s.sms_from, s.sms_biz,
                s.sms_asked_at as asked_at, s.sms_live_at as live_at, s.sms_note,
-               case s.sms_state when 'requested' then 0 when 'paused' then 1
-                                when 'live' then 2 else 3 end as rank,
+               public.sms_paid(s.client) as paid,
+               case s.sms_state when 'requested' then 0 when 'wanted' then 1
+                                when 'paused' then 2 when 'live' then 3 else 4 end as rank,
                (select count(*) from public.reward_members m
                  where m.client = s.client and public.sms_num(m.phone) is not null
                    and m.sms_opt_out_at is null and coalesce(m.sms_consent, true)) as reachable
@@ -322,6 +372,11 @@ begin
   if exists (select 1 from public.reward_settings where sms_from = v_from and client <> v_c) then
     return jsonb_build_object('ok', false, 'error', 'Another shop is already on that number.');
   end if;
+  -- The last stop before a monthly bill starts against a shop that is not
+  -- paying one. Everything above this is a form; this is the money.
+  if not public.sms_paid(v_c) then
+    return jsonb_build_object('ok', false, 'error', 'That shop is not on a paid plan — mark it paying first.');
+  end if;
   update public.reward_settings set
     sms_from = v_from, sms_state = 'live',
     sms_live_at = coalesce(sms_live_at, now()),
@@ -331,6 +386,19 @@ begin
   return jsonb_build_object('ok', true, 'number', v_from);
 end $$;
 
+create or replace function public.sms_mark_paid(p_key text, p_client text, p_on boolean default true)
+returns jsonb language plpgsql security definer set search_path to 'public','pg_temp' as $$
+declare v_st text;
+begin
+  if not public.crm_gate(p_key) then
+    return jsonb_build_object('ok', false, 'error', 'Wrong admin key.');
+  end if;
+  v_st := case when coalesce(p_on, true) then 'paid' else 'trial' end;
+  update public.reward_settings set plan_status = v_st where client = lower(p_client);
+  if not found then return jsonb_build_object('ok', false, 'error', 'No such shop.'); end if;
+  return jsonb_build_object('ok', true, 'plan_status', v_st, 'paid', public.sms_paid(p_client));
+end $$;
+
 create or replace function public.sms_set_state(p_key text, p_client text, p_state text, p_note text default null)
 returns jsonb language plpgsql security definer set search_path to 'public','pg_temp' as $$
 declare v_st text := lower(btrim(coalesce(p_state,'')));
@@ -338,7 +406,7 @@ begin
   if not public.crm_gate(p_key) then
     return jsonb_build_object('ok', false, 'error', 'Wrong admin key.');
   end if;
-  if v_st not in ('off','requested','live','paused') then
+  if v_st not in ('off','wanted','requested','live','paused') then
     return jsonb_build_object('ok', false, 'error', 'Unknown state.');
   end if;
   if v_st = 'live' and not exists (
@@ -373,6 +441,9 @@ begin
   return jsonb_build_object('ok', true, 'stopped', n);
 end $$;
 
+revoke execute on function public.sms_paid(text)                             from public, anon, authenticated;
+revoke execute on function public.sms_interest(text,text)                    from public, anon, authenticated;
+revoke execute on function public.sms_mark_paid(text,text,boolean)           from public, anon, authenticated;
 revoke execute on function public.sms_gate(text,text)                        from public, anon, authenticated;
 revoke execute on function public.loop_send_sms(text,text,text)              from public, anon, authenticated;
 revoke execute on function public.run_sms_automations()                      from public, anon, authenticated;
@@ -386,6 +457,8 @@ revoke execute on function public.sms_request(text,text,jsonb)               fro
 -- The shop's own two calls are PIN-gated inside; the admin's are key-gated.
 grant execute on function public.sms_status(text,text)               to anon, authenticated;
 grant execute on function public.sms_request(text,text,jsonb)        to anon, authenticated;
+grant execute on function public.sms_interest(text,text)             to anon, authenticated;
+grant execute on function public.sms_mark_paid(text,text,boolean)    to anon, authenticated;
 grant execute on function public.sms_queue(text)                     to anon, authenticated;
 grant execute on function public.sms_attach(text,text,text,text)     to anon, authenticated;
 grant execute on function public.sms_set_state(text,text,text,text)  to anon, authenticated;

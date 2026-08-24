@@ -226,6 +226,18 @@ number and takes the shop live. The number is bought in Twilio rather than from
 a button here, because `pg_net` posts and never sees the reply: a "buy" call
 from Postgres could not tell you which number it had just bought.
 
+A number bills monthly whether the shop texts anybody or not, so it sits behind
+the paid plan — but a barber who wants one is the most qualified lead there is,
+and a locked door loses that. So there are two taps. **Wanted** costs nothing
+and asks nothing: he says he wants it, it appears in `/hq/sms/` marked *not
+paying*, somebody rings him. Only once `plan_status` says he is paying does the
+registration form appear, and `sms_attach` refuses a shop that is not — the last
+stop before a bill starts against someone who never agreed to one. The A2P
+paperwork is never collected from a shop that has not agreed to pay for what it
+is for. Every shop in the database is `trial` today and nothing anywhere moved
+one off it, so `sms_mark_paid` exists too: a gate nothing can open is a feature
+that does not work.
+
 `sms_gate(client, code)` is the one place that decides whether a person may be
 texted — the shop has a live number, the member has a usable phone, they have
 not replied STOP, they consented, and it is between 9am and 8pm in the shop's

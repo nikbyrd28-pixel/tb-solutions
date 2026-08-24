@@ -32,6 +32,8 @@
   .pill{display:inline-block;font-size:10.5px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;
     border-radius:999px;padding:3px 8px;white-space:nowrap;margin-left:6px}
   .p-requested{background:rgba(240,177,0,.18);color:var(--warn)}
+  .p-wanted{background:rgba(111,157,255,.18);color:#b9cdff}
+  .p-unpaid{background:rgba(255,139,139,.14);color:var(--bad)}
   .p-live{background:rgba(93,242,224,.18);color:var(--acc)}
   .p-paused{background:rgba(255,139,139,.16);color:var(--bad)}
   .meta{font-size:12.5px;color:var(--muted);margin-top:6px}
@@ -125,7 +127,10 @@
     var st=s.sms_state, b=s.sms_biz||{};
     var h='<div class="row '+(st==='requested'?'ask':st==='live'?'live':'')+'" id="r-'+esc(s.client)+'">'
       +'<p class="rname">'+esc(s.biz_name||s.client)
-      +'<span class="pill p-'+esc(st)+'">'+esc(st)+'</span></p>'
+      +'<span class="pill p-'+esc(st)+'">'+esc(st)+'</span>'
+      // A number bills monthly. Whether this shop pays for one belongs next to
+      // its name, not three taps away in another page.
+      +(s.paid?'':'<span class="pill p-unpaid">not paying</span>')+'</p>'
       +'<div class="meta"><code>'+esc(s.client)+'</code>'
       +(s.sms_from?' · <b>'+esc(pretty(s.sms_from))+'</b>':'')
       +' · asked '+esc(day(s.asked_at))
@@ -143,13 +148,23 @@
     }
     if(s.sms_note) h+='<div class="meta">📝 '+esc(s.sms_note)+'</div>';
 
+    // Nothing can be attached to a shop that is not paying, so the tap that
+    // changes that is the first one offered rather than a puzzle.
+    if(!s.paid){
+      h+='<div class="acts"><button class="btn sm" data-act="pay" data-c="'+esc(s.client)+'">'
+        +'Mark as paying</button></div>'
+        +'<div class="msg hide" id="m-'+esc(s.client)+'"></div></div>';
+      return h;
+    }
+
     h+='<div class="acts">'
       +'<input id="n-'+esc(s.client)+'" placeholder="+16105551234" value="'+esc(s.sms_from||'')+'">'
       +'<button class="btn sm" data-act="attach" data-c="'+esc(s.client)+'">'
       +(st==='live'?'Change number':'Attach & go live')+'</button>';
     if(st==='live')   h+='<button class="btn sm ghost" data-act="paused" data-c="'+esc(s.client)+'">Pause</button>';
     if(st==='paused') h+='<button class="btn sm ghost" data-act="live" data-c="'+esc(s.client)+'">Resume</button>';
-    h+='<button class="btn sm ghost" data-act="off" data-c="'+esc(s.client)+'">Give the number back</button>';
+    h+='<button class="btn sm ghost" data-act="off" data-c="'+esc(s.client)+'">Give the number back</button>'
+      +'<button class="btn sm ghost" data-act="unpay" data-c="'+esc(s.client)+'">Stopped paying</button>';
     h+='</div><div class="msg hide" id="m-'+esc(s.client)+'"></div>';
     return h+'</div>';
   }
@@ -168,11 +183,17 @@
     b.disabled=true;
     var p = what==='attach'
       ? rpc('sms_attach',{p_key:ADMIN,p_client:c,p_from:(el('n-'+c)||{}).value||''})
+      : (what==='pay' || what==='unpay')
+      ? rpc('sms_mark_paid',{p_key:ADMIN,p_client:c,p_on:what==='pay'})
       : rpc('sms_set_state',{p_key:ADMIN,p_client:c,p_state:what});
     p.then(function(d){
       b.disabled=false;
       if(!(d&&d.ok)){ say(c,(d&&d.error)||'Did not work.',true); return; }
-      return load().then(function(){ say(c, what==='attach'?'Live.':'Done.'); });
+      return load().then(function(){ say(c,
+        what==='attach' ? 'Live.' :
+        what==='pay'    ? 'Marked as paying.' :
+        what==='unpay'  ? 'Marked as not paying — their number still sends until you take it back.' :
+        'Done.'); });
     });
   }
 })();

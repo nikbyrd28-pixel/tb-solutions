@@ -552,8 +552,18 @@
       h='<p class="muted">Asked for on '+esc(day(d.asked_at))+'. The carriers have to approve a business '
         +'before it can text customers — that usually takes about a week, and there is nothing more for '
         +'you to do. Keep using your own phone until then; we will let you know the day it goes live.</p>';
+    } else if(d.state==='wanted'){
+      h='<p class="muted">You asked for this on '+esc(day(d.asked_at))+'. Loop will be in touch about '
+        +'putting the shop on the plan that carries a number. Nothing changes in the meantime — '
+        +'the free way above keeps working exactly as it does now.</p>';
     } else if(d.state==='paused'){
       h='<p class="warn">Paused'+(d.note?' — '+esc(d.note):'')+'. Your own phone still works as normal.</p>';
+    } else if(!d.paid){
+      h='<p class="muted">A number of your own, and the win-backs go out without you tapping anything. '
+        +'It comes with the paid plan, because the number costs money every month whether the shop '
+        +'texts anybody or not.</p>'
+        +'<button class="btn" id="smsWant" style="margin-top:10px" onclick="wantSms()">Tell Loop I want this</button>'
+        +'<div id="smsMsg" class="muted" style="margin-top:10px"></div>';
     } else {
       h='<p class="muted">A number of your own, and the win-backs go out without you tapping anything. '
         +'Before a carrier will let any business text customers it wants four things about the shop — '
@@ -575,6 +585,16 @@
     }
     el('smsBody').innerHTML=h;
   }
+
+  window.wantSms=function(){
+    var b=el('smsWant'), m=el('smsMsg');
+    b.disabled=true; b.textContent='Telling them…';
+    rpc('sms_interest',{p_client:CODE,p_pin:PIN}).then(function(d){
+      if(d&&d.ok){ toast('Told them 👍'); loadSms(); }
+      else { b.disabled=false; b.textContent='Tell Loop I want this';
+             m.style.color='#ff8a8a'; m.textContent=(d&&d.error)||'Could not send that.'; }
+    });
+  };
 
   window.askSms=function(){
     var b=el('smsSend'), m=el('smsMsg');
