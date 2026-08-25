@@ -57,10 +57,25 @@ that lesson's text for every student. Clearing the field (or Restore) removes
 it. The flow for recording: Loom or phone → upload unlisted → paste. No
 storage bill, no transcoding, and the player is theirs to maintain.
 
+
+## The free founding cohort (current state)
+
+Enrolment is open right now with the multi-use code **FOUNDER** — 100 seats,
+expires 60 days from 2026-08-25, plan `founding`. The whole site's join
+buttons carry `/university/campus/?code=FOUNDER`, so a student never types it.
+
+- Watch the seats: admin → Students, or `select uses, max_uses from
+  uni_invites where code='FOUNDER'`.
+- **Ending the free period** is one statement — expire the code
+  (`update uni_invites set expires_at = now() where code='FOUNDER'`) and swap
+  the site copy back to paid. Existing founders keep their accounts; the
+  `founding` plan on their row is how you honour whatever founder terms you
+  choose later.
+
 ## Logging in
 
 - **Students** — `/university/campus/`. First time: **Enrol**, an enrolment code
-  (`TBU-FOUND1`…`TBU-FOUND5` are live and unused), their name, email, and a
+  (the open code is **FOUNDER**; `TBU-FOUND1`…`TBU-FOUND5` remain as single-use spares), their name, email, and a
   4-digit PIN they choose. After that it is email + PIN, and the session is
   remembered on the device for 30 days.
 - **You** — `/university/admin/`, with your existing HQ Supabase email and
