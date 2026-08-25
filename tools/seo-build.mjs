@@ -99,7 +99,7 @@ ${schema.map((s) => `<script type="application/ld+json">${J(s)}</script>`).join(
 <div class="wrap">
   <div class="top"><a class="brand" href="/">TB <span>Solutions</span></a><a class="btn" href="${SITE.book}" target="_blank" rel="noopener">Book a Free Call</a></div>
 ${body}
-  <p class="foot">© ${new Date().getFullYear()} ${esc(SITE.brand)} · <a href="/">tbsol.net</a> · AI marketing, web design &amp; local SEO for Chester County, PA · <a href="tel:${SITE.phone}">${SITE.phoneDisplay}</a></p>
+  <p class="foot">© ${new Date().getFullYear()} ${esc(SITE.brand)} · <a href="/">Home</a> · <a href="/services/">Services</a> · <a href="/pricing/">Pricing</a> · <a href="/work/">Work</a> · <a href="/about/">About</a> · <a href="/contact/">Contact</a><br>AI marketing, web design &amp; local SEO for Chester County, PA · <a href="tel:${SITE.phone}">${SITE.phoneDisplay}</a></p>
 </div>
 </body>
 </html>
@@ -132,6 +132,7 @@ const ctaBlock = (line) => `  <div class="cta">
     <p>${esc(line)} Free call, no pressure — you leave with the single highest-impact fix whether you hire us or not.</p>
     <div class="row">
       <a class="btn" href="${SITE.book}" target="_blank" rel="noopener">Book my free marketing plan</a>
+      <a class="btn ghost" href="/free-marketing-plan/">What happens on the call</a>
       <a class="btn ghost" href="tel:${SITE.phone}">${SITE.phoneDisplay}</a>
     </div>
   </div>`;
@@ -285,7 +286,7 @@ ${GUIDES.map((g) => `    <a href="/ai-marketing/${g.slug}/">${esc(g.h1)}<small>$
   <p>Websites from $300, local SEO and Google Business Profile work, Google and Meta Ads, and the follow-up system — each one has its own page with what it does and what it costs. <a href="/services/">All marketing services in Chester County →</a></p>
 
   <h2>Who does the work</h2>
-  <p>TB Solutions is a Chester County studio run by Nick Byrd out of West Chester. You talk to the person building the thing — no account manager, no ticket queue, no two-week turnaround on a one-line change. That is why the pricing looks nothing like an agency retainer and why changes happen the same day. <a href="/ai-marketing/ai-marketing-vs-agency/">How this compares to hiring an agency →</a></p>
+  <p>TB Solutions is a Chester County studio run by Nick Byrd out of West Chester. You talk to the person building the thing — no account manager, no ticket queue, no two-week turnaround on a one-line change. That is why the pricing looks nothing like an agency retainer and why changes happen the same day. <a href="/about/">More about the studio →</a> · <a href="/work/">See the work →</a> · <a href="/ai-marketing/ai-marketing-vs-agency/">How this compares to hiring an agency →</a></p>
 
 ${faqBlock([
     ['What is AI marketing for a small business?',
@@ -476,6 +477,427 @@ ${ctaBlock('Tell us what you sell and where you sell it.')}`;
   return { url, html: page({ url, title, desc, schema, body }) };
 }
 
+
+// ---- core site pages ----
+// The homepage is one long page with anchors. These give the real sections their
+// own URL, so they can rank, and so the Google profile and directory listings
+// have something specific to point at instead of the homepage every time.
+
+function aboutPage() {
+  const url = '/about/';
+  const title = 'About TB Solutions — West Chester, PA';
+  const desc = 'TB Solutions is a one-person digital marketing and web design studio in West Chester, PA, founded by Nick Byrd. Published prices, no account managers, no long-term contracts.';
+  const body = `  <div class="crumb"><a href="/">Home</a> › About</div>
+  <div class="eyebrow">West Chester, Pennsylvania</div>
+  <h1>You talk to the person who builds it</h1>
+  <p class="lead">TB Solutions is a digital marketing and web design studio in West Chester, run by Nick Byrd. One person, published prices, and no layer of account management between you and the work.</p>
+
+  <h2>Why it is built this way</h2>
+  <p>A typical agency assigns a small local business an account manager, a strategist and a media buyer, then charges a retainer that has to cover all three whether or not your account needs them. A one-line change to your homepage becomes a ticket, a queue, and two weeks. Meanwhile the junior on your account knows less about your trade than you do.</p>
+  <p>Removing that layer is most of why the prices on this site look nothing like a retainer, and all of why a change happens the same day. The trade-off is real and worth stating plainly: this is not the right shop for a national brand campaign across six markets. It is the right shop for an owner-run business in Chester County that is losing customers it already earned.</p>
+
+  <h2>What gets built</h2>
+  <p>Websites that load fast and state the offer. AI growth agents that answer your customers in seconds at any hour. Local SEO and Google Business Profile work aimed at the map pack. Google and Meta Ads set up tightly and reported on honestly. And lead follow-up — missed-call text-back, instant replies, review requests, win-back — which is usually the piece that pays for the rest. <a href="/services/">Everything, with the prices on it →</a></p>
+
+  <div class="box">
+    <h3>Loop</h3>
+    <p>Alongside the studio work, TB Solutions builds <b>Loop</b> — a booking, rewards and website platform for barbershops. It exists because the same four problems kept coming up in every shop: empty chairs, clients who quietly stopped coming, no easy way to rebook, and no website worth the name. <a href="/marketing-for/barbershop-marketing-chester-county/">How that thinking applies to any shop →</a></p>
+  </div>
+
+  <h2>How working together actually goes</h2>
+  <ul>
+    <li><b>The free call.</b> Bring your website, your Google listing and the number you wish were higher. You leave with the single highest-impact fix written down, whether or not you hire anyone.</li>
+    <li><b>The quote.</b> A price, in writing, from the published list. Half up front, half on delivery for starter packages.</li>
+    <li><b>The build.</b> Most one-page sites get a first draft within a few days of the deposit and your details. Revisions are fast because you are talking to the builder.</li>
+    <li><b>After.</b> Monthly work is billed monthly and cancellable. You own your site, your domain, your ad account and your customer data — if you leave, you take all of it.</li>
+  </ul>
+
+  <h2>Where</h2>
+  <p>West Chester, and across Chester County and the Main Line: ${TOWNS.slice(0, 12).map((t) => esc(t.name)).join(', ')} and the surrounding townships. Local work gets local knowledge — which searches actually happen in your town, and which of your competitors have left their listings half-built. <a href="/ai-marketing/">Town by town →</a></p>
+
+${faqBlock([
+    ['Who is TB Solutions?',
+     'A digital marketing and web design studio in West Chester, Pennsylvania, founded and run by Nick Byrd. It builds websites, AI growth agents, local SEO and lead follow-up systems for small businesses across Chester County and the Main Line, and develops Loop, a booking and rewards platform for barbershops.'],
+    ['Is this a one-person business?',
+     'Yes, and that is the point rather than a limitation to work around. It is why prices are published, why changes happen the same day, and why the honest answer to a job that needs a full agency team is to say so.'],
+    ['Do you work with businesses outside Chester County?',
+     'Yes. Chester County and the Main Line are home and get local knowledge, but the websites, agents, follow-up systems and ads are not geographically limited.'],
+    ['What if I need something you do not do?',
+     'You will be told on the call. Sending someone to a better-suited shop costs a project and keeps a reputation, which is a trade worth making every time.'],
+  ])}
+
+${ctaBlock('Bring your website, your Google listing and your worst month.')}`;
+
+  const schema = [
+    crumbs([['Home', '/'], ['About', url]]),
+    faqSchema([
+      ['Who is TB Solutions?',
+       'A digital marketing and web design studio in West Chester, Pennsylvania, founded and run by Nick Byrd, serving small businesses across Chester County and the Main Line.'],
+      ['Is this a one-person business?',
+       'Yes. It is why prices are published, why changes happen the same day, and why the honest answer to a job needing a full agency team is to say so.'],
+      ['Do you work with businesses outside Chester County?',
+       'Yes. Chester County and the Main Line are home, but the work is not geographically limited.'],
+      ['What if I need something you do not do?',
+       'You will be told on the call and pointed to a better-suited shop.'],
+    ]),
+    {
+      '@context': 'https://schema.org',
+      '@type': 'AboutPage',
+      '@id': SITE.origin + url + '#page',
+      url: SITE.origin + url,
+      name: title,
+      description: desc,
+      mainEntity: {
+        '@type': 'ProfessionalService',
+        '@id': SITE.origin + '/#business',
+        name: SITE.brand,
+        url: SITE.origin + '/',
+        telephone: SITE.phone,
+        email: SITE.email,
+        founder: { '@type': 'Person', name: 'Nick Byrd', jobTitle: 'Founder', worksFor: { '@id': SITE.origin + '/#business' } },
+        address: { '@type': 'PostalAddress', addressLocality: 'West Chester', addressRegion: 'PA', addressCountry: 'US' },
+        areaServed: [{ '@type': 'AdministrativeArea', name: 'Chester County, PA' }, ...TOWNS.map((t) => ({ '@type': 'City', name: t.full }))],
+      },
+    },
+  ];
+  return { url, html: page({ url, title, desc, schema, body }) };
+}
+
+function contactPage() {
+  const url = '/contact/';
+  const title = 'Contact TB Solutions — West Chester, PA';
+  const desc = 'Contact TB Solutions in West Chester, PA: call (484) 841-8501, email, or book a free marketing plan call. Serving Chester County and the Main Line.';
+  const body = `  <div class="crumb"><a href="/">Home</a> › Contact</div>
+  <div class="eyebrow">West Chester, PA · Chester County</div>
+  <h1>Get in touch</h1>
+  <p class="lead">Three ways, all of them reaching the same person. The fastest answer is the phone; the most useful one is the free call, because you leave it with something written down.</p>
+
+  <div class="box">
+    <h3>Call or text</h3>
+    <p><a href="tel:${SITE.phone}" style="font-size:22px;font-weight:700">${SITE.phoneDisplay}</a><br>
+    If it goes to voicemail, you will get a text back — the same system we install for clients.</p>
+  </div>
+  <div class="box">
+    <h3>Email</h3>
+    <p><a href="mailto:${SITE.email}">${SITE.email}</a><br>
+    Send your website and your Google listing and you will get a specific answer, not a brochure.</p>
+  </div>
+  <div class="box">
+    <h3>Book the free marketing plan call</h3>
+    <p>Thirty minutes. Bring your website, your Google listing and the number you wish were higher. You leave with the single highest-impact fix, written down, whether or not you hire us. <a href="/free-marketing-plan/">What happens on the call →</a></p>
+    <p><a class="btn" href="${SITE.book}" target="_blank" rel="noopener">Book a time</a></p>
+  </div>
+
+  <h2>Where we work</h2>
+  <p>Based in West Chester, serving Chester County and the Main Line: ${TOWNS.map((t) => `<a href="/ai-marketing/${t.slug}/">${esc(t.name)}</a>`).join(', ')} and the surrounding townships.</p>
+
+  <h2>Existing clients</h2>
+  <p>Client login is at <a href="/portal/">the portal</a>, and support requests go through <a href="/support/">the support page</a> so nothing gets lost in a text thread.</p>
+
+${faqBlock([
+    ['What is the fastest way to reach TB Solutions?',
+     'Call or text (484) 841-8501. If the call is missed you get an automatic text back within seconds — the same missed-call system installed for clients.'],
+    ['What should I have ready before the call?',
+     'Your website address, your Google Business Profile, and a rough sense of where enquiries come from now. That is enough to give you a specific answer.'],
+    ['Do you charge for the first call?',
+     'No. It is free, there is no obligation, and you leave with the highest-impact fix written down regardless of what you decide.'],
+  ])}`;
+
+  const schema = [
+    crumbs([['Home', '/'], ['Contact', url]]),
+    faqSchema([
+      ['What is the fastest way to reach TB Solutions?',
+       'Call or text (484) 841-8501. A missed call triggers an automatic text back within seconds.'],
+      ['What should I have ready before the call?',
+       'Your website address, your Google Business Profile, and where enquiries come from now.'],
+      ['Do you charge for the first call?', 'No. It is free and there is no obligation.'],
+    ]),
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ContactPage',
+      '@id': SITE.origin + url + '#page',
+      url: SITE.origin + url,
+      name: title,
+      description: desc,
+      mainEntity: {
+        '@type': 'ProfessionalService',
+        '@id': SITE.origin + '/#business',
+        name: SITE.brand,
+        telephone: SITE.phone,
+        email: SITE.email,
+        url: SITE.origin + '/',
+        address: { '@type': 'PostalAddress', addressLocality: 'West Chester', addressRegion: 'PA', addressCountry: 'US' },
+        contactPoint: {
+          '@type': 'ContactPoint', telephone: SITE.phone, email: SITE.email,
+          contactType: 'sales', areaServed: 'US-PA', availableLanguage: 'English',
+        },
+      },
+    },
+  ];
+  return { url, html: page({ url, title, desc, schema, body }) };
+}
+
+const PRICE_LIST = [
+  ['Local Presence Audit', 100, 'The full written read on your Google Business Profile, your site and your competitors, with every fix in priority order. The cheapest way to find out whether you have a marketing problem or a follow-up problem.'],
+  ['Creative Proof Pack', 150, 'Real photo and video assets for your business, so you have something worth running before you spend a dollar on distribution.'],
+  ['Meta Ads Starter', 250, 'Facebook and Instagram campaign setup: offer design, local targeting, creative direction. Ad spend paid directly by you to Meta.'],
+  ['Premium One-Page Website', 300, 'Fast, mobile-first, states the offer and the price, takes a booking. First draft in days.'],
+  ['Google Ads Starter', 350, 'Local search campaign setup: tight structure, a real negative keyword list, a landing page per service. Ad spend paid directly by you to Google.'],
+  ['AI Growth Agent Setup', 400, 'A chat concierge trained on your services, prices and hours. Answers in seconds at any hour, qualifies the visitor, books or captures, and texts you the lead.'],
+  ['Lead Follow-Up System', 500, 'Missed-call text-back, instant reply to every form, automatic review requests after each job, and win-back sequences for quiet customers.'],
+];
+
+function pricingPage() {
+  const url = '/pricing/';
+  const title = 'Pricing — TB Solutions, Chester County PA';
+  const desc = 'Published prices for websites, AI agents, local SEO, ads and lead follow-up in Chester County, PA. Audits $100, websites $300, AI agent $400, follow-up system $500. No long-term contracts.';
+  const rows = PRICE_LIST.map(([n, p, d]) =>
+    `  <div class="box"><h3>${esc(n)} — $${p}</h3><p>${esc(d)}</p></div>`).join('\n');
+  const body = `  <div class="crumb"><a href="/">Home</a> › Pricing</div>
+  <div class="eyebrow">Chester County, PA</div>
+  <h1>The prices, printed</h1>
+  <p class="lead">Nobody in this industry publishes pricing, which is how a $300 job becomes a $3,000 retainer. Here is the whole list. Half up front, half on delivery for anything below. No long-term contract on any of it.</p>
+
+  <h2>À la carte</h2>
+${rows}
+
+  <h2>Or bundled, if you would rather not choose</h2>
+  <div class="box">
+    <h3>Starter Site — $300</h3>
+    <p>Get online this week. A sharp one-page site that captures leads instead of sitting there. Custom design, lead capture, set up to show on Google.</p>
+  </div>
+  <div class="box">
+    <h3>Growth System — quoted on the call</h3>
+    <p>The website plus the machine behind it: your own CRM, instant AI replies, automatic follow-up, review collection, and monthly upkeep and reporting. Priced to your business on the free call — no lock-in, cancel monthly work any time.</p>
+  </div>
+  <div class="box">
+    <h3>The Whole Machine — custom</h3>
+    <p>Growth System plus paid ads and your own rewards club. Customers found, captured and kept. Scaled to what you are comfortable spending, quoted on the call.</p>
+  </div>
+
+  <h2>What to buy first, honestly</h2>
+  <p>If your budget is under $500, do not buy a website and do not buy ads. Fix your Google Business Profile and turn on automatic review requests and missed-call text-back. That recovers revenue from traffic you already have, which means the first purchase pays for the second. Ads are the last thing to buy, not the first — paying to send more traffic into a leaky system just increases the leak. <a href="/services/affordable-marketing-agency-chester-county/">The full order of operations →</a></p>
+
+  <h2>What is not in the price</h2>
+  <p>Ad spend. You pay Google and Meta directly so you can see exactly what was spent and so nobody has an incentive to talk you into a bigger budget. Setup and management are separate, quoted line items — never a percentage of your spend.</p>
+
+${faqBlock([
+    ['How much does a website cost in Chester County?',
+     'A premium one-page site is $300 here. Local agency quotes for a small-business site in this area commonly land between $2,500 and $8,000. The gap is mostly account management and sales overhead, not build quality.'],
+    ['Is there a monthly fee?',
+     'Only if you want ongoing work — content, campaign management, reporting, agent tuning. It is quoted after a free call, billed monthly, and cancellable. Nothing on this page requires it.'],
+    ['Why are these prices lower than an agency retainer?',
+     'No account manager, no media buyer, no office and no sales team between you and the work. That is most of an agency cost structure, and none of it reaches your customers.'],
+    ['What do I own if I leave?',
+     'Your site, your domain, your ad account and your customer data. All of it, exported, no argument. Ask any agency this question before you sign — the answer tells you what kind of company you are dealing with.'],
+    ['Do you offer payment plans?',
+     'Starter packages split half up front and half on delivery, which keeps the initial outlay small. Larger builds are staged across milestones.'],
+  ])}
+
+${ctaBlock('Bring your website and your Google listing and we will tell you which line on this page you actually need.')}`;
+
+  const schema = [
+    crumbs([['Home', '/'], ['Pricing', url]]),
+    faqSchema([
+      ['How much does a website cost in Chester County?',
+       'A premium one-page site is $300. Local agency quotes for a small-business site commonly land between $2,500 and $8,000.'],
+      ['Is there a monthly fee?',
+       'Only for ongoing work, quoted after a free call, billed monthly and cancellable.'],
+      ['Why are these prices lower than an agency retainer?',
+       'No account manager, media buyer, office or sales team between you and the work.'],
+      ['What do I own if I leave?', 'Your site, domain, ad account and customer data — all of it, exported.'],
+      ['Do you offer payment plans?', 'Starter packages split half up front and half on delivery.'],
+    ]),
+    {
+      '@context': 'https://schema.org',
+      '@type': 'OfferCatalog',
+      '@id': SITE.origin + url + '#catalog',
+      name: 'TB Solutions pricing',
+      url: SITE.origin + url,
+      itemListElement: PRICE_LIST.map(([n, p, d]) => ({
+        '@type': 'Offer',
+        name: n,
+        description: d,
+        price: String(p),
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        seller: { '@id': SITE.origin + '/#business' },
+      })),
+    },
+  ];
+  return { url, html: page({ url, title, desc, schema, body }) };
+}
+
+const WORK = [
+  {
+    name: 'Hubs & Babydoll',
+    what: 'Handcrafted body care brand',
+    href: '/clients/hubsandbabydoll/',
+    external: 'https://hubsandbabydoll.com',
+    body: 'A polished storefront for a small, home-based brand of body oils, butters, washes and gift boxes. Product sections built to present handmade goods properly, brand storytelling that makes the shop feel personal rather than drop-shipped, and the shipping, refund and FAQ pages that let a first-time buyer actually complete a purchase.',
+  },
+  {
+    name: 'VoomLux Luxury Transport',
+    what: 'Black car and luxury transport',
+    href: '/clients/voomlux/',
+    body: 'A booking-first site for a luxury transport service, plus a separate corporate and partner accounts page for the business travel side. Two audiences with genuinely different questions — someone booking a ride tonight, and an office manager setting up an account — served without either one having to wade through the other.',
+  },
+  {
+    name: 'Loop',
+    what: 'Booking, rewards and websites for barbershops',
+    href: '/marketing-for/barbershop-marketing-chester-county/',
+    external: 'https://www.thebarberloop.com',
+    body: 'TB Solutions’ own SaaS product: online booking, a rewards card clients actually open, win-back texts and a shop website in one. Built because the same four problems came up in every barbershop — empty chairs, clients who quietly stopped coming, rebooking friction, and no website worth the name.',
+  },
+  {
+    name: 'This site',
+    what: 'tbsol.net',
+    href: '/ai-marketing/',
+    body: 'Worth judging too. Fast, mobile-first, prices published, structured data on every page, and a town-by-town content cluster built the same way a client’s would be. If a marketing studio’s own site is slow or vague, that tells you what you would be buying.',
+  },
+];
+
+function workPage() {
+  const url = '/work/';
+  const title = 'Our Work — Websites Built in Chester County, PA';
+  const desc = 'Websites and products built by TB Solutions: Hubs & Babydoll, VoomLux Luxury Transport, and Loop for barbershops. Real builds you can open and judge.';
+  const cards = WORK.map((w) => `  <div class="box">
+    <h3>${esc(w.name)}</h3>
+    <p class="muted" style="margin-bottom:10px">${esc(w.what)}</p>
+    <p>${esc(w.body)}</p>
+    <p><a href="${w.href}">See the build →</a>${w.external ? ` &nbsp;·&nbsp; <a href="${w.external}" target="_blank" rel="noopener">${esc(w.external.replace('https://', ''))} ↗</a>` : ''}</p>
+  </div>`).join('\n');
+  const body = `  <div class="crumb"><a href="/">Home</a> › Work</div>
+  <div class="eyebrow">Chester County, PA</div>
+  <h1>Real work, openable in a new tab</h1>
+  <p class="lead">No case studies with invented percentages. These are live builds — open them, load them on a phone, and judge them the way your customers would.</p>
+
+${cards}
+
+  <h2>What you will not find here</h2>
+  <p>Client logos we have no relationship with, results we cannot substantiate, or a "347% increase in leads" attached to a business that is never named. Every number in this industry that appears without a business attached to it should be treated as decoration. TB Solutions opened in January 2026; the honest version of a portfolio at this stage is a short list of real builds you can inspect, which is what this is.</p>
+
+  <h2>How the builds are judged</h2>
+  <ul>
+    <li><b>Speed.</b> If it does not paint in about two seconds on a phone on a weak signal, nothing else matters.</li>
+    <li><b>Clarity.</b> What it is, where, and what it costs — visible without scrolling or hunting.</li>
+    <li><b>One action.</b> A single obvious next step, repeated, rather than six competing buttons.</li>
+    <li><b>Proof.</b> Real photos of real work. Never stock.</li>
+  </ul>
+
+${faqBlock([
+    ['Can I talk to one of your clients?',
+     'Yes. Ask on the call and you will be put in touch with someone whose build is closest to what you need.'],
+    ['Why is the portfolio short?',
+     'Because TB Solutions opened in January 2026 and the list is honest. A short real portfolio is worth more than a long one padded with logos and unverifiable numbers.'],
+    ['Will my site look like these?',
+     'It will be built to the same standard, not to the same template. A body care brand, a transport service and a barbershop need three genuinely different pages.'],
+  ])}
+
+${ctaBlock('Bring the site you have now and we will tell you what is costing you customers.')}`;
+
+  const schema = [
+    crumbs([['Home', '/'], ['Work', url]]),
+    faqSchema([
+      ['Can I talk to one of your clients?', 'Yes — ask on the call and you will be put in touch with the closest build to what you need.'],
+      ['Why is the portfolio short?', 'TB Solutions opened in January 2026 and the list is honest rather than padded.'],
+      ['Will my site look like these?', 'Built to the same standard, not the same template.'],
+    ]),
+    {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      '@id': SITE.origin + url + '#page',
+      url: SITE.origin + url,
+      name: title,
+      description: desc,
+      about: { '@id': SITE.origin + '/#business' },
+      mainEntity: {
+        '@type': 'ItemList',
+        itemListElement: WORK.map((w, i) => ({
+          '@type': 'ListItem', position: i + 1, name: w.name, description: w.what,
+          url: w.external || SITE.origin + w.href,
+        })),
+      },
+    },
+  ];
+  return { url, html: page({ url, title, desc, schema, body }) };
+}
+
+function planPage() {
+  const url = '/free-marketing-plan/';
+  const title = 'Free Marketing Plan Call — Chester County, PA';
+  const desc = 'Book a free 30-minute marketing plan call for your Chester County business. Bring your website and Google listing; leave with the single highest-impact fix written down. No cost, no pressure.';
+  const body = `  <div class="crumb"><a href="/">Home</a> › Free marketing plan</div>
+  <div class="eyebrow">Free · 30 minutes · no obligation</div>
+  <h1>Leave with the one fix that matters most</h1>
+  <p class="lead">Not a discovery call. Not a deck that arrives next week. Thirty minutes, your actual website and your actual Google listing on screen, and the single highest-impact thing to change — written down and sent to you, whether or not you hire anyone.</p>
+
+  <p><a class="btn" href="${SITE.book}" target="_blank" rel="noopener">Book my free marketing plan</a> &nbsp; <a class="btn ghost" href="tel:${SITE.phone}">${SITE.phoneDisplay}</a></p>
+
+  <h2>What happens on the call</h2>
+  <ul>
+    <li><b>Your listing, opened live.</b> Categories, services, photos, hours, reviews. Most local businesses have half of it blank, and it is the cheapest thing on the list to fix.</li>
+    <li><b>Your site, loaded on a phone.</b> How fast it paints, whether the offer is clear, whether anyone can book without calling.</li>
+    <li><b>Where your enquiries go.</b> Usually this is where the money is. The missed call at 4:50pm, the form filled in on Sunday, the message that got read and buried.</li>
+    <li><b>Two or three competitors, side by side.</b> Who is above you in the map pack, and specifically what they are doing that you are not.</li>
+    <li><b>The one fix.</b> Written down and sent after the call.</li>
+  </ul>
+
+  <h2>What it costs</h2>
+  <p>Nothing, and the catch is the ordinary one: some people take the fix, do it themselves and never pay for anything. That is fine, and it is the point. Being the person who gave a straight answer for free is a cheap way to be the person they call when the next thing comes up.</p>
+
+  <h2>What to bring</h2>
+  <p>Your website address, your Google Business Profile, and a rough sense of where enquiries come from now. If you do not have a website, bring your Instagram. If you do not have either, bring what you sell and where.</p>
+
+  <h2>Who it is for</h2>
+  <p>Owner-run businesses in ${TOWNS.slice(0, 8).map((t) => esc(t.name)).join(', ')} and across Chester County — trades, salons and barbershops, restaurants, professional services, retail, home services. Somewhere between one and thirty employees, where the owner still knows every customer and every lost lead stings.</p>
+
+${faqBlock([
+    ['Is the marketing plan call really free?',
+     'Yes. Thirty minutes, no cost, no obligation, and you leave with the highest-impact fix written down whether or not you hire us.'],
+    ['Will I be sold to on the call?',
+     'You will be told what to fix and what it would cost if you wanted it done for you. If the fix is something you can do yourself in an afternoon, you will be told that too.'],
+    ['What if I already have an agency?',
+     'Bring them along in spirit. The call will tell you fairly quickly whether what you are paying for is being delivered, and there is no obligation to change anything.'],
+    ['How soon can we talk?',
+     'Usually within a few days. If it is urgent, call or text (484) 841-8501 directly.'],
+  ])}
+
+  <div class="cta">
+    <h2>Book the call</h2>
+    <p>Thirty minutes. One fix, written down. No cost either way.</p>
+    <div class="row">
+      <a class="btn" href="${SITE.book}" target="_blank" rel="noopener">Book my free marketing plan</a>
+      <a class="btn ghost" href="tel:${SITE.phone}">${SITE.phoneDisplay}</a>
+    </div>
+  </div>`;
+
+  const schema = [
+    crumbs([['Home', '/'], ['Free marketing plan', url]]),
+    faqSchema([
+      ['Is the marketing plan call really free?',
+       'Yes. Thirty minutes, no cost, no obligation, and you leave with the highest-impact fix written down.'],
+      ['Will I be sold to on the call?',
+       'You will be told what to fix and what it costs if you want it done for you — including when you can do it yourself.'],
+      ['What if I already have an agency?',
+       'The call tells you whether what you are paying for is being delivered. No obligation to change anything.'],
+      ['How soon can we talk?', 'Usually within a few days; call or text (484) 841-8501 if it is urgent.'],
+    ]),
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      '@id': SITE.origin + url + '#service',
+      name: 'Free Marketing Plan Call',
+      serviceType: 'Marketing consultation',
+      description: desc,
+      provider: { '@id': SITE.origin + '/#business' },
+      areaServed: [{ '@type': 'AdministrativeArea', name: 'Chester County, PA' }],
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', url: SITE.book, availability: 'https://schema.org/InStock' },
+    },
+  ];
+  return { url, html: page({ url, title, desc, schema, body }) };
+}
+
 // ---- write pages ----
 const pages = [
   pillarPage(),
@@ -483,6 +905,7 @@ const pages = [
   ...GUIDES.map((g) => contentPage(g, { base: '/ai-marketing/', siblings: GUIDES, hubName: 'AI Marketing', hubUrl: '/ai-marketing/' })),
   servicesHub(),
   ...SERVICES.map((g) => contentPage(g, { base: '/services/', siblings: SERVICES, hubName: 'Marketing services', hubUrl: '/services/' })),
+  aboutPage(), contactPage(), pricingPage(), workPage(), planPage(),
   industriesHub(),
   ...INDUSTRIES.map((g) => contentPage(g, { base: '/marketing-for/', siblings: INDUSTRIES, hubName: 'Marketing by industry', hubUrl: '/marketing-for/' })),
 ];
@@ -496,7 +919,7 @@ for (const p of pages) {
 // Only pages meant for search. App screens, owner/admin consoles, client work and
 // the arcade stay out — a sitemap full of logged-in tools dilutes what Google crawls.
 const PUBLIC = [
-  '/', '/suite/', '/learn/', '/learn/why-marketing-matters/', '/learn/marketing-terms/', '/learn/ai-tools/',
+  '/', '/suite/', '/privacy/', '/terms/', '/learn/', '/learn/why-marketing-matters/', '/learn/marketing-terms/', '/learn/ai-tools/',
   '/guides/', '/guides/google-business-profile-for-barbers/', '/guides/slow-week-playbook/', '/guides/win-back-lapsed-clients/',
   '/content-studio/', '/booking/', '/booking/demo/', '/ambassadors/', '/ambassadors/demo/',
   '/university/', '/university/start/', '/university/toolkit/', '/university/lessons/',

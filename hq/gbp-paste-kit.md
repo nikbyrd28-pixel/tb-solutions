@@ -229,7 +229,7 @@ Each is under Google's limit with a "Learn more" button. Link target in brackets
 11. **Serving West Chester, Exton, Malvern, Downingtown, Kennett Square,
     Phoenixville, Coatesville, Paoli, Berwyn and Oxford.** [/ai-marketing/]
 12. **Free marketing plan call.** Bring your site and your Google listing.
-    Leave with the highest-impact fix, written down. [booking link]
+    Leave with the highest-impact fix, written down. [/free-marketing-plan/]
 
 ---
 

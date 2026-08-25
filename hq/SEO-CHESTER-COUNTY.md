@@ -66,6 +66,13 @@ now, because nobody local has optimized for it, and it feeds the same customer.
 - `/ai-marketing/` — pillar + 16 town pages + 5 intent guides.
 - `/marketing-for/` — hub + 5 vertical pages (barbershops & salons, restaurants,
   contractors & trades, professional services, gyms & studios).
+- **Core site pages** — `/about/`, `/contact/`, `/pricing/`, `/work/` and
+  `/free-marketing-plan/`. These were anchors on the one-page homepage, so they
+  could not rank and there was nothing specific to link to from the Google
+  profile or a directory listing. Now they have URLs, schema (AboutPage,
+  ContactPage, OfferCatalog, CollectionPage, Service) and their own titles.
+  `/free-marketing-plan/` is the conversion landing page — point GBP posts, ad
+  campaigns and directory listings at it rather than the homepage.
 - Titles cut to under 62 characters so Google stops truncating the brand off.
 - `/services/` — hub + 8 commercial pages, including the exact-match agency page
   and the "affordable" page.
