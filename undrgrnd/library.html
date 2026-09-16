@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Your library — UNDRGRND</title>
+<style>
+  :root{--panel:rgba(255,255,255,.04);--text:#f5f5f7;--muted:#9a9aa5;--line:rgba(255,255,255,.12);--accent:#ff3b3b}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Space Grotesk",Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:linear-gradient(180deg,#0a0a0c,#050506);color:var(--text);min-height:100vh}
+  a{color:var(--accent);text-decoration:none}
+  .navwrap{max-width:720px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line)}
+  .brand{font-weight:900;font-size:19px;color:var(--text)}
+  .brand span{color:var(--accent)}
+  .navlinks{display:flex;align-items:center;gap:16px;font-size:14px}
+  .navlinks a{color:var(--muted)}
+  .navlinks a.on,.navlinks a:hover{color:var(--text)}
+  .linklike{background:none;border:0;color:var(--muted);font:inherit;cursor:pointer;padding:0}
+  main{max-width:720px;margin:0 auto;padding:32px 20px}
+  h1{font-size:22px;margin:0 0 24px}
+  .track{border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;background:var(--panel)}
+  .track-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px}
+  .track-top .title{font-weight:700}
+  .track-top .artist{color:var(--muted);font-size:13px;margin-top:2px}
+  .save-btn{border:1px solid var(--accent);background:none;color:var(--accent);border-radius:999px;padding:6px 14px;font:inherit;font-size:12px;cursor:pointer}
+  .empty{color:var(--muted);padding:40px 0;text-align:center}
+  iframe{border-radius:10px;display:block;width:100%;border:0}
+</style>
+</head>
+<body>
+<header id="nav"></header>
+<main>
+  <h1>Your library</h1>
+  <div id="list" class="empty">Loading…</div>
+</main>
+<script type="module">
+  import { supabase, renderNav, embedHtml, escapeHtml } from "./shared.js";
+
+  const nav = document.getElementById("nav");
+  const listEl = document.getElementById("list");
+  const { user } = await renderNav(nav, "library");
+
+  if (!user) {
+    location.href = "./login.html";
+  } else {
+    const { data: saves } = await supabase
+      .from("saves")
+      .select("track_id, created_at, tracks(id, title, artist, source, embed_url, external_url)")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+
+    const tracks = (saves || []).map((s) => s.tracks).filter(Boolean);
+
+    if (tracks.length === 0) {
+      listEl.className = "empty";
+      listEl.textContent = "Nothing saved yet — save tracks from the feed to build your library.";
+    } else {
+      listEl.className = "";
+      listEl.innerHTML = tracks
+        .map(
+          (t) => `
+        <div class="track">
+          <div class="track-top">
+            <div>
+              <div class="title">${escapeHtml(t.title)}</div>
+              <div class="artist">${escapeHtml(t.artist)}</div>
+            </div>
+            <button class="save-btn" data-id="${t.id}">Saved</button>
+          </div>
+          ${embedHtml(t)}
+        </div>
+      `
+        )
+        .join("");
+
+      listEl.querySelectorAll(".save-btn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          await supabase.from("saves").delete().eq("user_id", user.id).eq("track_id", btn.dataset.id);
+          btn.closest(".track").remove();
+          if (!listEl.querySelector(".track")) {
+            listEl.className = "empty";
+            listEl.textContent = "Nothing saved yet — save tracks from the feed to build your library.";
+          }
+        });
+      });
+    }
+  }
+</script>
+</body>
+</html>

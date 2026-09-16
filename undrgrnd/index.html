@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>UNDRGRND — curated underground rap</title>
+<meta name="description" content="Discovery-first, curator-picked drops from rap artists you haven't heard yet." />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0a0c'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-weight='900' font-size='28' fill='%23ff3b3b'%3EU%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{
+    --void:#0a0a0c;--panel:rgba(255,255,255,.04);--text:#f5f5f7;--muted:#9a9aa5;
+    --line:rgba(255,255,255,.12);--accent:#ff3b3b;--accent2:#ff7a3b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Space Grotesk",Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+    background:radial-gradient(circle at 15% -10%,rgba(255,60,40,.10),transparent 35%),linear-gradient(180deg,#0a0a0c,#050506);
+    color:var(--text);min-height:100vh}
+  a{color:var(--accent);text-decoration:none}
+  .navwrap{max-width:720px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line)}
+  .brand{font-weight:900;font-size:19px;letter-spacing:-.02em;color:var(--text)}
+  .brand span{color:var(--accent)}
+  .navlinks{display:flex;align-items:center;gap:16px;font-size:14px}
+  .navlinks a{color:var(--muted)}
+  .navlinks a.on,.navlinks a:hover{color:var(--text)}
+  .linklike{background:none;border:0;color:var(--muted);font:inherit;cursor:pointer;padding:0}
+  .linklike:hover{color:var(--text)}
+  main{max-width:720px;margin:0 auto;padding:32px 20px}
+  .drop{margin-bottom:44px}
+  .drop h2{font-size:20px;margin:0 0 4px;letter-spacing:-.01em}
+  .drop p.desc{color:var(--muted);font-size:14px;margin:0 0 16px}
+  .track{border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;background:var(--panel)}
+  .track-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px}
+  .track-top .title{font-weight:700}
+  .track-top .artist{color:var(--muted);font-size:13px;margin-top:2px}
+  .save-btn{border:1px solid var(--line);background:none;color:var(--text);border-radius:999px;padding:6px 14px;font:inherit;font-size:12px;cursor:pointer;white-space:nowrap}
+  .save-btn:hover{border-color:var(--accent);color:var(--accent)}
+  .save-btn.saved{border-color:var(--accent);color:var(--accent)}
+  .listen-link{font-size:13px;text-decoration:underline}
+  .empty{color:var(--muted);padding:40px 0;text-align:center}
+  iframe{border-radius:10px;display:block;width:100%;border:0}
+</style>
+</head>
+<body>
+<header id="nav"></header>
+<main>
+  <div id="feed" class="empty">Loading drops…</div>
+</main>
+<script type="module">
+  import { supabase, renderNav, embedHtml, escapeHtml } from "./shared.js";
+
+  const nav = document.getElementById("nav");
+  const feedEl = document.getElementById("feed");
+
+  const { user } = await renderNav(nav, "feed");
+
+  const { data: drops, error } = await supabase
+    .from("drops")
+    .select("id, title, description, published_at, drop_tracks(position, tracks(id, title, artist, source, embed_url, external_url))")
+    .not("published_at", "is", null)
+    .order("published_at", { ascending: false });
+
+  let savedIds = new Set();
+  if (user) {
+    const { data: saves } = await supabase.from("saves").select("track_id").eq("user_id", user.id);
+    savedIds = new Set((saves || []).map((s) => s.track_id));
+  }
+
+  if (error || !drops || drops.length === 0) {
+    feedEl.className = "empty";
+    feedEl.textContent = "No drops yet. Check back soon — new curated picks land here first.";
+  } else {
+    feedEl.className = "";
+    feedEl.innerHTML = drops
+      .map((drop) => {
+        const tracks = [...(drop.drop_tracks || [])]
+          .sort((a, b) => a.position - b.position)
+          .map((dt) => dt.tracks)
+          .filter(Boolean);
+        return `
+          <section class="drop">
+            <h2>${escapeHtml(drop.title)}</h2>
+            ${drop.description ? `<p class="desc">${escapeHtml(drop.description)}</p>` : ""}
+            ${tracks
+              .map(
+                (t) => `
+              <div class="track" data-track-id="${t.id}">
+                <div class="track-top">
+                  <div>
+                    <div class="title">${escapeHtml(t.title)}</div>
+                    <div class="artist">${escapeHtml(t.artist)}</div>
+                  </div>
+                  ${
+                    user
+                      ? `<button class="save-btn ${savedIds.has(t.id) ? "saved" : ""}" data-id="${t.id}">${savedIds.has(t.id) ? "Saved" : "Save"}</button>`
+                      : `<a href="./login.html" style="font-size:12px;color:var(--muted)">Sign in to save</a>`
+                  }
+                </div>
+                ${embedHtml(t)}
+              </div>
+            `
+              )
+              .join("")}
+          </section>
+        `;
+      })
+      .join("");
+
+    feedEl.querySelectorAll(".save-btn").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const trackId = btn.dataset.id;
+        const isSaved = btn.classList.contains("saved");
+        btn.disabled = true;
+        if (isSaved) {
+          await supabase.from("saves").delete().eq("user_id", user.id).eq("track_id", trackId);
+          btn.classList.remove("saved");
+          btn.textContent = "Save";
+        } else {
+          await supabase.from("saves").insert({ user_id: user.id, track_id: trackId });
+          btn.classList.add("saved");
+          btn.textContent = "Saved";
+        }
+        btn.disabled = false;
+      });
+    });
+  }
+</script>
+</body>
+</html>
