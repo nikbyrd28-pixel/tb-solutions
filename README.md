@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nick Byrd TV
 
-## Getting Started
+Your own YouTube + TikTok + funnel. Next.js 16 · Supabase (project "Base") · Vercel.
 
-First, run the development server:
+## Routes
+- `/` — YouTube-style home: hero, Chaos Feed rail, video grid, email capture
+- `/watch/[slug]` — player, likes, comments, up-next, members paywall
+- `/feed` — TikTok-style vertical snap feed; join card slides in after 3 swipes
+- `/join` — 2-step funnel: free email → Inner Circle ($5) / Day One ($20)
+- `/community` — members wall (locked posts blur + "Unlock")
+- `/login` — magic link + Google
+- `/admin/upload` — upload video/thumbnail to Supabase Storage, publish (ADMIN_EMAILS only)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Setup
+1. Migration is already applied to Base (tables prefixed `nb_`, buckets `videos` + `thumbnails`, 5 seed videos).
+2. `.env.local` — add `SUPABASE_SERVICE_ROLE_KEY` (Supabase → Settings → API). URL + anon key are filled in.
+3. Supabase → Auth → URL Configuration: add `https://YOUR-DOMAIN/auth/callback` to redirect URLs. Enable Google provider if you want it.
+4. `npm run dev`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deploy
+`vercel` — set the same env vars in the Vercel project.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Money
+Create two Stripe Payment Links, paste into `NEXT_PUBLIC_STRIPE_LINK_INNER_CIRCLE` / `_DAY_ONE`. When a payment lands, a Stripe webhook → n8n → `update nb_profiles set tier='inner_circle' where id=…` flips the paywall. (`nb_memberships` table is ready for that.)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## n8n
+Every new lead POSTs to `N8N_LEAD_WEBHOOK_URL` → send welcome email, add to your list, ping you.
 
-## Learn More
+## Real video hosting
+Supabase Storage works for launch. When bandwidth costs bite, move to Bunny Stream or Cloudflare Stream — just change `video_url` per row; nothing else changes.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Delete the seed rows once you upload real videos: `delete from nb_videos where video_url like '%gtv-videos-bucket%';`
