@@ -650,7 +650,7 @@ footer a,footer p{overflow-wrap:anywhere}
     <div class="sk-side">
       <div class="panel sk-est"><div class="hint">Estimate from your sketch</div><div class="est-num" id="skEstNum">$0</div><ul class="sk-lines" id="skEstLines"></ul><div class="sk-opts" id="skOpts"></div><p class="hint" id="skEstHint"></p></div>
       <div class="panel"><h3>What we notice</h3><ul class="sk-notes" id="skNotes"></ul></div>
-      <div class="sk-actions"><button type="button" class="btn p" id="skSend">Send this sketch</button><p class="notice" id="skSent" hidden>Sent. It's attached to your request, and we'll have it open when we call.</p><button type="button" class="btn" id="skPng">Download as image</button><button type="button" class="btn" id="skLink">Copy a link to this sketch</button><button type="button" class="btn sm" id="skReset">Reset to a typical room</button><button type="button" class="btn sm" id="skClear">Clear the room</button></div>
+      <div class="sk-actions"><button type="button" class="btn p" id="skSend">Send this sketch</button><p class="notice" id="skSent" hidden>Sent. It's attached to your request, and we'll have it open when we call.</p><button type="button" class="btn" id="skPng">Download as image</button><button type="button" class="btn" id="skLink">Copy a link to this sketch</button><button type="button" class="btn sm" id="skBack">Put existing items back where they were</button><button type="button" class="btn sm" id="skReset">Reset to a typical room</button><button type="button" class="btn sm" id="skClear">Clear the room</button></div>
     </div>
   </div>
 </section>
@@ -924,13 +924,13 @@ $('#playbook').addEventListener('click',e=>{const p=e.target.closest('[data-copy
 const SK=(()=>{
 const I={
  sink:{l:'Sink',w:3,d:2,h:3,p:1,c:{rep:[150,450],rpl:[600,2000],rough:[800,2000]},mv:[1500,4000]},
- range:{l:'Stove',w:2.5,d:2.2,h:3,c:{rep:[150,400],rpl:[1200,4000],rough:[400,1200]}},
- fridge:{l:'Fridge',w:3,d:2.5,h:5.8,c:{rep:[150,350],rpl:[1500,4500],rough:[250,600]}},
+ range:{l:'Stove',w:2.5,d:2.2,h:3,c:{rep:[150,400],rpl:[1200,4000],rough:[400,1200]},mv:[400,1200]},
+ fridge:{l:'Fridge',w:3,d:2.5,h:5.8,c:{rep:[150,350],rpl:[1500,4500],rough:[250,600]},mv:[250,700]},
  dish:{l:'Dishwasher',w:2,d:2,h:2.9,p:1,c:{rep:[150,350],rpl:[700,1800],rough:[500,1200]},mv:[500,1200]},
- cab:{l:'Cabinets',w:3,d:2,h:3,c:{rep:[200,800],rpl:[300,1000],perft:1}},
- island:{l:'Island',w:4,d:3,h:3,c:{rpl:[3000,9000],area:12}},
+ cab:{l:'Cabinets',w:3,d:2,h:3,c:{rep:[200,800],rpl:[300,1000],perft:1},mv:[100,300],mvft:1},
+ island:{l:'Island',w:4,d:3,h:3,c:{rpl:[3000,9000],area:12},mv:[1200,3500]},
  islandsink:{l:'Island with sink',w:5,d:3,h:3,p:1,c:{rep:[150,450],rpl:[5500,14000],area:15,rough:[2500,5000]},mv:[2500,5000]},
- pantry:{l:'Pantry',w:2,d:2,h:7,c:{rep:[100,400],rpl:[1200,4000]}},
+ pantry:{l:'Pantry',w:2,d:2,h:7,c:{rep:[100,400],rpl:[1200,4000]},mv:[400,1200]},
  table:{l:'Table',w:4,d:3,h:2.5,f:1},
  toilet:{l:'Toilet',w:1.6,d:2.3,h:2.5,p:1,c:{rep:[150,400],rpl:[450,1200],rough:[1200,3000]},mv:[1200,3000]},
  vanity:{l:'Vanity',w:3,d:1.8,h:2.9,p:1,c:{rep:[150,500],rpl:[900,3000],rough:[800,1800]},mv:[800,1800]},
@@ -939,17 +939,17 @@ const I={
  shower:{l:'Shower',w:3,d:3,h:7,p:1,c:{rep:[250,900],rpl:[4000,12000],rough:[1500,3500]},mv:[1500,3500]},
  shower4:{l:'Shower 4×3',w:4,d:3,h:7,p:1,c:{rep:[250,900],rpl:[5000,14000],rough:[1500,3500]},mv:[1500,3500]},
  washer:{l:'Washer',w:2.3,d:2.3,h:3,p:1,c:{rep:[150,400],rpl:[800,1800],rough:[1000,2500]},mv:[1000,2500]},
- dryer:{l:'Dryer',w:2.3,d:2.3,h:3,c:{rep:[100,300],rpl:[700,1600],rough:[300,900]}},
- linen:{l:'Linen closet',w:2,d:1.5,h:7,c:{rep:[100,300],rpl:[600,2000]}},
+ dryer:{l:'Dryer',w:2.3,d:2.3,h:3,c:{rep:[100,300],rpl:[700,1600],rough:[300,900]},mv:[300,900]},
+ linen:{l:'Linen closet',w:2,d:1.5,h:7,c:{rep:[100,300],rpl:[600,2000]},mv:[400,1200]},
  usink:{l:'Utility sink',w:2,d:1.8,h:2.9,p:1,c:{rep:[100,350],rpl:[400,1000],rough:[600,1400]},mv:[600,1400]},
  heater:{l:'Water heater',w:2,d:2,h:5,p:1,c:{rep:[200,600],rpl:[1600,2800],rough:[800,2000]},mv:[900,2200]},
- sump:{l:'Sump pit',w:1.5,d:1.5,h:.15,c:{rep:[250,700],rpl:[800,2200],rough:[1500,3500]}},
+ sump:{l:'Sump pit',w:1.5,d:1.5,h:.15,c:{rep:[250,700],rpl:[800,2200],rough:[1500,3500]},mv:[1500,3500]},
  barsink:{l:'Bar sink',w:2,d:2,h:3.5,p:1,c:{rep:[150,450],rpl:[1200,3000],rough:[1200,2800]},mv:[1200,2800]},
- sofa:{l:'Sofa',w:7,d:3,h:2.7,f:1},tv:{l:'TV wall',w:5,d:1,h:4,c:{rpl:[1500,5000],rough:[300,800]}},
- stairs:{l:'Stairs',w:3,d:8,h:8,c:{rep:[300,1200],rpl:[2500,8000]}},post:{l:'Support post',w:.6,d:.6,h:8,f:1},
- door:{l:'Door',w:3,d:.5,o:[0,6.7],c:{rep:[100,300],rpl:[600,1800],rough:[800,2000]}},
- window:{l:'Window',w:3,d:.5,o:[3,6],c:{rep:[150,400],rpl:[900,2500],rough:[1000,2500]}},
- egress:{l:'Egress window',w:4,d:.5,o:[2,6.2],c:{rpl:[4000,9000],rough:[0,0]}},
+ sofa:{l:'Sofa',w:7,d:3,h:2.7,f:1},tv:{l:'TV wall',w:5,d:1,h:4,c:{rpl:[1500,5000],rough:[300,800]},mv:[300,800]},
+ stairs:{l:'Stairs',w:3,d:8,h:8,c:{rep:[300,1200],rpl:[2500,8000]},mv:[4000,12000]},post:{l:'Support post',w:.6,d:.6,h:8,f:1,mv:[2500,8000],mvnote:'structural, needs an engineer'},
+ door:{l:'Door',w:3,d:.5,o:[0,6.7],c:{rep:[100,300],rpl:[600,1800],rough:[800,2000]},mv:[800,2000]},
+ window:{l:'Window',w:3,d:.5,o:[3,6],c:{rep:[150,400],rpl:[900,2500],rough:[1000,2500]},mv:[1200,3000]},
+ egress:{l:'Egress window',w:4,d:.5,o:[2,6.2],c:{rpl:[4000,9000],rough:[0,0]},mv:[4000,9000]},
  wall:{l:'Wall',w:6,d:.5,h:8,pw:1,c:{nw:[60,120],rm:[800,2500],rmnote:'more if it is load-bearing'}},
  halfwall:{l:'Half wall',w:6,d:.5,h:3.5,pw:1,c:{nw:[45,90],rm:[400,1200]}},
  glasswall:{l:'Glass partition',w:6,d:.3,h:8,pw:1,c:{nw:[150,350],rm:[300,900]}},
@@ -994,10 +994,11 @@ function glyph(it,b){const [x,y]=P(b.x,b.y),w=b.w*scale,h=b.h*scale,k=it.k;cx.sa
 function fillFor(it,b){if(it.s==='remove')return '#FBE4E2';const k=it.k;if(k==='wall')return '#333';if(k==='halfwall')return '#BDBDB8';if(k==='glasswall')return '#D6E8F5';if(k==='closet')return '#EFEDE7';if(isOpen(it))return '#fff';return b.d.p?'#E6F0F8':'#F1EDE4'}
 function draw(){cx.clearRect(0,0,cv.width,cv.height);cx.fillStyle='#fff';cx.fillRect(0,0,cv.width,cv.height);const [rx,ry]=P(0,0),rw=S.w*scale,rh=S.l*scale;
  cx.fillStyle='#FAFAF7';cx.fillRect(rx,ry,rw,rh);cx.strokeStyle='#E4E4E0';cx.lineWidth=1;for(let i=1;i<S.w;i++){cx.beginPath();cx.moveTo(rx+i*scale,ry);cx.lineTo(rx+i*scale,ry+rh);cx.stroke()}for(let j=1;j<S.l;j++){cx.beginPath();cx.moveTo(rx,ry+j*scale);cx.lineTo(rx+rw,ry+j*scale);cx.stroke()}
+ S.items.forEach(it=>{if(!moved(it))return;const b=box(it);const orot=((it.o.r||0)%180)!==0;const ow=orot?b.D:b.W,oh=orot?b.W:b.D;const [gx,gy]=P(it.o.x,it.o.y);cx.save();cx.setLineDash([4,3]);cx.strokeStyle='#9A9A94';cx.lineWidth=1;cx.strokeRect(gx,gy,ow*scale,oh*scale);cx.fillStyle='#9A9A94';cx.font='10px Arial';cx.textAlign='center';cx.textBaseline='middle';cx.fillText('was here',gx+ow*scale/2,gy+oh*scale/2);const [ax,ay]=[gx+ow*scale/2,gy+oh*scale/2],[bx2,by2]=P(b.x+b.w/2,b.y+b.h/2);cx.setLineDash([]);cx.strokeStyle='#B8322B';cx.beginPath();cx.moveTo(ax,ay);cx.lineTo(bx2,by2);cx.stroke();const an=Math.atan2(by2-ay,bx2-ax);cx.beginPath();cx.moveTo(bx2,by2);cx.lineTo(bx2-8*Math.cos(an-.4),by2-8*Math.sin(an-.4));cx.moveTo(bx2,by2);cx.lineTo(bx2-8*Math.cos(an+.4),by2-8*Math.sin(an+.4));cx.stroke();cx.restore()});
  S.items.forEach((it,i)=>{const b=box(it);const [x,y]=P(b.x,b.y),w=b.w*scale,h=b.h*scale;const op=isOpen(it);
   cx.fillStyle=fillFor(it,b);cx.strokeStyle=it.s==='remove'?'#B8322B':i===sel?'#B8322B':'#444';cx.lineWidth=i===sel?2:1;if(it.s==='remove')cx.setLineDash([5,4]);
   cx.beginPath();cx.roundRect(x,y,w,h,op||isPart(it)?0:3);cx.fill();cx.stroke();cx.setLineDash([]);glyph(it,b);
-  if(!op){cx.fillStyle=it.k==='wall'?'#fff':'#222';cx.font=`${Math.max(10,Math.min(13,scale*.42))}px Arial`;cx.textAlign='center';cx.textBaseline='middle';let lab=b.d.l.replace(/ \d.*$/,'');if(it.s==='remove')lab='Remove '+lab.toLowerCase();else if(it.s==='new'&&kindOf(it)!=='furn')lab+=' (new)';if(w>lab.length*6.2||h>w){cx.save();cx.translate(x+w/2,y+h/2);if(h>w&&w<lab.length*6.2)cx.rotate(-Math.PI/2);cx.fillText(lab,0,0);cx.restore()}}});
+  if(!op){cx.fillStyle=it.k==='wall'?'#fff':'#222';cx.font=`${Math.max(10,Math.min(13,scale*.42))}px Arial`;cx.textAlign='center';cx.textBaseline='middle';let lab=b.d.l.replace(/ \d.*$/,'');if(it.s==='remove')lab='Remove '+lab.toLowerCase();else if(it.s==='new'&&kindOf(it)!=='furn')lab+=' (new)';else if(moved(it))lab+=' (moved)';if(w>lab.length*6.2||h>w){cx.save();cx.translate(x+w/2,y+h/2);if(h>w&&w<lab.length*6.2)cx.rotate(-Math.PI/2);cx.fillText(lab,0,0);cx.restore()}}});
  cx.lineWidth=6;cx.strokeStyle='#222';cx.strokeRect(rx,ry,rw,rh);
  if(S.plumb!=='none'){cx.strokeStyle='#2E6FB0';cx.lineWidth=6;cx.beginPath();if(S.plumb==='top'){cx.moveTo(rx,ry);cx.lineTo(rx+rw,ry)}if(S.plumb==='bottom'){cx.moveTo(rx,ry+rh);cx.lineTo(rx+rw,ry+rh)}if(S.plumb==='left'){cx.moveTo(rx,ry);cx.lineTo(rx,ry+rh)}if(S.plumb==='right'){cx.moveTo(rx+rw,ry);cx.lineTo(rx+rw,ry+rh)}cx.stroke();cx.fillStyle='#2E6FB0';cx.font='11px Arial';cx.textBaseline='middle';cx.textAlign='center';const t='existing plumbing';if(S.plumb==='top')cx.fillText(t,rx+rw/2,ry-16);else if(S.plumb==='bottom')cx.fillText(t,rx+rw/2,ry+rh+16);else{cx.save();cx.translate(S.plumb==='left'?rx-16:rx+rw+16,ry+rh/2);cx.rotate(-Math.PI/2);cx.fillText(t,0,0);cx.restore()}}
  cx.fillStyle='#666';cx.font='12px Arial';cx.textAlign='center';cx.textBaseline='middle';if(S.plumb!=='top')cx.fillText(ftin(S.w),rx+rw/2,ry-16);else cx.fillText(ftin(S.w),rx+rw/2,ry+rh+16);cx.save();cx.translate(S.plumb==='left'?rx+rw+16:rx-16,ry+rh/2);cx.rotate(-Math.PI/2);cx.fillText(ftin(S.l),0,0);cx.restore();
@@ -1028,7 +1029,8 @@ function gap(a,b){const dx=Math.max(0,Math.max(a.x,b.x)-Math.min(a.x+a.w,b.x+b.w
 function overlap(a,b){return a.x<b.x+b.w-0.01&&b.x<a.x+a.w-0.01&&a.y<b.y+b.h-0.01&&b.y<a.y+a.h-0.01}
 function wallDist(b){return {top:b.y,bottom:S.l-(b.y+b.h),left:b.x,right:S.w-(b.x+b.w)}[S.plumb]}
 function front(it,b){const dT=b.y,dB=S.l-(b.y+b.h),dL=b.x,dR=S.w-(b.x+b.w);const m=Math.min(dT,dB,dL,dR);let dir=m===dT?'down':m===dB?'up':m===dL?'right':'left';let best=Infinity;S.items.forEach(o=>{if(o===it||isOpen(o)||o.s==='remove')return;const c=box(o);let d=Infinity;if(dir==='down'&&c.y>=b.y+b.h-0.01&&c.x<b.x+b.w&&c.x+c.w>b.x)d=c.y-(b.y+b.h);if(dir==='up'&&c.y+c.h<=b.y+0.01&&c.x<b.x+b.w&&c.x+c.w>b.x)d=b.y-(c.y+c.h);if(dir==='right'&&c.x>=b.x+b.w-0.01&&c.y<b.y+b.h&&c.y+c.h>b.y)d=c.x-(b.x+b.w);if(dir==='left'&&c.x+c.w<=b.x+0.01&&c.y<b.y+b.h&&c.y+c.h>b.y)d=b.x-(c.x+c.w);best=Math.min(best,d)});const wall={down:dB,up:dT,right:dR,left:dL}[dir];return Math.min(best,wall)}
-function estimate(){const L=[];let lo=0,hi=0;const R=ROOM[S.type];let work=false,rough=false;
+function moved(it){if(!it.o||(it.s||'keep')==='new')return 0;const d=Math.hypot(it.x-it.o.x,it.y-it.o.y);const rot=((it.r||0)%180)!==((it.o.r||0)%180);return d>0.5||rot?Math.max(d,0.5):0}
+function estimate(){const L=[];let lo=0,hi=0;let moves=0,mlo=0,mhi=0;const R=ROOM[S.type];let work=false,rough=false;
  S.items.forEach(it=>{const b=box(it),d=def(it),c=d.c||{},s=it.s||'keep',name=d.l.replace(/ \d.*$/,'');let a=0,z=0,lab='';
   if(kindOf(it)==='part'){if(s==='new'){const len=b.W;a=c.nw[0]*len;z=c.nw[1]*len;lab=`New ${name.toLowerCase()} (${ftin(len)})`}else if(s==='remove'){a=c.rm[0];z=c.rm[1];lab=`Remove ${name.toLowerCase()}`+(c.rmnote?`, ${c.rmnote}`:'')}}
   else if(kindOf(it)==='furn'){return}
@@ -1036,8 +1038,9 @@ function estimate(){const L=[];let lo=0,hi=0;const R=ROOM[S.type];let work=false
    if(s==='repair'&&c.rep){a=c.rep[0];z=c.rep[1];lab=`Repair ${name.toLowerCase()}`}
    else if(s==='replace'&&c.rpl){a=c.rpl[0]*f;z=c.rpl[1]*f;lab=`Replace ${name.toLowerCase()}`+(c.perft?` (${ftin(b.W)})`:'')}
    else if(s==='new'){a=(c.rpl?c.rpl[0]*f:0)+(c.rough?c.rough[0]:0);z=(c.rpl?c.rpl[1]*f:0)+(c.rough?c.rough[1]:0);lab=`New ${name.toLowerCase()}`+(c.perft?` (${ftin(b.W)})`:'');if(c.rough)rough=true}
-   if(d.mv&&S.plumb!=='none'&&s!=='new'&&wallDist(b)>2){L.push({l:`${name} moved off the plumbing wall`,a:d.mv[0],z:d.mv[1],mv:1});lo+=d.mv[0];hi+=d.mv[1];rough=true}}
-  if(z>0){L.push({l:lab,a,z});lo+=a;hi+=z;work=true}});
+  }
+  if(z>0){L.push({l:lab,a,z});lo+=a;hi+=z;work=true}
+  const dist=moved(it);if(dist&&s!=='remove'){let ma=0,mz=0,note='';if(kindOf(it)==='part'){const len=b.W;ma=c.rm[0]+c.nw[0]*len;mz=c.rm[1]+c.nw[1]*len;note='remove and rebuild'}else if(d.mv){const f=(d.mvft?b.W/3:1)*(dist>8?1+(dist-8)*.05:1);ma=d.mv[0]*f;mz=d.mv[1]*f;if(d.p&&S.plumb!=='none'){const off=wallDist(b)>2;if(!off){ma*=.6;mz*=.6;note='along the plumbing wall'}else note='off the plumbing wall';rough=true}if(d.mvnote)note=note?note+', '+d.mvnote:d.mvnote}if(mz>0){L.push({l:`Move ${name.toLowerCase()} ${ftin(dist)}`+(note?` (${note})`:''),a:ma,z:mz,mv:1});lo+=ma;hi+=mz;moves++;mlo+=ma;mhi+=mz;work=true}}});
  if(S.type==='basement'&&S.items.some(it=>def(it).p&&it.s==='new')){L.push({l:'Ejector or drain pump for new below-grade plumbing',a:3500,z:8000});lo+=3500;hi+=8000;rough=true}
  const area=S.w*S.l,per=2*(S.w+S.l);
  if(S.opts.floor&&R.floor){L.push({l:`New flooring (${Math.round(area)} sq ft)`,a:area*R.floor[0],z:area*R.floor[1]});lo+=area*R.floor[0];hi+=area*R.floor[1];work=true}
@@ -1046,7 +1049,7 @@ function estimate(){const L=[];let lo=0,hi=0;const R=ROOM[S.type];let work=false
  if(S.opts.light&&R.light){L.push({l:'Lighting and electrical updates',a:R.light[0],z:R.light[1]});lo+=R.light[0];hi+=R.light[1];work=true}
  if(work){L.push({l:'Demo and haul-away',a:300,z:1200});lo+=300;hi+=1200}
  if(rough||S.items.some(it=>it.s==='remove')){L.push({l:'Permits and inspections',a:150,z:600});lo+=150;hi+=600}
- return {lo,hi,lines:L,kept:S.items.filter(it=>(it.s||'keep')==='keep'&&kindOf(it)!=='furn').length}}
+ return {lo,hi,lines:L,moves,mlo,mhi,kept:S.items.filter(it=>(it.s||'keep')==='keep'&&kindOf(it)!=='furn'&&!moved(it)).length}}
 function check(){const notes=[];const B=S.items.filter(it=>it.s!=='remove').map(it=>({it,b:box(it)}));const find=k=>B.find(x=>x.it.k===k);
  for(let i=0;i<B.length;i++)for(let j=i+1;j<B.length;j++){if(isOpen(B[i].it)||isOpen(B[j].it))continue;if(overlap(B[i].b,B[j].b))notes.push(['bad',`The ${B[i].b.d.l.toLowerCase()} overlaps the ${B[j].b.d.l.toLowerCase()}.`])}
  {const s=find('sink')||find('islandsink'),r=find('range'),f=find('fridge'),dw=find('dish'),isl=find('island')||find('islandsink');
@@ -1065,11 +1068,11 @@ function check(){const notes=[];const B=S.items.filter(it=>it.s!=='remove').map(
  if(!S.items.length)notes.push(['warn','Tap an item above to add it, then drag it into place.']);
  $k('skNotes').innerHTML=notes.map(([t,m])=>`<li class="${t}">${m}</li>`).join('');
  const E=estimate();$k('skEstNum').textContent=E.hi>0?`${$$$(E.lo)} – ${$$$(E.hi)}`:'$0';$k('skEstLines').innerHTML=E.lines.map(x=>`<li${x.mv?' class="mv"':''}><span>${x.l}</span><b>${$$$(x.a)}–${$$$(x.z)}</b></li>`).join('')+(E.kept?`<li class="hint"><span>${E.kept} existing item${E.kept>1?'s':''} kept as-is</span><b>$0</b></li>`:'');
- $k('skEstHint').textContent=E.hi>0?'Ranges for our area, based on what you drew. Tap an item and mark it existing, repair, replace or new to refine. The real number comes in writing after the visit.':'Everything is marked existing. Tap an item and choose repair, replace or new, or add something, and the estimate builds here.';
+ $k('skEstHint').textContent=E.hi>0?(E.moves?`${E.moves} thing${E.moves>1?'s':''} moved from where ${E.moves>1?'they are':'it is'} today: ${$$$(E.mlo)}–${$$$(E.mhi)} of the total. `:'')+'Ranges for our area, based on what you drew. Tap an item and mark it existing, repair, replace or new to refine. The real number comes in writing after the visit.':'Everything is marked existing. Tap an item and choose repair, replace or new, or add something, and the estimate builds here.';
  return E}
 function save(){try{localStorage.setItem('dne:sketch',JSON.stringify(S))}catch{}}
-function load(){const q=new URLSearchParams((location.hash.split('?')[1]||''));const d=q.get('d');if(d){try{const o=JSON.parse(decodeURIComponent(escape(atob(d.replace(/-/g,'+').replace(/_/g,'/')))));S=Object.assign({opts:{}},o);return}catch{}}try{const s=localStorage.getItem('dne:sketch');if(s)S=Object.assign({opts:{}},JSON.parse(s))}catch{}if(!S.opts)S.opts={}}
-function setType(t){S.type=t;const p=PRESETS[t];S.w=p.w;S.l=p.l;S.plumb=p.plumb;S.opts={};S.items=p.items.map(o=>Object.assign({r:0,s:'keep'},o));sel=-1;ui();fit();check();save()}
+function load(){const q=new URLSearchParams((location.hash.split('?')[1]||''));const d=q.get('d');if(d){try{const o=JSON.parse(decodeURIComponent(escape(atob(d.replace(/-/g,'+').replace(/_/g,'/')))));S=Object.assign({opts:{}},o);return}catch{}}try{const s=localStorage.getItem('dne:sketch');if(s)S=Object.assign({opts:{}},JSON.parse(s))}catch{}if(!S.opts)S.opts={};S.items.forEach(it=>{if((it.s||'keep')!=='new'&&!it.o)it.o={x:it.x,y:it.y,r:it.r||0}})}
+function setType(t){S.type=t;const p=PRESETS[t];S.w=p.w;S.l=p.l;S.plumb=p.plumb;S.opts={};S.items=p.items.map(o=>{const it=Object.assign({r:0,s:'keep'},o);it.o={x:it.x,y:it.y,r:it.r};return it});sel=-1;ui();fit();check();save()}
 function png(scaleUp=2){const off=document.createElement('canvas');off.width=cv.width*scaleUp;off.height=cv.height*scaleUp+40*scaleUp;const c2=off.getContext('2d');c2.fillStyle='#fff';c2.fillRect(0,0,off.width,off.height);c2.scale(scaleUp,scaleUp);c2.drawImage(cv,0,0);c2.fillStyle='#222';c2.font='13px Arial';c2.fillText(`D N E Contracting · ${S.type} sketch · ${ftin(S.w)} × ${ftin(S.l)}`+(S.plumb!=='none'?` · plumbing on the ${S.plumb} wall`:''),ox,cv.height+22);return off.toDataURL('image/png')}
 function link(){const j=JSON.stringify({type:S.type,w:S.w,l:S.l,plumb:S.plumb,items:S.items,opts:S.opts});return location.origin+location.pathname+'#sketch?d='+btoa(unescape(encodeURIComponent(j))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
 function lead(){return store.get('last_lead',null)}
@@ -1155,10 +1158,11 @@ $k('skL').addEventListener('change',()=>{S.l=Math.max(4,Math.min(40,+$k('skL').v
 $k('skPlumb').addEventListener('change',()=>{S.plumb=$k('skPlumb').value;draw();check();save()});
 $k('skRotate').addEventListener('click',rotate);$k('skDelete').addEventListener('click',del);
 $k('skIW').addEventListener('change',()=>setSize($k('skIW').value,$k('skID').value));$k('skID').addEventListener('change',()=>setSize($k('skIW').value,$k('skID').value));
-$k('skStatus').addEventListener('click',e=>{const b=e.target.closest('[data-st]');if(!b||sel<0)return;S.items[sel].s=b.dataset.st;sizeUI(S.items[sel]);check();draw();save()});
+$k('skStatus').addEventListener('click',e=>{const b=e.target.closest('[data-st]');if(!b||sel<0)return;const it=S.items[sel];it.s=b.dataset.st;if(it.s==='new')delete it.o;else if(!it.o)it.o={x:it.x,y:it.y,r:it.r||0};sizeUI(S.items[sel]);check();draw();save()});
 $k('skOpts').addEventListener('change',e=>{const i=e.target.closest('[data-opt]');if(!i)return;S.opts[i.dataset.opt]=i.checked;check();save()});
 $k('skClear').addEventListener('click',()=>{S.items=[];sel=-1;ui();check();draw();save()});
 $k('skReset').addEventListener('click',()=>setType(S.type));
+$k('skBack').addEventListener('click',()=>{S.items.forEach(it=>{if(it.o){it.x=it.o.x;it.y=it.o.y;it.r=it.o.r||0}});check();draw();save()});
 $k('skPng').addEventListener('click',()=>{const a=document.createElement('a');a.href=view==='3d'&&R3?R3.png():png();a.download=view==='3d'?'dne-room-3d.png':'dne-room-sketch.png';a.click()});
 $k('skLink').addEventListener('click',()=>{navigator.clipboard.writeText(link()).then(()=>toast('Link copied. Anyone who opens it sees this sketch.')).catch(()=>prompt('Copy this link',link()))});
 $$('.sk-vbtn').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
