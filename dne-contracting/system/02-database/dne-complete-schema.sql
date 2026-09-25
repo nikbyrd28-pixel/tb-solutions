@@ -72,3 +72,5 @@ create or replace view funnel_30d as select
 
 -- room sketch from the website planner
 alter table plumbing_leads add column if not exists sketch jsonb, add column if not exists sketch_png text;
+
+alter table plumbing_leads add column if not exists sketch_estimate text, add column if not exists sketch_lines text, add column if not exists sketch_3d_png text;

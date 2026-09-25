@@ -35,13 +35,14 @@
 {"@type":"WebSite","@id":"https://dnecontracting.com/#website","url":"https://dnecontracting.com/","name":"D N E Contracting","publisher":{"@id":"https://dnecontracting.com/#business"}},
 {"@type":"FAQPage","@id":"https://dnecontracting.com/#faq","mainEntity":[
  {"@type":"Question","name":"Is the remodel consultation really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. We come to your home, walk the space with you, and talk through options, costs and timelines. You never have to decide that day. If we are not the right fit, you still leave with clarity."}},
- {"@type":"Question","name":"How much does a kitchen, bathroom or basement remodel cost?","acceptedAnswer":{"@type":"Answer","text":"Typical ranges in our area: bathroom remodel $8,000 to $45,000, kitchen remodel $12,000 to $85,000, basement remodel $20,000 to $85,000, tub-to-shower conversion $6,000 to $24,000, water heater $1,600 to $8,500. The exact number comes in a written estimate after a free in-home visit."}},
+ {"@type":"Question","name":"Why doesn't D N E Contracting list prices online?","acceptedAnswer":{"@type":"Answer","text":"A number without seeing the space is a guess. After a free in-home visit you get a written estimate specific to your home, with nothing hidden."}},
  {"@type":"Question","name":"How long does a bathroom or kitchen remodel take?","acceptedAnswer":{"@type":"Answer","text":"Bathrooms usually take 2 to 4 weeks, kitchens 3 to 6 weeks and basements 3 to 6 weeks depending on scope and permits. Repairs and water heaters are usually same or next day. The schedule is put in writing and tracked on a private project page."}},
  {"@type":"Question","name":"What areas does D N E Contracting serve?","acceptedAnswer":{"@type":"Answer","text":"The 422 corridor, plus Montgomery, Chester, Bucks, Delaware and Philadelphia counties in Pennsylvania and nearby South Jersey."}},
  {"@type":"Question","name":"Is D N E Contracting licensed and insured?","acceptedAnswer":{"@type":"Answer","text":"Yes. D N E Contracting is a registered Pennsylvania Home Improvement Contractor and fully insured. The owner runs every consultation and is on every job."}},
  {"@type":"Question","name":"How do payments work on a remodel?","acceptedAnswer":{"@type":"Answer","text":"A deposit reserves the start date, progress payments happen at agreed milestones, and the balance is due when the client is happy with the finished work. Invoices are paid by card or bank transfer through a private project page."}}]}
 ]}
 </script>
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 
 <script>
@@ -277,19 +278,22 @@ th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line)}
 th{font-weight:bold;font-size:.9rem;color:var(--mute)}
 .trust{display:none}
 
-.est{display:grid;grid-template-columns:1.2fr 1fr;gap:40px;align-items:start}
-.est-out{border:1px solid var(--line);padding:22px;background:#fff}
 .est-num{font-family:var(--serif);font-size:2.2rem;line-height:1.1;margin:4px 0 8px}
-@media (max-width:800px){.est{grid-template-columns:1fr}}
 .sk{display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start;padding-bottom:64px}
 .sk-tools{grid-column:1/-1}
 .sk-types{display:flex;gap:8px;margin-bottom:12px}.sk-type{font:inherit;padding:8px 14px;border:1px solid var(--ink);background:#fff;cursor:pointer;border-radius:3px}.sk-type.s{background:var(--ink);color:#fff}
 .sk-dims{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-bottom:12px;font-size:.95rem}.sk-dims label{display:flex;align-items:center;gap:6px;margin:0;font-weight:normal}.sk-dims input{width:72px;padding:6px 8px}.sk-dims select{width:auto;padding:6px 8px}
-.sk-palette{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.sk-palette{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}.sk-palette .sk-pw{border-style:dashed}
+.sk-view{display:flex;gap:0;margin-bottom:10px}.sk-vbtn{font:inherit;padding:8px 16px;border:1px solid var(--ink);background:#fff;cursor:pointer}.sk-vbtn:first-child{border-radius:3px 0 0 3px}.sk-vbtn:last-child{border-radius:0 3px 3px 0;border-left:0}.sk-vbtn.s{background:var(--ink);color:#fff}
 .sk-sel{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;font-weight:bold;margin:10px 0 6px;min-height:40px}.sk-sel.off{visibility:hidden}.sk-sel label{display:inline-flex;align-items:center;gap:5px;margin:0;font-weight:normal;font-size:.95rem}.sk-sel input{width:64px;padding:6px 8px}
+.sk-status{display:inline-flex}.sk-st{font:inherit;font-size:.85rem;padding:5px 10px;border:1px solid var(--ink);background:#fff;cursor:pointer;margin-left:-1px}.sk-st:first-child{border-radius:3px 0 0 3px;margin-left:0}.sk-st:last-child{border-radius:0 3px 3px 0}.sk-st.s{background:var(--red);border-color:var(--red);color:#fff}
 .sk-canvas{overflow:auto}.sk-canvas canvas{touch-action:none;display:block;max-width:100%;border:1px solid var(--line);background:#fff}
-.sk-notes,.sk-costs{list-style:none;padding:0;margin:0}.sk-notes li,.sk-costs li{padding:8px 0 8px 22px;border-bottom:1px solid var(--line);position:relative;font-size:.95rem}.sk-notes li:last-child,.sk-costs li:last-child{border-bottom:0}
-.sk-notes li::before{content:"\2022";position:absolute;left:4px;font-size:1.3rem;line-height:1;top:6px}.sk-notes li.ok::before{color:var(--ok)}.sk-notes li.warn::before{color:#B07A00}.sk-notes li.bad::before{color:var(--red)}.sk-costs li::before{content:"$";position:absolute;left:6px;color:var(--mute)}.sk-costs li.hint::before{content:""}
+.sk3d-bar{display:flex;gap:6px;margin-bottom:8px}.sk3d #sk3dHost{border:1px solid var(--line);background:#E9ECEF;min-height:200px}.sk3d canvas{touch-action:none}
+.sk-est .est-num{font-family:var(--serif);font-size:2rem;line-height:1.1;margin:4px 0 10px}
+.sk-lines{list-style:none;padding:0;margin:0 0 10px}.sk-lines li{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid var(--line);font-size:.92rem}.sk-lines li b{white-space:nowrap;font-weight:600}.sk-lines li.mv span{color:var(--red)}.sk-lines li.hint{color:var(--mute)}
+.sk-opts{display:grid;gap:4px;margin:6px 0 10px;font-size:.92rem}.sk-opts label{display:flex;align-items:center;gap:8px;margin:0;font-weight:normal}.sk-opts input{width:auto}
+.sk-notes{list-style:none;padding:0;margin:0}.sk-notes li{padding:8px 0 8px 22px;border-bottom:1px solid var(--line);position:relative;font-size:.95rem}.sk-notes li:last-child{border-bottom:0}
+.sk-notes li::before{content:"\2022";position:absolute;left:4px;font-size:1.3rem;line-height:1;top:6px}.sk-notes li.ok::before{color:var(--ok)}.sk-notes li.warn::before{color:#B07A00}.sk-notes li.bad::before{color:var(--red)}
 .sk-actions{display:grid;gap:8px}
 @media (max-width:900px){.sk{grid-template-columns:1fr}}
 /* views */
@@ -355,7 +359,6 @@ footer a,footer p{overflow-wrap:anywhere}
     <button class="burger" id="burger" aria-expanded="false" aria-controls="mainNav">Menu</button>
     <nav class="main" id="mainNav" aria-label="Main">
       <a href="#services">Services</a>
-      <a href="#sketch">Room sketch</a>
       <a href="#projects">Our work</a>
       <a href="#about">About</a>
       <a href="#reviews">Reviews</a>
@@ -440,9 +443,9 @@ footer a,footer p{overflow-wrap:anywhere}
       <div>
         <span class="eyebrow">The question everyone asks</span>
         <h2>What does it cost?</h2>
-        <p>The ballpark ranges further down will get you in the right neighborhood. But a number picked before anyone has stood in your kitchen is a guess, and guesses either scare people off or disappoint them later.</p>
+        <p>We don't put prices on the site, because a number picked before anyone has stood in your kitchen is a guess, and guesses either scare people off or disappoint them later.</p>
         <p>What you get after the walk-through: a written estimate that lists what's included, what it costs, and how long it takes. If it's more than you'd hoped, we'll show you which parts are must-do and which can wait, or split it into phases.</p>
-        <a class="btn" href="#estimator">See ballpark ranges</a>
+        <a class="btn" href="#planner">Request a free consultation</a>
       </div>
       <div><p class="pull">"I was braced for a sales pitch. She gave me three options, told me which one she'd pick for her own house, and it was the cheapest one."</p><div class="who">Homeowner, Royersford</div></div>
     </div>
@@ -478,35 +481,11 @@ footer a,footer p{overflow-wrap:anywhere}
     </div>
   </div>
 
-  <div class="sec" id="estimator">
-    <div class="wrap est">
-      <div>
-        <h2>Ballpark estimator</h2>
-        <p>Rough ranges for our area, so you're not guessing before we've met. Every house is different; the real number comes in writing after the visit.</p>
-        <div class="grid g2">
-          <div class="field"><label for="estType">What are you looking at?</label><select id="estType"></select></div>
-          <div class="field"><label for="estScope">How much is changing?</label><select id="estScope"></select></div>
-        </div>
-      </div>
-      <div class="est-out">
-        <div class="hint">Typical range</div>
-        <div class="est-num" id="estNum">—</div>
-        <p class="hint" id="estNote"></p>
-        <a class="btn p" id="estCta" href="#planner">Get the real number for your home</a>
-      </div>
-    </div>
-  </div>
-  <div class="sec alt">
-    <div class="wrap split">
-      <div><h2>Sketch your room before we visit</h2><p>Drag a sink, a tub or an island around a to-scale plan of your room. It tells you what fits, what code won't allow, and which moves cost extra. Send it with your request and we show up already knowing the space.</p><a class="btn" href="#sketch">Open the room sketch</a></div>
-      <div class="photo has" style="aspect-ratio:3/2"><img data-photo="plans" alt="Going over a plan"></div>
-    </div>
-  </div>
 </section>
 
 <!-- ============ SERVICES ============ -->
 <section class="view" id="v-services">
-  <div class="wrap page-head"><h1>Remodeling, done calmly</h1><p>Kitchens, bathrooms and basements from the first walk-through to the last coat of paint, plus plumbing repairs and water heaters. Ballpark ranges are on the home page; the real number comes in writing after the visit.</p></div>
+  <div class="wrap page-head"><h1>Remodeling, done calmly</h1><p>Kitchens, bathrooms and basements from the first walk-through to the last coat of paint, plus plumbing repairs and water heaters. The real number comes in writing after the visit.</p></div>
   <div class="sec" style="padding-top:0"><div class="wrap"><div class="grid g3" id="svcGridFull"></div></div></div>
   <div class="sec alt"><div class="wrap">
     <h2>Emergencies</h2>
@@ -653,18 +632,25 @@ footer a,footer p{overflow-wrap:anywhere}
 
 <!-- ============ SKETCH ============ -->
 <section class="view" id="v-sketch">
-  <div class="wrap page-head"><h1>Sketch your room</h1><p>Draw the room you're thinking about. Drag things around and it tells you what fits, what code won't allow, and which moves cost extra, before anyone comes out. Send it with your consultation request and we'll show up already knowing the room.</p></div>
+  <div class="wrap page-head"><h1>Sketch your room</h1><p>Draw the room as it is, then change what you want to change. Mark each thing existing, repair, replace or new, and the estimate builds as you go. Flip to 3D to walk through it. When it looks right, send it and we'll arrive already knowing the room.</p></div>
   <div class="wrap sk">
     <div class="sk-tools">
+      <div class="notice" id="skGate" hidden>Tell us who to send this to first. <a href="#planner">The quick form takes a minute</a>, then come back here.</div>
       <div class="sk-types"><button type="button" class="sk-type" data-type="kitchen">Kitchen</button><button type="button" class="sk-type" data-type="bathroom">Bathroom</button><button type="button" class="sk-type" data-type="basement">Basement</button></div>
       <div class="sk-dims"><label>Width <input id="skW" type="number" inputmode="decimal" min="4" max="40" step="0.5"> ft</label><label>Length <input id="skL" type="number" inputmode="decimal" min="4" max="40" step="0.5"> ft</label><label>Plumbing is on the <select id="skPlumb"><option value="top">top wall</option><option value="right">right wall</option><option value="bottom">bottom wall</option><option value="left">left wall</option><option value="none">not sure</option></select></label></div>
       <div class="sk-palette" id="skPalette"></div>
     </div>
-    <div class="sk-canvas"><canvas id="skCanvas" width="600" height="400" aria-label="Room sketch"></canvas><div class="sk-sel off" id="skSel"><span id="skSelName">Nothing selected</span><label>Size <input id="skIW" type="number" inputmode="decimal" step="0.5" min="0.5" max="40"> ft</label><span id="skIDwrap"><label>× <input id="skID" type="number" inputmode="decimal" step="0.5" min="0.5" max="40"> ft</label></span><button type="button" class="btn sm" id="skRotate">Rotate</button><button type="button" class="btn sm" id="skDelete">Remove</button></div><p class="hint">Drag to move. Tap an item to see its distance to each wall, then drag the corner square to resize it, or type a size above. Things snap to 6 inches.</p></div>
+    <div class="sk-main">
+      <div class="sk-view"><button type="button" class="sk-vbtn s" data-view="2d">Floor plan</button><button type="button" class="sk-vbtn" data-view="3d">3D room</button></div>
+      <div class="sk-canvas" id="skPlanWrap"><canvas id="skCanvas" width="600" height="400" aria-label="Room sketch"></canvas>
+        <div class="sk-sel off" id="skSel"><span id="skSelName">Nothing selected</span><span class="sk-status" id="skStatus"></span><label>Size <input id="skIW" type="number" inputmode="decimal" step="0.5" min="0.5" max="40"> ft</label><span id="skIDwrap"><label>× <input id="skID" type="number" inputmode="decimal" step="0.5" min="0.5" max="40"> ft</label></span><button type="button" class="btn sm" id="skRotate">Rotate</button><button type="button" class="btn sm" id="skDelete">Remove</button></div>
+        <p class="hint">Drag to move. Tap an item to see its distance to each wall, drag the corner square to resize it, and mark it existing, repair, replace or new. Things snap to 6 inches.</p></div>
+      <div class="sk3d" id="sk3d" hidden><div class="sk3d-bar"><button type="button" class="btn sm" data-cam="corner">Corner</button><button type="button" class="btn sm" data-cam="eye">Walk in</button><button type="button" class="btn sm" data-cam="top">From above</button></div><div id="sk3dHost"></div><p class="hint">Drag to look around, pinch or scroll to zoom. Anything you change on the floor plan shows up here.</p></div>
+    </div>
     <div class="sk-side">
+      <div class="panel sk-est"><div class="hint">Estimate from your sketch</div><div class="est-num" id="skEstNum">$0</div><ul class="sk-lines" id="skEstLines"></ul><div class="sk-opts" id="skOpts"></div><p class="hint" id="skEstHint"></p></div>
       <div class="panel"><h3>What we notice</h3><ul class="sk-notes" id="skNotes"></ul></div>
-      <div class="panel" id="skCostWrap"><h3>Cost signals</h3><ul class="sk-costs" id="skCosts"></ul></div>
-      <div class="sk-actions"><button type="button" class="btn p" id="skSend">Send with my consultation request</button><button type="button" class="btn" id="skPng">Download as image</button><button type="button" class="btn" id="skLink">Copy a link to this sketch</button><button type="button" class="btn sm" id="skReset">Reset to a typical layout</button><button type="button" class="btn sm" id="skClear">Clear the room</button></div>
+      <div class="sk-actions"><button type="button" class="btn p" id="skSend">Send this sketch</button><p class="notice" id="skSent" hidden>Sent. It's attached to your request, and we'll have it open when we call.</p><button type="button" class="btn" id="skPng">Download as image</button><button type="button" class="btn" id="skLink">Copy a link to this sketch</button><button type="button" class="btn sm" id="skReset">Reset to a typical room</button><button type="button" class="btn sm" id="skClear">Clear the room</button></div>
     </div>
   </div>
 </section>
@@ -678,9 +664,10 @@ footer a,footer p{overflow-wrap:anywhere}
       <li>Check your email. There's a short note from <span data-owner></span> with a couple of ideas for your <span id="tyType"></span>.</li>
       <li>She'll reach out within one business day to find a time that suits you.</li>
       <li>The visit itself is calm and takes about an hour. Ask as many questions as you want.</li>
-      <li id="tySketch" hidden>Your room sketch came through with it, so we'll arrive already knowing the layout.</li>
+      <li id="tySketchOk" hidden>Your room sketch came through with it, so we'll arrive already knowing the layout.</li>
     </ol>
     <div id="tyBook"></div>
+    <div class="panel" style="margin-top:22px;border-left:3px solid var(--red)"><h3 style="font-size:1.2rem">Next: sketch your room (2 minutes)</h3><p>Drag your fixtures around a to-scale plan, mark what stays and what changes, see it in 3D, and get typical costs for exactly what you drew. Send it and we'll have it open when we call.</p><a class="btn p" id="tySketch" href="#sketch">Sketch my room</a></div>
     <div class="panel" style="margin-top:22px"><h3 style="font-size:1.2rem">Worth having on the day (none of it required)</h3><ul style="margin:0;padding-left:20px;color:var(--ink-2)"><li>Any photos or saved ideas you like — a phone screenshot is fine</li><li>A rough sense of budget, if you have one</li><li>Anyone else in the household who'd want to weigh in. A friend is welcome too.</li></ul></div>
     <a class="btn" id="vcardBtn" href="#" download="DNE-Contracting.vcf" style="margin-top:6px">Save our number to your phone</a>
     <p class="hint" style="margin-top:20px">Changed your mind or just want to chat first? That's completely okay. <a data-tel href="#" data-phone></a></p>
@@ -704,7 +691,7 @@ footer a,footer p{overflow-wrap:anywhere}
   <div class="wrap">
     <div><a class="brand" href="#home" style="margin-bottom:10px"><span>D N E Contracting</span></a><p style="max-width:40ch">Kitchen, bathroom and basement remodeling serving the 422 corridor and greater Philadelphia: Royersford, Limerick, Collegeville, Phoenixville, Boyertown, King of Prussia, Norristown and Philadelphia.</p><p><span data-license></span> · Fully insured</p></div>
     <div><h4>Services</h4><a href="#services">Kitchen remodels</a><a href="#services">Bathroom remodels</a><a href="#services">Basement remodels</a><a href="#services">Plumbing & water heaters</a></div>
-    <div><h4>Company</h4><a href="#sketch">Sketch your room</a><a href="#about">About</a><a href="#projects">Our work</a><a href="#reviews">Reviews</a><a href="#faq">FAQ</a><a href="#refer">Refer a friend</a></div>
+    <div><h4>Company</h4><a href="#about">About</a><a href="#projects">Our work</a><a href="#reviews">Reviews</a><a href="#faq">FAQ</a><a href="#refer">Refer a friend</a></div>
     <div><h4>Contact</h4><a data-tel href="#" data-phone></a><a data-mail href="#" data-email></a><a href="#portal">Client portal</a><a href="#contact">Send a note</a></div>
     <div class="fine"><span>© <span id="yr"></span> D N E Contracting</span><span>Website by <a href="https://tbsol.net" style="display:inline;padding:0">TB Solutions</a></span></div>
   </div>
@@ -740,7 +727,7 @@ const REVIEWS=[
 ];
 const FAQ=[
  ['Is the consultation really free, and is there a catch?','Yes, and no. We come to your home, walk the space with you, and talk through options, costs, and timelines. You don\'t have to decide anything that day, or ever. If we\'re not the right fit, you still leave with clarity.'],
- ['Are the estimator ranges what I\'ll actually pay?','They\'re typical ranges for our area, to help you plan. Your number depends on the house, the finishes you choose and what we find behind the walls, and it comes in writing after the visit.'],
+ ['Why don\'t you list prices online?','Because a number without seeing the space is a guess. Once you\'ve sent the quick form, the room sketch tool gives you typical ranges for exactly what you draw, and the written estimate after the visit is the real number.'],
  ['How long does a remodel take?','Bathrooms usually run 2–4 weeks, kitchens 3–6, basements 3–6, depending on scope and permits. Repairs and water heaters are usually same or next day. The schedule is in writing and on your project page.'],
  ['Do you handle everything, or just the plumbing?','Everything. Demo, plumbing, electrical and tile through trades we\'ve worked with for years, cabinets, counters, drywall and paint. One point of contact, one schedule, one person answering your questions.'],
  ['Who will actually be in my house?','The owner runs every consultation and is on every job. When an electrician or tile setter is on site, she\'s the one coordinating them, and she\'ll tell you ahead of time who is coming and when.'],
@@ -861,7 +848,7 @@ function buildPlanner(root,compact){
     if(SK&&SK.has()&&store.get('sketch_send',0)){d.sketch=JSON.stringify(SK.data());try{d.sketch_png=SK.png()}catch{}}
     const btn=$('[data-submit]',form);btn.disabled=true;btn.textContent='Sending…';
     try{const r=await send('lead',d);store.del('planner_draft');track('generate_lead',{project_type:d.type,score:d.score});
-      $('#tyName').textContent=d.name.split(' ')[0];$('#tySketch').hidden=!d.sketch;store.del('sketch_send');$('#tyType').textContent=d.type==='repair'?'plumbing issue':d.type;
+      $('#tyName').textContent=d.name.split(' ')[0];$('#tySketchOk').hidden=!d.sketch;$('#tySketch').href='#sketch?type='+(d.type==='repair'?'kitchen':d.type);$('#tySketch').textContent=d.sketch?'Open my sketch again':'Sketch my room';store.del('sketch_send');$('#tyType').textContent=d.type==='repair'?'plumbing issue':d.type;
       $('#tyBook').innerHTML=I.calendlyUrl?`<a class="btn p" href="${I.calendlyUrl}" target="_blank" rel="noopener">Pick a time now</a>`:'';
       location.hash='#thanks';if(r.offline)toast('Saved locally — connect the n8n webhook in config to send for real.')}
     catch(err){btn.disabled=false;btn.textContent='Book my free consultation';toast('That didn\'t go through. Try again, or call '+B.phone)}
@@ -869,23 +856,6 @@ function buildPlanner(root,compact){
   show();
 }
 buildPlanner($('#plannerHero'),true);buildPlanner($('#plannerFull'),false);
-
-/* ---------- ballpark estimator (edit these ranges) ---------- */
-const EST={
- kitchen:{label:'Kitchen remodel',planner:'kitchen',scopes:[['Refresh, cabinets stay',12000,25000,'New counters, backsplash, sink and faucet, lighting, paint. Cabinets stay put.'],['Full remodel, same layout',25000,50000,'New cabinets, counters, flooring, plumbing and electrical updates.'],['Layout change or custom',50000,85000,'Walls moved, island added, custom cabinetry, everything new.']]},
- bathroom:{label:'Bathroom remodel',planner:'bathroom',scopes:[['Refresh, same layout',8000,15000,'New vanity, toilet, fixtures, tile floor and paint. Tub or shower stays.'],['Full remodel',15000,28000,'Everything replaced, tiled shower, new layout if needed.'],['Expanded or high-end',28000,45000,'Larger footprint, curbless shower, heated floor, custom tile.']]},
- tubshower:{label:'Tub-to-shower conversion',planner:'bathroom',scopes:[['Prefab walk-in shower',6000,10000,'Acrylic base and walls, new valve, glass door.'],['Tiled shower',10000,16000,'Custom tile, proper waterproofing, new fixtures and glass.'],['Curbless or custom',16000,24000,'Curbless entry, linear drain, bench, niche, heated floor.']]},
- basement:{label:'Basement remodel',planner:'basement',scopes:[['Finish the open space',20000,35000,'Framing, insulation, drywall, flooring, lighting, paint.'],['Add a bathroom or laundry',35000,55000,'Finished space plus a full or half bath with ejector pump.'],['Full suite or wet bar',55000,85000,'Bedroom, bath, kitchenette or bar, egress window.']]},
- heater:{label:'Water heater',planner:'repair',scopes:[['Tank replaced with tank',1600,2800,'Like-for-like 40 or 50 gallon, code updates included.'],['Tank to tankless',3800,6500,'Condensing tankless unit, venting and isolation valves.'],['Tankless with gas upsizing',5500,8500,'Gas line upsized and new venting where needed.']]},
- repair:{label:'Plumbing repair',planner:'repair',scopes:[['Small fix',150,450,'Leaky faucet, running toilet, shut-off valve, minor drain clearing.'],['Typical repair',450,1200,'Leak in a wall or ceiling, disposal, sump pump swap, main shut-off.'],['Bigger repair',1200,2800,'Burst pipe with drywall access, sewer line section, backwater valve.']]}
-};
-const $$t=$('#estType'),$$s=$('#estScope');
-if($$t){$$t.innerHTML=Object.entries(EST).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
- const fmt=n=>'$'+n.toLocaleString();
- function estScopes(){const e=EST[$$t.value];$$s.innerHTML=e.scopes.map((s,i)=>`<option value="${i}">${s[0]}</option>`).join('');estShow()}
- function estShow(){const e=EST[$$t.value],s=e.scopes[+$$s.value];$('#estNum').textContent=fmt(s[1])+' – '+fmt(s[2]);$('#estNote').textContent=s[3]+' Labor and standard materials; permits and high-end finishes can add to it.';$('#estCta').href='#planner?type='+e.planner;store.set('est',{type:$$t.value,scope:+$$s.value});track('estimator',{type:$$t.value,scope:+$$s.value})}
- $$t.addEventListener('change',estScopes);$$s.addEventListener('change',estShow);
- const saved=store.get('est',null);if(saved&&EST[saved.type]){$$t.value=saved.type;estScopes();$$s.value=saved.scope;estShow()}else estScopes();}
 
 /* ---------- contact + referral forms ---------- */
 function simpleForm(id,kind,fields,okMsg){const f=$(id);f.addEventListener('submit',async e=>{e.preventDefault();let ok=true;const d={};
@@ -950,122 +920,233 @@ const PB=[
 $('#playbook').innerHTML=PB.map(([t,b],i)=>`<div class="panel" style="cursor:pointer" data-copy="${i}" title="Tap to copy"><h3 style="display:flex;justify-content:space-between">${t}<span class="tag">copy</span></h3><p style="white-space:pre-wrap;max-width:none;margin:0;color:var(--steel)">${esc(b)}</p></div>`).join('');
 $('#playbook').addEventListener('click',e=>{const p=e.target.closest('[data-copy]');if(!p)return;navigator.clipboard.writeText(PB[p.dataset.copy][1]).then(()=>toast('Copied')).catch(()=>toast('Select and copy manually'))});
 
-/* ---------- room sketch (canvas floor planner) ---------- */
+/* ---------- room sketch: plan + estimate + 3D ---------- */
 const SK=(()=>{
-const CAT={
- kitchen:[['sink','Sink',3,2,1],['range','Stove',2.5,2.2,0],['fridge','Fridge',3,2.5,0],['dish','Dishwasher',2,2,1],['cab','Cabinets 3 ft',3,2,0],['island','Island',4,3,0],['islandsink','Island with sink',5,3,1],['pantry','Pantry',2,2,0],['table','Table',4,3,0],['door','Door',3,.5,0],['window','Window',3,.5,0]],
- bathroom:[['toilet','Toilet',1.6,2.3,1],['vanity','Vanity',3,1.8,1],['dvanity','Double vanity',5,1.8,1],['tub','Tub',5,2.5,1],['shower','Shower 3×3',3,3,1],['shower4','Shower 4×3',4,3,1],['washer','Washer',2.3,2.3,1],['dryer','Dryer',2.3,2.3,0],['linen','Linen closet',2,1.5,0],['door','Door',2.5,.5,0],['window','Window',2.5,.5,0]],
- basement:[['toilet','Toilet',1.6,2.3,1],['vanity','Vanity',3,1.8,1],['shower','Shower 3×3',3,3,1],['washer','Washer',2.3,2.3,1],['dryer','Dryer',2.3,2.3,0],['usink','Utility sink',2,1.8,1],['heater','Water heater',2,2,1],['sump','Sump pit',1.5,1.5,0],['barsink','Bar sink',2,2,1],['sofa','Sofa',7,3,0],['tv','TV wall',5,1,0],['stairs','Stairs',3,8,0],['post','Support post',.6,.6,0],['door','Door',3,.5,0],['egress','Egress window',4,.5,0]]
+const I={
+ sink:{l:'Sink',w:3,d:2,h:3,p:1,c:{rep:[150,450],rpl:[600,2000],rough:[800,2000]},mv:[1500,4000]},
+ range:{l:'Stove',w:2.5,d:2.2,h:3,c:{rep:[150,400],rpl:[1200,4000],rough:[400,1200]}},
+ fridge:{l:'Fridge',w:3,d:2.5,h:5.8,c:{rep:[150,350],rpl:[1500,4500],rough:[250,600]}},
+ dish:{l:'Dishwasher',w:2,d:2,h:2.9,p:1,c:{rep:[150,350],rpl:[700,1800],rough:[500,1200]},mv:[500,1200]},
+ cab:{l:'Cabinets',w:3,d:2,h:3,c:{rep:[200,800],rpl:[300,1000],perft:1}},
+ island:{l:'Island',w:4,d:3,h:3,c:{rpl:[3000,9000],area:12}},
+ islandsink:{l:'Island with sink',w:5,d:3,h:3,p:1,c:{rep:[150,450],rpl:[5500,14000],area:15,rough:[2500,5000]},mv:[2500,5000]},
+ pantry:{l:'Pantry',w:2,d:2,h:7,c:{rep:[100,400],rpl:[1200,4000]}},
+ table:{l:'Table',w:4,d:3,h:2.5,f:1},
+ toilet:{l:'Toilet',w:1.6,d:2.3,h:2.5,p:1,c:{rep:[150,400],rpl:[450,1200],rough:[1200,3000]},mv:[1200,3000]},
+ vanity:{l:'Vanity',w:3,d:1.8,h:2.9,p:1,c:{rep:[150,500],rpl:[900,3000],rough:[800,1800]},mv:[800,1800]},
+ dvanity:{l:'Double vanity',w:5,d:1.8,h:2.9,p:1,c:{rep:[200,700],rpl:[1800,5500],rough:[1200,2600]},mv:[1200,2600]},
+ tub:{l:'Tub',w:5,d:2.5,h:1.7,p:1,c:{rep:[250,900],rpl:[2500,7000],rough:[1500,3500]},mv:[1500,3500]},
+ shower:{l:'Shower',w:3,d:3,h:7,p:1,c:{rep:[250,900],rpl:[4000,12000],rough:[1500,3500]},mv:[1500,3500]},
+ shower4:{l:'Shower 4×3',w:4,d:3,h:7,p:1,c:{rep:[250,900],rpl:[5000,14000],rough:[1500,3500]},mv:[1500,3500]},
+ washer:{l:'Washer',w:2.3,d:2.3,h:3,p:1,c:{rep:[150,400],rpl:[800,1800],rough:[1000,2500]},mv:[1000,2500]},
+ dryer:{l:'Dryer',w:2.3,d:2.3,h:3,c:{rep:[100,300],rpl:[700,1600],rough:[300,900]}},
+ linen:{l:'Linen closet',w:2,d:1.5,h:7,c:{rep:[100,300],rpl:[600,2000]}},
+ usink:{l:'Utility sink',w:2,d:1.8,h:2.9,p:1,c:{rep:[100,350],rpl:[400,1000],rough:[600,1400]},mv:[600,1400]},
+ heater:{l:'Water heater',w:2,d:2,h:5,p:1,c:{rep:[200,600],rpl:[1600,2800],rough:[800,2000]},mv:[900,2200]},
+ sump:{l:'Sump pit',w:1.5,d:1.5,h:.15,c:{rep:[250,700],rpl:[800,2200],rough:[1500,3500]}},
+ barsink:{l:'Bar sink',w:2,d:2,h:3.5,p:1,c:{rep:[150,450],rpl:[1200,3000],rough:[1200,2800]},mv:[1200,2800]},
+ sofa:{l:'Sofa',w:7,d:3,h:2.7,f:1},tv:{l:'TV wall',w:5,d:1,h:4,c:{rpl:[1500,5000],rough:[300,800]}},
+ stairs:{l:'Stairs',w:3,d:8,h:8,c:{rep:[300,1200],rpl:[2500,8000]}},post:{l:'Support post',w:.6,d:.6,h:8,f:1},
+ door:{l:'Door',w:3,d:.5,o:[0,6.7],c:{rep:[100,300],rpl:[600,1800],rough:[800,2000]}},
+ window:{l:'Window',w:3,d:.5,o:[3,6],c:{rep:[150,400],rpl:[900,2500],rough:[1000,2500]}},
+ egress:{l:'Egress window',w:4,d:.5,o:[2,6.2],c:{rpl:[4000,9000],rough:[0,0]}},
+ wall:{l:'Wall',w:6,d:.5,h:8,pw:1,c:{nw:[60,120],rm:[800,2500],rmnote:'more if it is load-bearing'}},
+ halfwall:{l:'Half wall',w:6,d:.5,h:3.5,pw:1,c:{nw:[45,90],rm:[400,1200]}},
+ glasswall:{l:'Glass partition',w:6,d:.3,h:8,pw:1,c:{nw:[150,350],rm:[300,900]}},
+ closet:{l:'Closet',w:4,d:2,h:8,pw:1,c:{nw:[300,900],rm:[500,1500]}}
 };
-const COST={sink:['Moving the sink off the plumbing wall',1500,4000],dish:['Dishwasher away from the sink drain',500,1200],islandsink:['Plumbing an island sink under the floor',2500,5000],toilet:['Moving the toilet drain',1200,3000],vanity:['Moving the vanity plumbing',800,1800],dvanity:['Second sink and moved vanity plumbing',1200,2600],tub:['Moving the tub drain and supply',1500,3500],shower:['Moving the shower drain and valve',1500,3500],shower4:['Moving the shower drain and valve',1500,3500],washer:['New washer hookup location',1000,2500],usink:['Utility sink plumbing',600,1400],barsink:['Bar sink plumbing',1200,2800],heater:['Relocating the water heater',900,2200]};
+const CAT={kitchen:['sink','range','fridge','dish','cab','island','islandsink','pantry','table','door','window','wall','halfwall','glasswall','closet'],
+ bathroom:['toilet','vanity','dvanity','tub','shower','shower4','washer','dryer','linen','door','window','wall','halfwall','glasswall','closet'],
+ basement:['toilet','vanity','shower','washer','dryer','usink','heater','sump','barsink','sofa','tv','stairs','post','door','egress','wall','halfwall','glasswall','closet']};
 const PRESETS={
- kitchen:{w:12,l:10,plumb:'top',items:[{k:'sink',x:4.5,y:0,r:0},{k:'dish',x:7.5,y:0,r:0},{k:'cab',x:1.5,y:0,r:0},{k:'range',x:9,y:0,r:0},{k:'fridge',x:0,y:7.5,r:0},{k:'island',x:4,y:4.5,r:0},{k:'door',x:9,y:9.5,r:0},{k:'window',x:4.5,y:0,r:0}]},
- bathroom:{w:5,l:8,plumb:'left',items:[{k:'vanity',x:0,y:0,r:90},{k:'toilet',x:0,y:3.3,r:270},{k:'tub',x:0,y:5.5,r:0},{k:'door',x:4.5,y:0.5,r:90},{k:'window',x:1,y:7.5,r:0}]},
- basement:{w:14,l:12,plumb:'top',items:[{k:'washer',x:0,y:0,r:0},{k:'dryer',x:2.3,y:0,r:0},{k:'usink',x:4.6,y:0,r:0},{k:'heater',x:12,y:0,r:0},{k:'toilet',x:8,y:0,r:0},{k:'vanity',x:9.6,y:0,r:0},{k:'stairs',x:11,y:4,r:0},{k:'sofa',x:1,y:7,r:0},{k:'tv',x:1.5,y:11,r:0}]}
-};
-let S={type:'kitchen',w:12,l:10,plumb:'top',items:[]};let sel=-1,drag=null,scale=28,ox=34,oy=34;
+ kitchen:{w:12,l:12,plumb:'top',items:[{k:'fridge',x:0,y:0},{k:'cab',x:3,y:0,w:1},{k:'sink',x:4,y:0},{k:'dish',x:7,y:0},{k:'range',x:9,y:0},{k:'island',x:4.5,y:5.5,w:3.5},{k:'door',x:8.5,y:11.5},{k:'window',x:4,y:0}]},
+ bathroom:{w:5,l:8,plumb:'left',items:[{k:'vanity',x:0,y:0,r:90},{k:'toilet',x:0,y:3.3,r:270},{k:'tub',x:0,y:5.5},{k:'door',x:4.5,y:.5,r:90},{k:'window',x:1,y:7.5}]},
+ basement:{w:14,l:12,plumb:'top',items:[{k:'washer',x:0,y:0},{k:'dryer',x:2.3,y:0},{k:'usink',x:4.6,y:0},{k:'heater',x:12,y:0},{k:'stairs',x:11,y:4},{k:'sofa',x:1,y:7},{k:'tv',x:1.5,y:11},{k:'door',x:8,y:11.5}]}};
+const ROOM={kitchen:{floor:[6,14],paint:[1.5,3],counters:[60,150],light:[800,2500]},bathroom:{floor:[12,25],paint:[1.5,3],light:[500,1500]},basement:{floor:[5,12],paint:[1.5,3],light:[900,2800]}};
+let S={type:'kitchen',w:12,l:10,plumb:'top',items:[],opts:{}};let sel=-1,drag=null,scale=28,ox=34,oy=34,view='2d';
 const cv=document.getElementById('skCanvas');if(!cv)return null;const cx=cv.getContext('2d');if(!cx.roundRect)cx.roundRect=function(x,y,w,h){this.rect(x,y,w,h)};
 const $k=id=>document.getElementById(id);
-const dims=it=>{const d=CAT[S.type].find(c=>c[0]===it.k)||CAT.kitchen.find(c=>c[0]===it.k)||CAT.bathroom.find(c=>c[0]===it.k)||CAT.basement.find(c=>c[0]===it.k);return d};
-const box=it=>{const d=dims(it);const W=it.w||d[2],D=it.d||d[3];const rot=it.r%180!==0;return {x:it.x,y:it.y,w:rot?D:W,h:rot?W:D,d}};
-const HANDLE=9;
-const ftin=v=>{const f=Math.floor(v+1e-6),i=Math.round((v-f)*12);return i===12?`${f+1}'`:i?`${f}' ${i}"`:`${f}'`};
-const isWall=k=>['door','window','egress'].includes(k);
-function fit(){const holder=cv.parentElement;const W=Math.min(holder.clientWidth,760);const maxH=Math.max(320,Math.min(560,window.innerHeight*0.6));scale=Math.max(12,Math.min((W-ox*2)/S.w,(maxH-oy*2)/S.l));cv.width=Math.round(S.w*scale+ox*2);cv.height=Math.round(S.l*scale+oy*2);cv.style.width=cv.width+'px';draw()}
+const def=it=>I[it.k];const isOpen=it=>!!I[it.k].o;const isPart=it=>!!I[it.k].pw;const isFurn=it=>!!I[it.k].f;
+const kindOf=it=>isOpen(it)?'open':isPart(it)?'part':isFurn(it)?'furn':'fix';
+const box=it=>{const d=def(it);const W=it.w||d.w,D=it.d||d.d;const rot=(it.r||0)%180!==0;return {x:it.x,y:it.y,w:rot?D:W,h:rot?W:D,W,D,d}};
+const HANDLE=9;const ftin=v=>{const f=Math.floor(v+1e-6),i=Math.round((v-f)*12);return i===12?`${f+1}'`:i?`${f}' ${i}"`:`${f}'`};const $$$=n=>'$'+Math.round(n).toLocaleString();
+const statusesFor=it=>kindOf(it)==='part'?['keep','new','remove']:kindOf(it)==='furn'?['keep','new']:['keep','repair','replace','new'];
+const SLBL={keep:'Existing',repair:'Repair',replace:'Replace',new:'New',remove:'Remove'};
+function fit(){const holder=cv.parentElement;const W=Math.min(holder.clientWidth||360,760);const maxH=Math.max(320,Math.min(560,window.innerHeight*0.6));scale=Math.max(12,Math.min((W-ox*2)/S.w,(maxH-oy*2)/S.l));cv.width=Math.round(S.w*scale+ox*2);cv.height=Math.round(S.l*scale+oy*2);cv.style.width=cv.width+'px';draw()}
 function snap(v){return Math.round(v*2)/2}
-function clamp(it){const b=box(it);it.x=Math.max(0,Math.min(S.w-b.w,it.x));it.y=Math.max(0,Math.min(S.l-b.h,it.y));if(isWall(it.k)){/* stick to nearest wall */const dT=it.y,dB=S.l-(it.y+b.h),dL=it.x,dR=S.w-(it.x+b.w);const m=Math.min(dT,dB,dL,dR);if(m===dT||m===dB){if(it.r%180!==0){it.r=0;const b2=box(it);it.x=Math.max(0,Math.min(S.w-b2.w,it.x))}const b3=box(it);it.y=m===dT?0:S.l-b3.h}else{if(it.r%180===0){it.r=90;const b2=box(it);it.y=Math.max(0,Math.min(S.l-b2.h,it.y))}const b3=box(it);it.x=m===dL?0:S.w-b3.w}}}
+function clamp(it){const b=box(it);it.x=Math.max(0,Math.min(S.w-b.w,it.x));it.y=Math.max(0,Math.min(S.l-b.h,it.y));if(isOpen(it)){const dT=it.y,dB=S.l-(it.y+b.h),dL=it.x,dR=S.w-(it.x+b.w);const m=Math.min(dT,dB,dL,dR);if(m===dT||m===dB){if((it.r||0)%180!==0){it.r=0;const b2=box(it);it.x=Math.max(0,Math.min(S.w-b2.w,it.x))}const b3=box(it);it.y=m===dT?0:S.l-b3.h}else{if((it.r||0)%180===0){it.r=90;const b2=box(it);it.y=Math.max(0,Math.min(S.l-b2.h,it.y))}const b3=box(it);it.x=m===dL?0:S.w-b3.w}}}
 function P(x,y){return [ox+x*scale,oy+y*scale]}
 function glyph(it,b){const [x,y]=P(b.x,b.y),w=b.w*scale,h=b.h*scale,k=it.k;cx.save();cx.strokeStyle='#555';cx.lineWidth=1;
  if(k==='sink'||k==='usink'||k==='barsink'){cx.beginPath();cx.ellipse(x+w/2,y+h/2,w*.32,h*.28,0,0,Math.PI*2);cx.stroke()}
  else if(k==='islandsink'){cx.beginPath();cx.ellipse(x+w*.72,y+h/2,w*.14,h*.26,0,0,Math.PI*2);cx.stroke()}
  else if(k==='range'){for(const [a,c] of [[.3,.3],[.7,.3],[.3,.7],[.7,.7]]){cx.beginPath();cx.arc(x+w*a,y+h*c,Math.min(w,h)*.12,0,Math.PI*2);cx.stroke()}}
  else if(k==='fridge'){cx.beginPath();cx.moveTo(x+w*.5,y+4);cx.lineTo(x+w*.5,y+h-4);cx.stroke()}
- else if(k==='toilet'){const rot=it.r%180!==0;cx.beginPath();if(!rot){cx.ellipse(x+w/2,y+h*.62,w*.32,h*.28,0,0,Math.PI*2);cx.stroke();cx.strokeRect(x+w*.15,y+h*.06,w*.7,h*.22)}else{cx.ellipse(x+w*.62,y+h/2,w*.28,h*.32,0,0,Math.PI*2);cx.stroke();cx.strokeRect(x+w*.06,y+h*.15,w*.22,h*.7)}}
+ else if(k==='toilet'){const rot=(it.r||0)%180!==0;cx.beginPath();if(!rot){cx.ellipse(x+w/2,y+h*.62,w*.32,h*.28,0,0,Math.PI*2);cx.stroke();cx.strokeRect(x+w*.15,y+h*.06,w*.7,h*.22)}else{cx.ellipse(x+w*.62,y+h/2,w*.28,h*.32,0,0,Math.PI*2);cx.stroke();cx.strokeRect(x+w*.06,y+h*.15,w*.22,h*.7)}}
  else if(k==='tub'){cx.beginPath();cx.roundRect(x+6,y+6,w-12,h-12,8);cx.stroke()}
  else if(k==='shower'||k==='shower4'){cx.beginPath();cx.arc(x+w/2,y+h/2,4,0,Math.PI*2);cx.stroke();cx.setLineDash([3,3]);cx.strokeRect(x+5,y+5,w-10,h-10);cx.setLineDash([])}
  else if(k==='washer'||k==='dryer'){cx.beginPath();cx.arc(x+w/2,y+h/2,Math.min(w,h)*.3,0,Math.PI*2);cx.stroke()}
- else if(k==='door'){const horiz=it.r%180===0;cx.beginPath();if(horiz){const up=b.y<S.l/2;cx.moveTo(x,up?y+h:y);cx.arc(x,up?y+h:y,w,up?0:-Math.PI/2,up?Math.PI/2:0);}else{const left=b.x<S.w/2;cx.moveTo(left?x+w:x,y);cx.arc(left?x+w:x,y,h,left?0:Math.PI/2,left?Math.PI/2:Math.PI);}cx.stroke()}
- else if(k==='window'||k==='egress'){cx.beginPath();const horiz=it.r%180===0;if(horiz){cx.moveTo(x,y+h/2);cx.lineTo(x+w,y+h/2)}else{cx.moveTo(x+w/2,y);cx.lineTo(x+w/2,y+h)}cx.stroke()}
- else if(k==='stairs'){const n=8;for(let i=1;i<n;i++){cx.beginPath();if(it.r%180===0){cx.moveTo(x,y+h*i/n);cx.lineTo(x+w,y+h*i/n)}else{cx.moveTo(x+w*i/n,y);cx.lineTo(x+w*i/n,y+h)}cx.stroke()}}
+ else if(k==='door'){const horiz=(it.r||0)%180===0;cx.beginPath();if(horiz){const up=b.y<S.l/2;cx.moveTo(x,up?y+h:y);cx.arc(x,up?y+h:y,w,up?0:-Math.PI/2,up?Math.PI/2:0)}else{const left=b.x<S.w/2;cx.moveTo(left?x+w:x,y);cx.arc(left?x+w:x,y,h,left?0:Math.PI/2,left?Math.PI/2:Math.PI)}cx.stroke()}
+ else if(k==='window'||k==='egress'){cx.beginPath();const horiz=(it.r||0)%180===0;if(horiz){cx.moveTo(x,y+h/2);cx.lineTo(x+w,y+h/2)}else{cx.moveTo(x+w/2,y);cx.lineTo(x+w/2,y+h)}cx.stroke()}
+ else if(k==='stairs'){const n=8;for(let i=1;i<n;i++){cx.beginPath();if((it.r||0)%180===0){cx.moveTo(x,y+h*i/n);cx.lineTo(x+w,y+h*i/n)}else{cx.moveTo(x+w*i/n,y);cx.lineTo(x+w*i/n,y+h)}cx.stroke()}}
  else if(k==='sump'){cx.beginPath();cx.arc(x+w/2,y+h/2,Math.min(w,h)*.35,0,Math.PI*2);cx.stroke()}
+ else if(k==='halfwall'||k==='closet'){cx.save();cx.beginPath();cx.rect(x,y,w,h);cx.clip();cx.strokeStyle='#999';for(let i=-h;i<w;i+=8){cx.beginPath();cx.moveTo(x+i,y);cx.lineTo(x+i+h,y+h);cx.stroke()}cx.restore()}
  cx.restore()}
-function draw(){cx.clearRect(0,0,cv.width,cv.height);cx.fillStyle='#fff';cx.fillRect(0,0,cv.width,cv.height);
- const [rx,ry]=P(0,0),rw=S.w*scale,rh=S.l*scale;
- cx.fillStyle='#FAFAF7';cx.fillRect(rx,ry,rw,rh);
- cx.strokeStyle='#E4E4E0';cx.lineWidth=1;for(let i=1;i<S.w;i++){cx.beginPath();cx.moveTo(rx+i*scale,ry);cx.lineTo(rx+i*scale,ry+rh);cx.stroke()}for(let j=1;j<S.l;j++){cx.beginPath();cx.moveTo(rx,ry+j*scale);cx.lineTo(rx+rw,ry+j*scale);cx.stroke()}
- // items
- S.items.forEach((it,i)=>{const b=box(it);const [x,y]=P(b.x,b.y),w=b.w*scale,h=b.h*scale;const wall=isWall(it.k);
-  cx.fillStyle=wall?'#fff':(b.d[4]?'#E6F0F8':'#F1EDE4');cx.strokeStyle=i===sel?'#B8322B':'#444';cx.lineWidth=i===sel?2:1;
-  cx.beginPath();cx.roundRect(x,y,w,h,wall?0:3);cx.fill();cx.stroke();glyph(it,b);
-  if(!wall){cx.fillStyle='#222';cx.font=`${Math.max(10,Math.min(13,scale*.42))}px Arial`;cx.textAlign='center';cx.textBaseline='middle';const lab=b.d[1].replace(/ \d.*$/,'');if(w>lab.length*6.5||h>w){cx.save();cx.translate(x+w/2,y+h/2);if(h>w&&w<lab.length*6.5)cx.rotate(-Math.PI/2);cx.fillText(lab,0,0);cx.restore()}}
- });
- // walls
+function fillFor(it,b){if(it.s==='remove')return '#FBE4E2';const k=it.k;if(k==='wall')return '#333';if(k==='halfwall')return '#BDBDB8';if(k==='glasswall')return '#D6E8F5';if(k==='closet')return '#EFEDE7';if(isOpen(it))return '#fff';return b.d.p?'#E6F0F8':'#F1EDE4'}
+function draw(){cx.clearRect(0,0,cv.width,cv.height);cx.fillStyle='#fff';cx.fillRect(0,0,cv.width,cv.height);const [rx,ry]=P(0,0),rw=S.w*scale,rh=S.l*scale;
+ cx.fillStyle='#FAFAF7';cx.fillRect(rx,ry,rw,rh);cx.strokeStyle='#E4E4E0';cx.lineWidth=1;for(let i=1;i<S.w;i++){cx.beginPath();cx.moveTo(rx+i*scale,ry);cx.lineTo(rx+i*scale,ry+rh);cx.stroke()}for(let j=1;j<S.l;j++){cx.beginPath();cx.moveTo(rx,ry+j*scale);cx.lineTo(rx+rw,ry+j*scale);cx.stroke()}
+ S.items.forEach((it,i)=>{const b=box(it);const [x,y]=P(b.x,b.y),w=b.w*scale,h=b.h*scale;const op=isOpen(it);
+  cx.fillStyle=fillFor(it,b);cx.strokeStyle=it.s==='remove'?'#B8322B':i===sel?'#B8322B':'#444';cx.lineWidth=i===sel?2:1;if(it.s==='remove')cx.setLineDash([5,4]);
+  cx.beginPath();cx.roundRect(x,y,w,h,op||isPart(it)?0:3);cx.fill();cx.stroke();cx.setLineDash([]);glyph(it,b);
+  if(!op){cx.fillStyle=it.k==='wall'?'#fff':'#222';cx.font=`${Math.max(10,Math.min(13,scale*.42))}px Arial`;cx.textAlign='center';cx.textBaseline='middle';let lab=b.d.l.replace(/ \d.*$/,'');if(it.s==='remove')lab='Remove '+lab.toLowerCase();else if(it.s==='new'&&kindOf(it)!=='furn')lab+=' (new)';if(w>lab.length*6.2||h>w){cx.save();cx.translate(x+w/2,y+h/2);if(h>w&&w<lab.length*6.2)cx.rotate(-Math.PI/2);cx.fillText(lab,0,0);cx.restore()}}});
  cx.lineWidth=6;cx.strokeStyle='#222';cx.strokeRect(rx,ry,rw,rh);
- if(S.plumb!=='none'){cx.strokeStyle='#2E6FB0';cx.lineWidth=6;cx.beginPath();if(S.plumb==='top'){cx.moveTo(rx,ry);cx.lineTo(rx+rw,ry)}if(S.plumb==='bottom'){cx.moveTo(rx,ry+rh);cx.lineTo(rx+rw,ry+rh)}if(S.plumb==='left'){cx.moveTo(rx,ry);cx.lineTo(rx,ry+rh)}if(S.plumb==='right'){cx.moveTo(rx+rw,ry);cx.lineTo(rx+rw,ry+rh)}cx.stroke();
-  cx.fillStyle='#2E6FB0';cx.font='11px Arial';cx.textBaseline='middle';cx.textAlign='center';const t='existing plumbing';if(S.plumb==='top'){cx.fillText(t,rx+rw/2,ry-16)}else if(S.plumb==='bottom'){cx.fillText(t,rx+rw/2,ry+rh+16)}else{cx.save();cx.translate(S.plumb==='left'?rx-16:rx+rw+16,ry+rh/2);cx.rotate(-Math.PI/2);cx.fillText(t,0,0);cx.restore()}}
- // dimensions
- cx.fillStyle='#666';cx.font='12px Arial';cx.textAlign='center';cx.textBaseline='middle';if(S.plumb!=='top')cx.fillText(ftin(S.w),rx+rw/2,ry-16);else cx.fillText(ftin(S.w),rx+rw/2,ry+rh+16);
- cx.save();cx.translate(S.plumb==='left'?rx+rw+16:rx-16,ry+rh/2);cx.rotate(-Math.PI/2);cx.fillText(ftin(S.l),0,0);cx.restore();
- // selected item: distances to walls
+ if(S.plumb!=='none'){cx.strokeStyle='#2E6FB0';cx.lineWidth=6;cx.beginPath();if(S.plumb==='top'){cx.moveTo(rx,ry);cx.lineTo(rx+rw,ry)}if(S.plumb==='bottom'){cx.moveTo(rx,ry+rh);cx.lineTo(rx+rw,ry+rh)}if(S.plumb==='left'){cx.moveTo(rx,ry);cx.lineTo(rx,ry+rh)}if(S.plumb==='right'){cx.moveTo(rx+rw,ry);cx.lineTo(rx+rw,ry+rh)}cx.stroke();cx.fillStyle='#2E6FB0';cx.font='11px Arial';cx.textBaseline='middle';cx.textAlign='center';const t='existing plumbing';if(S.plumb==='top')cx.fillText(t,rx+rw/2,ry-16);else if(S.plumb==='bottom')cx.fillText(t,rx+rw/2,ry+rh+16);else{cx.save();cx.translate(S.plumb==='left'?rx-16:rx+rw+16,ry+rh/2);cx.rotate(-Math.PI/2);cx.fillText(t,0,0);cx.restore()}}
+ cx.fillStyle='#666';cx.font='12px Arial';cx.textAlign='center';cx.textBaseline='middle';if(S.plumb!=='top')cx.fillText(ftin(S.w),rx+rw/2,ry-16);else cx.fillText(ftin(S.w),rx+rw/2,ry+rh+16);cx.save();cx.translate(S.plumb==='left'?rx+rw+16:rx-16,ry+rh/2);cx.rotate(-Math.PI/2);cx.fillText(ftin(S.l),0,0);cx.restore();
  if(sel>=0&&S.items[sel]){const b=box(S.items[sel]);const cxp=b.x+b.w/2,cyp=b.y+b.h/2;cx.setLineDash([4,4]);cx.strokeStyle='#B8322B';cx.lineWidth=1;cx.fillStyle='#B8322B';cx.font='11px Arial';
-  const segs=[[cxp,0,cxp,b.y,b.y],[cxp,b.y+b.h,cxp,S.l,S.l-(b.y+b.h)],[0,cyp,b.x,cyp,b.x],[b.x+b.w,cyp,S.w,cyp,S.w-(b.x+b.w)]];
-  segs.forEach(([x1,y1,x2,y2,d])=>{if(d<0.24)return;const [a,b2]=P(x1,y1),[c,e]=P(x2,y2);cx.beginPath();cx.moveTo(a,b2);cx.lineTo(c,e);cx.stroke();cx.fillText(ftin(d),(a+c)/2+(y1===y2?0:14),(b2+e)/2+(y1===y2?-8:0))});cx.setLineDash([]);
+  [[cxp,0,cxp,b.y,b.y],[cxp,b.y+b.h,cxp,S.l,S.l-(b.y+b.h)],[0,cyp,b.x,cyp,b.x],[b.x+b.w,cyp,S.w,cyp,S.w-(b.x+b.w)]].forEach(([x1,y1,x2,y2,d])=>{if(d<0.24)return;const [a,b2]=P(x1,y1),[c,e]=P(x2,y2);cx.beginPath();cx.moveTo(a,b2);cx.lineTo(c,e);cx.stroke();cx.fillText(ftin(d),(a+c)/2+(y1===y2?0:14),(b2+e)/2+(y1===y2?-8:0))});cx.setLineDash([]);
   const [hx,hy]=P(b.x+b.w,b.y+b.h);cx.fillStyle='#fff';cx.strokeStyle='#B8322B';cx.lineWidth=2;cx.beginPath();cx.rect(hx-HANDLE,hy-HANDLE,HANDLE*2,HANDLE*2);cx.fill();cx.stroke();cx.fillStyle='#B8322B';cx.font='11px Arial';cx.textAlign='right';cx.textBaseline='bottom';cx.fillText(ftin(b.w)+' × '+ftin(b.h),hx-HANDLE-4,hy-HANDLE-3);cx.textBaseline='middle'}
-}
+ if(view==='3d'&&R3)R3.dirty=true}
 function hit(px,py){const fx=(px-ox)/scale,fy=(py-oy)/scale;for(let i=S.items.length-1;i>=0;i--){const b=box(S.items[i]);if(fx>=b.x&&fx<=b.x+b.w&&fy>=b.y&&fy<=b.y+b.h)return i}return -1}
 function pos(e){const r=cv.getBoundingClientRect();return [(e.clientX-r.left)*(cv.width/r.width),(e.clientY-r.top)*(cv.height/r.height)]}
-cv.addEventListener('pointerdown',e=>{const [px,py]=pos(e);if(sel>=0&&S.items[sel]){const b=box(S.items[sel]);const [hx,hy]=P(b.x+b.w,b.y+b.h);if(Math.abs(px-hx)<=HANDLE+8&&Math.abs(py-hy)<=HANDLE+8){drag={i:sel,resize:true};cv.setPointerCapture(e.pointerId);return}}const i=hit(px,py);sel=i;if(i>=0){const it=S.items[i];drag={i,dx:(px-ox)/scale-it.x,dy:(py-oy)/scale-it.y};cv.setPointerCapture(e.pointerId)}ui();draw()});
-cv.addEventListener('pointermove',e=>{if(!drag){const [px,py]=pos(e);let c='default';if(sel>=0&&S.items[sel]){const b=box(S.items[sel]);const [hx,hy]=P(b.x+b.w,b.y+b.h);if(Math.abs(px-hx)<=HANDLE+8&&Math.abs(py-hy)<=HANDLE+8)c='nwse-resize'}if(c==='default'&&hit(px,py)>=0)c='move';cv.style.cursor=c;return}const [px,py]=pos(e);const it=S.items[drag.i];if(drag.resize){resizeTo(it,(px-ox)/scale-it.x,(py-oy)/scale-it.y);draw();sizeUI(it);return}it.x=snap((px-ox)/scale-drag.dx);it.y=snap((py-oy)/scale-drag.dy);clamp(it);draw()});
+function onHandle(px,py){if(sel<0||!S.items[sel])return false;const b=box(S.items[sel]);const [hx,hy]=P(b.x+b.w,b.y+b.h);return Math.abs(px-hx)<=HANDLE+8&&Math.abs(py-hy)<=HANDLE+8}
+cv.addEventListener('pointerdown',e=>{const [px,py]=pos(e);if(onHandle(px,py)){drag={i:sel,resize:true};cv.setPointerCapture(e.pointerId);return}const i=hit(px,py);sel=i;if(i>=0){const it=S.items[i];drag={i,dx:(px-ox)/scale-it.x,dy:(py-oy)/scale-it.y};cv.setPointerCapture(e.pointerId)}ui();draw()});
+cv.addEventListener('pointermove',e=>{const [px,py]=pos(e);if(!drag){cv.style.cursor=onHandle(px,py)?'nwse-resize':hit(px,py)>=0?'move':'default';return}const it=S.items[drag.i];if(drag.resize){resizeTo(it,(px-ox)/scale-it.x,(py-oy)/scale-it.y);draw();sizeUI(it);return}it.x=snap((px-ox)/scale-drag.dx);it.y=snap((py-oy)/scale-drag.dy);clamp(it);draw()});
 const end=()=>{if(drag){drag=null;check();save()}};cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);
-document.addEventListener('keydown',e=>{if(!document.getElementById('v-sketch').classList.contains('on')||sel<0||/input|select|textarea/i.test(e.target.tagName))return;const it=S.items[sel];const m={ArrowUp:[0,-.5],ArrowDown:[0,.5],ArrowLeft:[-.5,0],ArrowRight:[.5,0]}[e.key];if(m){it.x+=m[0];it.y+=m[1];clamp(it);e.preventDefault()}else if(e.key==='r'||e.key==='R')rotate();else if(e.key==='Delete'||e.key==='Backspace'){del();e.preventDefault()}check();draw();save()});
-function resizeTo(it,bw,bh){const wall=isWall(it.k);const rot=it.r%180!==0;bw=Math.max(0.5,Math.min(S.w-it.x,snap(bw)));bh=Math.max(0.5,Math.min(S.l-it.y,snap(bh)));if(wall){if(rot){it.w=bh}else{it.w=bw}it.d=0.5;return}it.w=rot?bh:bw;it.d=rot?bw:bh}
-function setSize(W,D){if(sel<0)return;const it=S.items[sel];const d=dims(it);it.w=Math.max(0.5,Math.min(40,+W||d[2]));it.d=isWall(it.k)?0.5:Math.max(0.5,Math.min(40,+D||d[3]));clamp(it);check();draw();save();sizeUI(it)}
-function sizeUI(it){const d=dims(it);$k('skIW').value=it.w||d[2];$k('skID').value=it.d||d[3];$k('skIDwrap').hidden=isWall(it.k);$k('skSelName').textContent=d[1].replace(/ \d.*$/,'')}
-function add(k){const d=CAT[S.type].find(c=>c[0]===k);const it={k,x:snap(Math.max(0,(S.w-d[2])/2)),y:snap(Math.max(0,(S.l-d[3])/2)),r:0};if(isWall(k)){it.y=S.l-d[3]}S.items.push(it);clamp(it);sel=S.items.length-1;ui();check();draw();save()}
-function rotate(){if(sel<0)return;const it=S.items[sel];it.r=(it.r+90)%360;clamp(it);check();draw();save();sizeUI(it)}
+document.addEventListener('keydown',e=>{if(!$k('v-sketch').classList.contains('on')||sel<0||/input|select|textarea/i.test(e.target.tagName))return;const it=S.items[sel];const m={ArrowUp:[0,-.5],ArrowDown:[0,.5],ArrowLeft:[-.5,0],ArrowRight:[.5,0]}[e.key];if(m){it.x+=m[0];it.y+=m[1];clamp(it);e.preventDefault()}else if(e.key==='r'||e.key==='R')rotate();else if(e.key==='Delete'||e.key==='Backspace'){del();e.preventDefault()}else return;check();draw();save()});
+function resizeTo(it,bw,bh){const rot=(it.r||0)%180!==0;bw=Math.max(0.5,Math.min(S.w-it.x,snap(bw)));bh=Math.max(0.5,Math.min(S.l-it.y,snap(bh)));if(isOpen(it)||(isPart(it)&&it.k!=='closet')){it.w=rot?bh:bw;it.d=def(it).d;return}it.w=rot?bh:bw;it.d=rot?bw:bh}
+function setSize(W,D){if(sel<0)return;const it=S.items[sel];const d=def(it);it.w=Math.max(0.5,Math.min(40,+W||d.w));it.d=(isOpen(it)||(isPart(it)&&it.k!=='closet'))?d.d:Math.max(0.5,Math.min(40,+D||d.d));clamp(it);check();draw();save();sizeUI(it)}
+function sizeUI(it){const d=def(it);$k('skIW').value=it.w||d.w;$k('skID').value=it.d||d.d;$k('skIDwrap').hidden=isOpen(it)||(isPart(it)&&it.k!=='closet');$k('skSelName').textContent=d.l.replace(/ \d.*$/,'');
+ $k('skStatus').innerHTML=statusesFor(it).map(s=>`<button type="button" class="sk-st${(it.s||'keep')===s?' s':''}" data-st="${s}">${SLBL[s]}</button>`).join('')}
+function add(k){const d=I[k];const it={k,x:snap(Math.max(0,(S.w-d.w)/2)),y:snap(Math.max(0,(S.l-d.d)/2)),r:0,s:'new'};if(isOpen(it))it.y=S.l-d.d;S.items.push(it);clamp(it);sel=S.items.length-1;ui();check();draw();save()}
+function rotate(){if(sel<0)return;const it=S.items[sel];it.r=((it.r||0)+90)%360;clamp(it);check();draw();save();sizeUI(it)}
 function del(){if(sel<0)return;S.items.splice(sel,1);sel=-1;ui();check();draw();save()}
 function ui(){$k('skSel').classList.toggle('off',sel<0);if(sel>=0)sizeUI(S.items[sel]);
- $k('skPalette').innerHTML=CAT[S.type].map(c=>`<button type="button" class="btn sm" data-add="${c[0]}">${c[1]}</button>`).join('');
- $k('skW').value=S.w;$k('skL').value=S.l;$k('skPlumb').value=S.plumb;$$('.sk-type').forEach(b=>b.classList.toggle('s',b.dataset.type===S.type))}
+ $k('skPalette').innerHTML=CAT[S.type].map(k=>`<button type="button" class="btn sm${I[k].pw?' sk-pw':''}" data-add="${k}">${I[k].l}</button>`).join('');
+ $k('skW').value=S.w;$k('skL').value=S.l;$k('skPlumb').value=S.plumb;$$('.sk-type').forEach(b=>b.classList.toggle('s',b.dataset.type===S.type));
+ const R=ROOM[S.type];$k('skOpts').innerHTML=[['floor','New flooring'],['paint','Paint'],['counters','New countertops'],['light','Lighting and electrical']].filter(([k])=>R[k]).map(([k,l])=>`<label><input type="checkbox" data-opt="${k}"${S.opts[k]?' checked':''}> ${l}</label>`).join('')}
 function gap(a,b){const dx=Math.max(0,Math.max(a.x,b.x)-Math.min(a.x+a.w,b.x+b.w));const dy=Math.max(0,Math.max(a.y,b.y)-Math.min(a.y+a.h,b.y+b.h));return Math.hypot(dx,dy)}
 function overlap(a,b){return a.x<b.x+b.w-0.01&&b.x<a.x+a.w-0.01&&a.y<b.y+b.h-0.01&&b.y<a.y+a.h-0.01}
 function wallDist(b){return {top:b.y,bottom:S.l-(b.y+b.h),left:b.x,right:S.w-(b.x+b.w)}[S.plumb]}
-function front(it,b){/* clear distance in front of the item (its front edge faces away from the nearest wall) */const dT=b.y,dB=S.l-(b.y+b.h),dL=b.x,dR=S.w-(b.x+b.w);const m=Math.min(dT,dB,dL,dR);let dir=m===dT?'down':m===dB?'up':m===dL?'right':'left';let best=Infinity;S.items.forEach((o,j)=>{if(o===it||isWall(o.k))return;const c=box(o);let d=Infinity;if(dir==='down'&&c.y>=b.y+b.h-0.01&&c.x<b.x+b.w&&c.x+c.w>b.x)d=c.y-(b.y+b.h);if(dir==='up'&&c.y+c.h<=b.y+0.01&&c.x<b.x+b.w&&c.x+c.w>b.x)d=b.y-(c.y+c.h);if(dir==='right'&&c.x>=b.x+b.w-0.01&&c.y<b.y+b.h&&c.y+c.h>b.y)d=c.x-(b.x+b.w);if(dir==='left'&&c.x+c.w<=b.x+0.01&&c.y<b.y+b.h&&c.y+c.h>b.y)d=b.x-(c.x+c.w);best=Math.min(best,d)});const wall={down:dB,up:dT,right:dR,left:dL}[dir];return Math.min(best,wall)}
-function check(){const notes=[],costs=[];const B=S.items.map(it=>({it,b:box(it)}));const find=k=>B.find(x=>x.it.k===k);
- // overlaps
- for(let i=0;i<B.length;i++)for(let j=i+1;j<B.length;j++){if(isWall(B[i].it.k)||isWall(B[j].it.k))continue;if(overlap(B[i].b,B[j].b))notes.push(['bad',`The ${B[i].b.d[1].toLowerCase()} overlaps the ${B[j].b.d[1].toLowerCase()}.`])}
- // plumbing wall
- if(S.plumb!=='none')B.forEach(({it,b})=>{if(!b.d[4]||it.k==='islandsink')return;const d=wallDist(b);if(d>2){const c=COST[it.k];if(c)costs.push([`${c[0]}: about $${c[1].toLocaleString()}–${c[2].toLocaleString()} extra.`,it.k])}});
- if(find('islandsink'))costs.push([`${COST.islandsink[0]}: about $${COST.islandsink[1].toLocaleString()}–${COST.islandsink[2].toLocaleString()}.`,'islandsink']);
- if(S.type==='basement'&&(find('toilet')||find('shower')))costs.push(['A basement bathroom usually needs a sewage ejector pit: about $4,500–8,000 for the pit and rough-in.','ejector']);
+function front(it,b){const dT=b.y,dB=S.l-(b.y+b.h),dL=b.x,dR=S.w-(b.x+b.w);const m=Math.min(dT,dB,dL,dR);let dir=m===dT?'down':m===dB?'up':m===dL?'right':'left';let best=Infinity;S.items.forEach(o=>{if(o===it||isOpen(o)||o.s==='remove')return;const c=box(o);let d=Infinity;if(dir==='down'&&c.y>=b.y+b.h-0.01&&c.x<b.x+b.w&&c.x+c.w>b.x)d=c.y-(b.y+b.h);if(dir==='up'&&c.y+c.h<=b.y+0.01&&c.x<b.x+b.w&&c.x+c.w>b.x)d=b.y-(c.y+c.h);if(dir==='right'&&c.x>=b.x+b.w-0.01&&c.y<b.y+b.h&&c.y+c.h>b.y)d=c.x-(b.x+b.w);if(dir==='left'&&c.x+c.w<=b.x+0.01&&c.y<b.y+b.h&&c.y+c.h>b.y)d=b.x-(c.x+c.w);best=Math.min(best,d)});const wall={down:dB,up:dT,right:dR,left:dL}[dir];return Math.min(best,wall)}
+function estimate(){const L=[];let lo=0,hi=0;const R=ROOM[S.type];let work=false,rough=false;
+ S.items.forEach(it=>{const b=box(it),d=def(it),c=d.c||{},s=it.s||'keep',name=d.l.replace(/ \d.*$/,'');let a=0,z=0,lab='';
+  if(kindOf(it)==='part'){if(s==='new'){const len=b.W;a=c.nw[0]*len;z=c.nw[1]*len;lab=`New ${name.toLowerCase()} (${ftin(len)})`}else if(s==='remove'){a=c.rm[0];z=c.rm[1];lab=`Remove ${name.toLowerCase()}`+(c.rmnote?`, ${c.rmnote}`:'')}}
+  else if(kindOf(it)==='furn'){return}
+  else{const f=c.perft?b.W:c.area?(b.W*b.D)/c.area:1;
+   if(s==='repair'&&c.rep){a=c.rep[0];z=c.rep[1];lab=`Repair ${name.toLowerCase()}`}
+   else if(s==='replace'&&c.rpl){a=c.rpl[0]*f;z=c.rpl[1]*f;lab=`Replace ${name.toLowerCase()}`+(c.perft?` (${ftin(b.W)})`:'')}
+   else if(s==='new'){a=(c.rpl?c.rpl[0]*f:0)+(c.rough?c.rough[0]:0);z=(c.rpl?c.rpl[1]*f:0)+(c.rough?c.rough[1]:0);lab=`New ${name.toLowerCase()}`+(c.perft?` (${ftin(b.W)})`:'');if(c.rough)rough=true}
+   if(d.mv&&S.plumb!=='none'&&s!=='new'&&wallDist(b)>2){L.push({l:`${name} moved off the plumbing wall`,a:d.mv[0],z:d.mv[1],mv:1});lo+=d.mv[0];hi+=d.mv[1];rough=true}}
+  if(z>0){L.push({l:lab,a,z});lo+=a;hi+=z;work=true}});
+ if(S.type==='basement'&&S.items.some(it=>['toilet','shower','shower4'].includes(it.k)&&it.s==='new')){L.push({l:'Sewage ejector pit for a basement bathroom',a:4500,z:8000});lo+=4500;hi+=8000;rough=true}
+ const area=S.w*S.l,per=2*(S.w+S.l);
+ if(S.opts.floor&&R.floor){L.push({l:`New flooring (${Math.round(area)} sq ft)`,a:area*R.floor[0],z:area*R.floor[1]});lo+=area*R.floor[0];hi+=area*R.floor[1];work=true}
+ if(S.opts.paint&&R.paint){const sq=per*8;L.push({l:'Paint walls and ceiling',a:sq*R.paint[0],z:sq*R.paint[1]});lo+=sq*R.paint[0];hi+=sq*R.paint[1];work=true}
+ if(S.opts.counters&&R.counters){const ft=S.items.filter(it=>['cab','sink','dish','island','islandsink','range'].includes(it.k)&&it.s!=='remove').reduce((t,it)=>t+box(it).W,0);if(ft>0){L.push({l:`New countertops (${ftin(ft)} of run)`,a:ft*R.counters[0],z:ft*R.counters[1]});lo+=ft*R.counters[0];hi+=ft*R.counters[1];work=true}}
+ if(S.opts.light&&R.light){L.push({l:'Lighting and electrical updates',a:R.light[0],z:R.light[1]});lo+=R.light[0];hi+=R.light[1];work=true}
+ if(work){L.push({l:'Demo and haul-away',a:300,z:1200});lo+=300;hi+=1200}
+ if(rough||S.items.some(it=>it.s==='remove')){L.push({l:'Permits and inspections',a:150,z:600});lo+=150;hi+=600}
+ return {lo,hi,lines:L,kept:S.items.filter(it=>(it.s||'keep')==='keep'&&kindOf(it)!=='furn').length}}
+function check(){const notes=[];const B=S.items.filter(it=>it.s!=='remove').map(it=>({it,b:box(it)}));const find=k=>B.find(x=>x.it.k===k);
+ for(let i=0;i<B.length;i++)for(let j=i+1;j<B.length;j++){if(isOpen(B[i].it)||isOpen(B[j].it))continue;if(overlap(B[i].b,B[j].b))notes.push(['bad',`The ${B[i].b.d.l.toLowerCase()} overlaps the ${B[j].b.d.l.toLowerCase()}.`])}
  if(S.type==='kitchen'){const s=find('sink')||find('islandsink'),r=find('range'),f=find('fridge'),dw=find('dish'),isl=find('island')||find('islandsink');
-  if(s&&r&&f){const c=o=>[o.b.x+o.b.w/2,o.b.y+o.b.h/2];const L=(a,b)=>Math.hypot(c(a)[0]-c(b)[0],c(a)[1]-c(b)[1]);const l1=L(s,r),l2=L(r,f),l3=L(f,s),sum=l1+l2+l3;
-   if(sum>=13&&sum<=26&&Math.min(l1,l2,l3)>=4&&Math.max(l1,l2,l3)<=9)notes.push(['ok','Sink, stove and fridge make a comfortable working triangle.']);
-   else if(sum>26||Math.max(l1,l2,l3)>9)notes.push(['warn',`Sink, stove and fridge are spread out (${ftin(Math.max(l1,l2,l3))} on the longest leg). Under 9 feet per leg saves a lot of walking.`]);
-   else notes.push(['warn','Sink, stove and fridge are tight together. Four feet between each gives you counter space to work.'])}
+  if(s&&r&&f){const c=o=>[o.b.x+o.b.w/2,o.b.y+o.b.h/2];const Ln=(a,b)=>Math.hypot(c(a)[0]-c(b)[0],c(a)[1]-c(b)[1]);const l1=Ln(s,r),l2=Ln(r,f),l3=Ln(f,s),sum=l1+l2+l3;
+   if(sum>=13&&sum<=26&&Math.min(l1,l2,l3)>=4&&Math.max(l1,l2,l3)<=9)notes.push(['ok','Sink, stove and fridge make a comfortable working triangle.']);else if(sum>26||Math.max(l1,l2,l3)>9)notes.push(['warn',`Sink, stove and fridge are spread out (${ftin(Math.max(l1,l2,l3))} on the longest leg). Under 9 feet per leg saves a lot of walking.`]);else notes.push(['warn','Sink, stove and fridge are tight together. Four feet between each gives you counter space to work.'])}
   if(s&&dw){if(gap(s.b,dw.b)<=0.6)notes.push(['ok','Dishwasher is right next to the sink, where the drain wants it.']);else notes.push(['warn','Dishwasher is away from the sink. Next to it is cheaper to plumb and easier to load.'])}
-  if(isl){let m=Infinity;B.forEach(o=>{if(o===isl||isWall(o.it.k))return;m=Math.min(m,gap(isl.b,o.b))});const wm=Math.min(isl.b.x,isl.b.y,S.w-(isl.b.x+isl.b.w),S.l-(isl.b.y+isl.b.h));m=Math.min(m,wm);if(m<3)notes.push(['bad',`Only ${ftin(m)} of walkway around the island. 36 inches is the minimum, 42 is comfortable.`]);else if(m<3.5)notes.push(['warn',`${ftin(m)} of walkway around the island. That works; 42 inches is comfortable for two people.`]);else notes.push(['ok',`${ftin(m)} of walkway around the island. Plenty.`])}
-  if(r){const rb=r.b;const win=B.find(o=>o.it.k==='window'&&overlap({x:rb.x-0.3,y:rb.y-0.3,w:rb.w+0.6,h:rb.h+0.6},o.b));if(win)notes.push(['warn','A stove under a window makes venting awkward. A sink under the window is the classic move.'])}
- }
- if(S.type!=='kitchen'){const t=find('toilet');if(t){let side=Infinity;const b=t.b;const rot=t.it.r%180!==0;const cxp=b.x+b.w/2,cyp=b.y+b.h/2;if(!rot){side=Math.min(cxp,S.w-cxp);B.forEach(o=>{if(o===t||isWall(o.it.k))return;if(o.b.y<b.y+b.h&&o.b.y+o.b.h>b.y){if(o.b.x>=cxp)side=Math.min(side,o.b.x-cxp);if(o.b.x+o.b.w<=cxp)side=Math.min(side,cxp-(o.b.x+o.b.w))}})}else{side=Math.min(cyp,S.l-cyp);B.forEach(o=>{if(o===t||isWall(o.it.k))return;if(o.b.x<b.x+b.w&&o.b.x+o.b.w>b.x){if(o.b.y>=cyp)side=Math.min(side,o.b.y-cyp);if(o.b.y+o.b.h<=cyp)side=Math.min(side,cyp-(o.b.y+o.b.h))}})}
-   if(side<1.25)notes.push(['bad',`Toilet needs 15 inches from its center to the nearest wall or vanity; this one has ${ftin(side)}.`]);else notes.push(['ok','Toilet has the side clearance code asks for.']);
-   const f=front(t.it,b);if(f<1.75)notes.push(['bad',`Only ${ftin(f)} in front of the toilet. Code wants 21 inches; 24 is comfortable.`]);else if(f<2)notes.push(['warn',`${ftin(f)} in front of the toilet. Legal, but 24 inches feels better.`])}
+  if(isl){let m=Infinity;B.forEach(o=>{if(o===isl||isOpen(o.it))return;m=Math.min(m,gap(isl.b,o.b))});m=Math.min(m,isl.b.x,isl.b.y,S.w-(isl.b.x+isl.b.w),S.l-(isl.b.y+isl.b.h));if(m<3)notes.push(['bad',`Only ${ftin(m)} of walkway around the island. 36 inches is the minimum, 42 is comfortable.`]);else if(m<3.5)notes.push(['warn',`${ftin(m)} of walkway around the island. That works; 42 inches is comfortable for two people.`]);else notes.push(['ok',`${ftin(m)} of walkway around the island. Plenty.`])}
+  if(r){const rb=r.b;if(B.find(o=>o.it.k==='window'&&overlap({x:rb.x-0.3,y:rb.y-0.3,w:rb.w+0.6,h:rb.h+0.6},o.b)))notes.push(['warn','A stove under a window makes venting awkward. A sink under the window is the classic move.'])}}
+ if(S.type!=='kitchen'){const t=find('toilet');if(t){let side=Infinity;const b=t.b;const rot=(t.it.r||0)%180!==0;const cxp=b.x+b.w/2,cyp=b.y+b.h/2;if(!rot){side=Math.min(cxp,S.w-cxp);B.forEach(o=>{if(o===t||isOpen(o.it))return;if(o.b.y<b.y+b.h&&o.b.y+o.b.h>b.y){if(o.b.x>=cxp)side=Math.min(side,o.b.x-cxp);if(o.b.x+o.b.w<=cxp)side=Math.min(side,cxp-(o.b.x+o.b.w))}})}else{side=Math.min(cyp,S.l-cyp);B.forEach(o=>{if(o===t||isOpen(o.it))return;if(o.b.x<b.x+b.w&&o.b.x+o.b.w>b.x){if(o.b.y>=cyp)side=Math.min(side,o.b.y-cyp);if(o.b.y+o.b.h<=cyp)side=Math.min(side,cyp-(o.b.y+o.b.h))}})}
+   if(side<1.25)notes.push(['bad',`Toilet needs 15 inches from its center to the nearest wall or vanity; this one has ${ftin(side)}.`]);else notes.push(['ok','Toilet has the side clearance code asks for.']);const f=front(t.it,b);if(f<1.75)notes.push(['bad',`Only ${ftin(f)} in front of the toilet. Code wants 21 inches; 24 is comfortable.`]);else if(f<2)notes.push(['warn',`${ftin(f)} in front of the toilet. Legal, but 24 inches feels better.`])}
   const v=find('vanity')||find('dvanity');if(v){const f=front(v.it,v.b);if(f<1.75)notes.push(['bad',`Only ${ftin(f)} in front of the vanity. You want at least 21 inches to stand at it.`])}
   const sh=find('shower')||find('shower4');if(sh){const f=front(sh.it,sh.b);if(f<2)notes.push(['warn',`${ftin(f)} outside the shower entry. 24 inches keeps the door from hitting things.`])}
-  const w=find('washer');if(w&&S.plumb!=='none'&&wallDist(w.b)<=2.5)notes.push(['ok','Washer is on the plumbing wall. Easy hookup.']);
- }
- const dr=find('door');if(!dr)notes.push(['warn','Add the door so we can see the swing and the walkway.']);
- if(!B.length)notes.push(['warn','Tap an item above to add it, then drag it into place.']);
- $k('skNotes').innerHTML=notes.map(([t,m])=>`<li class="${t}">${m}</li>`).join('')||'';
- $k('skCosts').innerHTML=costs.length?costs.map(([m])=>`<li>${m}</li>`).join(''):'<li class="hint">No plumbing moves flagged. Keeping fixtures on the plumbing wall is the cheapest layout.</li>';
- $k('skCostWrap').hidden=false;
-}
+  const w=find('washer');if(w&&S.plumb!=='none'&&wallDist(w.b)<=2.5)notes.push(['ok','Washer is on the plumbing wall. Easy hookup.'])}
+ if(S.items.some(it=>it.k==='wall'&&it.s==='remove'))notes.push(['warn','Removing a wall: if it carries the floor above, it needs a beam. We check that on the visit.']);
+ if(!find('door'))notes.push(['warn','Add the door so we can see the swing and the walkway.']);
+ if(!S.items.length)notes.push(['warn','Tap an item above to add it, then drag it into place.']);
+ $k('skNotes').innerHTML=notes.map(([t,m])=>`<li class="${t}">${m}</li>`).join('');
+ const E=estimate();$k('skEstNum').textContent=E.hi>0?`${$$$(E.lo)} – ${$$$(E.hi)}`:'$0';$k('skEstLines').innerHTML=E.lines.map(x=>`<li${x.mv?' class="mv"':''}><span>${x.l}</span><b>${$$$(x.a)}–${$$$(x.z)}</b></li>`).join('')+(E.kept?`<li class="hint"><span>${E.kept} existing item${E.kept>1?'s':''} kept as-is</span><b>$0</b></li>`:'');
+ $k('skEstHint').textContent=E.hi>0?'Ranges for our area, based on what you drew. Tap an item and mark it existing, repair, replace or new to refine. The real number comes in writing after the visit.':'Everything is marked existing. Tap an item and choose repair, replace or new, or add something, and the estimate builds here.';
+ return E}
 function save(){try{localStorage.setItem('dne:sketch',JSON.stringify(S))}catch{}}
-function load(){const q=new URLSearchParams((location.hash.split('?')[1]||''));const d=q.get('d');if(d){try{S=JSON.parse(decodeURIComponent(escape(atob(d.replace(/-/g,'+').replace(/_/g,'/')))));return}catch{}}try{const s=localStorage.getItem('dne:sketch');if(s)S=JSON.parse(s)}catch{}}
-function setType(t){S.type=t;const p=PRESETS[t];S.w=p.w;S.l=p.l;S.plumb=p.plumb;S.items=JSON.parse(JSON.stringify(p.items));sel=-1;ui();fit();check();save()}
+function load(){const q=new URLSearchParams((location.hash.split('?')[1]||''));const d=q.get('d');if(d){try{const o=JSON.parse(decodeURIComponent(escape(atob(d.replace(/-/g,'+').replace(/_/g,'/')))));S=Object.assign({opts:{}},o);return}catch{}}try{const s=localStorage.getItem('dne:sketch');if(s)S=Object.assign({opts:{}},JSON.parse(s))}catch{}if(!S.opts)S.opts={}}
+function setType(t){S.type=t;const p=PRESETS[t];S.w=p.w;S.l=p.l;S.plumb=p.plumb;S.opts={};S.items=p.items.map(o=>Object.assign({r:0,s:'keep'},o));sel=-1;ui();fit();check();save()}
 function png(scaleUp=2){const off=document.createElement('canvas');off.width=cv.width*scaleUp;off.height=cv.height*scaleUp+40*scaleUp;const c2=off.getContext('2d');c2.fillStyle='#fff';c2.fillRect(0,0,off.width,off.height);c2.scale(scaleUp,scaleUp);c2.drawImage(cv,0,0);c2.fillStyle='#222';c2.font='13px Arial';c2.fillText(`D N E Contracting · ${S.type} sketch · ${ftin(S.w)} × ${ftin(S.l)}`+(S.plumb!=='none'?` · plumbing on the ${S.plumb} wall`:''),ox,cv.height+22);return off.toDataURL('image/png')}
-function link(){const j=JSON.stringify({type:S.type,w:S.w,l:S.l,plumb:S.plumb,items:S.items});const d=btoa(unescape(encodeURIComponent(j))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');return location.origin+location.pathname+'#sketch?d='+d}
-// wire UI
+function link(){const j=JSON.stringify({type:S.type,w:S.w,l:S.l,plumb:S.plumb,items:S.items,opts:S.opts});return location.origin+location.pathname+'#sketch?d='+btoa(unescape(encodeURIComponent(j))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+function lead(){return store.get('last_lead',null)}
+function gate(){const L=lead();$k('skGate').hidden=!!L;$k('skSend').textContent=L?`Send this sketch to ${B.ownerName&&!/your name/i.test(B.ownerName)?B.ownerName:'us'}`:'Send with my consultation request'}
+/* ---------- 3D ---------- */
+let R3=null;
+async function init3d(){if(R3)return R3;const host=$k('sk3dHost');host.innerHTML='<p class="hint" style="padding:40px 0;text-align:center">Loading the 3D room…</p>';
+ let THREE,OrbitControls,RoomEnvironment;try{THREE=await import('three');({OrbitControls}=await import('three/addons/controls/OrbitControls.js'));({RoomEnvironment}=await import('three/addons/environments/RoomEnvironment.js'))}catch(e){host.innerHTML='<p class="hint" style="padding:30px 0;text-align:center">The 3D view needs a newer browser. The floor plan still works.</p>';return null}
+ host.innerHTML='';const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;host.appendChild(renderer.domElement);renderer.domElement.style.width='100%';renderer.domElement.style.display='block';
+ const scene=new THREE.Scene();scene.background=new THREE.Color('#E9ECEF');const pm=new THREE.PMREMGenerator(renderer);scene.environment=pm.fromScene(new RoomEnvironment(),0.04).texture;
+ const camera=new THREE.PerspectiveCamera(50,1.6,0.1,200);const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.08;controls.maxPolarAngle=Math.PI/2-0.02;controls.minDistance=2;controls.maxDistance=70;
+ const hemi=new THREE.HemisphereLight(0xffffff,0xb9b1a4,.7);scene.add(hemi);const sun=new THREE.DirectionalLight(0xfff1dc,2.4);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.bias=-0.0004;sun.shadow.normalBias=.02;scene.add(sun);scene.add(sun.target);const fill=new THREE.PointLight(0xffffff,.5,60,1.4);scene.add(fill);
+ const tex=(kind)=>{const c=document.createElement('canvas');c.width=c.height=512;const g=c.getContext('2d');if(kind==='wood'){g.fillStyle='#C9A87C';g.fillRect(0,0,512,512);for(let r=0;r<8;r++){const y=r*64,off=(r%2)*180;const tone=200+Math.round(Math.random()*30);g.fillStyle=`rgb(${tone},${tone-45},${tone-95})`;g.fillRect(0,y,512,64);g.fillStyle='rgba(0,0,0,.06)';for(let s=0;s<6;s++)g.fillRect(0,y+8+s*9+Math.random()*3,512,1);g.fillStyle='rgba(60,35,10,.35)';g.fillRect(0,y,512,2);g.fillRect((off+Math.random()*100)%512,y,2,64)}}else{g.fillStyle='#D9D9D4';g.fillRect(0,0,512,512);g.fillStyle='#EEEEEA';for(let i=0;i<4;i++)for(let j=0;j<4;j++){const v=Math.random()*10;g.fillStyle=`rgb(${230+v},${230+v},${226+v})`;g.fillRect(i*128+3,j*128+3,122,122)}}const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=renderer.capabilities.getMaxAnisotropy();return t};
+ const TX={wood:tex('wood'),tile:tex('tile')};
+ const M={};const mat=(n,o)=>M[n]||(M[n]=new THREE.MeshStandardMaterial(o));
+ mat('wall',{color:'#F2F0EB',roughness:.92});mat('pwall',{color:'#DCE6EE',roughness:.9});mat('cab',{color:'#EDEBE5',roughness:.55});mat('island',{color:'#5B6B5A',roughness:.6});mat('wood',{color:'#B9946A',roughness:.55});mat('quartz',{color:'#F5F3EE',roughness:.28});mat('steel',{color:'#C9CCD0',metalness:.85,roughness:.35});mat('porc',{color:'#FBFAF7',roughness:.12});mat('brass',{color:'#C9A227',metalness:.9,roughness:.3});mat('glass',{color:'#CFE3F0',transparent:true,opacity:.28,roughness:.05,metalness:0});mat('dark',{color:'#202020',roughness:.5});mat('screen',{color:'#0E0E10',roughness:.25,metalness:.2});mat('fabric',{color:'#6E7F95',roughness:.95});mat('mirror',{color:'#ffffff',metalness:1,roughness:.03});mat('grey',{color:'#D8D8D4',roughness:.6});mat('copper',{color:'#B87333',metalness:.8,roughness:.35});mat('remove',{color:'#E24B4A',transparent:true,opacity:.35,roughness:.8});mat('lamp',{color:'#fff8e6',emissive:'#fff2cc',emissiveIntensity:1.2,roughness:.4});mat('pvc',{color:'#F4F4F2',roughness:.5});
+ const G=new THREE.Group();scene.add(G);
+ const bx=(g,w,h,d,m,x,y,z,rx=0,ry=0)=>{const me=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);me.position.set(x,y+h/2,z);me.rotation.set(rx,ry,0);me.castShadow=me.receiveShadow=true;g.add(me);return me};
+ const cyl=(g,r,h,m,x,y,z,rx=0,rz=0,rt=r)=>{const me=new THREE.Mesh(new THREE.CylinderGeometry(rt,r,h,28),m);me.position.set(x,y+h/2,z);me.rotation.set(rx,0,rz);me.castShadow=me.receiveShadow=true;g.add(me);return me};
+ const tor=(g,r,t,m,x,y,z,rx=Math.PI/2)=>{const me=new THREE.Mesh(new THREE.TorusGeometry(r,t,10,32),m);me.position.set(x,y,z);me.rotation.x=rx;me.castShadow=true;g.add(me);return me};
+ function counter(g,W,D,y,holes,m){const t=.1;if(!holes.length){bx(g,W,t,D,m,0,y,0);return}holes.sort((a,b)=>a.x-b.x);const z0=Math.min(...holes.map(h=>h.z-h.d/2)),z1=Math.max(...holes.map(h=>h.z+h.d/2));bx(g,W,t,z0+D/2,m,0,y,-D/2+(z0+D/2)/2);bx(g,W,t,D/2-z1,m,0,y,z1+(D/2-z1)/2);let c=-W/2;holes.forEach(h=>{const a=h.x-h.w/2;if(a>c+.01)bx(g,a-c,t,z1-z0,m,(a+c)/2,y,(z0+z1)/2);c=h.x+h.w/2});if(W/2>c+.01)bx(g,W/2-c,t,z1-z0,m,(W/2+c)/2,y,(z0+z1)/2)}
+ function faucet(g,x,y,z){cyl(g,.05,.85,M.brass,x,y,z);cyl(g,.04,.5,M.brass,x,y+.82,z+.22,Math.PI/2);cyl(g,.05,.12,M.brass,x,y+.72,z+.45)}
+ function handleH(g,len,x,y,z){cyl(g,.035,len,M.steel,x,y,z,0,Math.PI/2)}
+ function doors(g,W,H,D,n,y0,m){for(let i=1;i<n;i++)bx(g,.02,H-.1,.02,M.dark,-W/2+W*i/n,y0+.05,D/2+.01);for(let i=0;i<n;i++)cyl(g,.03,.45,M.steel,-W/2+W*(i+.5)/n+(i<n/2?.5:-.5)*(W/n)*.7,y0+H*.55,D/2+.06)}
+ const B3={
+  cab:(g,W,D)=>{bx(g,W,2.9,D-.25,M.cab,0,.3,.12);bx(g,W-.1,.3,D-.5,M.dark,0,0,-.1);doors(g,W,2.6,D-.25,Math.max(1,Math.round(W/1.5)),.3,M.cab);counter(g,W+.1,D+.1,2.9,[],M.quartz)},
+  sink:(g,W,D)=>{bx(g,W,2.9,D-.25,M.cab,0,.3,.12);bx(g,W-.1,.3,D-.5,M.dark,0,0,-.1);doors(g,W,2.6,D-.25,2,.3);counter(g,W+.1,D+.1,2.9,[{x:0,z:0,w:Math.min(W-.7,2.6),d:Math.min(D-.7,1.5)}],M.quartz);bx(g,Math.min(W-.7,2.6),.7,Math.min(D-.7,1.5),M.steel,0,2.2,0);faucet(g,0,3,-Math.min(D-.7,1.5)/2-.15)},
+  dish:(g,W,D)=>{bx(g,W,2.9,D,M.steel,0,0,0);handleH(g,W-.4,0,2.55,D/2+.05);bx(g,W-.2,.15,.02,M.dark,0,2.7,D/2+.01);counter(g,W+.1,D+.1,2.9,[],M.quartz)},
+  range:(g,W,D)=>{bx(g,W,3,D,M.steel,0,0,0);bx(g,W-.1,.04,D-.1,M.dark,0,3,0);[[-.28,-.28],[.28,-.28],[-.28,.28],[.28,.28]].forEach(([a,b])=>tor(g,.2,.03,M.dark,a*W,3.06,b*D));bx(g,W,.45,.08,M.steel,0,3,-D/2+.04);handleH(g,W-.5,0,2.15,D/2+.06);bx(g,W-.6,.9,.02,M.screen,0,1.15,D/2+.01)},
+  fridge:(g,W,D)=>{bx(g,W,5.8,D,M.steel,0,0,0);bx(g,W,.02,.02,M.dark,0,4,D/2+.01);cyl(g,.04,1.5,M.steel,-.18,2.4,D/2+.08);cyl(g,.04,1.5,M.steel,.18,2.4,D/2+.08);handleH(g,W-.6,0,4.9,D/2+.08)},
+  island:(g,W,D)=>{bx(g,W,2.9,D,M.island,0,0,0);counter(g,W+.3,D+.3,2.9,[],M.quartz)},
+  islandsink:(g,W,D)=>{bx(g,W,2.9,D,M.island,0,0,0);const hx=W*.22;counter(g,W+.3,D+.3,2.9,[{x:hx,z:0,w:1.9,d:1.4}],M.quartz);bx(g,1.9,.7,1.4,M.steel,hx,2.2,0);faucet(g,hx,3,-.85)},
+  pantry:(g,W,D)=>{bx(g,W,7,D,M.cab,0,0,0);doors(g,W,6.9,D,2,0)},
+  table:(g,W,D)=>{bx(g,W,.15,D,M.wood,0,2.4,0);[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>bx(g,.15,2.4,.15,M.wood,a*(W/2-.2),0,b*(D/2-.2)))},
+  toilet:(g,W,D)=>{bx(g,W*.8,.65,.65,M.porc,0,1.35,-D/2+.33);bx(g,W*.8,1.35,.6,M.porc,0,0,-D/2+.3);const bw=cyl(g,.52,1.2,M.porc,0,0,.25);bw.scale.z=1.35;const st=tor(g,.5,.07,M.porc,0,1.25,.25);st.scale.set(1,1.35,1)},
+  vanity:(g,W,D)=>{bx(g,W,2.8,D-.1,M.wood,0,.1,.05);bx(g,W-.1,.1,D-.3,M.dark,0,0,-.05);doors(g,W,2.5,D-.1,2,.2);counter(g,W+.1,D+.1,2.8,[{x:0,z:0,w:Math.min(W-.8,1.6),d:Math.min(D-.6,1.1)}],M.quartz);bx(g,Math.min(W-.8,1.6),.6,Math.min(D-.6,1.1),M.porc,0,2.2,0);faucet(g,0,2.9,-Math.min(D-.6,1.1)/2-.12);bx(g,W-.3,2.4,.04,M.mirror,0,4.1,-D/2+.02);bx(g,W-.6,.12,.25,M.lamp,0,6.6,-D/2+.15)},
+  dvanity:(g,W,D)=>{bx(g,W,2.8,D-.1,M.wood,0,.1,.05);bx(g,W-.1,.1,D-.3,M.dark,0,0,-.05);doors(g,W,2.5,D-.1,4,.2);const hx=W/4;counter(g,W+.1,D+.1,2.8,[{x:-hx,z:0,w:1.5,d:1.1},{x:hx,z:0,w:1.5,d:1.1}],M.quartz);bx(g,1.5,.6,1.1,M.porc,-hx,2.2,0);bx(g,1.5,.6,1.1,M.porc,hx,2.2,0);faucet(g,-hx,2.9,-.67);faucet(g,hx,2.9,-.67);bx(g,W-.3,2.4,.04,M.mirror,0,4.1,-D/2+.02);bx(g,W-.6,.12,.25,M.lamp,0,6.6,-D/2+.15)},
+  tub:(g,W,D)=>{bx(g,W,1.5,D,M.porc,0,0,0);counter(g,W+.1,D+.1,1.5,[{x:0,z:0,w:W-.6,d:D-.6}],M.porc);bx(g,W-.6,1.3,D-.6,M.grey,0,0,0);faucet(g,-W/2+.35,1.6,-D/2+.35);cyl(g,.04,.9,M.brass,-W/2+.35,1.6,-D/2+.15)},
+  shower:(g,W,D,it,b)=>{bx(g,W,.15,D,M.porc,0,0,0);cyl(g,.12,.02,M.dark,0,.15,0);const sides=touching(b,it);['back','left','right','front'].forEach(s=>{const wall=sides[s];const len=(s==='back'||s==='front')?W:D;const px=s==='left'?-W/2:s==='right'?W/2:0,pz=s==='back'?-D/2:s==='front'?D/2:0;const ry=(s==='left'||s==='right')?Math.PI/2:0;if(wall){const m=new THREE.Mesh(new THREE.BoxGeometry(len,7,.04),new THREE.MeshStandardMaterial({map:TX.tile,roughness:.35}));m.material.map=TX.tile.clone();m.material.map.repeat.set(len/2,3.5);m.material.map.needsUpdate=true;m.position.set(px+(s==='left'?.02:s==='right'?-.02:0),3.5,pz+(s==='back'?.02:s==='front'?-.02:0));m.rotation.y=ry;g.add(m)}else{const gl=new THREE.Mesh(new THREE.BoxGeometry(len,6.8,.04),M.glass);gl.position.set(px,3.4,pz);gl.rotation.y=ry;g.add(gl);const rail=new THREE.Mesh(new THREE.BoxGeometry(len,.08,.08),M.steel);rail.position.set(px,6.8,pz);rail.rotation.y=ry;g.add(rail)}});cyl(g,.06,2.6,M.brass,0,4.2,-D/2+.2);cyl(g,.05,.7,M.brass,0,6.75,-D/2+.55,Math.PI/2);cyl(g,.4,.06,M.brass,0,6.65,-D/2+.9);cyl(g,.07,.3,M.brass,0,3.8,-D/2+.08)},
+  washer:(g,W,D)=>{bx(g,W,3,D,M.grey,0,0,0);tor(g,.7,.08,M.steel,0,1.5,D/2+.02,0);cyl(g,.66,.05,M.screen,0,1.5,D/2+.04,Math.PI/2);bx(g,W-.2,.35,.1,M.dark,0,2.55,D/2-.05)},
+  dryer:(g,W,D)=>B3.washer(g,W,D),
+  linen:(g,W,D)=>{bx(g,W,7,D,M.cab,0,0,0);doors(g,W,6.9,D,1,0)},
+  usink:(g,W,D)=>{bx(g,W,2.9,D,M.grey,0,0,0);counter(g,W+.05,D+.05,2.9,[{x:0,z:0,w:W-.4,d:D-.4}],M.grey);faucet(g,0,3,-D/2+.15)},
+  heater:(g,W,D)=>{cyl(g,Math.min(W,D)/2,5,M.grey,0,0,0);cyl(g,.08,3,M.copper,-.4,5,0);cyl(g,.08,3,M.copper,.4,5,0);bx(g,.35,.3,.3,M.dark,0,.9,Math.min(W,D)/2)},
+  sump:(g,W,D)=>{cyl(g,.7,.12,M.dark,0,0,0);cyl(g,.72,.05,M.grey,0,.12,0);cyl(g,.1,8,M.pvc,.35,0,0)},
+  barsink:(g,W,D)=>{bx(g,W,3.3,D,M.wood,0,0,0);counter(g,W+.1,D+.1,3.3,[{x:0,z:0,w:1.4,d:1.1}],M.quartz);bx(g,1.4,.6,1.1,M.steel,0,2.7,0);faucet(g,0,3.4,-.7)},
+  sofa:(g,W,D)=>{bx(g,W,1.2,D,M.fabric,0,0,0);bx(g,W,1.5,.7,M.fabric,0,1.2,-D/2+.35);bx(g,.6,.9,D,M.fabric,-W/2+.3,1.2,0);bx(g,.6,.9,D,M.fabric,W/2-.3,1.2,0);const n=Math.max(2,Math.round(W/2.3));for(let i=0;i<n;i++)bx(g,(W-1.2)/n-.08,.5,D-.8,M.fabric,-W/2+.6+(W-1.2)*(i+.5)/n,1.2,.3)},
+  tv:(g,W,D)=>{bx(g,Math.min(W,5.5),2.4,.1,M.screen,0,3.3,-D/2+.06);bx(g,W,1.4,D,M.wood,0,0,0)},
+  stairs:(g,W,D)=>{const n=8;for(let i=0;i<n;i++)bx(g,W,8*(i+1)/n,D/n,M.wood,0,0,-D/2+D*(i+.5)/n)},
+  post:(g,W,D)=>bx(g,W,8,D,M.grey,0,0,0),
+  wall:(g,W,D,it)=>bx(g,W,8,D,it.s==='remove'?M.remove:M.wall,0,0,0),
+  halfwall:(g,W,D,it)=>{bx(g,W,3.4,D,it.s==='remove'?M.remove:M.wall,0,0,0);bx(g,W+.1,.15,D+.1,M.wood,0,3.4,0)},
+  glasswall:(g,W,D,it)=>{bx(g,W,7.9,.05,it.s==='remove'?M.remove:M.glass,0,0,0);bx(g,W,.08,.1,M.dark,0,7.9,0);bx(g,W,.08,.1,M.dark,0,0,0);bx(g,.08,8,.1,M.dark,-W/2,0,0);bx(g,.08,8,.1,M.dark,W/2,0,0)},
+  closet:(g,W,D,it)=>{bx(g,W,8,D,it.s==='remove'?M.remove:M.wall,0,0,0);if(it.s!=='remove'){bx(g,W-.3,6.7,.06,M.cab,0,0,D/2+.03);doors(g,W-.3,6.6,.06,2,0)}}
+ };
+ function touching(b,it){const e=.35;const t=b.y<e,bt=S.l-(b.y+b.h)<e,l=b.x<e,r=S.w-(b.x+b.w)<e;const f=facingOf(b,it);return {down:{back:t,front:bt,left:l,right:r},up:{back:bt,front:t,left:r,right:l},right:{back:l,front:r,left:bt,right:t},left:{back:r,front:l,left:t,right:bt}}[f]}
+ function facingOf(b,it){const rot=it?(it.r||0)%180!==0:false;if(!rot){const dT=b.y,dB=S.l-(b.y+b.h);return dT<=dB?'down':'up'}const dL=b.x,dR=S.w-(b.x+b.w);return dL<=dR?'right':'left'}
+ const ROT={down:0,up:Math.PI,right:Math.PI/2,left:-Math.PI/2};
+ const WG={};
+ function wallRun(g0,side,len,openings,m){const g=new THREE.Group();g0.add(g);WG[side]=g;const t=.4,H=8;const pieces=[];let c=side==='top'||side==='bottom'?-t:0;const end=(side==='top'||side==='bottom')?len+t:len;openings.sort((a,b)=>a.a-b.a).forEach(o=>{if(o.a>c+.01)pieces.push([c,o.a,0,H]);pieces.push([o.a,o.b,o.y1,H]);if(o.y0>0)pieces.push([o.a,o.b,0,o.y0]);c=o.b});if(end>c+.01)pieces.push([c,end,0,H]);
+  pieces.forEach(([a,b,y0,y1])=>{const L=b-a,h=y1-y0;if(L<=0||h<=0)return;const me=new THREE.Mesh(new THREE.BoxGeometry(side==='top'||side==='bottom'?L:t,h,side==='top'||side==='bottom'?t:L),m);me.receiveShadow=true;me.castShadow=true;if(side==='top')me.position.set((a+b)/2,y0+h/2,-t/2);if(side==='bottom')me.position.set((a+b)/2,y0+h/2,S.l+t/2);if(side==='left')me.position.set(-t/2,y0+h/2,(a+b)/2);if(side==='right')me.position.set(S.w+t/2,y0+h/2,(a+b)/2);g.add(me)});
+  openings.forEach(o=>{const L=o.b-o.a,horiz=side==='top'||side==='bottom';const cx=horiz?(o.a+o.b)/2:(side==='left'?0:S.w),cz=horiz?(side==='top'?0:S.l):(o.a+o.b)/2;const ry=horiz?0:Math.PI/2;const gr=new THREE.Group();gr.position.set(cx,0,cz);gr.rotation.y=ry;g.add(gr);const inward=(side==='top'||side==='left')?1:-1;
+   if(o.k==='door'){const p=bx(gr,L-.15,o.y1-.1,.12,M.cab,0,.05,inward*.06);bx(gr,L-.8,2.4,.02,M.dark,0,3.6,inward*.13);bx(gr,L-.8,2.2,.02,M.dark,0,.7,inward*.13);const kn=new THREE.Mesh(new THREE.SphereGeometry(.09,16,12),M.brass);kn.position.set(L/2-.4,3.1,inward*.2);gr.add(kn)}
+   else{bx(gr,L,o.y1-o.y0,.05,M.glass,0,o.y0,0);bx(gr,L,.12,.18,M.cab,0,o.y0,0);bx(gr,L,.12,.18,M.cab,0,o.y1-.12,0);bx(gr,.12,o.y1-o.y0,.18,M.cab,-L/2+.06,o.y0,0);bx(gr,.12,o.y1-o.y0,.18,M.cab,L/2-.06,o.y0,0);bx(gr,.08,o.y1-o.y0,.1,M.cab,0,o.y0,0)}})}
+ function build(){const shared=new Set(Object.values(M));while(G.children.length){const o=G.children.pop();o.traverse(n=>{if(n.geometry)n.geometry.dispose();if(n.material&&!shared.has(n.material)){if(n.material.map)n.material.map.dispose();n.material.dispose()}})}
+  const fl=new THREE.Mesh(new THREE.PlaneGeometry(S.w,S.l),new THREE.MeshStandardMaterial({map:(S.type==='bathroom'?TX.tile:TX.wood).clone(),roughness:S.type==='bathroom'?.35:.6}));fl.material.map.repeat.set(S.w/4,S.l/4);fl.material.map.needsUpdate=true;fl.rotation.x=-Math.PI/2;fl.position.set(S.w/2,0,S.l/2);fl.receiveShadow=true;G.add(fl);
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(S.w+40,S.l+40),new THREE.MeshStandardMaterial({color:'#D9DDE0',roughness:1}));ground.rotation.x=-Math.PI/2;ground.position.set(S.w/2,-.02,S.l/2);ground.receiveShadow=true;G.add(ground);
+  const ops={top:[],bottom:[],left:[],right:[]};S.items.filter(isOpen).forEach(it=>{const b=box(it),d=def(it);const horiz=(it.r||0)%180===0;const side=horiz?(b.y<S.l/2?'top':'bottom'):(b.x<S.w/2?'left':'right');const a=horiz?b.x:b.y,e=horiz?b.x+b.w:b.y+b.h;ops[side].push({a,b:e,y0:d.o[0],y1:d.o[1],k:it.k})});
+  ['top','bottom','left','right'].forEach(side=>wallRun(G,side,side==='top'||side==='bottom'?S.w:S.l,ops[side],side===S.plumb?M.pwall:M.wall));
+  S.items.forEach(it=>{if(isOpen(it))return;const b=box(it),d=def(it);const fn=B3[it.k];if(!fn)return;const g=new THREE.Group();const f=facingOf(b,it);const W=(it.r||0)%180!==0?b.h:b.w,D=(it.r||0)%180!==0?b.w:b.h;fn(g,W,D,it,b);g.rotation.y=ROT[f];g.position.set(b.x+b.w/2,0,b.y+b.h/2);if(it.s==='remove'&&!isPart(it)){g.traverse(n=>{if(n.isMesh)n.material=M.remove})}G.add(g)});
+  const win=S.items.find(it=>it.k==='window'||it.k==='egress');const wb=win?box(win):null;const horiz=win?(win.r||0)%180===0:true;const side=win?(horiz?(wb.y<S.l/2?'top':'bottom'):(wb.x<S.w/2?'left':'right')):'top';const pos={top:[S.w*.5+4,14,-12],bottom:[S.w*.5-4,14,S.l+12],left:[-12,14,S.l*.5+4],right:[S.w+12,14,S.l*.5-4]}[side];sun.position.set(...pos);sun.target.position.set(S.w/2,0,S.l/2);const ext=Math.max(S.w,S.l)*1.2;Object.assign(sun.shadow.camera,{left:-ext,right:ext,top:ext,bottom:-ext,near:1,far:60});sun.shadow.camera.updateProjectionMatrix();fill.position.set(S.w/2,7.6,S.l/2)}
+ const camTo={};function preset(n,instant){const w=S.w,l=S.l,c=[w/2,2.5,l/2];const p={corner:[[w+3,9,l+4],[w/2,1.5,l/2]],eye:[[w/2,5.4,l+.6],[w/2,4.3,0]],top:[[w/2,Math.max(w,l)*1.7,l/2+.01],[w/2,0,l/2]]}[n];camTo.p=p[0];camTo.t=p[1];camTo.k=instant?1:0;camTo.s=null}
+ function size(){const w=Math.min(host.clientWidth||360,760),h=Math.max(300,Math.min(520,Math.round(w*.62)));renderer.setSize(w,h,false);renderer.domElement.style.width='100%';camera.aspect=w/h;camera.updateProjectionMatrix()}
+ let raf=0;function loop(){if(view!=='3d'){raf=0;return}raf=requestAnimationFrame(loop);if(R3.dirty){R3.dirty=false;build()}if(camTo.p&&camTo.k<1){camTo.k=Math.min(1,camTo.k+.045);const e=1-Math.pow(1-camTo.k,3);if(!camTo.s){camTo.s=[camera.position.clone(),controls.target.clone()]}camera.position.lerpVectors(camTo.s[0],new THREE.Vector3(...camTo.p),e);controls.target.lerpVectors(camTo.s[1],new THREE.Vector3(...camTo.t),e);if(camTo.k>=1)camTo.s=null}controls.update();const c=camera.position;if(WG.top)WG.top.visible=c.z>-0.3;if(WG.bottom)WG.bottom.visible=c.z<S.l+0.3;if(WG.left)WG.left.visible=c.x>-0.3;if(WG.right)WG.right.visible=c.x<S.w+0.3;renderer.render(scene,camera)}
+ R3={renderer,scene,camera,controls,build,size,preset,start(){size();R3.dirty=true;if(!raf)loop()},png(){renderer.render(scene,camera);return renderer.domElement.toDataURL('image/png')},dirty:true};
+ preset('corner',true);camera.position.set(...camTo.p);controls.target.set(...camTo.t);camTo.k=1;window.addEventListener('resize',()=>{if(view==='3d')size()});return R3}
+async function setView(v){view=v;$$('.sk-vbtn').forEach(b=>b.classList.toggle('s',b.dataset.view===v));$k('skPlanWrap').hidden=v!=='2d';$k('sk3d').hidden=v!=='3d';if(v==='3d'){const r=await init3d();if(r)r.start()}else fit()}
+/* ---------- wiring ---------- */
 $k('skPalette').addEventListener('click',e=>{const b=e.target.closest('[data-add]');if(b)add(b.dataset.add)});
 $$('.sk-type').forEach(b=>b.addEventListener('click',()=>setType(b.dataset.type)));
 $k('skW').addEventListener('change',()=>{S.w=Math.max(4,Math.min(40,+$k('skW').value||S.w));S.items.forEach(clamp);fit();check();save()});
@@ -1073,22 +1154,30 @@ $k('skL').addEventListener('change',()=>{S.l=Math.max(4,Math.min(40,+$k('skL').v
 $k('skPlumb').addEventListener('change',()=>{S.plumb=$k('skPlumb').value;draw();check();save()});
 $k('skRotate').addEventListener('click',rotate);$k('skDelete').addEventListener('click',del);
 $k('skIW').addEventListener('change',()=>setSize($k('skIW').value,$k('skID').value));$k('skID').addEventListener('change',()=>setSize($k('skIW').value,$k('skID').value));
+$k('skStatus').addEventListener('click',e=>{const b=e.target.closest('[data-st]');if(!b||sel<0)return;S.items[sel].s=b.dataset.st;sizeUI(S.items[sel]);check();draw();save()});
+$k('skOpts').addEventListener('change',e=>{const i=e.target.closest('[data-opt]');if(!i)return;S.opts[i.dataset.opt]=i.checked;check();save()});
 $k('skClear').addEventListener('click',()=>{S.items=[];sel=-1;ui();check();draw();save()});
 $k('skReset').addEventListener('click',()=>setType(S.type));
-$k('skPng').addEventListener('click',()=>{const a=document.createElement('a');a.href=png();a.download='dne-room-sketch.png';a.click()});
+$k('skPng').addEventListener('click',()=>{const a=document.createElement('a');a.href=view==='3d'&&R3?R3.png():png();a.download=view==='3d'?'dne-room-3d.png':'dne-room-sketch.png';a.click()});
 $k('skLink').addEventListener('click',()=>{navigator.clipboard.writeText(link()).then(()=>toast('Link copied. Anyone who opens it sees this sketch.')).catch(()=>prompt('Copy this link',link()))});
-$k('skSend').addEventListener('click',()=>{try{localStorage.setItem('dne:sketch_send','1')}catch{}location.hash='#planner?type='+(S.type==='basement'?'basement':S.type)});
-window.addEventListener('resize',()=>{if(document.getElementById('v-sketch').classList.contains('on'))fit()});
+$$('.sk-vbtn').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
+$$('[data-cam]').forEach(b=>b.addEventListener('click',()=>{if(R3)R3.preset(b.dataset.cam)}));
+$k('skSend').addEventListener('click',async()=>{const L=lead();if(!L){try{localStorage.setItem('dne:sketch_send','1')}catch{}location.hash='#planner?type='+S.type;return}
+ const E=estimate();const btn=$k('skSend');btn.disabled=true;btn.textContent='Sending…';
+ try{const payload={name:L.name,phone:L.phone,email:L.email,type:S.type,sketch:JSON.stringify({type:S.type,w:S.w,l:S.l,plumb:S.plumb,items:S.items,opts:S.opts}),sketch_estimate:E.hi>0?`${$$$(E.lo)} – ${$$$(E.hi)}`:'',sketch_lines:E.lines.map(x=>`${x.l}: ${$$$(x.a)}–${$$$(x.z)}`).join('\n')};try{payload.sketch_png=png(1)}catch{}if(R3){try{payload.sketch_3d_png=R3.png()}catch{}}
+  const r=await send('sketch',payload);track('sketch_sent',{type:S.type});$k('skSent').hidden=false;btn.textContent='Sent';if(r.offline)toast('Saved locally — connect the n8n webhook to send for real.')}
+ catch(e){btn.disabled=false;btn.textContent='Try sending again';toast('That didn\'t go through. Try again, or call '+B.phone)}});
+window.addEventListener('resize',()=>{if($k('v-sketch').classList.contains('on')&&view==='2d')fit()});
 load();ui();
-return {show(){fit();check();draw()},data(){return {type:S.type,w:S.w,l:S.l,plumb:S.plumb,items:S.items}},png:()=>png(1),has:()=>S.items.length>0};
+return {show(){const q=new URLSearchParams((location.hash.split('?')[1]||''));const t=q.get('type');if(t&&PRESETS[t]&&(t!==S.type||!S.items.length))setType(t);gate();if(view==='3d'){setView('3d')}else fit();check()},data(){return {type:S.type,w:S.w,l:S.l,plumb:S.plumb,items:S.items,opts:S.opts}},png:()=>png(1),has:()=>S.items.length>0,estimate};
 })();
 
 /* ---------- routing ---------- */
 const VIEWS=['home','services','projects','about','reviews','faq','contact','planner','refer','portal','thanks','playbook','sketch'];
-function route(){let h=(location.hash||'#home').slice(1).split('?')[0];if(h==='estimator'){h='home';setTimeout(()=>{const el=$('#estimator');if(el)el.scrollIntoView({behavior:'smooth'})},50)}if(!VIEWS.includes(h))h='home';
+function route(){let h=(location.hash||'#home').slice(1).split('?')[0];if(!VIEWS.includes(h))h='home';
   $$('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+h));$$('nav.main a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+h));
   $('#mainNav').classList.remove('open');$('#burger').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'instant'});
-  const META={home:['D N E Contracting — Kitchen, bathroom & basement remodeling, 422 corridor & greater Philadelphia','Free, no-pressure in-home consultations for kitchens, bathrooms and basement plumbing across the 422 corridor and greater Philadelphia.'],services:['Kitchen, bathroom & basement remodeling — 422 corridor & greater Philadelphia','Kitchen, bathroom and basement remodels start to finish, plus plumbing repairs and water heaters. Free in-home consultation.'],projects:['Recent kitchen, bathroom & basement remodels','Before-and-after projects in Royersford, Limerick, Collegeville, Phoenixville and Boyertown.'],about:['About D N E Contracting — women-owned, owner on every job','Why the consultation feels different: we listen first, explain plainly, and you never decide on the spot.'],reviews:['Reviews — D N E Contracting','What homeowners say about working with a calm, no-pressure remodeling contractor.'],faq:['Remodel FAQ — cost, timeline, licensing, service area','Straight answers about consultations, pricing, timelines, permits and payments.'],contact:['Contact D N E Contracting — (484) 939-8535','Call, text or send a note. Even if you are just starting to think about it.'],planner:['Tell us about your space — free consultation','Four quick questions so we come prepared. No obligation.'],refer:['Refer a friend — D N E Contracting','$100 when they book a consultation, $250 if they go ahead with a project.'],portal:['Client portal — D N E Contracting','Your schedule, photos, documents and payments.'],sketch:['Sketch your room — D N E Contracting','Draw your kitchen, bathroom or basement layout and get instant feedback on clearances, code and cost before the visit.']};
+  const META={home:['D N E Contracting — Kitchen, bathroom & basement remodeling, 422 corridor & greater Philadelphia','Free, no-pressure in-home consultations for kitchens, bathrooms and basement plumbing across the 422 corridor and greater Philadelphia.'],services:['Kitchen, bathroom & basement remodeling — 422 corridor & greater Philadelphia','Kitchen, bathroom and basement remodels start to finish, plus plumbing repairs and water heaters. Free in-home consultation.'],projects:['Recent kitchen, bathroom & basement remodels','Before-and-after projects in Royersford, Limerick, Collegeville, Phoenixville and Boyertown.'],about:['About D N E Contracting — women-owned, owner on every job','Why the consultation feels different: we listen first, explain plainly, and you never decide on the spot.'],reviews:['Reviews — D N E Contracting','What homeowners say about working with a calm, no-pressure remodeling contractor.'],faq:['Remodel FAQ — cost, timeline, licensing, service area','Straight answers about consultations, pricing, timelines, permits and payments.'],contact:['Contact D N E Contracting — (484) 939-8535','Call, text or send a note. Even if you are just starting to think about it.'],planner:['Tell us about your space — free consultation','Four quick questions so we come prepared. No obligation.'],refer:['Refer a friend — D N E Contracting','$100 when they book a consultation, $250 if they go ahead with a project.'],portal:['Client portal — D N E Contracting','Your schedule, photos, documents and payments.'],sketch:['Sketch your room — D N E Contracting','Draw your kitchen, bathroom or basement, see it in 3D, and get typical costs for what you drew.']};
   if(h==='sketch'&&SK)setTimeout(SK.show,0);if(h==='planner'&&SK&&SK.has()&&store.get('sketch_send',0))setTimeout(()=>toast('Your room sketch will be sent with this request.'),300);
   const m=META[h]||META.home;document.title=m[0];const md=document.querySelector('meta[name=description]');if(md)md.content=m[1];const cn=document.getElementById('canon');if(cn)cn.href='https://dnecontracting.com/'+(h==='home'?'':'#'+h);track('page_view',{page:h});
   if(h==='planner'){const pre=new URLSearchParams((location.hash.split('?')[1]||'')).get('type');if(pre){const f=$('#plannerFull form');[...f.elements.type].forEach(r=>r.checked=r.value===pre)}}}
