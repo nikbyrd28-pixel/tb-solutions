@@ -283,8 +283,17 @@ th{font-weight:bold;font-size:.9rem;color:var(--mute)}
 .sk-tools{grid-column:1/-1}
 .sk-types{display:flex;gap:8px;margin-bottom:12px}.sk-type{font:inherit;padding:8px 14px;border:1px solid var(--ink);background:#fff;cursor:pointer;border-radius:3px}.sk-type.s{background:var(--ink);color:#fff}
 .sk-dims{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-bottom:12px;font-size:.95rem}.sk-dims label{display:flex;align-items:center;gap:6px;margin:0;font-weight:normal}.sk-dims input{width:72px;padding:6px 8px}.sk-dims select{width:auto;padding:6px 8px}
-.sk-palette{display:grid;gap:4px;margin-bottom:6px}.sk-group summary{cursor:pointer;font-weight:bold;font-size:.95rem;padding:6px 0;list-style:none;display:flex;align-items:center;gap:8px}.sk-group summary::before{content:'+';width:18px;height:18px;border:1px solid var(--ink);border-radius:3px;display:inline-grid;place-items:center;font-size:.9rem;line-height:1}.sk-group[open] summary::before{content:'–'}.sk-group div{display:flex;flex-wrap:wrap;gap:6px;padding:2px 0 8px}.sk-palette .sk-pw{border-style:dashed}
-.sk-view{display:flex;gap:0;margin-bottom:10px}.sk-vbtn{font:inherit;padding:8px 16px;border:1px solid var(--ink);background:#fff;cursor:pointer}.sk-vbtn:first-child{border-radius:3px 0 0 3px}.sk-vbtn:last-child{border-radius:0 3px 3px 0;border-left:0}.sk-vbtn.s{background:var(--ink);color:#fff}
+.sk-palette{display:grid;gap:2px;margin-bottom:0}.sk-group summary{cursor:pointer;font-weight:bold;font-size:.95rem;padding:6px 0;list-style:none;display:flex;align-items:center;gap:8px}.sk-group summary::before{content:'+';width:18px;height:18px;border:1px solid var(--ink);border-radius:3px;display:inline-grid;place-items:center;font-size:.9rem;line-height:1}.sk-group[open] summary::before{content:'–'}.sk-group div{display:flex;flex-wrap:wrap;gap:6px;padding:2px 0 8px}.sk-palette .sk-pw{border-style:dashed}
+.linkbtn{background:none;border:0;padding:0;font:inherit;color:var(--ink);text-decoration:underline;cursor:pointer}
+.sk-bar{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;margin-bottom:8px}
+.sk-room{flex:1 1 220px;border:1px solid var(--line);border-radius:3px;background:#fff}.sk-room summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 12px;font-weight:bold;font-size:.95rem}.sk-room summary::-webkit-details-marker{display:none}.sk-room-edit{font-weight:normal;font-size:.85rem;color:var(--red);text-decoration:underline}.sk-room[open] .sk-room-edit{color:var(--mute)}.sk-room > div{padding:0 12px 10px}.sk-room .sk-types{margin:4px 0 10px}.sk-room .sk-dims{margin:0}
+#skAdd{white-space:nowrap}
+.sk-sheet{border:1px solid var(--line);background:#fff;padding:10px 12px;margin:0 0 8px;border-radius:3px}.sk-sheet-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.sk-scrim{display:none}
+@media (max-width:900px){.sk-sheet{position:fixed;left:0;right:0;bottom:0;max-height:70vh;overflow:auto;z-index:80;margin:0;border-radius:12px 12px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.2);padding-bottom:20px}.sk-scrim{display:block;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:75}.sk-scrim[hidden]{display:none}}
+.sk-coach{background:#FFF8D6;border-left:3px solid #E8C56A;padding:8px 12px;font-size:.95rem;margin:0 0 10px;color:#4A3E00}
+.sk-tour{max-width:560px}.sk-tour ol{list-style:none;padding:0;margin:14px 0 0;counter-reset:t}.sk-tour li{display:grid;grid-template-columns:44px 1fr;gap:2px 12px;padding:12px 0;border-top:1px solid var(--line)}.sk-tour li::before{counter-increment:t;content:counter(t);grid-row:1/3;width:36px;height:36px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font-weight:bold;font-size:1.1rem}.sk-tour li b{grid-column:2;display:block;align-self:center;min-height:36px;line-height:36px}.sk-tour li p{grid-column:2;margin:0;color:var(--ink-2);font-size:.95rem}
+.sk-view{display:flex;gap:0}.sk-vbtn{font:inherit;padding:8px 16px;border:1px solid var(--ink);background:#fff;cursor:pointer}.sk-vbtn:first-child{border-radius:3px 0 0 3px}.sk-vbtn:last-child{border-radius:0 3px 3px 0;border-left:0}.sk-vbtn.s{background:var(--ink);color:#fff}
 .sk-sel{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;font-weight:bold;margin:10px 0 6px;min-height:40px}.sk-sel.off{visibility:hidden}.sk-sel label{display:inline-flex;align-items:center;gap:5px;margin:0;font-weight:normal;font-size:.95rem}.sk-sel input{width:64px;padding:6px 8px}
 .sk-status{display:inline-flex}.sk-st{font:inherit;font-size:.85rem;padding:5px 10px;border:1px solid var(--ink);background:#fff;cursor:pointer;margin-left:-1px}.sk-st:first-child{border-radius:3px 0 0 3px;margin-left:0}.sk-st:last-child{border-radius:0 3px 3px 0}.sk-st.s{background:var(--red);border-color:var(--red);color:#fff}
 .sk-canvas{overflow:auto}.sk-canvas canvas{touch-action:none;display:block;max-width:100%;border:1px solid var(--line);background:#fff}
@@ -305,7 +314,7 @@ th{font-weight:bold;font-size:.9rem;color:var(--mute)}
 .modal{position:fixed;inset:0;background:rgba(27,27,27,.7);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}
 .modal.on{display:flex}
 .modal .box{background:var(--paper);max-width:820px;width:100%;max-height:90vh;overflow:auto;padding:28px;position:relative}
-.modal .x{position:absolute;right:14px;top:10px;background:none;border:0;font-size:1.6rem;cursor:pointer;color:var(--mute)}
+.modal .x{position:absolute;right:14px;top:10px;background:none;border:0;font-size:1.6rem;cursor:pointer;color:var(--mute)}@media(max-width:600px){.modal{padding:10px}.modal .box{max-height:calc(100vh - 20px);padding:22px 18px 18px}.sk-tour li{padding:10px 0}}
 .ba{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media (max-width:600px){.ba{grid-template-columns:1fr}}
 
@@ -632,19 +641,26 @@ footer a,footer p{overflow-wrap:anywhere}
 
 <!-- ============ SKETCH ============ -->
 <section class="view" id="v-sketch">
-  <div class="wrap page-head"><h1>Sketch your room</h1><p>Draw the room as it is, then change what you want to change. Mark each thing existing, repair, replace or new, and the estimate builds as you go. Flip to 3D to walk through it. When it looks right, send it and we'll arrive already knowing the room.</p></div>
+  <div class="wrap page-head"><h1>Sketch your room</h1><p>Draw the room as it is, change what you want, and watch the estimate build. <button type="button" class="linkbtn" id="skTour">How it works (30 seconds)</button></p></div>
   <div class="wrap sk">
     <div class="sk-tools">
       <div class="notice" id="skGate" hidden>Tell us who to send this to first. <a href="#planner">The quick form takes a minute</a>, then come back here.</div>
-      <div class="sk-types"><button type="button" class="sk-type" data-type="kitchen">Kitchen</button><button type="button" class="sk-type" data-type="bathroom">Bathroom</button><button type="button" class="sk-type" data-type="basement">Basement</button></div>
-      <div class="sk-dims"><label>Width <input id="skW" type="number" inputmode="decimal" min="4" max="40" step="0.5"> ft</label><label>Length <input id="skL" type="number" inputmode="decimal" min="4" max="40" step="0.5"> ft</label><label>Plumbing is on the <select id="skPlumb"><option value="top">top wall</option><option value="right">right wall</option><option value="bottom">bottom wall</option><option value="left">left wall</option><option value="none">not sure</option></select></label></div>
-      <div class="sk-palette" id="skPalette"></div>
+      <div class="sk-bar">
+        <details class="sk-room" id="skRoom"><summary><span id="skRoomSum">Room</span><span class="sk-room-edit">Change</span></summary>
+          <div class="sk-types"><button type="button" class="sk-type" data-type="kitchen">Kitchen</button><button type="button" class="sk-type" data-type="bathroom">Bathroom</button><button type="button" class="sk-type" data-type="basement">Basement</button></div>
+          <div class="sk-dims"><label>Width <input id="skW" type="number" inputmode="decimal" min="4" max="40" step="0.5"> ft</label><label>Length <input id="skL" type="number" inputmode="decimal" min="4" max="40" step="0.5"> ft</label><label>Plumbing is on the <select id="skPlumb"><option value="top">top wall</option><option value="right">right wall</option><option value="bottom">bottom wall</option><option value="left">left wall</option><option value="none">not sure</option></select></label></div>
+        </details>
+        <button type="button" class="btn p" id="skAdd">+ Add</button>
+        <div class="sk-view"><button type="button" class="sk-vbtn s" data-view="2d">Floor plan</button><button type="button" class="sk-vbtn" data-view="3d">3D room</button></div>
+      </div>
+      <div class="sk-scrim" id="skScrim" hidden></div>
+      <div class="sk-sheet" id="skSheet" hidden><div class="sk-sheet-head"><b>Add to the room</b><button type="button" class="btn sm" id="skSheetClose">Done</button></div><div class="sk-palette" id="skPalette"></div></div>
+      <p class="sk-coach" id="skCoach"></p>
     </div>
     <div class="sk-main">
-      <div class="sk-view"><button type="button" class="sk-vbtn s" data-view="2d">Floor plan</button><button type="button" class="sk-vbtn" data-view="3d">3D room</button></div>
       <div class="sk-canvas" id="skPlanWrap"><canvas id="skCanvas" width="600" height="400" aria-label="Room sketch"></canvas>
         <div class="sk-sel off" id="skSel"><span id="skSelName">Nothing selected</span><span class="sk-status" id="skStatus"></span><label>Size <input id="skIW" type="number" inputmode="decimal" step="0.5" min="0.5" max="40"> ft</label><span id="skIDwrap"><label>× <input id="skID" type="number" inputmode="decimal" step="0.5" min="0.5" max="40"> ft</label></span><button type="button" class="btn sm" id="skRotate">Rotate</button><button type="button" class="btn sm" id="skDelete">Remove</button></div>
-        <p class="hint">Drag to move. Tap an item to see its distance to each wall, drag the corner square to resize it, and mark it existing, repair, replace or new. Things snap to 6 inches.</p></div>
+        <p class="hint">Things snap to 6 inches. Drag the corner square to resize.</p></div>
       <div class="sk3d" id="sk3d" hidden><div class="sk3d-bar"><button type="button" class="btn sm" data-cam="corner">Corner</button><button type="button" class="btn sm" data-cam="eye">Walk in</button><button type="button" class="btn sm" data-cam="top">From above</button></div><div id="sk3dHost"></div><p class="hint">Drag to look around, pinch or scroll to zoom. Anything you change on the floor plan shows up here.</p></div>
     </div>
     <div class="sk-side">
@@ -1009,7 +1025,7 @@ function draw(){cx.clearRect(0,0,cv.width,cv.height);cx.fillStyle='#fff';cx.fill
 function hit(px,py){const fx=(px-ox)/scale,fy=(py-oy)/scale;for(let i=S.items.length-1;i>=0;i--){const b=box(S.items[i]);if(fx>=b.x&&fx<=b.x+b.w&&fy>=b.y&&fy<=b.y+b.h)return i}return -1}
 function pos(e){const r=cv.getBoundingClientRect();return [(e.clientX-r.left)*(cv.width/r.width),(e.clientY-r.top)*(cv.height/r.height)]}
 function onHandle(px,py){if(sel<0||!S.items[sel])return false;const b=box(S.items[sel]);const [hx,hy]=P(b.x+b.w,b.y+b.h);return Math.abs(px-hx)<=HANDLE+8&&Math.abs(py-hy)<=HANDLE+8}
-cv.addEventListener('pointerdown',e=>{const [px,py]=pos(e);if(onHandle(px,py)){drag={i:sel,resize:true};cv.setPointerCapture(e.pointerId);return}const i=hit(px,py);sel=i;if(i>=0){const it=S.items[i];drag={i,dx:(px-ox)/scale-it.x,dy:(py-oy)/scale-it.y};cv.setPointerCapture(e.pointerId)}ui();draw()});
+cv.addEventListener('pointerdown',e=>{const [px,py]=pos(e);if(onHandle(px,py)){drag={i:sel,resize:true};cv.setPointerCapture(e.pointerId);return}const i=hit(px,py);sel=i;if(i>=0){const it=S.items[i];drag={i,dx:(px-ox)/scale-it.x,dy:(py-oy)/scale-it.y};cv.setPointerCapture(e.pointerId)}ui();coach();draw()});
 cv.addEventListener('pointermove',e=>{const [px,py]=pos(e);if(!drag){cv.style.cursor=onHandle(px,py)?'nwse-resize':hit(px,py)>=0?'move':'default';return}const it=S.items[drag.i];if(drag.resize){resizeTo(it,(px-ox)/scale-it.x,(py-oy)/scale-it.y);draw();sizeUI(it);return}it.x=snap((px-ox)/scale-drag.dx);it.y=snap((py-oy)/scale-drag.dy);clamp(it);draw()});
 const end=()=>{if(drag){drag=null;check();save()}};cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);
 document.addEventListener('keydown',e=>{if(!$k('v-sketch').classList.contains('on')||sel<0||/input|select|textarea/i.test(e.target.tagName))return;const it=S.items[sel];const m={ArrowUp:[0,-.5],ArrowDown:[0,.5],ArrowLeft:[-.5,0],ArrowRight:[.5,0]}[e.key];if(m){it.x+=m[0];it.y+=m[1];clamp(it);e.preventDefault()}else if(e.key==='r'||e.key==='R')rotate();else if(e.key==='Delete'||e.key==='Backspace'){del();e.preventDefault()}else return;check();draw();save()});
@@ -1018,12 +1034,13 @@ function setSize(W,D){if(sel<0)return;const it=S.items[sel];const d=def(it);it.w
 function sizeUI(it){const d=def(it);$k('skIW').value=it.w||d.w;$k('skID').value=it.d||d.d;$k('skIDwrap').hidden=isOpen(it)||(isPart(it)&&it.k!=='closet');$k('skSelName').textContent=d.l.replace(/ \d.*$/,'');
  $k('skStatus').innerHTML=statusesFor(it).map(s=>`<button type="button" class="sk-st${(it.s||'keep')===s?' s':''}" data-st="${s}">${SLBL[s]}</button>`).join('')}
 function freeSpot(w,h){const occ=S.items.filter(it=>!isOpen(it)).map(box);for(let y=0;y<=S.l-h+1e-6;y+=.5)for(let x=0;x<=S.w-w+1e-6;x+=.5){const c={x,y,w,h};if(!occ.some(o=>overlap(o,c)))return [x,y]}return [snap(Math.max(0,(S.w-w)/2)),snap(Math.max(0,(S.l-h)/2))]}
-function add(k){$k('skOpts').dataset.dirty='1';const d=I[k];const [fx,fy]=isOpen({k})?[snap(Math.max(0,(S.w-d.w)/2)),S.l-d.d]:freeSpot(d.w,d.d);const it={k,x:fx,y:fy,r:0,s:'new'};S.items.push(it);clamp(it);sel=S.items.length-1;ui();check();draw();save()}
+function add(k){$k('skOpts').dataset.dirty='1';const d=I[k];const [fx,fy]=isOpen({k})?[snap(Math.max(0,(S.w-d.w)/2)),S.l-d.d]:freeSpot(d.w,d.d);const it={k,x:fx,y:fy,r:0,s:'new'};S.items.push(it);clamp(it);sel=S.items.length-1;ui();check();draw();save();sheet(false);if(window.innerWidth<=900)$k('skCanvas').scrollIntoView({block:'center',behavior:'smooth'})}
 function rotate(){if(sel<0)return;const it=S.items[sel];it.r=((it.r||0)+90)%360;clamp(it);check();draw();save();sizeUI(it)}
 function del(){if(sel<0)return;S.items.splice(sel,1);sel=-1;ui();check();draw();save()}
 function ui(){$k('skSel').classList.toggle('off',sel<0);if(sel>=0)sizeUI(S.items[sel]);
  if($k('skPalette').dataset.type!==S.type){$k('skPalette').dataset.type=S.type;$k('skPalette').innerHTML=GROUPS.map(([g,keys])=>`<details class="sk-group"${OPEN[S.type].includes(g)?' open':''}><summary>${g}</summary><div>${keys.map(k=>`<button type="button" class="btn sm${I[k].pw?' sk-pw':''}" data-add="${k}">${I[k].l}</button>`).join('')}</div></details>`).join('')}
  $k('skW').value=S.w;$k('skL').value=S.l;$k('skPlumb').value=S.plumb;$$('.sk-type').forEach(b=>b.classList.toggle('s',b.dataset.type===S.type));
+ $k('skRoomSum').textContent=`${S.type[0].toUpperCase()+S.type.slice(1)} · ${ftin(S.w)} × ${ftin(S.l)} · plumbing on the ${S.plumb==='none'?'?':S.plumb} wall`;
  const R=ROOM[S.type];$k('skOpts').innerHTML=[['floor','New flooring'],['paint','Paint'],['counters','New countertops'],['light','Lighting and electrical']].filter(([k])=>R[k]&&(k!=='counters'||hasCounters())).map(([k,l])=>`<label><input type="checkbox" data-opt="${k}"${S.opts[k]?' checked':''}> ${l}</label>`).join('')}
 function gap(a,b){const dx=Math.max(0,Math.max(a.x,b.x)-Math.min(a.x+a.w,b.x+b.w));const dy=Math.max(0,Math.max(a.y,b.y)-Math.min(a.y+a.h,b.y+b.h));return Math.hypot(dx,dy)}
 function overlap(a,b){return a.x<b.x+b.w-0.01&&b.x<a.x+a.w-0.01&&a.y<b.y+b.h-0.01&&b.y<a.y+a.h-0.01}
@@ -1069,7 +1086,10 @@ function check(){const notes=[];const B=S.items.filter(it=>it.s!=='remove').map(
  $k('skNotes').innerHTML=notes.map(([t,m])=>`<li class="${t}">${m}</li>`).join('');
  const E=estimate();$k('skEstNum').textContent=E.hi>0?`${$$$(E.lo)} – ${$$$(E.hi)}`:'$0';$k('skEstLines').innerHTML=E.lines.map(x=>`<li${x.mv?' class="mv"':''}><span>${x.l}</span><b>${$$$(x.a)}–${$$$(x.z)}</b></li>`).join('')+(E.kept?`<li class="hint"><span>${E.kept} existing item${E.kept>1?'s':''} kept as-is</span><b>$0</b></li>`:'');
  $k('skEstHint').textContent=E.hi>0?(E.moves?`${E.moves} thing${E.moves>1?'s':''} moved from where ${E.moves>1?'they are':'it is'} today: ${$$$(E.mlo)}–${$$$(E.mhi)} of the total. `:'')+'Ranges for our area, based on what you drew. Tap an item and mark it existing, repair, replace or new to refine. The real number comes in writing after the visit.':'Everything is marked existing. Tap an item and choose repair, replace or new, or add something, and the estimate builds here.';
- return E}
+ coach();return E}
+function coach(){const L=lead();let t;if(!S.items.length)t='Tap + Add and pick what\'s in the room.';else if(sel>=0)t='Drag it to where it goes. The corner square resizes it. Below the drawing, mark it Existing, Repair, Replace or New.';else if(!S.items.some(it=>(it.s||'keep')!=='keep'||moved(it)))t='This is a typical room, not yours yet. Drag things to where they really are, then tap anything to change it, or + Add something new.';else t=L?'The estimate updates as you go. Flip to 3D to see the room, then tap Send when it looks right.':'The estimate updates as you go. Fill the quick form so we know where to send it.';$k('skCoach').textContent=t}
+function sheet(open){$k('skSheet').hidden=!open;$k('skScrim').hidden=!open;if(open){$k('skSheet').querySelector('.sk-group')?.scrollIntoView&&$k('skSheet').scrollTo(0,0)}}
+function tour(force){try{if(!force&&localStorage.getItem('dne:tour_done'))return;localStorage.setItem('dne:tour_done','1')}catch{}openModal(`<div class="sk-tour"><h2 style="margin-top:6px">How the room sketch works</h2><ol><li><b>Set up the room</b><p>Pick kitchen, bathroom or basement, type the size, and tell us which wall the plumbing is on. Tap "Change" in the room bar any time.</p></li><li><b>Make it match today</b><p>The starting layout is a guess. Drag each thing to where it really is and resize with the corner square. Everything starts as Existing, which costs nothing.</p></li><li><b>Change what you want</b><p>Tap an item and mark it Repair, Replace or New. Move it anywhere and the move gets priced. Tap + Add for anything else, including walls to knock out.</p></li><li><b>Check it and send</b><p>The estimate builds as you go. Flip to 3D to walk through it. Send puts the sketch on your request so we arrive already knowing the room.</p></li></ol><button class="btn p" style="margin-top:16px" onclick="document.getElementById('modal').classList.remove('on')">Start sketching</button></div>`)}
 function save(){try{localStorage.setItem('dne:sketch',JSON.stringify(S))}catch{}}
 function load(){const q=new URLSearchParams((location.hash.split('?')[1]||''));const d=q.get('d');if(d){try{const o=JSON.parse(decodeURIComponent(escape(atob(d.replace(/-/g,'+').replace(/_/g,'/')))));S=Object.assign({opts:{}},o);return}catch{}}try{const s=localStorage.getItem('dne:sketch');if(s)S=Object.assign({opts:{}},JSON.parse(s))}catch{}if(!S.opts)S.opts={};S.items.forEach(it=>{if((it.s||'keep')!=='new'&&!it.o)it.o={x:it.x,y:it.y,r:it.r||0}})}
 function setType(t){S.type=t;const p=PRESETS[t];S.w=p.w;S.l=p.l;S.plumb=p.plumb;S.opts={};S.items=p.items.map(o=>{const it=Object.assign({r:0,s:'keep'},o);it.o={x:it.x,y:it.y,r:it.r};return it});sel=-1;ui();fit();check();save()}
@@ -1152,7 +1172,8 @@ async function init3d(){if(R3)return R3;const host=$k('sk3dHost');host.innerHTML
 async function setView(v){view=v;$$('.sk-vbtn').forEach(b=>b.classList.toggle('s',b.dataset.view===v));$k('skPlanWrap').hidden=v!=='2d';$k('sk3d').hidden=v!=='3d';if(v==='3d'){const r=await init3d();if(r)r.start()}else fit()}
 /* ---------- wiring ---------- */
 $k('skPalette').addEventListener('click',e=>{const b=e.target.closest('[data-add]');if(b)add(b.dataset.add)});
-$$('.sk-type').forEach(b=>b.addEventListener('click',()=>setType(b.dataset.type)));
+$k('skAdd').addEventListener('click',()=>sheet($k('skSheet').hidden));$k('skSheetClose').addEventListener('click',()=>sheet(false));$k('skScrim').addEventListener('click',()=>sheet(false));$k('skTour').addEventListener('click',()=>tour(true));
+$$('.sk-type').forEach(b=>b.addEventListener('click',()=>{setType(b.dataset.type);if(window.innerWidth<=900)$k('skRoom').open=false}));
 $k('skW').addEventListener('change',()=>{S.w=Math.max(4,Math.min(40,+$k('skW').value||S.w));S.items.forEach(clamp);fit();check();save()});
 $k('skL').addEventListener('change',()=>{S.l=Math.max(4,Math.min(40,+$k('skL').value||S.l));S.items.forEach(clamp);fit();check();save()});
 $k('skPlumb').addEventListener('change',()=>{S.plumb=$k('skPlumb').value;draw();check();save()});
@@ -1174,7 +1195,7 @@ $k('skSend').addEventListener('click',async()=>{const L=lead();if(!L){try{localS
  catch(e){btn.disabled=false;btn.textContent='Try sending again';toast('That didn\'t go through. Try again, or call '+B.phone)}});
 window.addEventListener('resize',()=>{if($k('v-sketch').classList.contains('on')&&view==='2d')fit()});
 load();ui();
-return {show(){const q=new URLSearchParams((location.hash.split('?')[1]||''));const t=q.get('type');if(t&&PRESETS[t]&&(t!==S.type||!S.items.length))setType(t);gate();if(view==='3d'){setView('3d')}else fit();check()},data(){return {type:S.type,w:S.w,l:S.l,plumb:S.plumb,items:S.items,opts:S.opts}},png:()=>png(1),has:()=>S.items.length>0,estimate};
+return {show(){const q=new URLSearchParams((location.hash.split('?')[1]||''));const t=q.get('type');if(t&&PRESETS[t]&&(t!==S.type||!S.items.length))setType(t);gate();if(view==='3d'){setView('3d')}else fit();check();setTimeout(()=>tour(false),400)},data(){return {type:S.type,w:S.w,l:S.l,plumb:S.plumb,items:S.items,opts:S.opts}},png:()=>png(1),has:()=>S.items.length>0,estimate};
 })();
 
 /* ---------- routing ---------- */
