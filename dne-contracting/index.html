@@ -9,7 +9,7 @@
 <link rel="canonical" id="canon" href="https://dnecontracting.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="D N E Contracting">
-<meta property="og:title" content="A remodel consultation that actually feels comfortable — D N E Contracting, Pottstown PA">
+<meta property="og:title" content="D N E Contracting — Kitchen, bath and basement plumbing in Pottstown, PA">
 <meta property="og:description" content="Free, no-pressure in-home consultations for kitchens, bathrooms and basement plumbing. Women-owned. 422 corridor and greater Philadelphia.">
 <meta property="og:image" content="https://dnecontracting.com/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
@@ -171,8 +171,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--ink);outline:none}
 .hero h1{margin-bottom:22px}
 .hero .lead{max-width:52ch}
 .hero .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center}
-.hero .facts{margin:26px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px 22px;color:var(--mute);font-size:.9rem}
-.hero .facts li::before{content:"·";margin-right:8px}
+.hero .facts{margin:22px 0 0;color:var(--mute);font-size:.92rem}
+.hero-phone{font-size:1.35rem;margin:6px 0 4px}.hero-phone a{font-weight:bold;text-decoration:none}
+@media (max-width:700px){.hero .actions{display:none}}
 .portrait{position:relative;justify-self:end;width:100%;max-width:400px}
 .portrait .photo{aspect-ratio:4/5;border-radius:0}
 .portrait figcaption{color:var(--mute);margin-top:8px;font-size:.9rem}
@@ -358,11 +359,11 @@ footer a,footer p{overflow-wrap:anywhere}
   <div class="hero">
     <div class="wrap">
       <div>
-        <span class="eyebrow">Plumber · Pottstown, PA · Women-owned</span>
-        <h1>A remodel consultation that actually feels comfortable.</h1>
-        <p class="lead">We do the plumbing side of kitchen, bathroom and basement projects, plus the everyday repairs. The consultation is free, in your home, at your pace. You never have to decide on the spot.</p>
-        <div class="actions"><a class="btn p" href="#planner">Book a free consultation</a><a class="btn hero-call" data-tel href="#">Call <span data-phone></span></a></div>
-        <ul class="facts"><li>Women-owned</li><li>Free in-home consultation</li><li><span data-license></span></li><li>Insured</li><li>Owner on every job</li><li>422 corridor &amp; greater Philadelphia</li></ul>
+        <h1>Kitchen, bath and basement plumbing in Pottstown, PA.</h1>
+        <p class="lead">Free in-home consultations, no pressure. You get honest answers and a written estimate, and you decide when you're ready.</p>
+        <p class="hero-phone">Call or text <a data-tel href="#" data-phone></a></p>
+        <div class="actions"><a class="btn p" href="#planner">Request a free consultation</a></div>
+        <p class="facts">Licensed &amp; insured · Women-owned · Serving the 422 corridor and greater Philadelphia</p>
       </div>
       <figure class="portrait"><div class="photo has"><img data-photo="owner" alt="Owner of D N E Contracting" fetchpriority="high" width="800" height="1000"></div><figcaption><span data-owner-cap></span></figcaption></figure>
     </div>
@@ -373,7 +374,7 @@ footer a,footer p{overflow-wrap:anywhere}
       <div class="split" style="align-items:start">
         <div>
           <span class="eyebrow">Why this exists</span>
-          <h2>Why the consultation is different</h2>
+          <h2>A remodel consultation that actually feels comfortable.</h2>
         </div>
         <div>
           <p class="lead">Inviting someone into your home should never feel awkward, rushed, or uncomfortable.</p>
@@ -711,7 +712,7 @@ function bindBusiness(){
   const soc=[['Google',B.googleReviewUrl],['Yelp',B.yelpUrl],['Facebook',B.facebookUrl],['Instagram',B.instagramUrl]].filter(x=>x[1]);
   $('#socialLinks').innerHTML=soc.length?soc.map(([n,u])=>`<a class="btn g sm" href="${u}" target="_blank" rel="noopener">${n}</a>`).join(''):'<span class="hint">Add links in the config to show them here.</span>';
   $('#reviewLinks').innerHTML=(B.googleReviewUrl?`<a class="btn p" href="${B.googleReviewUrl}" target="_blank" rel="noopener">Leave a Google review</a>`:'')+(B.yelpUrl?`<a class="btn g" href="${B.yelpUrl}" target="_blank" rel="noopener">Review on Yelp</a>`:'');
-  if(C.sampleContent)$('#sampleBanner').hidden=false;
+  if(C.sampleContent&&(!location.hostname||location.hostname==='localhost'))$('#sampleBanner').hidden=false;else console.warn('D N E: sample content is on — swap photos/reviews and set sampleContent:false');
 }
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),3500)}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
