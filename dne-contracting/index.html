@@ -281,9 +281,20 @@ th{font-weight:bold;font-size:.9rem;color:var(--mute)}
 .est-out{border:1px solid var(--line);padding:22px;background:#fff}
 .est-num{font-family:var(--serif);font-size:2.2rem;line-height:1.1;margin:4px 0 8px}
 @media (max-width:800px){.est{grid-template-columns:1fr}}
+.sk{display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start;padding-bottom:64px}
+.sk-tools{grid-column:1/-1}
+.sk-types{display:flex;gap:8px;margin-bottom:12px}.sk-type{font:inherit;padding:8px 14px;border:1px solid var(--ink);background:#fff;cursor:pointer;border-radius:3px}.sk-type.s{background:var(--ink);color:#fff}
+.sk-dims{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-bottom:12px;font-size:.95rem}.sk-dims label{display:flex;align-items:center;gap:6px;margin:0;font-weight:normal}.sk-dims input{width:72px;padding:6px 8px}.sk-dims select{width:auto;padding:6px 8px}
+.sk-palette{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.sk-sel{display:flex;gap:8px;align-items:center;font-weight:bold;margin-bottom:6px}
+.sk-canvas{overflow:auto}.sk-canvas canvas{touch-action:none;display:block;max-width:100%;border:1px solid var(--line);background:#fff}
+.sk-notes,.sk-costs{list-style:none;padding:0;margin:0}.sk-notes li,.sk-costs li{padding:8px 0 8px 22px;border-bottom:1px solid var(--line);position:relative;font-size:.95rem}.sk-notes li:last-child,.sk-costs li:last-child{border-bottom:0}
+.sk-notes li::before{content:"\2022";position:absolute;left:4px;font-size:1.3rem;line-height:1;top:6px}.sk-notes li.ok::before{color:var(--ok)}.sk-notes li.warn::before{color:#B07A00}.sk-notes li.bad::before{color:var(--red)}.sk-costs li::before{content:"$";position:absolute;left:6px;color:var(--mute)}.sk-costs li.hint::before{content:""}
+.sk-actions{display:grid;gap:8px}
+@media (max-width:900px){.sk{grid-template-columns:1fr}}
 /* views */
 .view{display:none}.view.on{display:block}
-.page-head{padding:40px 0 20px;border-bottom:1px solid var(--line);margin-bottom:32px}
+.page-head{padding:40px 22px 20px;border-bottom:1px solid var(--line);margin-bottom:32px}
 .page-head p{color:var(--ink-2);font-size:1.05rem}
 
 /* modal */
@@ -344,6 +355,7 @@ footer a,footer p{overflow-wrap:anywhere}
     <button class="burger" id="burger" aria-expanded="false" aria-controls="mainNav">Menu</button>
     <nav class="main" id="mainNav" aria-label="Main">
       <a href="#services">Services</a>
+      <a href="#sketch">Room sketch</a>
       <a href="#projects">Our work</a>
       <a href="#about">About</a>
       <a href="#reviews">Reviews</a>
@@ -482,6 +494,12 @@ footer a,footer p{overflow-wrap:anywhere}
         <p class="hint" id="estNote"></p>
         <a class="btn p" id="estCta" href="#planner">Get the real number for your home</a>
       </div>
+    </div>
+  </div>
+  <div class="sec alt">
+    <div class="wrap split">
+      <div><h2>Sketch your room before we visit</h2><p>Drag a sink, a tub or an island around a to-scale plan of your room. It tells you what fits, what code won't allow, and which moves cost extra. Send it with your request and we show up already knowing the space.</p><a class="btn" href="#sketch">Open the room sketch</a></div>
+      <div class="photo has" style="aspect-ratio:3/2"><img data-photo="plans" alt="Going over a plan"></div>
     </div>
   </div>
 </section>
@@ -633,6 +651,25 @@ footer a,footer p{overflow-wrap:anywhere}
   </div>
 </section>
 
+<!-- ============ SKETCH ============ -->
+<section class="view" id="v-sketch">
+  <div class="wrap page-head"><h1>Sketch your room</h1><p>Draw the room you're thinking about. Drag things around and it tells you what fits, what code won't allow, and which moves cost extra, before anyone comes out. Send it with your consultation request and we'll show up already knowing the room.</p></div>
+  <div class="wrap sk">
+    <div class="sk-tools">
+      <div class="sk-types"><button type="button" class="sk-type" data-type="kitchen">Kitchen</button><button type="button" class="sk-type" data-type="bathroom">Bathroom</button><button type="button" class="sk-type" data-type="basement">Basement</button></div>
+      <div class="sk-dims"><label>Width <input id="skW" type="number" inputmode="decimal" min="4" max="40" step="0.5"> ft</label><label>Length <input id="skL" type="number" inputmode="decimal" min="4" max="40" step="0.5"> ft</label><label>Plumbing is on the <select id="skPlumb"><option value="top">top wall</option><option value="right">right wall</option><option value="bottom">bottom wall</option><option value="left">left wall</option><option value="none">not sure</option></select></label></div>
+      <div class="sk-palette" id="skPalette"></div>
+      <div class="sk-sel" id="skSel" hidden><span id="skSelName"></span><button type="button" class="btn sm" id="skRotate">Rotate</button><button type="button" class="btn sm" id="skDelete">Remove</button></div>
+    </div>
+    <div class="sk-canvas"><canvas id="skCanvas" width="600" height="400" aria-label="Room sketch"></canvas><p class="hint">Drag to move. Tap an item to see its distance to each wall. Things snap to 6 inches.</p></div>
+    <div class="sk-side">
+      <div class="panel"><h3>What we notice</h3><ul class="sk-notes" id="skNotes"></ul></div>
+      <div class="panel" id="skCostWrap"><h3>Cost signals</h3><ul class="sk-costs" id="skCosts"></ul></div>
+      <div class="sk-actions"><button type="button" class="btn p" id="skSend">Send with my consultation request</button><button type="button" class="btn" id="skPng">Download as image</button><button type="button" class="btn" id="skLink">Copy a link to this sketch</button><button type="button" class="btn sm" id="skReset">Reset to a typical layout</button><button type="button" class="btn sm" id="skClear">Clear the room</button></div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ THANK YOU ============ -->
 <section class="view" id="v-thanks">
   <div class="wrap" style="max-width:640px;padding:64px 20px">
@@ -642,6 +679,7 @@ footer a,footer p{overflow-wrap:anywhere}
       <li>Check your email. There's a short note from <span data-owner></span> with a couple of ideas for your <span id="tyType"></span>.</li>
       <li>She'll reach out within one business day to find a time that suits you.</li>
       <li>The visit itself is calm and takes about an hour. Ask as many questions as you want.</li>
+      <li id="tySketch" hidden>Your room sketch came through with it, so we'll arrive already knowing the layout.</li>
     </ol>
     <div id="tyBook"></div>
     <div class="panel" style="margin-top:22px"><h3 style="font-size:1.2rem">Worth having on the day (none of it required)</h3><ul style="margin:0;padding-left:20px;color:var(--ink-2)"><li>Any photos or saved ideas you like — a phone screenshot is fine</li><li>A rough sense of budget, if you have one</li><li>Anyone else in the household who'd want to weigh in. A friend is welcome too.</li></ul></div>
@@ -667,7 +705,7 @@ footer a,footer p{overflow-wrap:anywhere}
   <div class="wrap">
     <div><a class="brand" href="#home" style="margin-bottom:10px"><span>D N E Contracting</span></a><p style="max-width:40ch">Kitchen, bathroom and basement remodeling serving the 422 corridor and greater Philadelphia: Royersford, Limerick, Collegeville, Phoenixville, Boyertown, King of Prussia, Norristown and Philadelphia.</p><p><span data-license></span> · Fully insured</p></div>
     <div><h4>Services</h4><a href="#services">Kitchen remodels</a><a href="#services">Bathroom remodels</a><a href="#services">Basement remodels</a><a href="#services">Plumbing & water heaters</a></div>
-    <div><h4>Company</h4><a href="#about">About</a><a href="#projects">Our work</a><a href="#reviews">Reviews</a><a href="#faq">FAQ</a><a href="#refer">Refer a friend</a></div>
+    <div><h4>Company</h4><a href="#sketch">Sketch your room</a><a href="#about">About</a><a href="#projects">Our work</a><a href="#reviews">Reviews</a><a href="#faq">FAQ</a><a href="#refer">Refer a friend</a></div>
     <div><h4>Contact</h4><a data-tel href="#" data-phone></a><a data-mail href="#" data-email></a><a href="#portal">Client portal</a><a href="#contact">Send a note</a></div>
     <div class="fine"><span>© <span id="yr"></span> D N E Contracting</span><span>Website by <a href="https://tbsol.net" style="display:inline;padding:0">TB Solutions</a></span></div>
   </div>
@@ -821,9 +859,10 @@ function buildPlanner(root,compact){
   form.addEventListener('submit',async e=>{e.preventDefault();if(!valid())return;if(form.elements.company.value)return;
     const d={};new FormData(form).forEach((v,k)=>{if(k!=='company')d[k]=v.trim()});
     d.score=(SCORE.timeline[d.timeline]||0)+(SCORE.budget[d.budget]||0)+(SCORE.type[d.type]||0);d.score_tier=tier(d.score);
+    if(SK&&SK.has()&&store.get('sketch_send',0)){d.sketch=JSON.stringify(SK.data());try{d.sketch_png=SK.png()}catch{}}
     const btn=$('[data-submit]',form);btn.disabled=true;btn.textContent='Sending…';
     try{const r=await send('lead',d);store.del('planner_draft');track('generate_lead',{project_type:d.type,score:d.score});
-      $('#tyName').textContent=d.name.split(' ')[0];$('#tyType').textContent=d.type==='repair'?'plumbing issue':d.type;
+      $('#tyName').textContent=d.name.split(' ')[0];$('#tySketch').hidden=!d.sketch;store.del('sketch_send');$('#tyType').textContent=d.type==='repair'?'plumbing issue':d.type;
       $('#tyBook').innerHTML=I.calendlyUrl?`<a class="btn p" href="${I.calendlyUrl}" target="_blank" rel="noopener">Pick a time now</a>`:'';
       location.hash='#thanks';if(r.offline)toast('Saved locally — connect the n8n webhook in config to send for real.')}
     catch(err){btn.disabled=false;btn.textContent='Book my free consultation';toast('That didn\'t go through. Try again, or call '+B.phone)}
@@ -912,12 +951,140 @@ const PB=[
 $('#playbook').innerHTML=PB.map(([t,b],i)=>`<div class="panel" style="cursor:pointer" data-copy="${i}" title="Tap to copy"><h3 style="display:flex;justify-content:space-between">${t}<span class="tag">copy</span></h3><p style="white-space:pre-wrap;max-width:none;margin:0;color:var(--steel)">${esc(b)}</p></div>`).join('');
 $('#playbook').addEventListener('click',e=>{const p=e.target.closest('[data-copy]');if(!p)return;navigator.clipboard.writeText(PB[p.dataset.copy][1]).then(()=>toast('Copied')).catch(()=>toast('Select and copy manually'))});
 
+/* ---------- room sketch (canvas floor planner) ---------- */
+const SK=(()=>{
+const CAT={
+ kitchen:[['sink','Sink',3,2,1],['range','Stove',2.5,2.2,0],['fridge','Fridge',3,2.5,0],['dish','Dishwasher',2,2,1],['cab','Cabinets 3 ft',3,2,0],['island','Island',4,3,0],['islandsink','Island with sink',5,3,1],['pantry','Pantry',2,2,0],['table','Table',4,3,0],['door','Door',3,.5,0],['window','Window',3,.5,0]],
+ bathroom:[['toilet','Toilet',1.6,2.3,1],['vanity','Vanity',3,1.8,1],['dvanity','Double vanity',5,1.8,1],['tub','Tub',5,2.5,1],['shower','Shower 3×3',3,3,1],['shower4','Shower 4×3',4,3,1],['washer','Washer',2.3,2.3,1],['dryer','Dryer',2.3,2.3,0],['linen','Linen closet',2,1.5,0],['door','Door',2.5,.5,0],['window','Window',2.5,.5,0]],
+ basement:[['toilet','Toilet',1.6,2.3,1],['vanity','Vanity',3,1.8,1],['shower','Shower 3×3',3,3,1],['washer','Washer',2.3,2.3,1],['dryer','Dryer',2.3,2.3,0],['usink','Utility sink',2,1.8,1],['heater','Water heater',2,2,1],['sump','Sump pit',1.5,1.5,0],['barsink','Bar sink',2,2,1],['sofa','Sofa',7,3,0],['tv','TV wall',5,1,0],['stairs','Stairs',3,8,0],['post','Support post',.6,.6,0],['door','Door',3,.5,0],['egress','Egress window',4,.5,0]]
+};
+const COST={sink:['Moving the sink off the plumbing wall',1500,4000],dish:['Dishwasher away from the sink drain',500,1200],islandsink:['Plumbing an island sink under the floor',2500,5000],toilet:['Moving the toilet drain',1200,3000],vanity:['Moving the vanity plumbing',800,1800],dvanity:['Second sink and moved vanity plumbing',1200,2600],tub:['Moving the tub drain and supply',1500,3500],shower:['Moving the shower drain and valve',1500,3500],shower4:['Moving the shower drain and valve',1500,3500],washer:['New washer hookup location',1000,2500],usink:['Utility sink plumbing',600,1400],barsink:['Bar sink plumbing',1200,2800],heater:['Relocating the water heater',900,2200]};
+const PRESETS={
+ kitchen:{w:12,l:10,plumb:'top',items:[{k:'sink',x:4.5,y:0,r:0},{k:'dish',x:7.5,y:0,r:0},{k:'cab',x:1.5,y:0,r:0},{k:'range',x:9,y:0,r:0},{k:'fridge',x:0,y:7.5,r:0},{k:'island',x:4,y:4.5,r:0},{k:'door',x:9,y:9.5,r:0},{k:'window',x:4.5,y:0,r:0}]},
+ bathroom:{w:5,l:8,plumb:'left',items:[{k:'vanity',x:0,y:0,r:90},{k:'toilet',x:0,y:3.3,r:270},{k:'tub',x:0,y:5.5,r:0},{k:'door',x:4.5,y:0.5,r:90},{k:'window',x:1,y:7.5,r:0}]},
+ basement:{w:14,l:12,plumb:'top',items:[{k:'washer',x:0,y:0,r:0},{k:'dryer',x:2.3,y:0,r:0},{k:'usink',x:4.6,y:0,r:0},{k:'heater',x:12,y:0,r:0},{k:'toilet',x:8,y:0,r:0},{k:'vanity',x:9.6,y:0,r:0},{k:'stairs',x:11,y:4,r:0},{k:'sofa',x:1,y:7,r:0},{k:'tv',x:1.5,y:11,r:0}]}
+};
+let S={type:'kitchen',w:12,l:10,plumb:'top',items:[]};let sel=-1,drag=null,scale=28,ox=34,oy=34;
+const cv=document.getElementById('skCanvas');if(!cv)return null;const cx=cv.getContext('2d');if(!cx.roundRect)cx.roundRect=function(x,y,w,h){this.rect(x,y,w,h)};
+const $k=id=>document.getElementById(id);
+const dims=it=>{const d=CAT[S.type].find(c=>c[0]===it.k)||CAT.kitchen.find(c=>c[0]===it.k)||CAT.bathroom.find(c=>c[0]===it.k)||CAT.basement.find(c=>c[0]===it.k);return d};
+const box=it=>{const d=dims(it);const rot=it.r%180!==0;return {x:it.x,y:it.y,w:rot?d[3]:d[2],h:rot?d[2]:d[3],d}};
+const ftin=v=>{const f=Math.floor(v+1e-6),i=Math.round((v-f)*12);return i===12?`${f+1}'`:i?`${f}' ${i}"`:`${f}'`};
+const isWall=k=>['door','window','egress'].includes(k);
+function fit(){const holder=cv.parentElement;const W=Math.min(holder.clientWidth,760);const maxH=Math.max(320,Math.min(560,window.innerHeight*0.6));scale=Math.max(12,Math.min((W-ox*2)/S.w,(maxH-oy*2)/S.l));cv.width=Math.round(S.w*scale+ox*2);cv.height=Math.round(S.l*scale+oy*2);cv.style.width=cv.width+'px';draw()}
+function snap(v){return Math.round(v*2)/2}
+function clamp(it){const b=box(it);it.x=Math.max(0,Math.min(S.w-b.w,it.x));it.y=Math.max(0,Math.min(S.l-b.h,it.y));if(isWall(it.k)){/* stick to nearest wall */const dT=it.y,dB=S.l-(it.y+b.h),dL=it.x,dR=S.w-(it.x+b.w);const m=Math.min(dT,dB,dL,dR);if(m===dT||m===dB){if(it.r%180!==0){it.r=0;const b2=box(it);it.x=Math.max(0,Math.min(S.w-b2.w,it.x))}const b3=box(it);it.y=m===dT?0:S.l-b3.h}else{if(it.r%180===0){it.r=90;const b2=box(it);it.y=Math.max(0,Math.min(S.l-b2.h,it.y))}const b3=box(it);it.x=m===dL?0:S.w-b3.w}}}
+function P(x,y){return [ox+x*scale,oy+y*scale]}
+function glyph(it,b){const [x,y]=P(b.x,b.y),w=b.w*scale,h=b.h*scale,k=it.k;cx.save();cx.strokeStyle='#555';cx.lineWidth=1;
+ if(k==='sink'||k==='usink'||k==='barsink'){cx.beginPath();cx.ellipse(x+w/2,y+h/2,w*.32,h*.28,0,0,Math.PI*2);cx.stroke()}
+ else if(k==='islandsink'){cx.beginPath();cx.ellipse(x+w*.72,y+h/2,w*.14,h*.26,0,0,Math.PI*2);cx.stroke()}
+ else if(k==='range'){for(const [a,c] of [[.3,.3],[.7,.3],[.3,.7],[.7,.7]]){cx.beginPath();cx.arc(x+w*a,y+h*c,Math.min(w,h)*.12,0,Math.PI*2);cx.stroke()}}
+ else if(k==='fridge'){cx.beginPath();cx.moveTo(x+w*.5,y+4);cx.lineTo(x+w*.5,y+h-4);cx.stroke()}
+ else if(k==='toilet'){const rot=it.r%180!==0;cx.beginPath();if(!rot){cx.ellipse(x+w/2,y+h*.62,w*.32,h*.28,0,0,Math.PI*2);cx.stroke();cx.strokeRect(x+w*.15,y+h*.06,w*.7,h*.22)}else{cx.ellipse(x+w*.62,y+h/2,w*.28,h*.32,0,0,Math.PI*2);cx.stroke();cx.strokeRect(x+w*.06,y+h*.15,w*.22,h*.7)}}
+ else if(k==='tub'){cx.beginPath();cx.roundRect(x+6,y+6,w-12,h-12,8);cx.stroke()}
+ else if(k==='shower'||k==='shower4'){cx.beginPath();cx.arc(x+w/2,y+h/2,4,0,Math.PI*2);cx.stroke();cx.setLineDash([3,3]);cx.strokeRect(x+5,y+5,w-10,h-10);cx.setLineDash([])}
+ else if(k==='washer'||k==='dryer'){cx.beginPath();cx.arc(x+w/2,y+h/2,Math.min(w,h)*.3,0,Math.PI*2);cx.stroke()}
+ else if(k==='door'){const horiz=it.r%180===0;cx.beginPath();if(horiz){const up=b.y<S.l/2;cx.moveTo(x,up?y+h:y);cx.arc(x,up?y+h:y,w,up?0:-Math.PI/2,up?Math.PI/2:0);}else{const left=b.x<S.w/2;cx.moveTo(left?x+w:x,y);cx.arc(left?x+w:x,y,h,left?0:Math.PI/2,left?Math.PI/2:Math.PI);}cx.stroke()}
+ else if(k==='window'||k==='egress'){cx.beginPath();const horiz=it.r%180===0;if(horiz){cx.moveTo(x,y+h/2);cx.lineTo(x+w,y+h/2)}else{cx.moveTo(x+w/2,y);cx.lineTo(x+w/2,y+h)}cx.stroke()}
+ else if(k==='stairs'){const n=8;for(let i=1;i<n;i++){cx.beginPath();if(it.r%180===0){cx.moveTo(x,y+h*i/n);cx.lineTo(x+w,y+h*i/n)}else{cx.moveTo(x+w*i/n,y);cx.lineTo(x+w*i/n,y+h)}cx.stroke()}}
+ else if(k==='sump'){cx.beginPath();cx.arc(x+w/2,y+h/2,Math.min(w,h)*.35,0,Math.PI*2);cx.stroke()}
+ cx.restore()}
+function draw(){cx.clearRect(0,0,cv.width,cv.height);cx.fillStyle='#fff';cx.fillRect(0,0,cv.width,cv.height);
+ const [rx,ry]=P(0,0),rw=S.w*scale,rh=S.l*scale;
+ cx.fillStyle='#FAFAF7';cx.fillRect(rx,ry,rw,rh);
+ cx.strokeStyle='#E4E4E0';cx.lineWidth=1;for(let i=1;i<S.w;i++){cx.beginPath();cx.moveTo(rx+i*scale,ry);cx.lineTo(rx+i*scale,ry+rh);cx.stroke()}for(let j=1;j<S.l;j++){cx.beginPath();cx.moveTo(rx,ry+j*scale);cx.lineTo(rx+rw,ry+j*scale);cx.stroke()}
+ // items
+ S.items.forEach((it,i)=>{const b=box(it);const [x,y]=P(b.x,b.y),w=b.w*scale,h=b.h*scale;const wall=isWall(it.k);
+  cx.fillStyle=wall?'#fff':(b.d[4]?'#E6F0F8':'#F1EDE4');cx.strokeStyle=i===sel?'#B8322B':'#444';cx.lineWidth=i===sel?2:1;
+  cx.beginPath();cx.roundRect(x,y,w,h,wall?0:3);cx.fill();cx.stroke();glyph(it,b);
+  if(!wall){cx.fillStyle='#222';cx.font=`${Math.max(10,Math.min(13,scale*.42))}px Arial`;cx.textAlign='center';cx.textBaseline='middle';const lab=b.d[1].replace(/ \d.*$/,'');if(w>lab.length*6.5||h>w){cx.save();cx.translate(x+w/2,y+h/2);if(h>w&&w<lab.length*6.5)cx.rotate(-Math.PI/2);cx.fillText(lab,0,0);cx.restore()}}
+ });
+ // walls
+ cx.lineWidth=6;cx.strokeStyle='#222';cx.strokeRect(rx,ry,rw,rh);
+ if(S.plumb!=='none'){cx.strokeStyle='#2E6FB0';cx.lineWidth=6;cx.beginPath();if(S.plumb==='top'){cx.moveTo(rx,ry);cx.lineTo(rx+rw,ry)}if(S.plumb==='bottom'){cx.moveTo(rx,ry+rh);cx.lineTo(rx+rw,ry+rh)}if(S.plumb==='left'){cx.moveTo(rx,ry);cx.lineTo(rx,ry+rh)}if(S.plumb==='right'){cx.moveTo(rx+rw,ry);cx.lineTo(rx+rw,ry+rh)}cx.stroke();
+  cx.fillStyle='#2E6FB0';cx.font='11px Arial';cx.textBaseline='middle';cx.textAlign='center';const t='existing plumbing';if(S.plumb==='top'){cx.fillText(t,rx+rw/2,ry-16)}else if(S.plumb==='bottom'){cx.fillText(t,rx+rw/2,ry+rh+16)}else{cx.save();cx.translate(S.plumb==='left'?rx-16:rx+rw+16,ry+rh/2);cx.rotate(-Math.PI/2);cx.fillText(t,0,0);cx.restore()}}
+ // dimensions
+ cx.fillStyle='#666';cx.font='12px Arial';cx.textAlign='center';cx.textBaseline='middle';if(S.plumb!=='top')cx.fillText(ftin(S.w),rx+rw/2,ry-16);else cx.fillText(ftin(S.w),rx+rw/2,ry+rh+16);
+ cx.save();cx.translate(S.plumb==='left'?rx+rw+16:rx-16,ry+rh/2);cx.rotate(-Math.PI/2);cx.fillText(ftin(S.l),0,0);cx.restore();
+ // selected item: distances to walls
+ if(sel>=0&&S.items[sel]){const b=box(S.items[sel]);const cxp=b.x+b.w/2,cyp=b.y+b.h/2;cx.setLineDash([4,4]);cx.strokeStyle='#B8322B';cx.lineWidth=1;cx.fillStyle='#B8322B';cx.font='11px Arial';
+  const segs=[[cxp,0,cxp,b.y,b.y],[cxp,b.y+b.h,cxp,S.l,S.l-(b.y+b.h)],[0,cyp,b.x,cyp,b.x],[b.x+b.w,cyp,S.w,cyp,S.w-(b.x+b.w)]];
+  segs.forEach(([x1,y1,x2,y2,d])=>{if(d<0.24)return;const [a,b2]=P(x1,y1),[c,e]=P(x2,y2);cx.beginPath();cx.moveTo(a,b2);cx.lineTo(c,e);cx.stroke();cx.fillText(ftin(d),(a+c)/2+(y1===y2?0:14),(b2+e)/2+(y1===y2?-8:0))});cx.setLineDash([])}
+}
+function hit(px,py){const fx=(px-ox)/scale,fy=(py-oy)/scale;for(let i=S.items.length-1;i>=0;i--){const b=box(S.items[i]);if(fx>=b.x&&fx<=b.x+b.w&&fy>=b.y&&fy<=b.y+b.h)return i}return -1}
+function pos(e){const r=cv.getBoundingClientRect();return [(e.clientX-r.left)*(cv.width/r.width),(e.clientY-r.top)*(cv.height/r.height)]}
+cv.addEventListener('pointerdown',e=>{const [px,py]=pos(e);const i=hit(px,py);sel=i;if(i>=0){const it=S.items[i];drag={i,dx:(px-ox)/scale-it.x,dy:(py-oy)/scale-it.y};cv.setPointerCapture(e.pointerId)}ui();draw()});
+cv.addEventListener('pointermove',e=>{if(!drag)return;const [px,py]=pos(e);const it=S.items[drag.i];it.x=snap((px-ox)/scale-drag.dx);it.y=snap((py-oy)/scale-drag.dy);clamp(it);draw()});
+const end=()=>{if(drag){drag=null;check();save()}};cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);
+document.addEventListener('keydown',e=>{if(!document.getElementById('v-sketch').classList.contains('on')||sel<0||/input|select|textarea/i.test(e.target.tagName))return;const it=S.items[sel];const m={ArrowUp:[0,-.5],ArrowDown:[0,.5],ArrowLeft:[-.5,0],ArrowRight:[.5,0]}[e.key];if(m){it.x+=m[0];it.y+=m[1];clamp(it);e.preventDefault()}else if(e.key==='r'||e.key==='R')rotate();else if(e.key==='Delete'||e.key==='Backspace'){del();e.preventDefault()}check();draw();save()});
+function add(k){const d=CAT[S.type].find(c=>c[0]===k);const it={k,x:snap(Math.max(0,(S.w-d[2])/2)),y:snap(Math.max(0,(S.l-d[3])/2)),r:0};if(isWall(k)){it.y=S.l-d[3]}S.items.push(it);clamp(it);sel=S.items.length-1;ui();check();draw();save()}
+function rotate(){if(sel<0)return;const it=S.items[sel];it.r=(it.r+90)%360;clamp(it);check();draw();save()}
+function del(){if(sel<0)return;S.items.splice(sel,1);sel=-1;ui();check();draw();save()}
+function ui(){$k('skSel').hidden=sel<0;if(sel>=0)$k('skSelName').textContent=box(S.items[sel]).d[1];
+ $k('skPalette').innerHTML=CAT[S.type].map(c=>`<button type="button" class="btn sm" data-add="${c[0]}">${c[1]}</button>`).join('');
+ $k('skW').value=S.w;$k('skL').value=S.l;$k('skPlumb').value=S.plumb;$$('.sk-type').forEach(b=>b.classList.toggle('s',b.dataset.type===S.type))}
+function gap(a,b){const dx=Math.max(0,Math.max(a.x,b.x)-Math.min(a.x+a.w,b.x+b.w));const dy=Math.max(0,Math.max(a.y,b.y)-Math.min(a.y+a.h,b.y+b.h));return Math.hypot(dx,dy)}
+function overlap(a,b){return a.x<b.x+b.w-0.01&&b.x<a.x+a.w-0.01&&a.y<b.y+b.h-0.01&&b.y<a.y+a.h-0.01}
+function wallDist(b){return {top:b.y,bottom:S.l-(b.y+b.h),left:b.x,right:S.w-(b.x+b.w)}[S.plumb]}
+function front(it,b){/* clear distance in front of the item (its front edge faces away from the nearest wall) */const dT=b.y,dB=S.l-(b.y+b.h),dL=b.x,dR=S.w-(b.x+b.w);const m=Math.min(dT,dB,dL,dR);let dir=m===dT?'down':m===dB?'up':m===dL?'right':'left';let best=Infinity;S.items.forEach((o,j)=>{if(o===it||isWall(o.k))return;const c=box(o);let d=Infinity;if(dir==='down'&&c.y>=b.y+b.h-0.01&&c.x<b.x+b.w&&c.x+c.w>b.x)d=c.y-(b.y+b.h);if(dir==='up'&&c.y+c.h<=b.y+0.01&&c.x<b.x+b.w&&c.x+c.w>b.x)d=b.y-(c.y+c.h);if(dir==='right'&&c.x>=b.x+b.w-0.01&&c.y<b.y+b.h&&c.y+c.h>b.y)d=c.x-(b.x+b.w);if(dir==='left'&&c.x+c.w<=b.x+0.01&&c.y<b.y+b.h&&c.y+c.h>b.y)d=b.x-(c.x+c.w);best=Math.min(best,d)});const wall={down:dB,up:dT,right:dR,left:dL}[dir];return Math.min(best,wall)}
+function check(){const notes=[],costs=[];const B=S.items.map(it=>({it,b:box(it)}));const find=k=>B.find(x=>x.it.k===k);
+ // overlaps
+ for(let i=0;i<B.length;i++)for(let j=i+1;j<B.length;j++){if(isWall(B[i].it.k)||isWall(B[j].it.k))continue;if(overlap(B[i].b,B[j].b))notes.push(['bad',`The ${B[i].b.d[1].toLowerCase()} overlaps the ${B[j].b.d[1].toLowerCase()}.`])}
+ // plumbing wall
+ if(S.plumb!=='none')B.forEach(({it,b})=>{if(!b.d[4]||it.k==='islandsink')return;const d=wallDist(b);if(d>2){const c=COST[it.k];if(c)costs.push([`${c[0]}: about $${c[1].toLocaleString()}–${c[2].toLocaleString()} extra.`,it.k])}});
+ if(find('islandsink'))costs.push([`${COST.islandsink[0]}: about $${COST.islandsink[1].toLocaleString()}–${COST.islandsink[2].toLocaleString()}.`,'islandsink']);
+ if(S.type==='basement'&&(find('toilet')||find('shower')))costs.push(['A basement bathroom usually needs a sewage ejector pit: about $4,500–8,000 for the pit and rough-in.','ejector']);
+ if(S.type==='kitchen'){const s=find('sink')||find('islandsink'),r=find('range'),f=find('fridge'),dw=find('dish'),isl=find('island')||find('islandsink');
+  if(s&&r&&f){const c=o=>[o.b.x+o.b.w/2,o.b.y+o.b.h/2];const L=(a,b)=>Math.hypot(c(a)[0]-c(b)[0],c(a)[1]-c(b)[1]);const l1=L(s,r),l2=L(r,f),l3=L(f,s),sum=l1+l2+l3;
+   if(sum>=13&&sum<=26&&Math.min(l1,l2,l3)>=4&&Math.max(l1,l2,l3)<=9)notes.push(['ok','Sink, stove and fridge make a comfortable working triangle.']);
+   else if(sum>26||Math.max(l1,l2,l3)>9)notes.push(['warn',`Sink, stove and fridge are spread out (${ftin(Math.max(l1,l2,l3))} on the longest leg). Under 9 feet per leg saves a lot of walking.`]);
+   else notes.push(['warn','Sink, stove and fridge are tight together. Four feet between each gives you counter space to work.'])}
+  if(s&&dw){if(gap(s.b,dw.b)<=0.6)notes.push(['ok','Dishwasher is right next to the sink, where the drain wants it.']);else notes.push(['warn','Dishwasher is away from the sink. Next to it is cheaper to plumb and easier to load.'])}
+  if(isl){let m=Infinity;B.forEach(o=>{if(o===isl||isWall(o.it.k))return;m=Math.min(m,gap(isl.b,o.b))});const wm=Math.min(isl.b.x,isl.b.y,S.w-(isl.b.x+isl.b.w),S.l-(isl.b.y+isl.b.h));m=Math.min(m,wm);if(m<3)notes.push(['bad',`Only ${ftin(m)} of walkway around the island. 36 inches is the minimum, 42 is comfortable.`]);else if(m<3.5)notes.push(['warn',`${ftin(m)} of walkway around the island. That works; 42 inches is comfortable for two people.`]);else notes.push(['ok',`${ftin(m)} of walkway around the island. Plenty.`])}
+  if(r){const rb=r.b;const win=B.find(o=>o.it.k==='window'&&overlap({x:rb.x-0.3,y:rb.y-0.3,w:rb.w+0.6,h:rb.h+0.6},o.b));if(win)notes.push(['warn','A stove under a window makes venting awkward. A sink under the window is the classic move.'])}
+ }
+ if(S.type!=='kitchen'){const t=find('toilet');if(t){let side=Infinity;const b=t.b;const rot=t.it.r%180!==0;const cxp=b.x+b.w/2,cyp=b.y+b.h/2;if(!rot){side=Math.min(cxp,S.w-cxp);B.forEach(o=>{if(o===t||isWall(o.it.k))return;if(o.b.y<b.y+b.h&&o.b.y+o.b.h>b.y){if(o.b.x>=cxp)side=Math.min(side,o.b.x-cxp);if(o.b.x+o.b.w<=cxp)side=Math.min(side,cxp-(o.b.x+o.b.w))}})}else{side=Math.min(cyp,S.l-cyp);B.forEach(o=>{if(o===t||isWall(o.it.k))return;if(o.b.x<b.x+b.w&&o.b.x+o.b.w>b.x){if(o.b.y>=cyp)side=Math.min(side,o.b.y-cyp);if(o.b.y+o.b.h<=cyp)side=Math.min(side,cyp-(o.b.y+o.b.h))}})}
+   if(side<1.25)notes.push(['bad',`Toilet needs 15 inches from its center to the nearest wall or vanity; this one has ${ftin(side)}.`]);else notes.push(['ok','Toilet has the side clearance code asks for.']);
+   const f=front(t.it,b);if(f<1.75)notes.push(['bad',`Only ${ftin(f)} in front of the toilet. Code wants 21 inches; 24 is comfortable.`]);else if(f<2)notes.push(['warn',`${ftin(f)} in front of the toilet. Legal, but 24 inches feels better.`])}
+  const v=find('vanity')||find('dvanity');if(v){const f=front(v.it,v.b);if(f<1.75)notes.push(['bad',`Only ${ftin(f)} in front of the vanity. You want at least 21 inches to stand at it.`])}
+  const sh=find('shower')||find('shower4');if(sh){const f=front(sh.it,sh.b);if(f<2)notes.push(['warn',`${ftin(f)} outside the shower entry. 24 inches keeps the door from hitting things.`])}
+  const w=find('washer');if(w&&S.plumb!=='none'&&wallDist(w.b)<=2.5)notes.push(['ok','Washer is on the plumbing wall. Easy hookup.']);
+ }
+ const dr=find('door');if(!dr)notes.push(['warn','Add the door so we can see the swing and the walkway.']);
+ if(!B.length)notes.push(['warn','Tap an item above to add it, then drag it into place.']);
+ $k('skNotes').innerHTML=notes.map(([t,m])=>`<li class="${t}">${m}</li>`).join('')||'';
+ $k('skCosts').innerHTML=costs.length?costs.map(([m])=>`<li>${m}</li>`).join(''):'<li class="hint">No plumbing moves flagged. Keeping fixtures on the plumbing wall is the cheapest layout.</li>';
+ $k('skCostWrap').hidden=false;
+}
+function save(){try{localStorage.setItem('dne:sketch',JSON.stringify(S))}catch{}}
+function load(){const q=new URLSearchParams((location.hash.split('?')[1]||''));const d=q.get('d');if(d){try{S=JSON.parse(decodeURIComponent(escape(atob(d.replace(/-/g,'+').replace(/_/g,'/')))));return}catch{}}try{const s=localStorage.getItem('dne:sketch');if(s)S=JSON.parse(s)}catch{}}
+function setType(t){S.type=t;const p=PRESETS[t];S.w=p.w;S.l=p.l;S.plumb=p.plumb;S.items=JSON.parse(JSON.stringify(p.items));sel=-1;ui();fit();check();save()}
+function png(scaleUp=2){const off=document.createElement('canvas');off.width=cv.width*scaleUp;off.height=cv.height*scaleUp+40*scaleUp;const c2=off.getContext('2d');c2.fillStyle='#fff';c2.fillRect(0,0,off.width,off.height);c2.scale(scaleUp,scaleUp);c2.drawImage(cv,0,0);c2.fillStyle='#222';c2.font='13px Arial';c2.fillText(`D N E Contracting · ${S.type} sketch · ${ftin(S.w)} × ${ftin(S.l)}`+(S.plumb!=='none'?` · plumbing on the ${S.plumb} wall`:''),ox,cv.height+22);return off.toDataURL('image/png')}
+function link(){const j=JSON.stringify({type:S.type,w:S.w,l:S.l,plumb:S.plumb,items:S.items});const d=btoa(unescape(encodeURIComponent(j))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');return location.origin+location.pathname+'#sketch?d='+d}
+// wire UI
+$k('skPalette').addEventListener('click',e=>{const b=e.target.closest('[data-add]');if(b)add(b.dataset.add)});
+$$('.sk-type').forEach(b=>b.addEventListener('click',()=>setType(b.dataset.type)));
+$k('skW').addEventListener('change',()=>{S.w=Math.max(4,Math.min(40,+$k('skW').value||S.w));S.items.forEach(clamp);fit();check();save()});
+$k('skL').addEventListener('change',()=>{S.l=Math.max(4,Math.min(40,+$k('skL').value||S.l));S.items.forEach(clamp);fit();check();save()});
+$k('skPlumb').addEventListener('change',()=>{S.plumb=$k('skPlumb').value;draw();check();save()});
+$k('skRotate').addEventListener('click',rotate);$k('skDelete').addEventListener('click',del);
+$k('skClear').addEventListener('click',()=>{S.items=[];sel=-1;ui();check();draw();save()});
+$k('skReset').addEventListener('click',()=>setType(S.type));
+$k('skPng').addEventListener('click',()=>{const a=document.createElement('a');a.href=png();a.download='dne-room-sketch.png';a.click()});
+$k('skLink').addEventListener('click',()=>{navigator.clipboard.writeText(link()).then(()=>toast('Link copied. Anyone who opens it sees this sketch.')).catch(()=>prompt('Copy this link',link()))});
+$k('skSend').addEventListener('click',()=>{try{localStorage.setItem('dne:sketch_send','1')}catch{}location.hash='#planner?type='+(S.type==='basement'?'basement':S.type)});
+window.addEventListener('resize',()=>{if(document.getElementById('v-sketch').classList.contains('on'))fit()});
+load();ui();
+return {show(){fit();check();draw()},data(){return {type:S.type,w:S.w,l:S.l,plumb:S.plumb,items:S.items}},png:()=>png(1),has:()=>S.items.length>0};
+})();
+
 /* ---------- routing ---------- */
-const VIEWS=['home','services','projects','about','reviews','faq','contact','planner','refer','portal','thanks','playbook'];
+const VIEWS=['home','services','projects','about','reviews','faq','contact','planner','refer','portal','thanks','playbook','sketch'];
 function route(){let h=(location.hash||'#home').slice(1).split('?')[0];if(h==='estimator'){h='home';setTimeout(()=>{const el=$('#estimator');if(el)el.scrollIntoView({behavior:'smooth'})},50)}if(!VIEWS.includes(h))h='home';
   $$('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+h));$$('nav.main a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+h));
   $('#mainNav').classList.remove('open');$('#burger').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'instant'});
-  const META={home:['D N E Contracting — Kitchen, bathroom & basement remodeling, 422 corridor & greater Philadelphia','Free, no-pressure in-home consultations for kitchens, bathrooms and basement plumbing across the 422 corridor and greater Philadelphia.'],services:['Kitchen, bathroom & basement remodeling — 422 corridor & greater Philadelphia','Kitchen, bathroom and basement remodels start to finish, plus plumbing repairs and water heaters. Free in-home consultation.'],projects:['Recent kitchen, bathroom & basement remodels','Before-and-after projects in Royersford, Limerick, Collegeville, Phoenixville and Boyertown.'],about:['About D N E Contracting — women-owned, owner on every job','Why the consultation feels different: we listen first, explain plainly, and you never decide on the spot.'],reviews:['Reviews — D N E Contracting','What homeowners say about working with a calm, no-pressure remodeling contractor.'],faq:['Remodel FAQ — cost, timeline, licensing, service area','Straight answers about consultations, pricing, timelines, permits and payments.'],contact:['Contact D N E Contracting — (484) 939-8535','Call, text or send a note. Even if you are just starting to think about it.'],planner:['Tell us about your space — free consultation','Four quick questions so we come prepared. No obligation.'],refer:['Refer a friend — D N E Contracting','$100 when they book a consultation, $250 if they go ahead with a project.'],portal:['Client portal — D N E Contracting','Your schedule, photos, documents and payments.']};
+  const META={home:['D N E Contracting — Kitchen, bathroom & basement remodeling, 422 corridor & greater Philadelphia','Free, no-pressure in-home consultations for kitchens, bathrooms and basement plumbing across the 422 corridor and greater Philadelphia.'],services:['Kitchen, bathroom & basement remodeling — 422 corridor & greater Philadelphia','Kitchen, bathroom and basement remodels start to finish, plus plumbing repairs and water heaters. Free in-home consultation.'],projects:['Recent kitchen, bathroom & basement remodels','Before-and-after projects in Royersford, Limerick, Collegeville, Phoenixville and Boyertown.'],about:['About D N E Contracting — women-owned, owner on every job','Why the consultation feels different: we listen first, explain plainly, and you never decide on the spot.'],reviews:['Reviews — D N E Contracting','What homeowners say about working with a calm, no-pressure remodeling contractor.'],faq:['Remodel FAQ — cost, timeline, licensing, service area','Straight answers about consultations, pricing, timelines, permits and payments.'],contact:['Contact D N E Contracting — (484) 939-8535','Call, text or send a note. Even if you are just starting to think about it.'],planner:['Tell us about your space — free consultation','Four quick questions so we come prepared. No obligation.'],refer:['Refer a friend — D N E Contracting','$100 when they book a consultation, $250 if they go ahead with a project.'],portal:['Client portal — D N E Contracting','Your schedule, photos, documents and payments.'],sketch:['Sketch your room — D N E Contracting','Draw your kitchen, bathroom or basement layout and get instant feedback on clearances, code and cost before the visit.']};
+  if(h==='sketch'&&SK)setTimeout(SK.show,0);if(h==='planner'&&SK&&SK.has()&&store.get('sketch_send',0))setTimeout(()=>toast('Your room sketch will be sent with this request.'),300);
   const m=META[h]||META.home;document.title=m[0];const md=document.querySelector('meta[name=description]');if(md)md.content=m[1];const cn=document.getElementById('canon');if(cn)cn.href='https://dnecontracting.com/'+(h==='home'?'':'#'+h);track('page_view',{page:h});
   if(h==='planner'){const pre=new URLSearchParams((location.hash.split('?')[1]||'')).get('type');if(pre){const f=$('#plannerFull form');[...f.elements.type].forEach(r=>r.checked=r.value===pre)}}}
 window.addEventListener('hashchange',route);

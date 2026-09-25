@@ -69,3 +69,6 @@ create or replace view funnel_30d as select
   count(*) filter (where status in ('quoted','signed','active','complete') and created_at > now()-interval '30 days') as quoted,
   count(*) filter (where status in ('signed','active','complete') and created_at > now()-interval '30 days') as signed
   from plumbing_leads;
+
+-- room sketch from the website planner
+alter table plumbing_leads add column if not exists sketch jsonb, add column if not exists sketch_png text;

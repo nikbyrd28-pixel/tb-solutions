@@ -75,3 +75,8 @@ Stock originals are in `stock-photos/` for reference only. Do not run ads to a p
 
 ## Ballpark estimator
 Home page, after the consultation form (`#estimator`). Ranges live in the `EST` table in the JS (search `ballpark estimator`): 7 job types × 3 scopes, each `[label, low, high, note]`. Change the numbers there; nothing else needs touching. The FAQ schema answer quotes the outer ranges, so update that line too if the numbers move a lot.
+
+## Room sketch (`#sketch`)
+Canvas floor planner: kitchen / bathroom / basement presets, drag-to-place fixtures, plumbing-wall marker, live clearance and code notes, cost signals for plumbing moves, PNG download, shareable link (`#sketch?d=…`).
+When the visitor taps "Send with my consultation request", the planner submission includes two extra fields: `sketch` (JSON: type, w, l, plumb, items) and `sketch_png` (data-URL PNG, ~30–80 KB). Store them: `alter table plumbing_leads add column sketch jsonb, add column sketch_png text;` — n8n can drop the PNG into the WhatsApp alert or the lead email so mom sees the room before she calls.
+Cost signals and clearance rules live in the `COST` table and `check()` function (search `room sketch`).
