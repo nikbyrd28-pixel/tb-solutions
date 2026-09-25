@@ -42,11 +42,11 @@
           "assignments": [
             {
               "name": "score",
-              "value": "={{ (($.timeline === 'asap' ? 40 : $.timeline === '3months' ? 30 : $.timeline === 'thisyear' ? 20 : 10) + ($.budget === '50k+' ? 30 : $.budget === '25-50k' ? 25 : $.budget === '10-25k' ? 15 : $.budget === '5-10k' ? 5 : 0) + ($.project_type === 'kitchen' ? 20 : $.project_type === 'bathroom' ? 15 : $.project_type === 'basement' ? 10 : 0)) }}"
+              "value": "={{ $json.body.score ?? 0 }}"
             },
             {
               "name": "score_tier",
-              "value": "={{ $.score >= 80 ? 'URGENT' : $.score >= 60 ? 'HOT' : $.score >= 40 ? 'WARM' : 'COLD' }}"
+              "value": "={{ $json.body.score_tier ?? 'COLD' }}"
             },
             {
               "name": "created_at",
@@ -77,7 +77,7 @@
         "operation": "insert",
         "schema": "public",
         "table": "plumbing_leads",
-        "columns": "phone,email,name,project_type,budget,timeline,score,score_tier,status,created_at"
+        "columns": "kind,name,phone,email,town,zip,type,timeline,budget,notes,contact_pref,form,score,score_tier,status,source,utm_source,utm_medium,utm_campaign,gclid,created_at"
       },
       "name": "Save to Supabase",
       "type": "n8n-nodes-base.postgres",
@@ -92,9 +92,9 @@
         "apiKey": "re_your-resend-api-key",
         "fromEmail": "hello@dne-contracting.com",
         "toEmail": "={{ $node[\"Webhook - Form Submit\"].json.body.email }}",
-        "subject": "{{ $node[\"Webhook - Form Submit\"].json.body.name }}, Your Custom Remodel Video is Ready! 🎥",
+        "subject": "Your free consultation with D N E Contracting",
         "emailFormat": "html",
-        "htmlBody": "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>\n  <h2>Hi {{ $node[\"Webhook - Form Submit\"].json.body.name }},</h2>\n  <p>We got your remodeling request! 🎉</p>\n  \n  <p>Watch a quick video from <strong>Mom (contractor)</strong> introducing our process:</p>\n  \n  <div style='background: #f0f0f0; padding: 20px; text-align: center; margin: 20px 0;'>\n    <p>[Video will be embedded here - YouTube link]</p>\n  </div>\n  \n  <p><strong>Next:</strong> Check out your custom 3D design →</p>\n  <a href='https://your-site.com/visualizer' style='background: #1e40af; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;'>See Your Design</a>\n  \n  <p style='margin-top: 30px; color: #666; font-size: 12px;'>Mom will call you within 24 hours to discuss timeline & budget. Questions? Reply to this email!</p>\n</div>"
+        "htmlBody": "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>\n  <h2>Hi {{ ($node[\"Webhook - Form Submit\"].json.body.name || '').split(' ')[0] || 'there' }},</h2>\n  <p>Thanks for reaching out. We'll text or call within one business day to find a time that suits you.</p>\n  <p>The visit is free, in your home, and nothing is decided on the spot. If you'd like us to arrive already knowing the room, sketch it here (two minutes): <a href='https://www.dnecontracting.com/#sketch?type={{ $node[\"Webhook - Form Submit\"].json.body.type }}'>Sketch my room</a></p>\n  <p style='margin-top: 30px; color: #666; font-size: 12px;'>Questions? Reply to this email or call (484) 939-8535.</p>\n</div>"
       },
       "name": "Send Welcome Email",
       "type": "n8n-nodes-base.resend",
@@ -102,7 +102,9 @@
       "position": [
         850,
         150
-      ]
+      ],
+      "onError": "continueRegularOutput",
+      "continueOnFail": true
     },
     {
       "parameters": {
@@ -110,7 +112,7 @@
         "authToken": "your-twilio-auth-token",
         "from": "your-twilio-phone-number",
         "to": "={{ $node[\"Webhook - Form Submit\"].json.body.phone }}",
-        "message": "Hi {{ $node[\"Webhook - Form Submit\"].json.body.name }}! Got your remodel request. Check your email for a video from Mom 🎥"
+        "message": "Hi {{ ($node[\"Webhook - Form Submit\"].json.body.name || '').split(' ')[0] || 'there' }}, D N E Contracting here. Got your request — we'll reach out within one business day. Nothing to do until then. Reply STOP to opt out."
       },
       "name": "Send SMS to Lead",
       "type": "n8n-nodes-base.twilio",
@@ -118,7 +120,9 @@
       "position": [
         850,
         300
-      ]
+      ],
+      "onError": "continueRegularOutput",
+      "continueOnFail": true
     },
     {
       "parameters": {
@@ -126,7 +130,7 @@
         "authToken": "your-twilio-auth-token",
         "from": "your-twilio-phone-number",
         "to": "{{ env.MOM_PHONE_NUMBER }}",
-        "message": "🔥 NEW LEAD!\nName: {{ $node[\"Webhook - Form Submit\"].json.body.name }}\nPhone: {{ $node[\"Webhook - Form Submit\"].json.body.phone }}\nProject: {{ $node[\"Webhook - Form Submit\"].json.body.project_type }}\nBudget: {{ $node[\"Webhook - Form Submit\"].json.body.budget }}\nTimeline: {{ $node[\"Webhook - Form Submit\"].json.body.timeline }}\nScore: {{ $node[\"Calculate Lead Score\"].json.score }} ({{ $node[\"Calculate Lead Score\"].json.score_tier }})\n\n→ Check portal to call"
+        "message": "🔥 NEW LEAD ({{ $node[\"Webhook - Form Submit\"].json.body.form === 'hero_quick' ? 'quick form — no name/email yet' : 'full form' }})\nName: {{ $node[\"Webhook - Form Submit\"].json.body.name || '—' }}\nPhone: {{ $node[\"Webhook - Form Submit\"].json.body.phone }}\nEmail: {{ $node[\"Webhook - Form Submit\"].json.body.email || '—' }}\nZIP/Town: {{ $node[\"Webhook - Form Submit\"].json.body.zip || $node[\"Webhook - Form Submit\"].json.body.town || '—' }}\nProject: {{ $node[\"Webhook - Form Submit\"].json.body.type }}\nBudget: {{ $node[\"Webhook - Form Submit\"].json.body.budget || '—' }}\nTimeline: {{ $node[\"Webhook - Form Submit\"].json.body.timeline || '—' }}\nPrefers: {{ $node[\"Webhook - Form Submit\"].json.body.contact_pref || 'text' }}\nScore: {{ $node[\"Webhook - Form Submit\"].json.body.score }} ({{ $node[\"Webhook - Form Submit\"].json.body.score_tier }})\nNotes: {{ $node[\"Webhook - Form Submit\"].json.body.notes || '—' }}\n\n→ Reply to them today"
       },
       "name": "Send WhatsApp Alert to Mom",
       "type": "n8n-nodes-base.twilio",

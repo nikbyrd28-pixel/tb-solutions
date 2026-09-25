@@ -20,7 +20,7 @@ Everything lives in `index.html`. The only block you edit to go live is `window.
 - Owner photo on Home + About: same `.photo` slots.
 
 ## 3. Wire the lead pipeline (n8n)
-Set `integrations.n8nWebhook`. Every form posts JSON with a `kind` field:
+Set `integrations.n8nWebhook`. Every form posts JSON with a `kind` field. The home-page hero form (project type, ZIP, phone) posts `kind: "lead"` with `form: "hero_quick"` and **empty `name` and `email`** — run the `alter table … drop not null` lines in the schema file, and make sure any email node in n8n is set to continue on error so mom's alert still fires. Full-planner leads add name, email, town, timeline, budget, notes, contact_pref. Both include `zip` when given, `score`, `score_tier`, UTM fields, `source_page`, `submitted_at`. After either form the visitor is taken straight into the room sketch.
 - `lead` — planner (fields: type, timeline, budget, name, phone, email, town, notes, contact_pref, score, score_tier, utm_*)
 - `contact`, `referral`, `portal_message`
 Use the existing `n8n-dne-workflow.json`; add a Switch node on `kind`. Lead scoring is already done client-side and also in the workflow (either is fine).

@@ -74,3 +74,7 @@ create or replace view funnel_30d as select
 alter table plumbing_leads add column if not exists sketch jsonb, add column if not exists sketch_png text;
 
 alter table plumbing_leads add column if not exists sketch_estimate text, add column if not exists sketch_lines text, add column if not exists sketch_3d_png text;
+
+-- hero quick form (project, ZIP, phone only): name/email arrive later, so relax them and add zip + form
+alter table plumbing_leads alter column name drop not null, alter column email drop not null;
+alter table plumbing_leads add column if not exists zip text, add column if not exists form text;

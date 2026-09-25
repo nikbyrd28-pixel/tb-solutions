@@ -168,9 +168,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--ink);outline:none}
 
 /* hero — editorial, paper, asymmetric */
 .hero{padding:40px 0 36px;border-bottom:1px solid var(--line)}
-.hero .wrap{display:grid;grid-template-columns:7fr 5fr;gap:40px;align-items:center}
+.hero .wrap{display:grid;grid-template-columns:7fr 5fr;grid-template-areas:"h1 form" "text form";gap:0 40px;align-items:start}.hero h1{grid-area:h1}.hero-text{grid-area:text}.hero-form{grid-area:form;align-self:center}
 .hero h1{margin-bottom:22px}
-.hero .lead{max-width:52ch}
+.hero .lead{max-width:52ch}.hero-form{background:#fff;border:1px solid var(--line);padding:20px 20px 16px;justify-self:end;width:100%;max-width:440px}.hero-form .field{margin-bottom:12px}.hf-row{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}.hf-head{display:flex;gap:12px;align-items:center;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--line)}.hf-head b{display:block;font-size:1.08rem}.hf-head span{color:var(--mute);font-size:.9rem}.hf-face{width:52px;height:52px;border-radius:50%;overflow:hidden;flex:none;background:var(--line)}.hf-face img{width:100%;height:100%;object-fit:cover;display:block}.hf-btn{width:100%;margin-top:2px}.hf-hint{margin:10px 0 0;text-align:center}@media(max-width:900px){.hero-form{justify-self:stretch;max-width:none}}@media(max-width:380px){.hf-row{grid-template-columns:1fr}}.proof-cta{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:26px;padding:18px 20px;background:#fff;border:1px solid var(--line);border-left:3px solid var(--red)}.proof-cta p{margin:0;font-size:1.05rem}.proof-cta b{display:block;font-size:1.15rem}
 .hero .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center}
 .hero .facts{margin:22px 0 0;color:var(--mute);font-size:.92rem}
 .hero-phone{font-size:1.35rem;margin:6px 0 4px}.hero-phone a{font-weight:bold;text-decoration:none}
@@ -179,7 +179,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--ink);outline:none}
 .portrait .photo{aspect-ratio:4/5;border-radius:0}
 .portrait figcaption{color:var(--mute);margin-top:8px;font-size:.9rem}
 .pipe{display:none}
-@media (max-width:900px){.hero .wrap{grid-template-columns:1fr}.portrait{justify-self:center;max-width:340px;text-align:center}.hero{padding:36px 0 40px}}
+@media (max-width:900px){.hero .wrap{grid-template-columns:1fr;grid-template-areas:"h1" "form" "text"}.hero h1{margin-bottom:16px}.hero-text{margin-top:22px}.portrait{justify-self:center;max-width:340px;text-align:center}.hero{padding:36px 0 40px}}
 
 /* planner band */
 .planner-band{background:var(--paper-2);color:var(--ink);padding:48px 0;border-top:1px solid var(--line)}
@@ -386,14 +386,23 @@ footer a,footer p{overflow-wrap:anywhere}
 <section class="view" id="v-home">
   <div class="hero">
     <div class="wrap">
-      <div>
-        <h1>A remodel consultation that actually feels comfortable.</h1>
+      <h1>A remodel consultation that actually feels comfortable.</h1>
+      <div class="hero-text">
         <p class="lead">Kitchen, bathroom and basement remodels, start to finish, plus plumbing repairs and water heaters. The consultation is free, in your home, at your pace. You never have to decide on the spot.</p>
         <p class="hero-phone">Call or text <a data-tel href="#" data-phone></a></p>
-        <div class="actions"><a class="btn p" href="#planner">Request a free consultation</a></div>
         <p class="facts">Licensed &amp; insured · Women-owned · Serving the 422 corridor and greater Philadelphia</p>
       </div>
-      <figure class="portrait"><div class="photo has"><img data-photo="owner" alt="Owner of D N E Contracting" fetchpriority="high" width="800" height="1000"></div><figcaption><span data-owner-cap></span></figcaption></figure>
+      <form class="hero-form" id="heroForm" novalidate aria-label="Request a free consultation">
+        <div class="hf-head"><div class="hf-face"><img data-photo="owner" alt="" width="56" height="56"></div><div><b>Free in-home consultation</b><span data-owner-cap></span></div></div>
+        <div class="field"><label for="hfType">What's the project?</label><select id="hfType" name="type"><option value="">Choose one</option><option value="kitchen">Kitchen</option><option value="bathroom">Bathroom</option><option value="basement">Basement</option><option value="repair">Plumbing repair</option></select><div class="err">Pick the closest one.</div></div>
+        <div class="hf-row">
+          <div class="field"><label for="hfZip">ZIP code</label><input id="hfZip" name="zip" inputmode="numeric" autocomplete="postal-code" maxlength="5" placeholder="19468"><div class="err">A 5-digit ZIP, please.</div></div>
+          <div class="field"><label for="hfPhone">Phone</label><input id="hfPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(484) 555-0123"><div class="err">A 10-digit phone number, please.</div></div>
+        </div>
+        <input type="text" name="company" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+        <button type="submit" class="btn p hf-btn">Get my free consultation</button>
+        <p class="hint hf-hint">No pressure, nothing to sign. We text or call within one business day.</p>
+      </form>
     </div>
   </div>
 
@@ -444,6 +453,7 @@ footer a,footer p{overflow-wrap:anywhere}
         <a href="#projects" style="font-weight:600">All projects →</a>
       </div>
       <div class="feature" id="homeProjects"></div>
+      <div class="proof-cta"><p><b>Want results like these?</b>Let's discuss your project. Free, in your home, no pressure.</p><a class="btn p" href="#planner">Talk about your project</a></div>
     </div>
   </div>
 
@@ -465,6 +475,7 @@ footer a,footer p{overflow-wrap:anywhere}
       <h2>Reviews</h2>
       <div class="quotes" id="homeReviews"></div>
       <a href="#reviews" style="font-weight:600">More reviews →</a>
+      <div class="proof-cta"><p><b>Want results like these?</b>Let's discuss your project. The consultation is free and nothing is decided on the spot.</p><a class="btn p" href="#planner">Talk about your project</a></div>
     </div>
   </div>
 
@@ -511,7 +522,7 @@ footer a,footer p{overflow-wrap:anywhere}
   <div class="wrap page-head"><h1>Our work</h1><p>Before, after, and what it took. Tap any project for the full story.</p></div>
   <div class="wrap" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px" id="projFilters"></div>
   <div class="sec" style="padding-top:0"><div class="wrap"><div class="grid g3" id="projGrid"></div></div></div>
-  <div class="cta-band"><div class="wrap"><h2>Picture your own space done.</h2><a class="btn s" href="#planner">Start with the planner</a></div></div>
+  <div class="cta-band"><div class="wrap"><div><h2>Want results like these?</h2><p style="margin:6px 0 0;color:var(--ink-2)">Let's discuss your project. Free, in your home, no pressure.</p></div><a class="btn p" href="#planner">Talk about your project</a></div></div>
 </section>
 
 <!-- ============ ABOUT ============ -->
@@ -542,7 +553,8 @@ footer a,footer p{overflow-wrap:anywhere}
 <section class="view" id="v-reviews">
   <div class="wrap page-head"><h1>Reviews</h1><p>From homeowners we've worked with.</p></div>
   <div class="sec" style="padding-top:0"><div class="wrap"><div id="reviewGrid"></div>
-  <div style="margin-top:28px;display:flex;gap:10px;flex-wrap:wrap" id="reviewLinks"></div></div></div>
+  <div style="margin-top:28px;display:flex;gap:10px;flex-wrap:wrap" id="reviewLinks"></div>
+  <div class="proof-cta"><p><b>Want results like these?</b>Let's discuss your project. Free, in your home, no pressure.</p><a class="btn p" href="#planner">Talk about your project</a></div></div></div>
 </section>
 
 <!-- ============ FAQ ============ -->
@@ -641,7 +653,7 @@ footer a,footer p{overflow-wrap:anywhere}
 
 <!-- ============ SKETCH ============ -->
 <section class="view" id="v-sketch">
-  <div class="wrap page-head"><div class="sk-done" id="skDone" hidden><span class="tag ok">Received</span><p><b>Got it, <span id="skDoneName"></span>.</b> <span id="skDoneText">We'll reach out within one business day.</span> While you're here, sketch the room and we'll arrive already knowing it. Two minutes, nothing to get right.</p><div class="sk-done-actions"><span id="skDoneBook"></span><a href="#thanks" class="linkbtn" id="skDoneSkip">Skip this for now</a></div></div><h1>Sketch your room</h1><p>Draw the room as it is, change what you want, and watch the estimate build. <button type="button" class="linkbtn" id="skTour">How it works (30 seconds)</button></p></div>
+  <div class="wrap page-head"><div class="sk-done" id="skDone" hidden><span class="tag ok">Received</span><p><b id="skDoneName">Got it.</b> <span id="skDoneText">We'll reach out within one business day.</span> While you're here, sketch the room and we'll arrive already knowing it. Two minutes, nothing to get right.</p><div class="sk-done-actions"><span id="skDoneBook"></span><a href="#thanks" class="linkbtn" id="skDoneSkip">Skip this for now</a></div></div><h1>Sketch your room</h1><p>Draw the room as it is, change what you want, and watch the estimate build. <button type="button" class="linkbtn" id="skTour">How it works (30 seconds)</button></p></div>
   <div class="wrap sk">
     <div class="sk-tools">
       <div class="notice" id="skGate" hidden>Tell us who to send this to first. <a href="#planner">The quick form takes a minute</a>, then come back here.</div>
@@ -675,9 +687,9 @@ footer a,footer p{overflow-wrap:anywhere}
 <section class="view" id="v-thanks">
   <div class="wrap" style="max-width:640px;padding:64px 20px">
     <div class="tag ok" style="margin-bottom:12px">Received</div>
-    <h1 style="font-size:2.2rem">Thanks, <span id="tyName"></span>. Here's what happens next.</h1>
+    <h1 style="font-size:2.2rem" id="tyHead">Thanks. Here's what happens next.</h1>
     <ol style="font-size:1.05rem;line-height:1.7;padding-left:22px">
-      <li>Check your email. There's a short note from <span data-owner></span> with a couple of ideas for your <span id="tyType"></span>.</li>
+      <li id="tyEmailLi">Check your email. There's a short note from <span data-owner></span> with a couple of ideas for your <span id="tyType"></span>.</li>
       <li>She'll reach out within one business day to find a time that suits you.</li>
       <li>The visit itself is calm and takes about an hour. Ask as many questions as you want.</li>
       <li id="tySketchOk" hidden>Your room sketch came through with it, so we'll arrive already knowing the layout.</li>
@@ -783,6 +795,8 @@ function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','
 function photo(label,cls='',key=''){const src=key&&window.DNE_PHOTOS&&window.DNE_PHOTOS[key];return `<div class="photo ${cls}${src?' has':''}">${src?`<img src="${src}" alt="${esc(label)}" loading="lazy">`:''}<span>${src?'':esc(label)}</span></div>`}
 function validPhone(v){const d=v.replace(/\D/g,'');return d.length===10||(d.length===11&&d[0]==='1')}
 function cleanPhone(v){let d=v.replace(/\D/g,'');if(d.length===11&&d[0]==='1')d=d.slice(1);return d.length===10?'('+d.slice(0,3)+') '+d.slice(3,6)+'-'+d.slice(6):v.trim()}
+function validZip(v){return /^\d{5}$/.test(v.trim())}
+function fillThanks(d){const first=(d.name||'').trim().split(' ')[0];$('#tyHead').textContent=first?`Thanks, ${first}. Here's what happens next.`:"Thanks. Here's what happens next.";$('#tyEmailLi').hidden=!d.email;$('#tySketchOk').hidden=!d.sketch;const room=d.type==='repair'?'bathroom':d.type;$('#tySketch').href='#sketch?type='+room;$('#tySketch').textContent=d.sketch?'Open my sketch again':'Sketch my room';$('#tyType').textContent=d.type==='repair'?'plumbing issue':d.type;$('#tyBook').innerHTML=I.calendlyUrl?`<a class="btn p" href="${I.calendlyUrl}" target="_blank" rel="noopener">Pick a time now</a>`:'';return room}
 function showFirstBad(root){const bad=$('.q.bad, .field.bad',root);if(!bad)return;const err=$('.err',bad);const inp=$('input:not([type=radio]),textarea,select',bad);bad.scrollIntoView({block:'center',behavior:'smooth'});if(inp)setTimeout(()=>inp.focus({preventScroll:true}),350);toast(err?err.textContent:'Please check the highlighted field.')}
 function validEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)}
 function utm(){const p=new URLSearchParams(location.search);const o={};['utm_source','utm_medium','utm_campaign','utm_content','gclid','fbclid'].forEach(k=>{if(p.get(k))o[k]=p.get(k)});return o}
@@ -868,14 +882,29 @@ function buildPlanner(root,compact){
     try{if(SK&&SK.has()&&store.get('sketch_send',0)){d.sketch=JSON.stringify(SK.data());try{d.sketch_png=SK.png()}catch{}}}catch{}
     const btn=$('[data-submit]',form);btn.disabled=true;btn.textContent='Sending…';
     try{const r=await send('lead',d);store.del('planner_draft');track('generate_lead',{project_type:d.type,score:d.score});
-      $('#tyName').textContent=d.name.split(' ')[0];$('#tySketchOk').hidden=!d.sketch;$('#tySketch').href='#sketch?type='+(d.type==='repair'?'kitchen':d.type);$('#tySketch').textContent=d.sketch?'Open my sketch again':'Sketch my room';store.del('sketch_send');$('#tyType').textContent=d.type==='repair'?'plumbing issue':d.type;
-      $('#tyBook').innerHTML=I.calendlyUrl?`<a class="btn p" href="${I.calendlyUrl}" target="_blank" rel="noopener">Pick a time now</a>`:'';
-      if(d.sketch){location.hash='#thanks'}else{store.set('just_sent',{name:d.name.split(' ')[0],pref:d.contact_pref,type:d.type});location.hash='#sketch?type='+(d.type==='repair'?'bathroom':d.type)}if(r.offline)toast('Saved locally — connect the n8n webhook in config to send for real.')}
+      const room=fillThanks(d);store.del('sketch_send');
+      if(d.sketch){location.hash='#thanks'}else{store.set('just_sent',{name:d.name.split(' ')[0],pref:d.contact_pref,type:d.type});location.hash='#sketch?type='+room}if(r.offline)toast('Saved locally — connect the n8n webhook in config to send for real.')}
     catch(err){btn.disabled=false;btn.textContent='Book my free consultation';toast('That didn\'t go through. Try again, or call '+B.phone)}
   });
   show();
 }
 buildPlanner($('#plannerHero'),true);buildPlanner($('#plannerFull'),false);
+
+/* ---------- hero quick form (project, ZIP, phone) ---------- */
+(function(){const f=$('#heroForm');if(!f)return;const LBL='Get my free consultation';
+  const dr=store.get('planner_draft',{});if(dr.type)f.elements.type.value=dr.type;if(dr.zip)f.elements.zip.value=dr.zip;if(dr.phone)f.elements.phone.value=dr.phone;
+  f.addEventListener('input',e=>{const fl=e.target.closest('.field.bad');if(!fl)return;const n=e.target.name,fn=n==='phone'?validPhone:n==='zip'?validZip:v=>!!v;if(fn(e.target.value))fl.classList.remove('bad')});
+  f.addEventListener('submit',async e=>{e.preventDefault();if(f.elements.company.value)return;let ok=true;
+    [['type',v=>!!v],['zip',validZip],['phone',validPhone]].forEach(([n,fn])=>{const el=f.elements[n],good=fn(el.value);el.closest('.field').classList.toggle('bad',!good);if(!good)ok=false});
+    if(!ok){showFirstBad(f);return}
+    const d={type:f.elements.type.value,zip:f.elements.zip.value.trim(),phone:cleanPhone(f.elements.phone.value),name:'',email:'',contact_pref:'text',form:'hero_quick'};
+    d.score=SCORE.type[d.type]||0;d.score_tier=tier(d.score);
+    const btn=$('button[type=submit]',f);btn.disabled=true;btn.textContent='Sending…';
+    try{const r=await send('lead',d);store.set('planner_draft',{...store.get('planner_draft',{}),type:d.type,zip:d.zip,phone:d.phone});track('generate_lead',{project_type:d.type,score:d.score,form:'hero'});
+      const room=fillThanks(d);store.set('just_sent',{name:'',pref:'text',type:d.type});btn.disabled=false;btn.textContent=LBL;location.hash='#sketch?type='+room;
+      if(r.offline)toast('Saved locally — connect the n8n webhook in config to send for real.')}
+    catch(err){btn.disabled=false;btn.textContent=LBL;toast('That didn\'t go through. Try again, or call '+B.phone)}});
+})();
 
 /* ---------- contact + referral forms ---------- */
 function simpleForm(id,kind,fields,okMsg){const f=$(id);f.addEventListener('submit',async e=>{e.preventDefault();let ok=true;const d={};
@@ -1199,7 +1228,7 @@ $k('skSend').addEventListener('click',async()=>{const L=lead();if(!L){try{localS
  catch(e){btn.disabled=false;btn.textContent='Try sending again';toast('That didn\'t go through. Try again, or call '+B.phone)}});
 window.addEventListener('resize',()=>{if($k('v-sketch').classList.contains('on')&&view==='2d')fit()});
 load();ui();
-function done(){const J=store.get('just_sent',null);const el=$k('skDone');el.hidden=!J;if(!J)return;$k('skDoneName').textContent=J.name||'thanks';$k('skDoneText').textContent=J.pref==='call'?'Expect a call within one business day.':J.pref==='email'?'Expect an email within one business day.':'Expect a text within one business day.';$k('skDoneBook').innerHTML=I.calendlyUrl?`<a class="btn sm" href="${I.calendlyUrl}" target="_blank" rel="noopener">Pick a time now</a>`:''}
+function done(){const J=store.get('just_sent',null);const el=$k('skDone');el.hidden=!J;if(!J)return;$k('skDoneName').textContent=J.name?`Got it, ${J.name}.`:'Got it.';$k('skDoneText').textContent=J.pref==='call'?'Expect a call within one business day.':J.pref==='email'?'Expect an email within one business day.':'Expect a text within one business day.';$k('skDoneBook').innerHTML=I.calendlyUrl?`<a class="btn sm" href="${I.calendlyUrl}" target="_blank" rel="noopener">Pick a time now</a>`:''}
 return {show(){const q=new URLSearchParams((location.hash.split('?')[1]||''));const t=q.get('type');if(t&&PRESETS[t]&&(t!==S.type||!S.items.length))setType(t);gate();done();if(view==='3d'){setView('3d')}else fit();check();setTimeout(()=>tour(false),400)},data(){return {type:S.type,w:S.w,l:S.l,plumb:S.plumb,items:S.items,opts:S.opts}},png:()=>png(1),has:()=>S.items.length>0,estimate};
 })();
 
