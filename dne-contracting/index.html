@@ -757,7 +757,7 @@ const FAQ=[
 ];
 
 /* ---------- helpers ---------- */
-document.addEventListener('input',e=>{const t=e.target;if(t.type!=='tel')return;const d=t.value.replace(/\D/g,'').slice(0,10);t.value=d.length>6?`(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`:d.length>3?`(${d.slice(0,3)}) ${d.slice(3)}`:d});
+document.addEventListener('input',e=>{const t=e.target;if(t.type!=='tel')return;let d=t.value.replace(/\D/g,'');if(d.length>10&&d[0]==='1')d=d.slice(1);d=d.slice(0,10);t.value=d.length>6?`(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`:d.length>3?`(${d.slice(0,3)}) ${d.slice(3)}`:d});
 function bindBusiness(){
   $$('[data-phone]').forEach(e=>e.textContent=B.phone);
   $$('[data-tel]').forEach(e=>e.href='tel:'+B.phoneE164);
@@ -781,7 +781,9 @@ function bindBusiness(){
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),3500)}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 function photo(label,cls='',key=''){const src=key&&window.DNE_PHOTOS&&window.DNE_PHOTOS[key];return `<div class="photo ${cls}${src?' has':''}">${src?`<img src="${src}" alt="${esc(label)}" loading="lazy">`:''}<span>${src?'':esc(label)}</span></div>`}
-function validPhone(v){return v.replace(/\D/g,'').length===10}
+function validPhone(v){const d=v.replace(/\D/g,'');return d.length===10||(d.length===11&&d[0]==='1')}
+function cleanPhone(v){let d=v.replace(/\D/g,'');if(d.length===11&&d[0]==='1')d=d.slice(1);return d.length===10?'('+d.slice(0,3)+') '+d.slice(3,6)+'-'+d.slice(6):v.trim()}
+function showFirstBad(root){const bad=$('.q.bad, .field.bad',root);if(!bad)return;const err=$('.err',bad);const inp=$('input:not([type=radio]),textarea,select',bad);bad.scrollIntoView({block:'center',behavior:'smooth'});if(inp)setTimeout(()=>inp.focus({preventScroll:true}),350);toast(err?err.textContent:'Please check the highlighted field.')}
 function validEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)}
 function utm(){const p=new URLSearchParams(location.search);const o={};['utm_source','utm_medium','utm_campaign','utm_content','gclid','fbclid'].forEach(k=>{if(p.get(k))o[k]=p.get(k)});return o}
 async function send(kind,data){
@@ -855,13 +857,15 @@ function buildPlanner(root,compact){
   function valid(){const q=$('.q.on',form);let ok=true;
     if(step<4){ok=!!$('input:checked',q);q.classList.toggle('bad',!ok);$('.err',q).style.display=ok?'none':'block'}
     else{[['name',v=>v.trim().length>1],['phone',validPhone],['email',validEmail]].forEach(([n,fn])=>{const el=form.elements[n],f=el.closest('.field'),good=fn(el.value);f.classList.toggle('bad',!good);if(!good)ok=false})}
+    if(!ok)showFirstBad(form);
     return ok}
+  form.addEventListener('input',e=>{const f=e.target.closest('.field.bad');if(!f)return;const n=e.target.name,fn=n==='phone'?validPhone:n==='email'?validEmail:v=>v.trim().length>1;if(fn(e.target.value))f.classList.remove('bad')});
   $('[data-next]',form).addEventListener('click',()=>{if(!valid())return;step++;show();track('planner_step',{step})});
   $('[data-back]',form).addEventListener('click',()=>{step--;show()});
   form.addEventListener('submit',async e=>{e.preventDefault();if(!valid())return;if(form.elements.company.value)return;
     const d={};new FormData(form).forEach((v,k)=>{if(k!=='company')d[k]=v.trim()});
-    d.score=(SCORE.timeline[d.timeline]||0)+(SCORE.budget[d.budget]||0)+(SCORE.type[d.type]||0);d.score_tier=tier(d.score);
-    if(SK&&SK.has()&&store.get('sketch_send',0)){d.sketch=JSON.stringify(SK.data());try{d.sketch_png=SK.png()}catch{}}
+    d.phone=cleanPhone(d.phone);d.score=(SCORE.timeline[d.timeline]||0)+(SCORE.budget[d.budget]||0)+(SCORE.type[d.type]||0);d.score_tier=tier(d.score);
+    try{if(SK&&SK.has()&&store.get('sketch_send',0)){d.sketch=JSON.stringify(SK.data());try{d.sketch_png=SK.png()}catch{}}}catch{}
     const btn=$('[data-submit]',form);btn.disabled=true;btn.textContent='Sending…';
     try{const r=await send('lead',d);store.del('planner_draft');track('generate_lead',{project_type:d.type,score:d.score});
       $('#tyName').textContent=d.name.split(' ')[0];$('#tySketchOk').hidden=!d.sketch;$('#tySketch').href='#sketch?type='+(d.type==='repair'?'kitchen':d.type);$('#tySketch').textContent=d.sketch?'Open my sketch again':'Sketch my room';store.del('sketch_send');$('#tyType').textContent=d.type==='repair'?'plumbing issue':d.type;
@@ -876,7 +880,7 @@ buildPlanner($('#plannerHero'),true);buildPlanner($('#plannerFull'),false);
 /* ---------- contact + referral forms ---------- */
 function simpleForm(id,kind,fields,okMsg){const f=$(id);f.addEventListener('submit',async e=>{e.preventDefault();let ok=true;const d={};
   fields.forEach(([sel,key,fn])=>{const el=$(sel,f),v=el.value.trim(),good=!fn||fn(v);el.closest('.field').classList.toggle('bad',!good);if(!good)ok=false;d[key]=v});
-  if(!ok)return;const b=$('button[type=submit]',f);b.disabled=true;
+  if(!ok){showFirstBad(f);return}if(d.phone)d.phone=cleanPhone(d.phone);if(d.referrer_phone)d.referrer_phone=cleanPhone(d.referrer_phone);const b=$('button[type=submit]',f);b.disabled=true;
   try{await send(kind,d);f.reset();toast(okMsg);track(kind+'_submitted')}catch{toast('Couldn\'t send. Call '+B.phone+' instead.')}b.disabled=false})}
 simpleForm('#contactForm','contact',[['#cName','name',v=>v.length>1],['#cPhone','phone',validPhone],['#cEmail','email',validEmail],['#cMsg','message']],'Sent. We reply within one business day.');
 simpleForm('#referForm','referral',[['#rName','referrer_name',v=>v.length>1],['#rPhone','referrer_phone',validPhone],['#fName','friend_name',v=>v.length>1],['#fPhone','friend_contact',v=>v.length>4],['#fNote','note']],'Thank you. We\'ll reach out to them gently.');
