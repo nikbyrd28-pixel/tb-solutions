@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>D N E Contracting — Women-owned plumber in Pottstown, PA</title>
 <meta name="description" content="Women-owned plumber in Pottstown, PA. Kitchen, bathroom and basement plumbing, water heaters and repairs across Montgomery, Chester, Bucks, Delaware and Philadelphia counties. Free, no-pressure in-home consultations. Licensed, insured, owner on every job.">
 <meta name="theme-color" content="#0F2A44">
@@ -94,13 +94,13 @@ window.DNE = {
   --red:#B8322B; --red-2:#9A2721; --ok:#2E6B3F;
   --serif:Georgia,"Times New Roman",serif; --sans:Arial,Helvetica,system-ui,sans-serif;
   --max:1120px;
-  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  box-sizing:border-box;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --paper:#FFFFFF; } }
 :root[data-theme="dark"]{ --paper:#FFFFFF; }
 *{box-sizing:inherit}
 [hidden]{display:none!important}
-html{scroll-padding-top:calc(64px + env(safe-area-inset-top,0px));scroll-behavior:smooth}
+html{scroll-padding-top:64px;scroll-behavior:smooth}
 body{margin:0;font-family:var(--sans);font-size:16.5px;line-height:1.6;color:var(--ink);background:var(--paper)}
 img,svg{max-width:100%}
 a{color:var(--ink)}
@@ -123,7 +123,7 @@ p{margin:0 0 1em;max-width:60ch}
 .skip{position:absolute;left:-9999px;top:8px;background:var(--ink);color:#fff;padding:10px 14px;z-index:999}.skip:focus{left:8px}
 .util{display:none}.util .wrap{display:flex;gap:18px;align-items:center;height:32px;overflow:hidden;white-space:nowrap}.util a{color:#fff;margin-left:auto;text-decoration:none;font-weight:600}
 @media (max-width:700px){.util .wrap > span:first-child{display:none}.hero .hero-call{display:none}}
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--paper);border-bottom:1px solid var(--line)}
+.top{position:sticky;top:0;z-index:50;background:var(--paper);border-bottom:1px solid var(--line)}
 .top .wrap{display:flex;align-items:center;gap:14px;height:64px;min-width:0}
 .brand{white-space:nowrap;display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-family:var(--serif);font-size:1.2rem}
 .brand .mark{width:30px;height:30px}
@@ -318,9 +318,9 @@ footer a{color:var(--ink-2);text-decoration:none;display:block;padding:3px 0}
 footer a:hover{text-decoration:underline}
 footer .fine{grid-column:1/-1;border-top:1px solid var(--line);padding-top:18px;font-size:.85rem;display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
 @media (max-width:800px){footer .wrap{grid-template-columns:1fr 1fr}}
-.toast{position:fixed;left:50%;bottom:calc(72px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:4px;display:none;z-index:200}
+.toast{position:fixed;left:50%;bottom:72px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:4px;display:none;z-index:200}
 .toast.on{display:block}
-.sticky-call{display:none;position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-top:1px solid var(--line);padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px))}
+.sticky-call{display:none;position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-top:1px solid var(--line);padding:8px 12px 8px}
 @media (max-width:700px){body{padding-bottom:64px}.sticky-call{display:grid;grid-template-columns:1fr 1.6fr;gap:8px}}
 </style>
 </head>
