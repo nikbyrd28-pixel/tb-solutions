@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Remodel Visualization - D N E Contracting</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.95;
+            margin-bottom: 16px;
+        }
+
+        .header .lead-info {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: inline-block;
+            margin-top: 12px;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .project-type-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .type-btn {
+            padding: 12px 24px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .type-btn:hover {
+            border-color: #1e40af;
+            background: rgba(30, 64, 175, 0.05);
+        }
+
+        .type-btn.active {
+            border-color: #1e40af;
+            background: #1e40af;
+            color: white;
+        }
+
+        .visualization-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 16px;
+        }
+
+        .before-after-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .before-after-box {
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f1f5f9;
+            border: 2px solid #e2e8f0;
+        }
+
+        .before-after-label {
+            background: #1e40af;
+            color: white;
+            padding: 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .before-after-label.before {
+            background: #8b5a3c;
+        }
+
+        .before-after-content {
+            padding: 24px;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .before-after-content.before {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        }
+
+        .before-after-content.after {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        }
+
+        .placeholder-icon {
+            font-size: 48px;
+            opacity: 0.5;
+        }
+
+        .placeholder-text {
+            color: #64748b;
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .blueprint-section {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .blueprint-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .blueprint-description {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 16px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .file-input-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .file-input-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(30, 64, 175, 0.2);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .view-toggles {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .view-btn {
+            padding: 10px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .view-btn:hover {
+            border-color: #1e40af;
+        }
+
+        .view-btn.active {
+            background: #1e40af;
+            color: white;
+            border-color: #1e40af;
+        }
+
+        .grid-area {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 400px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+            gap: 1px;
+            background-image: 
+                linear-gradient(#e2e8f0 1px, transparent 1px),
+                linear-gradient(90deg, #e2e8f0 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .grid-item {
+            background: #f8fafc;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .grid-item:hover {
+            background: #1e40af;
+            opacity: 0.3;
+        }
+
+        .grid-item.fixture {
+            background: #8b5a3c;
+            opacity: 0.8;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .cta-section h2 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .cta-section p {
+            font-size: 14px;
+            opacity: 0.95;
+            margin-bottom: 16px;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: white;
+            color: #1e40af;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            .before-after-container {
+                grid-template-columns: 1fr;
+            }
+
+            .project-type-selector {
+                flex-direction: column;
+            }
+
+            .type-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Your Remodel Visualization</h1>
+            <p>See exactly what your project will look like</p>
+            <div class="lead-info" id="leadInfo">
+                <strong>Project:</strong> <span id="projectName">Kitchen Remodel</span> • 
+                <strong>Budget:</strong> <span id="budgetRange">$15K - $30K</span>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Project Type Selector -->
+            <div class="visualization-section">
+                <div class="section-title">Choose Your Project Type</div>
+                <div class="project-type-selector">
+                    <button class="type-btn active" data-type="kitchen">Kitchen</button>
+                    <button class="type-btn" data-type="bathroom">Bathroom</button>
+                    <button class="type-btn" data-type="basement">Basement</button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">20×14</div>
+                    <div class="stat-label">Space (ft)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8-10 wks</div>
+                    <div class="stat-label">Timeline</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4 zones</div>
+                    <div class="stat-label">Work Areas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">24/7</div>
+                    <div class="stat-label">Support</div>
+                </div>
+            </div>
+
+            <!-- Before/After Visualization -->
+            <div class="visualization-section">
+                <div class="section-title">Before & After Vision</div>
+                <div class="before-after-container">
+                    <div class="before-after-box">
+                        <div class="before-after-label before">Before - What's there today</div>
+                        <div class="before-after-content before">
+                            <div class="placeholder-icon">🏚️</div>
+                            <div class="placeholder-text">
+                                Outdated fixtures<br>
+                                Limited layout<br>
+                                Worn surfaces
+                            </div>
+                        </div>
+                    </div>
+                    <div class="before-after-box">
+                        <div class="before-after-label">After - Your new plan</div>
+                        <div class="before-after-content after">
+                            <div class="placeholder-icon">✨</div>
+                            <div class="placeholder-text">
+                                Modern fixtures<br>
+                                Optimized layout<br>
+                                Premium finishes
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blueprint Upload -->
+            <div class="visualization-section">
+                <div class="blueprint-section">
+                    <div class="blueprint-title">📐 Upload Your Blueprint</div>
+                    <div class="blueprint-description">
+                        Share your floor plan (PDF, JPG, or PNG) so we can show you exactly what we'll do
+                    </div>
+                    <div class="file-input-wrapper">
+                        <button class="file-input-btn" onclick="document.getElementById('blueprintFile').click()">
+                            Choose File
+                        </button>
+                        <input type="file" id="blueprintFile" accept=".pdf,.jpg,.jpeg,.png" onchange="handleBlueprintUpload(event)">
+                        <span id="fileName" style="margin-left: 12px; font-size: 14px; color: #64748b;"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View Toggles -->
+            <div class="visualization-section">
+                <div class="section-title">Floor Plan View</div>
+                <div class="view-toggles">
+                    <button class="view-btn active" onclick="switchView('floor')">Floor Plan</button>
+                    <button class="view-btn" onclick="switchView('3d')">3D View</button>
+                </div>
+
+                <!-- Interactive Grid for Floor Plan -->
+                <div class="grid-area" id="gridArea">
+                    <!-- Grid will be generated with JavaScript -->
+                </div>
+
+                <div id="messageArea" style="margin-top: 20px; padding: 16px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; color: #166534; font-size: 14px; text-align: center;">
+                    Click on the grid to place fixtures and customize your layout. Drag to remove.
+                </div>
+            </div>
+
+            <!-- Call-to-Action -->
+            <div class="cta-section">
+                <h2>Ready to move forward?</h2>
+                <p>Our team has reviewed your project and is ready to discuss next steps</p>
+                <button class="cta-btn" onclick="scheduleCall()">Schedule a Call with Our Team</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Parse URL params for lead data
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectType = urlParams.get('projectType') || 'Kitchen';
+        const budget = urlParams.get('budget') || '$15K - $30K';
+
+        document.getElementById('projectName').textContent = projectType + ' Remodel';
+        document.getElementById('budgetRange').textContent = budget;
+
+        // Project type switching
+        document.querySelectorAll('.type-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Generate grid
+        function generateGrid() {
+            const gridArea = document.getElementById('gridArea');
+            gridArea.innerHTML = '';
+            for (let i = 0; i < 80; i++) {
+                const item = document.createElement('div');
+                item.className = 'grid-item';
+                item.addEventListener('click', function() {
+                    this.classList.toggle('fixture');
+                });
+                gridArea.appendChild(item);
+            }
+        }
+
+        generateGrid();
+
+        // View switching
+        function switchView(view) {
+            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (view === '3d') {
+                document.getElementById('messageArea').textContent = '3D visualization coming soon! We\'ll send you an interactive model after your consultation.';
+            } else {
+                document.getElementById('messageArea').textContent = 'Click on the grid to place fixtures and customize your layout.';
+            }
+        }
+
+        // Blueprint upload
+        function handleBlueprintUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('fileName').textContent = '✓ ' + file.name + ' uploaded';
+            }
+        }
+
+        // Schedule call
+        function scheduleCall() {
+            const phone = urlParams.get('phone') || 'your phone';
+            alert('Great! We\'ll call you at ' + phone + ' within 24 hours. Check your email for details.');
+        }
+    </script>
+</body>
+</html>

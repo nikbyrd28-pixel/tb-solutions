@@ -1,0 +1,154 @@
+{
+  "name": "D N E Contracting - Lead Capture + Video Email + Visualizer",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "YOUR_WEBHOOK_ID",
+      "method": "POST",
+      "path": "plumbing-leads"
+    },
+    {
+      "parameters": {
+        "resource": "executeQuery",
+        "query": "=INSERT INTO plumbing_leads (full_name, phone, email, address, zip_code, project_type, scope, timeline, budget, notes, submitted_at, source) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *;",
+        "queryParams": "={{$json.body.fullName}},{{$json.body.phone}},{{$json.body.email}},{{$json.body.address}},{{$json.body.zipCode}},{{$json.body.projectType}},{{$json.body.scope}},{{$json.body.timeline}},{{$json.body.budget}},{{$json.body.notes}},{{$json.body.submittedAt}},{{$json.body.source}}"
+      },
+      "name": "Save Lead to Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "supabaseApi": "YOUR_SUPABASE_CREDENTIALS"
+      }
+    },
+    {
+      "parameters": {
+        "model": "claude-3-5-sonnet",
+        "messages": {
+          "messageValues": [
+            {
+              "role": "user",
+              "content": "=Generate a brief, warm video script (30-45 seconds) for D N E Contracting welcoming {{$json.body.fullName}} and explaining their {{$json.body.projectType}} project. The script should:\n\n1. Open with: 'Hi {{$json.body.fullName}}, thanks for choosing D N E Contracting!'\n2. Acknowledge their project type and timeline: '{{$json.body.projectType}}, starting {{$json.body.timeline}}'\n3. Mention we've prepared a personalized remodel visualization\n4. Tell them we'll call within 24 hours\n5. Close with professional, friendly tone\n\nFormat as plain text, no markdown."
+            }
+          ]
+        }
+      },
+      "name": "Generate Video Script",
+      "type": "n8n-nodes-base.openaiChatModel",
+      "typeVersion": 1,
+      "position": [650, 200],
+      "credentials": {
+        "openaiApi": "YOUR_OPENAI_API"
+      }
+    },
+    {
+      "parameters": {
+        "toEmail": "={{$json.body.email}}",
+        "subject": "Your Free Remodel Plan + Personalized Video - D N E Contracting",
+        "textOnly": false,
+        "htmlMessage": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f9fafb; padding: 20px; border-radius: 8px;\">\n  <div style=\"text-align: center; margin-bottom: 30px;\">\n    <h1 style=\"color: #1e40af; margin-bottom: 8px;\">Your Personalized Remodel Plan</h1>\n    <p style=\"color: #64748b; font-size: 14px;\">{{$json.body.fullName}}, we're excited to show you what's possible!</p>\n  </div>\n\n  <!-- Video Section -->\n  <div style=\"background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; text-align: center;\">\n    <p style=\"color: #475569; margin-bottom: 16px; font-size: 14px;\">Watch our personalized welcome video:</p>\n    <div style=\"position: relative; background: #000; border-radius: 8px; overflow: hidden; padding-bottom: 56.25%; height: 0;\">\n      <iframe \n        style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;\"\n        src=\"https://www.youtube.com/embed/YOUR_VIDEO_ID?autoplay=0\"\n        allowfullscreen=\"true\"\n        allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\">\n      </iframe>\n    </div>\n    <p style=\"color: #999; font-size: 12px; margin-top: 12px;\">Can't watch now? We'll follow up with all details in 24 hours.</p>\n  </div>\n\n  <!-- Project Summary -->\n  <div style=\"background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px;\">\n    <h2 style=\"color: #1e293b; font-size: 16px; margin-bottom: 12px;\">Your Project Summary</h2>\n    <table style=\"width: 100%; font-size: 14px;\">\n      <tr style=\"border-bottom: 1px solid #e2e8f0;\">\n        <td style=\"padding: 10px 0; color: #64748b;\"><strong>Project Type:</strong></td>\n        <td style=\"padding: 10px 0; text-align: right;\">{{$json.body.projectType}}</td>\n      </tr>\n      <tr style=\"border-bottom: 1px solid #e2e8f0;\">\n        <td style=\"padding: 10px 0; color: #64748b;\"><strong>Scope:</strong></td>\n        <td style=\"padding: 10px 0; text-align: right;\">{{$json.body.scope}}</td>\n      </tr>\n      <tr style=\"border-bottom: 1px solid #e2e8f0;\">\n        <td style=\"padding: 10px 0; color: #64748b;\"><strong>Timeline:</strong></td>\n        <td style=\"padding: 10px 0; text-align: right;\">{{$json.body.timeline}}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px 0; color: #64748b;\"><strong>Budget Range:</strong></td>\n        <td style=\"padding: 10px 0; text-align: right;\">{{$json.body.budget}}</td>\n      </tr>\n    </table>\n  </div>\n\n  <!-- Interactive Visualizer CTA -->\n  <div style=\"background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%); color: white; border-radius: 8px; padding: 24px; margin-bottom: 20px; text-align: center;\">\n    <h2 style=\"margin-bottom: 12px; font-size: 18px;\">View Your Interactive Remodel</h2>\n    <p style=\"margin-bottom: 16px; font-size: 14px; opacity: 0.95;\">Explore 3D visualizations, floor plans, and before/after renderings customized for your project.</p>\n    <a href=\"https://YOUR_DOMAIN.com/visualizer?projectType={{$json.body.projectType}}&budget={{$json.body.budget}}&phone={{$json.body.phone}}\" style=\"display: inline-block; background: white; color: #1e40af; padding: 12px 28px; border-radius: 6px; text-decoration: none; font-weight: 600; transition: all 0.2s;\">\n      See Your Visualization\n    </a>\n  </div>\n\n  <!-- Next Steps -->\n  <div style=\"background: #ecf9ff; border: 1px solid #86efac; border-radius: 8px; padding: 16px; margin-bottom: 20px;\">\n    <h3 style=\"color: #0c447c; margin-bottom: 8px; font-size: 14px;\">What Happens Next</h3>\n    <ol style=\"color: #0c7a8f; font-size: 13px; margin-left: 20px; line-height: 1.8;\">\n      <li>Review your personalized visualization above</li>\n      <li>Our team will call you within 24 hours</li>\n      <li>We'll discuss your project in detail</li>\n      <li>Receive a custom estimate and timeline</li>\n    </ol>\n  </div>\n\n  <!-- Contact Info -->\n  <div style=\"text-align: center; border-top: 1px solid #e2e8f0; padding-top: 20px; color: #64748b; font-size: 12px;\">\n    <p>Have questions before we call? Reply to this email or call us anytime.</p>\n    <p style=\"margin-top: 8px;\"><strong>D N E Contracting</strong><br>Pottstown, PA<br>📞 717-XXXX-XXXX</p>\n  </div>\n</div>"
+      },
+      "name": "Send Video Email to Lead",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [850, 150],
+      "credentials": {
+        "smtp": "YOUR_SMTP_CREDENTIALS"
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "chatId": "YOUR_MOM_PHONE_NUMBER",
+        "text": "🔔 NEW LEAD\n\nName: {{$json.body.fullName}}\nPhone: {{$json.body.phone}}\nEmail: {{$json.body.email}}\n\nProject: {{$json.body.projectType}} ({{$json.body.scope}})\nTimeline: {{$json.body.timeline}}\nBudget: {{$json.body.budget}}\nAddress: {{$json.body.address}}, {{$json.body.zipCode}}\n\nNotes: {{$json.body.notes}}\n\n✅ Video email sent\n✅ Visualization link generated\n\n→ Ready to call!\n\nVisualization: https://YOUR_DOMAIN.com/visualizer?projectType={{$json.body.projectType}}&budget={{$json.body.budget}}&phone={{$json.body.phone}}"
+      },
+      "name": "Send WhatsApp to Mom",
+      "type": "n8n-nodes-base.whatsapp",
+      "typeVersion": 1,
+      "position": [850, 350],
+      "credentials": {
+        "whatsappApi": "YOUR_WHATSAPP_CREDENTIALS"
+      }
+    },
+    {
+      "parameters": {
+        "statusCode": 200
+      },
+      "name": "Return Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1050, 250]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Save Lead to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Lead to Supabase": {
+      "main": [
+        [
+          {
+            "node": "Generate Video Script",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Video Email to Lead",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send WhatsApp to Mom",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Video Script": {
+      "main": [
+        [
+          {
+            "node": "Return Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Video Email to Lead": {
+      "main": [
+        [
+          {
+            "node": "Return Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp to Mom": {
+      "main": [
+        [
+          {
+            "node": "Return Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

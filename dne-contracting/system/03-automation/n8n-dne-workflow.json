@@ -1,0 +1,241 @@
+{
+  "name": "D N E Contracting - Lead Capture + Scoring + Email + SMS",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "dne-leads",
+        "method": "POST"
+      },
+      "name": "Webhook - Form Submit",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        50,
+        300
+      ],
+      "webhookId": "webhook-dne-leads"
+    },
+    {
+      "parameters": {
+        "conditions": "AND",
+        "combineOperation": "and",
+        "rules": [
+          {
+            "condition": "datetimeBefore",
+            "value1": "={{ $now }}",
+            "value2": "={{ $now }}"
+          }
+        ]
+      },
+      "name": "Validate Form Data",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "continueOnFail": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "score",
+              "value": "={{ (($.timeline === 'asap' ? 40 : $.timeline === '3months' ? 30 : $.timeline === 'thisyear' ? 20 : 10) + ($.budget === '50k+' ? 30 : $.budget === '25-50k' ? 25 : $.budget === '10-25k' ? 15 : $.budget === '5-10k' ? 5 : 0) + ($.project_type === 'kitchen' ? 20 : $.project_type === 'bathroom' ? 15 : $.project_type === 'basement' ? 10 : 0)) }}"
+            },
+            {
+              "name": "score_tier",
+              "value": "={{ $.score >= 80 ? 'URGENT' : $.score >= 60 ? 'HOT' : $.score >= 40 ? 'WARM' : 'COLD' }}"
+            },
+            {
+              "name": "created_at",
+              "value": "={{ $now }}"
+            },
+            {
+              "name": "status",
+              "value": "new"
+            }
+          ]
+        }
+      },
+      "name": "Calculate Lead Score",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "host": "your-project.supabase.co",
+        "database": "postgres",
+        "user": "postgres",
+        "password": "your-db-password",
+        "ssl": true,
+        "operation": "insert",
+        "schema": "public",
+        "table": "plumbing_leads",
+        "columns": "phone,email,name,project_type,budget,timeline,score,score_tier,status,created_at"
+      },
+      "name": "Save to Supabase",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [
+        650,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "apiKey": "re_your-resend-api-key",
+        "fromEmail": "hello@dne-contracting.com",
+        "toEmail": "={{ $node[\"Webhook - Form Submit\"].json.body.email }}",
+        "subject": "{{ $node[\"Webhook - Form Submit\"].json.body.name }}, Your Custom Remodel Video is Ready! 🎥",
+        "emailFormat": "html",
+        "htmlBody": "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>\n  <h2>Hi {{ $node[\"Webhook - Form Submit\"].json.body.name }},</h2>\n  <p>We got your remodeling request! 🎉</p>\n  \n  <p>Watch a quick video from <strong>Mom (contractor)</strong> introducing our process:</p>\n  \n  <div style='background: #f0f0f0; padding: 20px; text-align: center; margin: 20px 0;'>\n    <p>[Video will be embedded here - YouTube link]</p>\n  </div>\n  \n  <p><strong>Next:</strong> Check out your custom 3D design →</p>\n  <a href='https://your-site.com/visualizer' style='background: #1e40af; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;'>See Your Design</a>\n  \n  <p style='margin-top: 30px; color: #666; font-size: 12px;'>Mom will call you within 24 hours to discuss timeline & budget. Questions? Reply to this email!</p>\n</div>"
+      },
+      "name": "Send Welcome Email",
+      "type": "n8n-nodes-base.resend",
+      "typeVersion": 1,
+      "position": [
+        850,
+        150
+      ]
+    },
+    {
+      "parameters": {
+        "accountSid": "your-twilio-account-sid",
+        "authToken": "your-twilio-auth-token",
+        "from": "your-twilio-phone-number",
+        "to": "={{ $node[\"Webhook - Form Submit\"].json.body.phone }}",
+        "message": "Hi {{ $node[\"Webhook - Form Submit\"].json.body.name }}! Got your remodel request. Check your email for a video from Mom 🎥"
+      },
+      "name": "Send SMS to Lead",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        850,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "accountSid": "your-twilio-account-sid",
+        "authToken": "your-twilio-auth-token",
+        "from": "your-twilio-phone-number",
+        "to": "{{ env.MOM_PHONE_NUMBER }}",
+        "message": "🔥 NEW LEAD!\nName: {{ $node[\"Webhook - Form Submit\"].json.body.name }}\nPhone: {{ $node[\"Webhook - Form Submit\"].json.body.phone }}\nProject: {{ $node[\"Webhook - Form Submit\"].json.body.project_type }}\nBudget: {{ $node[\"Webhook - Form Submit\"].json.body.budget }}\nTimeline: {{ $node[\"Webhook - Form Submit\"].json.body.timeline }}\nScore: {{ $node[\"Calculate Lead Score\"].json.score }} ({{ $node[\"Calculate Lead Score\"].json.score_tier }})\n\n→ Check portal to call"
+      },
+      "name": "Send WhatsApp Alert to Mom",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        850,
+        450
+      ]
+    },
+    {
+      "parameters": {
+        "respondWithData": "{{ { \"status\": \"success\", \"message\": \"Lead received and will be contacted within 24 hours\" } }}"
+      },
+      "name": "Return Success Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1050,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook - Form Submit": {
+      "main": [
+        [
+          {
+            "node": "Validate Form Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Form Data": {
+      "main": [
+        [
+          {
+            "node": "Calculate Lead Score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Lead Score": {
+      "main": [
+        [
+          {
+            "node": "Save to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Supabase": {
+      "main": [
+        [
+          {
+            "node": "Send Welcome Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send SMS to Lead",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send WhatsApp Alert to Mom",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Welcome Email": {
+      "main": [
+        [
+          {
+            "node": "Return Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send SMS to Lead": {
+      "main": [
+        [
+          {
+            "node": "Return Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp Alert to Mom": {
+      "main": [
+        [
+          {
+            "node": "Return Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

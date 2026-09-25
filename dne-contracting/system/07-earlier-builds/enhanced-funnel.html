@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Remodel Planner - D N E Contracting</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.95;
+            margin-bottom: 12px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #1e40af;
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .radio-option:hover {
+            border-color: #1e40af;
+            background: rgba(30, 64, 175, 0.02);
+        }
+
+        .radio-option input[type="radio"] {
+            margin-right: 12px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .radio-option label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .benefits {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            border-left: 4px solid #1e40af;
+        }
+
+        .benefits h3 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .benefits ul {
+            list-style: none;
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .benefits li {
+            margin-bottom: 6px;
+        }
+
+        .benefits li:before {
+            content: "✓ ";
+            color: #1e40af;
+            font-weight: 700;
+            margin-right: 6px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 8px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(30, 64, 175, 0.2);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .success-message {
+            display: none;
+            background: #dcfce7;
+            border: 1px solid #86efac;
+            color: #166534;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .error-message {
+            display: none;
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 16px;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .form-section-title:first-of-type {
+            margin-top: 0;
+            border-top: none;
+            padding-top: 0;
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .content {
+                padding: 25px 20px;
+            }
+
+            input[type="text"],
+            input[type="email"],
+            input[type="tel"],
+            select {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Free Remodel Planner</h1>
+            <p>Get a personalized project scope & timeline estimate</p>
+            <span class="badge">✓ No obligation • Free consultation</span>
+        </div>
+
+        <div class="content">
+            <div class="benefits">
+                <h3>What You'll Get</h3>
+                <ul>
+                    <li>Custom project scope & timeline</li>
+                    <li>Budget range for your project</li>
+                    <li>Interactive 3D remodel visualization</li>
+                    <li>Free consultation from D N E Contracting</li>
+                </ul>
+            </div>
+
+            <form id="plannerForm">
+                <div class="form-section-title">Project Details</div>
+
+                <div class="form-group">
+                    <label>What type of project are you planning?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="kitchen" name="projectType" value="Kitchen Remodel" required>
+                            <label for="kitchen">Kitchen Remodel</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="bathroom" name="projectType" value="Bathroom Remodel" required>
+                            <label for="bathroom">Bathroom Remodel</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="basement" name="projectType" value="Basement Project" required>
+                            <label for="basement">Basement Project</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="other" name="projectType" value="Other" required>
+                            <label for="other">Other Plumbing Work</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>What's the scope of work?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="full" name="scope" value="Full Remodel" required>
+                            <label for="full">Full Remodel / New Installation</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="partial" name="scope" value="Partial Update" required>
+                            <label for="partial">Partial Update / Upgrade</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="repair" name="scope" value="Repair / Replacement" required>
+                            <label for="repair">Repair / Replacement</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>When do you want to start?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="urgent" name="timeline" value="ASAP (This Month)" required>
+                            <label for="urgent">ASAP (This Month)</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="soon" name="timeline" value="Next 1-3 Months" required>
+                            <label for="soon">Next 1-3 Months</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="flexible" name="timeline" value="Flexible / Planning" required>
+                            <label for="flexible">Flexible / Just Planning</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Estimated budget range?</label>
+                    <select name="budget" required>
+                        <option value="">Select a range...</option>
+                        <option value="Under $5K">Under $5,000</option>
+                        <option value="$5K - $15K">$5,000 - $15,000</option>
+                        <option value="$15K - $30K">$15,000 - $30,000</option>
+                        <option value="$30K - $50K">$30,000 - $50,000</option>
+                        <option value="Over $50K">Over $50,000</option>
+                        <option value="Not Sure">Not Sure Yet</option>
+                    </select>
+                </div>
+
+                <div class="form-section-title">Your Information</div>
+
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" name="fullName" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Phone Number *</label>
+                    <input type="tel" name="phone" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address *</label>
+                    <input type="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Street Address (Pottstown, PA area) *</label>
+                    <input type="text" name="address" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Zip Code *</label>
+                    <input type="text" name="zipCode" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Anything else we should know?</label>
+                    <textarea name="notes" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px; font-family: inherit; resize: vertical; min-height: 80px;"></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">Get My Free Remodel Plan</button>
+
+                <div class="success-message" id="successMessage">
+                    ✓ Got it! Check your email for your personalized remodel plan & 3D visualization. We'll call within 24 hours.
+                </div>
+
+                <div class="error-message" id="errorMessage">
+                    Something went wrong. Please try again or call us directly.
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('plannerForm');
+        const successMsg = document.getElementById('successMessage');
+        const errorMsg = document.getElementById('errorMessage');
+        const submitBtn = form.querySelector('button[type="submit"]');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            successMsg.style.display = 'none';
+            errorMsg.style.display = 'none';
+
+            const formData = new FormData(form);
+            const data = {
+                fullName: formData.get('fullName'),
+                phone: formData.get('phone'),
+                email: formData.get('email'),
+                address: formData.get('address'),
+                zipCode: formData.get('zipCode'),
+                projectType: formData.get('projectType'),
+                scope: formData.get('scope'),
+                timeline: formData.get('timeline'),
+                budget: formData.get('budget'),
+                notes: formData.get('notes'),
+                submittedAt: new Date().toISOString(),
+                source: 'remodel-planner'
+            };
+
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+
+            try {
+                const response = await fetch('YOUR_N8N_WEBHOOK_URL_HERE', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    form.reset();
+                    successMsg.style.display = 'block';
+                    submitBtn.classList.remove('loading');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Get My Free Remodel Plan';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    throw new Error('Form submission failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                errorMsg.style.display = 'block';
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Get My Free Remodel Plan';
+            }
+        });
+    </script>
+</body>
+</html>

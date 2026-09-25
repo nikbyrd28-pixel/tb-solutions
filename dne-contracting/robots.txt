@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /#playbook
+Sitemap: https://dnecontracting.com/sitemap.xml

@@ -1,0 +1,148 @@
+{
+  "name": "D N E Contracting - Lead Capture & Notify",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "YOUR_WEBHOOK_ID",
+      "method": "POST",
+      "path": "plumbing-leads"
+    },
+    {
+      "parameters": {
+        "resource": "executeQuery",
+        "query": "=INSERT INTO plumbing_leads (full_name, phone, email, address, zip_code, project_type, scope, timeline, budget, notes, submitted_at, source) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *;",
+        "queryParams": "={{$json.body.fullName}},{{$json.body.phone}},{{$json.body.email}},{{$json.body.address}},{{$json.body.zipCode}},{{$json.body.projectType}},{{$json.body.scope}},{{$json.body.timeline}},{{$json.body.budget}},{{$json.body.notes}},{{$json.body.submittedAt}},{{$json.body.source}}"
+      },
+      "name": "Save Lead to Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "supabaseApi": "YOUR_SUPABASE_CREDENTIALS"
+      }
+    },
+    {
+      "parameters": {
+        "toEmail": "={{$json.body.email}}",
+        "subject": "Your Free Remodel Plan - D N E Contracting",
+        "textOnly": false,
+        "htmlMessage": "=<h2>Hi {{$json.body.fullName}},</h2>\n\n<p>Thanks for using our Free Remodel Planner! We received your information and are preparing your personalized project scope and timeline.</p>\n\n<p><strong>Your Project Summary:</strong></p>\n<ul>\n<li><strong>Project Type:</strong> {{$json.body.projectType}}</li>\n<li><strong>Scope:</strong> {{$json.body.scope}}</li>\n<li><strong>Timeline:</strong> {{$json.body.timeline}}</li>\n<li><strong>Budget Range:</strong> {{$json.body.budget}}</li>\n</ul>\n\n<p>Our team will review your details and call you within 24 hours with a custom estimate and next steps.</p>\n\n<p><strong>Questions before we call?</strong> Reply to this email or call us at your convenience.</p>\n\n<p>Best regards,<br>\n<strong>D N E Contracting</strong><br>\nPottstown, PA</p>"
+      },
+      "name": "Send Confirmation Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [650, 200],
+      "credentials": {
+        "smtp": "YOUR_SMTP_CREDENTIALS"
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "phoneNumber": "={{$json.body.phone}}",
+        "message": "Hi {{$json.body.fullName}}! We got your remodel request. Our team will call within 24 hours to discuss your {{$json.body.projectType}}. Thanks for choosing D N E Contracting!"
+      },
+      "name": "Send SMS Notification",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [650, 400],
+      "credentials": {
+        "twilioApi": "YOUR_TWILIO_CREDENTIALS"
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "chatId": "YOUR_MOM_PHONE_NUMBER",
+        "text": "🔔 NEW LEAD\n\nName: {{$json.body.fullName}}\nPhone: {{$json.body.phone}}\nProject: {{$json.body.projectType}} ({{$json.body.scope}})\nTimeline: {{$json.body.timeline}}\nBudget: {{$json.body.budget}}\nAddress: {{$json.body.address}}, {{$json.body.zipCode}}\n\nNotes: {{$json.body.notes}}\n\n→ Ready to call!"
+      },
+      "name": "Send WhatsApp to Mom",
+      "type": "n8n-nodes-base.whatsapp",
+      "typeVersion": 1,
+      "position": [650, 550],
+      "credentials": {
+        "whatsappApi": "YOUR_WHATSAPP_CREDENTIALS"
+      }
+    },
+    {
+      "parameters": {
+        "statusCode": 200
+      },
+      "name": "Return Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [850, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Save Lead to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Lead to Supabase": {
+      "main": [
+        [
+          {
+            "node": "Send Confirmation Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send SMS Notification",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send WhatsApp to Mom",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Confirmation Email": {
+      "main": [
+        [
+          {
+            "node": "Return Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send SMS Notification": {
+      "main": [
+        [
+          {
+            "node": "Return Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp to Mom": {
+      "main": [
+        [
+          {
+            "node": "Return Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

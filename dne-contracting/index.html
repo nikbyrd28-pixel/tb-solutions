@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>D N E Contracting — Women-owned plumber in Pottstown, PA</title>
+<meta name="description" content="Women-owned plumber in Pottstown, PA. Kitchen, bathroom and basement plumbing, water heaters and repairs across Montgomery, Chester, Bucks, Delaware and Philadelphia counties. Free, no-pressure in-home consultations. Licensed, insured, owner on every job.">
+<meta name="theme-color" content="#0F2A44">
+<link rel="canonical" id="canon" href="https://dnecontracting.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="D N E Contracting">
+<meta property="og:title" content="A remodel consultation that actually feels comfortable — D N E Contracting, Pottstown PA">
+<meta property="og:description" content="Free, no-pressure in-home consultations for kitchens, bathrooms and basement plumbing. Women-owned. 422 corridor and greater Philadelphia.">
+<meta property="og:image" content="https://dnecontracting.com/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="geo.region" content="US-PA"><meta name="geo.placename" content="Pottstown"><meta name="geo.position" content="40.2620;-75.6440"><meta name="ICBM" content="40.2620, -75.6440">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":["Plumber","HomeAndConstructionBusiness","LocalBusiness"],"@id":"https://dnecontracting.com/#business","name":"D N E Contracting","url":"https://dnecontracting.com/","telephone":"+1-484-939-8535","email":"hello@dnecontracting.com","image":"https://dnecontracting.com/og.jpg","priceRange":"$$","currenciesAccepted":"USD","paymentAccepted":"Credit card, bank transfer, check",
+ "address":{"@type":"PostalAddress","streetAddress":"270 Upland Square Dr #1014","addressLocality":"Pottstown","addressRegion":"PA","postalCode":"19464","addressCountry":"US"},
+ "geo":{"@type":"GeoCoordinates","latitude":40.2620,"longitude":-75.6440},
+ "openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"18:00"}],
+ "areaServed":[{"@type":"AdministrativeArea","name":"Montgomery County, PA"},{"@type":"AdministrativeArea","name":"Chester County, PA"},{"@type":"AdministrativeArea","name":"Bucks County, PA"},{"@type":"AdministrativeArea","name":"Delaware County, PA"},{"@type":"City","name":"Philadelphia"},{"@type":"City","name":"Pottstown"}],
+ "knowsAbout":["residential plumbing","kitchen and bathroom remodel plumbing","tub to shower conversion plumbing","basement bathroom rough-in","sewage ejector pump","sump pump installation","tankless water heater installation","PEX repipe","plumbing repair"],
+ "slogan":"A remodel consultation that actually feels comfortable.",
+ "description":"Women-owned residential plumber in Pottstown, PA. Plumbing for kitchen, bathroom and basement projects, water heaters and repairs. Free, no-pressure in-home consultations along the 422 corridor and greater Philadelphia.",
+ "hasOfferCatalog":{"@type":"OfferCatalog","name":"Services","itemListElement":[
+  {"@type":"Offer","itemOffered":{"@type":"Service","name":"Kitchen and bathroom remodel plumbing"}},
+  {"@type":"Offer","itemOffered":{"@type":"Service","name":"Tub to shower conversion plumbing"}},
+  {"@type":"Offer","itemOffered":{"@type":"Service","name":"Whole-house PEX repipe"}},
+  {"@type":"Offer","itemOffered":{"@type":"Service","name":"Basement bathroom and laundry plumbing"}},
+  {"@type":"Offer","itemOffered":{"@type":"Service","name":"Water heater installation"}},
+  {"@type":"Offer","itemOffered":{"@type":"Service","name":"Plumbing repair"}},
+  {"@type":"Offer","price":"0","priceCurrency":"USD","itemOffered":{"@type":"Service","name":"Free in-home remodel consultation"}}]}},
+{"@type":"WebSite","@id":"https://dnecontracting.com/#website","url":"https://dnecontracting.com/","name":"D N E Contracting","publisher":{"@id":"https://dnecontracting.com/#business"}},
+{"@type":"FAQPage","@id":"https://dnecontracting.com/#faq","mainEntity":[
+ {"@type":"Question","name":"Is the remodel consultation really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. We come to your home, walk the space with you, and talk through options, costs and timelines. You never have to decide that day. If we are not the right fit, you still leave with clarity."}},
+ {"@type":"Question","name":"Why doesn't D N E Contracting list prices online?","acceptedAnswer":{"@type":"Answer","text":"A number without seeing the space is a guess. After the in-home visit you get a written estimate specific to your home, with nothing hidden."}},
+ {"@type":"Question","name":"How long does a bathroom or kitchen remodel take?","acceptedAnswer":{"@type":"Answer","text":"Most repairs and water heaters are same or next day. Plumbing rough-in for a kitchen or bathroom remodel is usually 1 to 3 days plus a fixture-setting visit; a basement half-bath with ejector pit about a week; a whole-house repipe 2 to 4 days."}},
+ {"@type":"Question","name":"What areas does D N E Contracting serve?","acceptedAnswer":{"@type":"Answer","text":"Pottstown and the 422 corridor, plus Montgomery, Chester, Bucks, Delaware and Philadelphia counties in Pennsylvania and nearby South Jersey."}},
+ {"@type":"Question","name":"Is D N E Contracting licensed and insured?","acceptedAnswer":{"@type":"Answer","text":"Yes. D N E Contracting is a registered Pennsylvania Home Improvement Contractor and fully insured. The owner runs every consultation and is on every job."}},
+ {"@type":"Question","name":"How do payments work on a remodel?","acceptedAnswer":{"@type":"Answer","text":"A deposit reserves the start date, progress payments happen at agreed milestones, and the balance is due when the client is happy with the finished work. Invoices are paid by card or bank transfer through a private project page."}}]}
+]}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+
+<script>
+/* Stock photos (Unsplash license) as stand-ins. Replace with real photos: put files in /img and set window.DNE_PHOTOS.owner = "img/denise.jpg" etc. */
+window.DNE_PHOTOS={"owner": "img/owner.jpg", "sump": "img/sump.jpg", "solder": "img/solder.jpg", "undersink": "img/undersink.jpg", "tankless": "img/tankless.jpg", "onsite": "img/onsite.jpg", "pex": "img/pex.jpg", "tubvalve": "img/tubvalve.jpg", "subfloor": "img/subfloor.jpg", "plans": "img/plans.jpg"};
+</script>
+<script>
+/* ============================================================
+   D N E CONTRACTING — SITE CONFIG
+   This is the ONLY block you edit to make the site real.
+   Every page, form, phone link, and integration reads from here.
+   ============================================================ */
+window.DNE = {
+  business: {
+    name: "D N E Contracting",
+    tagline: "A remodel consultation that actually feels comfortable.",
+    phone: "(484) 939-8535",
+    phoneE164: "+14849398535",
+    email: "hello@dnecontracting.com",
+    address: "270 Upland Square Dr #1014, Pottstown, PA 19464",
+    hours: "Mon–Fri 8am–6pm · Sun closed",
+    license: "PA HIC #PAXXXXXX",      // Pennsylvania Home Improvement Contractor number
+    insured: true,
+    yearsInBusiness: 20,
+    ownerName: "Your Name",           // ← mom's first name (shows on About + thank-you page)
+    serviceAreaLabel: "The 422 corridor and the greater Philadelphia area — Montgomery, Bucks, Delaware and Philadelphia counties, plus South Jersey",
+    serviceAreas: ["Pottstown","Royersford","Limerick","Collegeville","Phoenixville","King of Prussia","Norristown","Conshohocken","Montgomery County","Bucks County","Delaware County","Philadelphia","South Jersey"],
+    googleReviewUrl: "https://www.google.com/maps/search/D+N+E+Contracting+Pottstown+PA",   // replace with the GBP "Get more reviews" short link
+    yelpUrl: "",
+    facebookUrl: "",
+    instagramUrl: ""
+  },
+  integrations: {
+    n8nWebhook: "",                   // e.g. https://n8n.yourhost.com/webhook/dne-leads
+    supabaseUrl: "",                  // e.g. https://xxxx.supabase.co  (customer portal login)
+    supabaseAnonKey: "",              // anon public key only — never the service key
+    calendlyUrl: "",                  // optional: booking link shown on thank-you page
+    metaPixelId: "",                  // optional
+    ga4Id: ""                         // optional: G-XXXXXXX
+  },
+  referral: { reward: 100, bonus: 250 },
+  // Set to false once real reviews and photos are loaded.
+  sampleContent: true
+};
+</script>
+
+<style>
+:root{
+  --paper:#FFFFFF; --paper-2:#F6F6F6; --ink:#111; --ink-2:#333; --mute:#666; --line:#DDD; --rule:#111;
+  --red:#B8322B; --red-2:#9A2721; --ok:#2E6B3F;
+  --serif:Georgia,"Times New Roman",serif; --sans:Arial,Helvetica,system-ui,sans-serif;
+  --max:1120px;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --paper:#FFFFFF; } }
+:root[data-theme="dark"]{ --paper:#FFFFFF; }
+*{box-sizing:inherit}
+[hidden]{display:none!important}
+html{scroll-padding-top:calc(64px + env(safe-area-inset-top,0px));scroll-behavior:smooth}
+body{margin:0;font-family:var(--sans);font-size:16.5px;line-height:1.6;color:var(--ink);background:var(--paper)}
+img,svg{max-width:100%}
+a{color:var(--ink)}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:normal;line-height:1.15;margin:0 0 .5em}
+h1{font-size:clamp(1.9rem,4vw,2.8rem)}
+h2{font-size:clamp(1.5rem,2.6vw,1.9rem)}
+h3{font-size:1.2rem}
+p{margin:0 0 1em;max-width:60ch}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 22px}
+.sec{padding:48px 0}
+.sec.alt{background:var(--paper-2)}
+.lead{font-size:1.1rem;color:var(--ink-2)}
+.eyebrow{display:none}
+.rule{border:0;border-top:1px solid var(--rule);margin:0}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.sr{position:absolute;left:-9999px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+/* header */
+.skip{position:absolute;left:-9999px;top:8px;background:var(--ink);color:#fff;padding:10px 14px;z-index:999}.skip:focus{left:8px}
+.util{display:none}.util .wrap{display:flex;gap:18px;align-items:center;height:32px;overflow:hidden;white-space:nowrap}.util a{color:#fff;margin-left:auto;text-decoration:none;font-weight:600}
+@media (max-width:700px){.util .wrap > span:first-child{display:none}.hero .hero-call{display:none}}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--paper);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:14px;height:64px;min-width:0}
+.brand{white-space:nowrap;display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-family:var(--serif);font-size:1.2rem}
+.brand .mark{width:30px;height:30px}
+nav.main{display:flex;gap:2px;margin-left:auto}
+nav.main a{text-decoration:none;color:var(--ink);padding:8px 10px;font-size:.95rem}
+nav.main a:hover,nav.main a.on{text-decoration:underline}
+.nav-phone{font-weight:600;text-decoration:none;color:var(--ink);white-space:nowrap;font-size:.95rem}.call.icon-only{display:none;padding:9px 11px}@media (max-width:900px){.nav-phone{display:none}.call:not(.icon-only){display:none}.call.icon-only{display:inline-flex}}
+.call{display:inline-flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none;font-weight:600;white-space:nowrap;border:1px solid var(--ink);padding:9px 14px}
+.call:hover{background:var(--ink);color:#fff}
+.burger{display:none;margin-left:auto;background:none;color:var(--ink);border:1px solid var(--ink);padding:7px 10px;font:inherit;cursor:pointer}
+@media (max-width:900px){
+  .brand{font-size:1.1rem}
+  nav.main{display:none;position:absolute;left:0;right:0;top:64px;background:var(--paper);border-bottom:1px solid var(--rule);flex-direction:column;padding:10px}
+  nav.main.open{display:flex}
+  .burger{display:block}
+}
+
+/* buttons & forms */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--ink);cursor:pointer;font:inherit;font-weight:bold;font-size:.95rem;padding:12px 18px;text-decoration:none;background:transparent;color:var(--ink);border-radius:3px}
+.btn:hover{background:var(--ink);color:#fff}
+.btn.p{background:var(--red);border-color:var(--red);color:#fff}
+.btn.p:hover{background:var(--red-2);border-color:var(--red-2)}
+.btn.s{background:var(--ink);color:#fff}
+.btn.s:hover{background:#000}
+.btn.g{background:transparent}
+.btn.sm{padding:8px 13px;font-size:.88rem}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+label{display:block;font-weight:500;margin-bottom:6px;font-size:.95rem}
+input,select,textarea{width:100%;font:inherit;padding:11px 12px;border:1px solid var(--line);border-radius:0;background:#fff;color:var(--ink)}
+input:focus,select:focus,textarea:focus{border-color:var(--ink);outline:none}
+.field{margin-bottom:16px}
+.hint{font-size:.88rem;color:var(--mute);margin-top:4px}
+.err{color:var(--red);font-size:.88rem;margin-top:4px;display:none}
+.field.bad input,.field.bad select{border-color:var(--red)}
+.field.bad .err{display:block}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.choices label{margin:0;border:1px solid var(--line);padding:11px;cursor:pointer;text-align:center;font-weight:500;background:#fff}
+.choices input{position:absolute;opacity:0;width:0;height:0}
+.choices label:has(input:checked){border-color:var(--ink);background:var(--ink);color:#fff}
+.choices label:has(input:focus-visible){outline:2px solid var(--red)}
+
+/* hero — editorial, paper, asymmetric */
+.hero{padding:40px 0 36px;border-bottom:1px solid var(--line)}
+.hero .wrap{display:grid;grid-template-columns:7fr 5fr;gap:40px;align-items:center}
+.hero h1{margin-bottom:22px}
+.hero .lead{max-width:52ch}
+.hero .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center}
+.hero .facts{margin:26px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px 22px;color:var(--mute);font-size:.9rem}
+.hero .facts li::before{content:"·";margin-right:8px}
+.portrait{position:relative;justify-self:end;width:100%;max-width:400px}
+.portrait .photo{aspect-ratio:4/5;border-radius:0}
+.portrait figcaption{color:var(--mute);margin-top:8px;font-size:.9rem}
+.pipe{display:none}
+@media (max-width:900px){.hero .wrap{grid-template-columns:1fr}.portrait{justify-self:start;max-width:320px}.hero{padding:36px 0 40px}}
+
+/* planner band */
+.planner-band{background:var(--paper-2);color:var(--ink);padding:48px 0;border-top:1px solid var(--line)}
+.planner-band .wrap{display:grid;grid-template-columns:5fr 7fr;gap:48px;align-items:start}
+.planner-band p{color:var(--ink-2)}
+.planner{background:#fff;color:var(--ink);padding:22px;border:1px solid var(--line)}
+.planner h3{margin-bottom:4px}
+.planner .step-bar{display:flex;gap:6px;margin:14px 0 20px}
+.planner .step-bar i{flex:1;height:3px;background:var(--line)}
+.planner .step-bar i.on{background:var(--red)}
+.planner .nav{display:flex;justify-content:space-between;gap:10px;margin-top:8px}
+.planner fieldset{border:0;padding:0;margin:0}
+.planner .q{display:none}.planner .q.on{display:block}
+@media (max-width:900px){.planner-band .wrap{grid-template-columns:1fr}}
+
+/* editorial rows */
+.rows{border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:1fr 2fr 1.2fr;gap:28px;padding:34px 0;border-bottom:1px solid var(--line);align-items:start}
+.row h3{margin:0}
+.row .num{display:none}
+.row ul{padding-left:18px;margin:8px 0 12px;color:var(--ink-2)}
+.row .time{color:var(--mute);font-size:.9rem}
+.row .photo{aspect-ratio:4/3;border-radius:0}
+@media (max-width:800px){.row{grid-template-columns:1fr}.row .photo{max-width:360px}}
+
+/* visit dialogue */
+.visit{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.visit ol{list-style:none;padding:0;margin:0;counter-reset:v}
+.visit li{position:relative;padding:16px 0 16px 28px;border-bottom:1px solid var(--line)}
+.visit li::before{counter-increment:v;content:counter(v) ".";position:absolute;left:0;top:18px;font-size:1.1rem;color:var(--ink)}
+.visit li b{display:block;font-family:var(--serif);font-weight:500;font-size:1.25rem;margin-bottom:4px}
+.visit li p{margin:0;color:var(--ink-2)}
+@media (max-width:800px){.visit{grid-template-columns:1fr}}
+
+/* grids & cards (other pages) */
+.grid{display:grid;gap:22px}
+.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media (max-width:900px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.svc{border-top:1px solid var(--rule);padding:18px 0 0}
+.svc ul{padding-left:18px;margin:8px 0 12px;color:var(--ink-2)}
+.svc .from{color:var(--mute);font-size:.9rem}
+.photo{aspect-ratio:4/3;background:var(--paper-2);position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:10px;color:var(--mute);font-size:.8rem;border:1px solid var(--line)}
+.photo img{loading:lazy;position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+
+.photo span{position:relative}.photo.has{border:0}.photo.has::before{display:none}
+.proj{border:0;background:transparent;cursor:pointer;text-align:left;padding:0;font:inherit;color:inherit;width:100%}
+.proj .photo{aspect-ratio:3/2}
+.proj .body{padding:12px 0}
+.proj h3{font-size:1.25rem;margin:4px 0 2px}
+.proj .meta{display:flex;justify-content:space-between;color:var(--mute);font-size:.88rem}
+.proj:hover h3{text-decoration:underline;text-underline-offset:4px}
+.feature{display:grid;grid-template-columns:2fr 1fr;gap:22px}
+.feature .proj:first-child .photo{aspect-ratio:16/10}
+.feature .side{display:grid;gap:22px}
+@media (max-width:800px){.feature{grid-template-columns:1fr}}
+.tag{display:inline-block;font-size:.85rem;color:var(--mute)}
+.tag.brass{color:#8A5A00}.tag.ok{color:var(--ok)}
+.steps{counter-reset:s;display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.steps div{position:relative;padding-top:44px}
+.steps div::before{counter-increment:s;content:counter(s) ".";position:absolute;top:0;left:0;font-size:1.1rem}
+@media (max-width:900px){.steps{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:600px){.steps{grid-template-columns:1fr}}
+
+/* quotes — staggered, not cards */
+.quotes{columns:2;column-gap:40px}
+.review .who{font-weight:bold}
+.review{break-inside:avoid;padding:0 0 28px;margin:0 0 28px;border-bottom:1px solid var(--line)}
+.review .stars{display:none}
+.review p{font-size:1rem;line-height:1.55;margin:0 0 8px;max-width:none}
+.review .who{font-size:.9rem}
+.review .who small{color:var(--mute);margin-left:6px}
+@media (max-width:800px){.quotes{columns:1}}
+.pull{font-size:1.15rem;line-height:1.5;margin:0;font-style:italic;color:var(--ink-2)}
+.pull + .who{margin-top:10px;font-size:.92rem}
+
+.areas{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.98rem}
+.areas span::after{content:"·";margin-left:18px;color:var(--mute)}
+.areas span:last-child::after{content:""}
+.faq details{border-bottom:1px solid var(--line);padding:18px 0}
+.faq summary{cursor:pointer;font-weight:bold;font-size:1.02rem;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.faq summary::after{content:"+";color:var(--red);font-size:1.5rem;line-height:1}
+.faq details[open] summary::after{content:"–"}
+.faq details p{margin-top:10px;color:var(--ink-2)}
+.cta-band{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:36px 0}
+.cta-band .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px}
+.cta-band h2{margin:0;font-size:clamp(1.6rem,3vw,2.3rem)}
+.notice{background:#fff;border:1px solid var(--line);border-left:3px solid var(--red);padding:12px 16px;font-size:.95rem}
+.banner-sample{background:#FFF8D6;color:#5A4A00;text-align:center;font-size:.82rem;padding:6px 12px;border-bottom:1px solid #E8D98A}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+@media (max-width:800px){.split{grid-template-columns:1fr}}
+.badges{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:14px;color:var(--ink-2);font-size:.95rem}
+.badges span::before{content:"✓";color:var(--ok);margin-right:6px}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line)}
+th{font-weight:bold;font-size:.9rem;color:var(--mute)}
+.trust{display:none}
+
+/* views */
+.view{display:none}.view.on{display:block}
+.page-head{padding:40px 0 20px;border-bottom:1px solid var(--line);margin-bottom:32px}
+.page-head p{color:var(--ink-2);font-size:1.05rem}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(27,27,27,.7);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}
+.modal.on{display:flex}
+.modal .box{background:var(--paper);max-width:820px;width:100%;max-height:90vh;overflow:auto;padding:28px;position:relative}
+.modal .x{position:absolute;right:14px;top:10px;background:none;border:0;font-size:1.6rem;cursor:pointer;color:var(--mute)}
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:600px){.ba{grid-template-columns:1fr}}
+
+/* portal */
+.portal{display:grid;grid-template-columns:220px 1fr;gap:28px;padding:36px 0 72px}
+@media (max-width:900px){.portal{grid-template-columns:1fr}}
+.portal aside{border-top:1px solid var(--rule);padding-top:10px;align-self:start}
+.portal aside button{display:block;width:100%;text-align:left;background:none;border:0;font:inherit;padding:9px 0;cursor:pointer;color:var(--ink);border-bottom:1px solid var(--line)}
+.portal aside button.on{font-weight:600;color:var(--red)}
+.panel{border:1px solid var(--line);padding:22px;background:#fff;margin-bottom:22px}
+.progress{height:6px;background:var(--line);overflow:hidden}
+.progress i{display:block;height:100%;background:var(--red)}
+.tl{list-style:none;padding:0;margin:0}
+.tl li{display:grid;grid-template-columns:24px 1fr auto;gap:12px;align-items:start;padding:12px 0;border-bottom:1px solid var(--line)}
+.tl .dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--line);margin-top:6px}
+.tl .done .dot{background:var(--ok);border-color:var(--ok)}
+.tl .now .dot{border-color:var(--red);background:#fff}
+.tl small{color:var(--mute)}
+.login{max-width:440px;margin:56px auto;border:1px solid var(--line);padding:30px;background:#fff}
+.pf{display:none}.pf.on{display:block}
+.msg{border:1px solid var(--line);padding:12px 14px;margin-bottom:10px;max-width:80%;background:#fff}
+.msg.me{margin-left:auto;background:var(--paper-2)}
+.msg small{display:block;color:var(--mute);margin-top:4px}
+
+/* footer */
+footer{background:var(--paper-2);color:var(--ink-2);padding:40px 0 24px;border-top:1px solid var(--line)}
+footer .wrap{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:30px}
+footer h4{color:var(--ink);font-family:var(--sans);font-size:.95rem;margin-bottom:10px}
+footer a{color:var(--ink-2);text-decoration:none;display:block;padding:3px 0}
+footer a:hover{text-decoration:underline}
+footer .fine{grid-column:1/-1;border-top:1px solid var(--line);padding-top:18px;font-size:.85rem;display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
+@media (max-width:800px){footer .wrap{grid-template-columns:1fr 1fr}}
+.toast{position:fixed;left:50%;bottom:calc(72px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:4px;display:none;z-index:200}
+.toast.on{display:block}
+.sticky-call{display:none;position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-top:1px solid var(--line);padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px))}
+@media (max-width:700px){body{padding-bottom:64px}.sticky-call{display:grid;grid-template-columns:1fr 1.6fr;gap:8px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="banner-sample" id="sampleBanner" hidden>Preview — photos are licensed stock stand-ins and reviews are samples until hers are loaded.</div>
+
+<div class="util"><div class="wrap"><span>📍 <span data-address></span></span><span>🕒 <span data-hours></span></span><a data-tel href="#">📞 <span data-phone></span></a></div></div>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#home" aria-label="D N E Contracting home">
+      <svg class="mark" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 5 4 19h5v14h22V19h5z" fill="#B8322B"/><path d="M17 33v-9h6v9" fill="#FBF9F5"/></svg>
+      <span>D N E Contracting</span>
+    </a>
+    <button class="burger" id="burger" aria-expanded="false" aria-controls="mainNav">Menu</button>
+    <nav class="main" id="mainNav" aria-label="Main">
+      <a href="#services">Services</a>
+      <a href="#projects">Our work</a>
+      <a href="#about">About</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#faq">FAQ</a>
+      <a href="#portal" class="portal-link">Client portal</a>
+    </nav>
+    <a class="nav-phone" data-tel href="#"><span data-phone></span></a>
+    <a class="call" href="#planner">Free consultation</a>
+    <a class="call icon-only" data-tel href="#" aria-label="Call"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 1.9.7 2.8a2 2 0 01-.5 2.1L8 9.9a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.4c.9.3 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg></a>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============ HOME ============ -->
+<section class="view" id="v-home">
+  <div class="hero">
+    <div class="wrap">
+      <div>
+        <span class="eyebrow">Plumber · Pottstown, PA · Women-owned</span>
+        <h1>A remodel consultation that actually feels comfortable.</h1>
+        <p class="lead">We do the plumbing side of kitchen, bathroom and basement projects, plus the everyday repairs. The consultation is free, in your home, at your pace. You never have to decide on the spot.</p>
+        <div class="actions"><a class="btn p" href="#planner">Book a free consultation</a><a class="btn hero-call" data-tel href="#">Call <span data-phone></span></a></div>
+        <ul class="facts"><li>Women-owned</li><li>Free in-home consultation</li><li><span data-license></span></li><li>Insured</li><li>Owner on every job</li><li>422 corridor &amp; greater Philadelphia</li></ul>
+      </div>
+      <figure class="portrait"><div class="photo has"><img data-photo="owner" alt="Owner of D N E Contracting" fetchpriority="high" width="800" height="1000"></div><figcaption><span data-owner-cap></span></figcaption></figure>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="wrap">
+      <div class="split" style="align-items:start">
+        <div>
+          <span class="eyebrow">Why this exists</span>
+          <h2>Why the consultation is different</h2>
+        </div>
+        <div>
+          <p class="lead">Inviting someone into your home should never feel awkward, rushed, or uncomfortable.</p>
+          <p>If you've ever walked away from a contractor conversation feeling unheard, pressured, or talked down to, you're not alone. We hear it from women homeowners all the time. It's the reason a lot of leaky faucets, cold showers and half-planned bathrooms stay the way they are for years.</p>
+          <p>So the consultation is built the other way round. You talk, we listen. Then we explain what's possible with the pipes you have, what it might cost, how long it takes, and whether we're the right fit. We do plumbing, not cabinets or tile, and if your project needs those we'll tell you who we trust. If we're not the right fit, you still walk away with clarity.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec alt">
+    <div class="wrap">
+      <h2>Services</h2>
+      <div class="rows" id="svcGrid"></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="wrap visit">
+      <div>
+        <span class="eyebrow">The visit</span>
+        <h2>What the visit looks like</h2>
+        <p>Written down so there are no surprises.</p>
+        <a class="btn" href="#planner">Set one up</a>
+      </div>
+      <ol>
+        <li><b>You pick the time. We take our shoes off.</b><p>Evenings and Saturdays are fine. Even if you're just at the thinking stage.</p></li>
+        <li><b>We walk the room together.</b><p>You tell us what's bothering you and what you've been picturing. We mostly listen.</p></li>
+        <li><b>We explain, plainly.</b><p>Layout, plumbing, what's easy, what's not. If something's a bad idea for your house, we'll say so.</p></li>
+        <li><b>We leave. You get numbers in writing.</b><p>A few days later: what's included, what it costs, how long. Nothing hidden, nothing to sign that day.</p></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="sec alt">
+    <div class="wrap">
+      <div style="display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:12px;margin-bottom:26px">
+        <div><h2 style="margin:0">Recent work</h2></div>
+        <a href="#projects" style="font-weight:600">All projects →</a>
+      </div>
+      <div class="feature" id="homeProjects"></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="wrap split" style="align-items:start">
+      <div>
+        <span class="eyebrow">The question everyone asks</span>
+        <h2>What does it cost?</h2>
+        <p>We don't put ranges online, because a number picked before anyone has stood in your kitchen is either scary enough to stop you or low enough to disappoint you later. Neither is fair to you.</p>
+        <p>What you get instead: after the walk-through, a written estimate that lists what's included, what it costs, and how long it takes. If it's more than you'd hoped, we'll show you which parts are must-do and which can wait, or split it into phases.</p>
+        <a class="btn s" href="#planner">Get the real number for your space</a>
+      </div>
+      <div><p class="pull">"I was braced for a sales pitch. She gave me three options, told me which one she'd pick for her own house, and it was the cheapest one."</p><div class="who">Homeowner, Pottstown</div></div>
+    </div>
+  </div>
+
+  <div class="sec alt">
+    <div class="wrap">
+      <h2>Reviews</h2>
+      <div class="quotes" id="homeReviews"></div>
+      <a href="#reviews" style="font-weight:600">More reviews →</a>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="wrap split" style="align-items:start">
+      <div>
+        <span class="eyebrow">Where we work</span>
+        <h2>Where we work</h2>
+        <p>Kitchen, bathroom and basement plumbing projects in Montgomery, Chester, Bucks, Delaware and Philadelphia counties, and across the bridge in South Jersey.</p>
+      </div>
+      <div><div class="areas" id="areaChips"></div><p class="hint" style="margin-top:14px">On the edge of that? Ask. We'll tell you honestly.</p></div>
+    </div>
+  </div>
+
+  <div class="planner-band" id="plannerBand">
+    <div class="wrap">
+      <div>
+        
+        <h2>Request a free consultation</h2>
+        <p>Four quick questions so we come prepared. Nothing here commits you to anything, and if you'd rather just talk first, call <a data-tel href="#" data-phone></a>.</p>
+      </div>
+      <div class="planner" id="plannerHero"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SERVICES ============ -->
+<section class="view" id="v-services">
+  <div class="wrap page-head"><h1>Plumbing, done calmly</h1><p>The plumbing side of kitchen, bathroom and basement projects, plus water heaters and repairs. We don't quote prices online because every house is different, but you'll get honest numbers in writing after the visit.</p></div>
+  <div class="sec" style="padding-top:0"><div class="wrap"><div class="grid g3" id="svcGridFull"></div></div></div>
+  <div class="sec alt"><div class="wrap">
+    <h2>Emergencies</h2>
+    <div class="grid g2">
+      <div><p>Burst pipe, no hot water, sewage backing up, water where it shouldn't be. Shut the main off if you can (we'll talk you through it on the phone), then call. Same calm approach, just faster.</p></div>
+      <div class="notice">If it's an emergency (active leak, no hot water, sewage backup), call us directly rather than filling out a form. <a data-tel href="#"><b data-phone></b></a></div>
+    </div>
+  </div></div>
+  <div class="cta-band"><div class="wrap"><h2>Want to talk it through?</h2><a class="btn s" href="#planner">Book a free consultation</a></div></div>
+</section>
+
+<!-- ============ PROJECTS ============ -->
+<section class="view" id="v-projects">
+  <div class="wrap page-head"><h1>Our work</h1><p>Before, after, and what it took. Tap any project for the full story.</p></div>
+  <div class="wrap" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px" id="projFilters"></div>
+  <div class="sec" style="padding-top:0"><div class="wrap"><div class="grid g3" id="projGrid"></div></div></div>
+  <div class="cta-band"><div class="wrap"><h2>Picture your own space done.</h2><a class="btn s" href="#planner">Start with the planner</a></div></div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section class="view" id="v-about">
+  <div class="wrap page-head"><h1>Why we do things differently</h1></div>
+  <div class="sec" style="padding-top:0"><div class="wrap split">
+    <div class="photo has" style="aspect-ratio:4/5"><img data-photo="owner" alt="Owner of D N E Contracting"></div>
+    <div>
+      <p class="lead">Inviting someone into your home should never feel awkward, rushed, or uncomfortable.</p>
+      <p>If you've ever walked away from a contractor conversation feeling unheard, pressured, or talked down to, you're not alone. We hear this from women homeowners all the time. That's exactly why <span data-owner></span> built D N E Contracting the way she did.</p>
+      <p>She's been in the plumbing trade for <span data-years></span> years, and she runs every consultation herself. You'll meet the person who will actually be in your home, not a salesperson.</p>
+      <p>Our goal is simple: you should leave the conversation feeling more confident, not overwhelmed. Confident about what's possible, what it might cost, how long it takes, and whether we're the right fit for you.</p>
+      <div class="badges"><span>✓ <span data-license></span></span><span>✓ Fully insured</span><span>✓ Owner on every job</span><span>✓ Written estimates</span></div>
+    </div>
+  </div></div>
+  <div class="sec"><div class="wrap"><div class="photo has" style="aspect-ratio:21/9"><img data-photo="plans" alt="Going over a plan at the kitchen table"></div></div></div>
+  <div class="sec alt"><div class="wrap">
+    <h2>What we promise</h2>
+    <div class="grid g3">
+      <div class="svc"><h3>We listen first</h3><p>You know your home. We start by understanding what's bothering you and what you're hoping for.</p></div>
+      <div class="svc"><h3>Plain language, honest numbers</h3><p>No jargon, no vague ranges, no surprise line items. Costs and timelines in writing.</p></div>
+      <div class="svc"><h3>You can see the work</h3><p>Every client gets a private project page with photos, schedule, and payments, so you always know where things stand.</p></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ============ REVIEWS ============ -->
+<section class="view" id="v-reviews">
+  <div class="wrap page-head"><h1>Reviews</h1><p>From homeowners we've worked with.</p></div>
+  <div class="sec" style="padding-top:0"><div class="wrap"><div id="reviewGrid"></div>
+  <div style="margin-top:28px;display:flex;gap:10px;flex-wrap:wrap" id="reviewLinks"></div></div></div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="view" id="v-faq">
+  <div class="wrap page-head"><h1>Questions people ask</h1></div>
+  <div class="sec" style="padding-top:0"><div class="wrap faq" style="max-width:760px" id="faqList"></div></div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="view" id="v-contact">
+  <div class="wrap page-head"><h1>Get in touch</h1><p>Message, call, or send a note. Even if you're just starting to think about it.</p></div>
+  <div class="sec" style="padding-top:0"><div class="wrap split" style="align-items:start">
+    <div>
+      <div class="panel"><h3>Call or text</h3><p><a data-tel href="#" style="font-family:var(--font-d);font-size:1.5rem;font-weight:800;text-decoration:none" data-phone></a></p><p class="hint" data-hours></p></div>
+      <div class="panel"><h3>Email</h3><p><a data-mail href="#" data-email></a></p></div>
+      <div class="panel"><h3>Based in</h3><p data-address></p><p class="hint" data-area-label></p></div>
+      <div class="panel"><h3>Find us on</h3><div id="socialLinks" style="display:flex;gap:8px;flex-wrap:wrap"></div></div>
+    </div>
+    <form class="panel" id="contactForm" novalidate>
+      <h3>Send a note</h3>
+      <div class="field"><label for="cName">Your name</label><input id="cName" name="name" required autocomplete="name"><div class="err">Please add your name.</div></div>
+      <div class="field"><label for="cPhone">Phone</label><input id="cPhone" name="phone" type="tel" inputmode="tel" required autocomplete="tel" placeholder="(484) 555-0123"><div class="err">A 10-digit phone number, please.</div></div>
+      <div class="field"><label for="cEmail">Email</label><input id="cEmail" name="email" type="email" required autocomplete="email"><div class="err">That email doesn't look right.</div></div>
+      <div class="field"><label for="cMsg">What's on your mind?</label><textarea id="cMsg" name="message" rows="4" placeholder="Even a sentence is fine."></textarea></div>
+      <button class="btn p" type="submit">Send note</button>
+      <p class="hint" style="margin-top:10px">We reply within one business day. No follow-up pressure.</p>
+    </form>
+  </div></div>
+</section>
+
+<!-- ============ PLANNER (full) ============ -->
+<section class="view" id="v-planner">
+  <div class="wrap page-head"><h1>Tell us about your space</h1><p>Four quick questions. It helps us come prepared, and it takes about a minute. Nothing here commits you to anything.</p></div>
+  <div class="sec" style="padding-top:0"><div class="wrap" style="max-width:640px"><div class="planner" style="box-shadow:var(--shadow)" id="plannerFull"></div></div></div>
+</section>
+
+<!-- ============ REFER ============ -->
+<section class="view" id="v-refer">
+  <div class="wrap page-head"><h1>Know someone who's been putting off a remodel?</h1><p>Send them our way. When they book a consultation, we'll thank you with <b>$<span data-ref-reward></span></b>. If they go ahead with a project, that becomes <b>$<span data-ref-bonus></span></b>.</p></div>
+  <div class="sec" style="padding-top:0"><div class="wrap" style="max-width:640px">
+    <form class="panel" id="referForm" novalidate>
+      <h3>Your details</h3>
+      <div class="grid g2"><div class="field"><label for="rName">Your name</label><input id="rName" required></div><div class="field"><label for="rPhone">Your phone</label><input id="rPhone" type="tel" required></div></div>
+      <h3 style="margin-top:8px">Who you're referring</h3>
+      <div class="grid g2"><div class="field"><label for="fName">Their name</label><input id="fName" required></div><div class="field"><label for="fPhone">Their phone or email</label><input id="fPhone" required></div></div>
+      <div class="field"><label for="fNote">Anything we should know?</label><input id="fNote" placeholder="e.g. she mentioned her bathroom last month"></div>
+      <button class="btn p" type="submit">Send referral</button>
+      <p class="hint" style="margin-top:10px">We'll reach out gently and mention you by name only if you're okay with that.</p>
+    </form>
+  </div></div>
+</section>
+
+<!-- ============ PORTAL ============ -->
+<section class="view" id="v-portal">
+  <div id="portalLogin" class="login">
+    <h2 style="font-size:1.6rem">Client portal</h2>
+    <p class="hint">See your project schedule, photos, documents, and payments. Log in with the email you gave us.</p>
+    <form id="loginForm" novalidate>
+      <div class="field"><label for="lEmail">Email</label><input id="lEmail" type="email" required autocomplete="email"></div>
+      <div class="field"><label for="lPass">Password</label><input id="lPass" type="password" required autocomplete="current-password"></div>
+      <button class="btn s" type="submit" style="width:100%">Log in</button>
+      <p class="hint" style="margin-top:12px"><a href="#" id="forgotLink">Forgot password?</a> · Don't have a login yet? It's created when your project starts.</p>
+    </form>
+    <div id="demoBox" class="notice" style="margin-top:16px" hidden>Portal login isn't connected yet. <button class="btn sm g" type="button" id="demoBtn" style="margin-left:6px">Open sample project</button></div>
+  </div>
+
+  <div id="portalApp" class="wrap portal" hidden>
+    <aside>
+      <div style="padding:6px 12px 14px"><b id="pClient"></b><br><small class="hint" id="pProject"></small></div>
+      <button class="on" data-pf="overview">Overview</button>
+      <button data-pf="schedule">Schedule</button>
+      <button data-pf="photos">Photos</button>
+      <button data-pf="payments">Payments</button>
+      <button data-pf="docs">Documents</button>
+      <button data-pf="messages">Messages</button>
+      <hr style="border:0;border-top:1px solid var(--line);margin:10px 0">
+      <button id="logoutBtn">Log out</button>
+    </aside>
+    <div>
+      <div class="pf on" id="pf-overview">
+        <div class="panel"><h3 id="pTitle"></h3><p class="hint" id="pStage"></p><div class="progress"><i id="pBar"></i></div><p style="margin-top:14px" id="pNext"></p></div>
+        <div class="grid g3">
+          <div class="panel"><small class="hint">Estimated completion</small><h3 id="pDone"></h3></div>
+          <div class="panel"><small class="hint">Paid so far</small><h3 id="pPaid"></h3></div>
+          <div class="panel"><small class="hint">Next payment</small><h3 id="pDue"></h3></div>
+        </div>
+      </div>
+      <div class="pf" id="pf-schedule"><div class="panel"><h3>Schedule</h3><ul class="tl" id="pTimeline"></ul></div></div>
+      <div class="pf" id="pf-photos"><div class="panel"><h3>Progress photos</h3><p class="hint">Uploaded each week. Tap to enlarge.</p><div class="grid g3" id="pPhotos"></div></div></div>
+      <div class="pf" id="pf-payments"><div class="panel"><h3>Invoices</h3><table><thead><tr><th>Invoice</th><th>Due</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody id="pInvoices"></tbody></table></div></div>
+      <div class="pf" id="pf-docs"><div class="panel"><h3>Documents</h3><ul id="pDocs" style="list-style:none;padding:0"></ul></div></div>
+      <div class="pf" id="pf-messages"><div class="panel"><h3>Messages</h3><div id="pMsgs"></div><form id="msgForm" style="display:flex;gap:8px;margin-top:14px"><input id="msgIn" placeholder="Ask anything about your project" aria-label="Message"><button class="btn s sm" type="submit">Send</button></form></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THANK YOU ============ -->
+<section class="view" id="v-thanks">
+  <div class="wrap" style="max-width:640px;padding:64px 20px">
+    <div class="tag ok" style="margin-bottom:12px">Received</div>
+    <h1 style="font-size:2.2rem">Thanks, <span id="tyName"></span>. Here's what happens next.</h1>
+    <ol style="font-size:1.05rem;line-height:1.7;padding-left:22px">
+      <li>Check your email. There's a short note from <span data-owner></span> with a couple of ideas for your <span id="tyType"></span>.</li>
+      <li>She'll reach out within one business day to find a time that suits you.</li>
+      <li>The visit itself is calm and takes about an hour. Ask as many questions as you want.</li>
+    </ol>
+    <div id="tyBook"></div>
+    <div class="panel" style="margin-top:22px"><h3 style="font-size:1.2rem">Worth having on the day (none of it required)</h3><ul style="margin:0;padding-left:20px;color:var(--ink-2)"><li>Any photos or saved ideas you like — a phone screenshot is fine</li><li>A rough sense of budget, if you have one</li><li>Anyone else in the household who'd want to weigh in. A friend is welcome too.</li></ul></div>
+    <a class="btn" id="vcardBtn" href="#" download="DNE-Contracting.vcf" style="margin-top:6px">Save our number to your phone</a>
+    <p class="hint" style="margin-top:20px">Changed your mind or just want to chat first? That's completely okay. <a data-tel href="#" data-phone></a></p>
+    <a class="btn g" href="#projects" style="margin-top:8px">Look at recent projects while you wait</a>
+  </div>
+</section>
+
+<!-- ============ PLAYBOOK (owner-only, not linked in nav: #playbook) ============ -->
+<section class="view" id="v-playbook">
+  <div class="wrap page-head"><h1>Owner playbook</h1><p>Copy-ready posts, DM scripts, and comment replies. This page isn't linked anywhere public. Tap any block to copy it.</p></div>
+  <div class="sec" style="padding-top:0"><div class="wrap" style="max-width:820px" id="playbook"></div></div>
+</section>
+
+</main>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true"><div class="box"><button class="x" aria-label="Close">×</button><div id="modalBody"></div></div></div>
+<div class="toast" id="toast" role="status"></div>
+<div class="sticky-call"><a class="btn" data-tel href="#">Call</a><a class="btn p" href="#planner">Free consultation</a></div>
+
+<footer>
+  <div class="wrap">
+    <div><a class="brand" href="#home" style="margin-bottom:10px"><span>D N E Contracting</span></a><p style="max-width:40ch">Residential plumber in Pottstown, PA. Serving Royersford, Limerick, Collegeville, Phoenixville, Boyertown, King of Prussia, Norristown and Philadelphia.</p><p><span data-license></span> · Fully insured</p></div>
+    <div><h4>Services</h4><a href="#services">Kitchen & bath plumbing</a><a href="#services">Basement plumbing</a><a href="#services">Water heaters</a><a href="#services">Repairs & repipes</a></div>
+    <div><h4>Company</h4><a href="#about">About</a><a href="#projects">Our work</a><a href="#reviews">Reviews</a><a href="#faq">FAQ</a><a href="#refer">Refer a friend</a></div>
+    <div><h4>Contact</h4><a data-tel href="#" data-phone></a><a data-mail href="#" data-email></a><a href="#portal">Client portal</a><a href="#contact">Send a note</a></div>
+    <div class="fine"><span>© <span id="yr"></span> D N E Contracting. <span data-address></span></span><span>Website by <a href="https://tbsol.net" style="display:inline;padding:0">TB Solutions</a></span></div>
+  </div>
+</footer>
+<script>
+(function(){
+const C=window.DNE, B=C.business, I=C.integrations;
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const store={get(k,d){try{const v=localStorage.getItem('dne:'+k);return v?JSON.parse(v):d}catch{return d}},set(k,v){try{localStorage.setItem('dne:'+k,JSON.stringify(v))}catch{}},del(k){try{localStorage.removeItem('dne:'+k)}catch{}}};
+
+/* ---------- content ---------- */
+const SERVICES=[
+ {id:'kitchen',img:'undersink',title:'Kitchen & bathroom plumbing',blurb:'The plumbing side of a remodel: moving a sink, adding an island prep sink, converting a tub to a shower, roughing in a new bathroom. We work with your cabinet or tile people, or point you to ours.',pts:['Sink, dishwasher, disposal and ice-maker lines moved or added','Tub-to-shower conversions: new valve, drain, and supply','Full rough-in and finish for new or relocated bathrooms','Permits and inspections handled'],time:'Rough-in usually 1–3 days, finish 1 day'},
+ {id:'basement',img:'sump',title:'Basement plumbing & drainage',blurb:'Adding a half-bath or laundry below grade, or fixing the water that keeps you from using the space at all.',pts:['Sewage ejector pits and half-bath rough-in','Laundry relocation with proper drain and vent','Sump pumps with battery backup, French drains','Backwater valves and floor drains'],time:'Usually 1 day to 1 week'},
+ {id:'repair',img:'pex',title:'Water heaters & repairs',blurb:'The calls that can\'t wait, done properly the first time. Same calm approach, just faster.',pts:['Tank and tankless water heater replacement','Leaks, burst pipes, frozen lines, main shut-offs','Faucets, toilets, fixtures, drains','Galvanized-to-PEX repipes'],time:'Most repairs same or next day'}
+];
+const PROJECTS=[
+ {id:1,img:'undersink',type:'kitchen',title:'Sink and dishwasher moved to the window wall',town:'Royersford',weeks:'4 days',summary:'A 1970s galley with a leaking drain line and the sink in the wrong place. We ran new PEX supply and a new drain to the window wall, added a shut-off for the dishwasher, and re-vented the line so the cabinet crew could set the new base the following week.',scope:['New supply and drain to relocated sink','Dishwasher and disposal hooked up','Vent corrected to code','Inspection passed first visit'],quote:'"She told me exactly what would happen each day and it happened. The cabinet guy said it was the cleanest rough-in he\'d worked behind."',who:'Homeowner, Royersford'},
+ {id:2,img:'tubvalve',type:'bathroom',title:'Tub-to-shower plumbing',town:'Pottstown',weeks:'3 days',summary:'A hall bathroom the family had stopped using. Out came the cast-iron tub; we set a new pressure-balance valve, moved the drain to a linear position, and re-vented the line that had gurgled for years. The tile setter came in behind us.',scope:['Pressure-balanced shower valve','Drain relocated and sloped for a linear drain','Line re-vented','Coordinated with the tile installer'],quote:'"Honest about what it would cost from the first visit. No surprises at the end."',who:'Homeowner, Pottstown'},
+ {id:3,img:'sump',type:'basement',title:'Basement half-bath rough-in with ejector pit',town:'Limerick',weeks:'1 week',summary:'Finished basement, no bathroom, washer upstairs. Two other quotes called for breaking up half the slab. We cut one pit, installed a sealed sewage ejector, and roughed in a toilet, vanity and laundry box off it.',scope:['Sewage ejector system with alarm','Toilet, vanity and laundry rough-in','Vent tied into existing stack','Township permit and inspection'],quote:'"I asked a hundred questions. She answered every one, and it cost less than the other two quotes."',who:'Homeowner, Limerick'},
+ {id:4,img:'tankless',type:'repair',title:'Tankless water heater conversion',town:'Collegeville',weeks:'1 day',summary:'A 40-gallon tank that couldn\'t keep up with two teenagers. We swapped it for a condensing tankless unit, upsized the gas line, added a condensate drain and isolation valves for easy flushing.',scope:['Condensing tankless unit','Gas line upsized','Isolation valves for annual flush','Old tank hauled away'],quote:'"Hot water that doesn\'t run out, and she showed me how to flush it myself."',who:'Homeowner, Collegeville'},
+ {id:5,img:'solder',type:'repair',title:'Galvanized-to-PEX repipe',town:'Phoenixville',weeks:'3 days',summary:'Rusty water and a shower that went cold whenever the washer ran. We replaced every galvanized supply line with PEX on a manifold, so each fixture has its own shut-off and pressure stays even.',scope:['Whole-house PEX repipe','Manifold with per-fixture shut-offs','New main shut-off and PRV','Walls patched where opened'],quote:'"Three days, minimal holes, and she labeled every valve. My kind of contractor."',who:'Homeowner, Phoenixville'},
+ {id:6,img:'subfloor',type:'basement',title:'Sump pump, backup and floor drain',town:'Boyertown',weeks:'1 day',summary:'Not glamorous, but it made the basement usable: new sump pump with battery backup, check valve, and a floor drain by the utility sink.',scope:['Sump pump with battery backup','Check valve and discharge rerouted','Floor drain added','Dehumidifier drain line'],quote:'"Fixed the actual problem instead of selling me a bigger one."',who:'Homeowner, Boyertown'}
+];
+const REVIEWS=[
+ {name:'Karen D.',town:'Pottstown · Google',text:'I put off my hall bathroom for almost two years because I dreaded having contractors in the house. This was nothing like that. She came out on a Saturday, took her shoes off at the door, and just asked what was bugging me about the room. No clipboard, no "we can do this today if you sign." Estimate came Wednesday, I thought about it for a week, and called her back. The plumbing was done in three days, exactly when she said.'},
+ {name:'Michelle R.',town:'Royersford · Google',text:'Clear estimate, clear schedule, photos on my project page every day. My husband travels and I never once felt uncomfortable having her here.'},
+ {name:'Pat & Linda S.',town:'Limerick · Google',text:'Two other companies told us we needed to break up half the basement floor. She looked at it for ten minutes, said one ejector pit would do it, and it did. Half-bath and laundry downstairs for way less than we were bracing for.'},
+ {name:'Jen A.',town:'Collegeville · Google',text:'Honest about what I did and didn\'t need. Nobody has ever talked me OUT of spending money before lol. Tankless heater has been perfect.'},
+ {name:'Denise K.',town:'Phoenixville · Google',text:'She said "you don\'t have to decide today" and actually meant it. Called me back a week later just to answer a question, not to push. Repiped the whole house in three days and labeled every single valve.'},
+ {name:'Tom W.',town:'Boyertown · Google',text:'Sump pump, battery backup, and a floor drain. Basement has been dry through two storms that used to flood it. Showed up when she said, cleaned up after, price matched the estimate to the dollar.'}
+];
+const FAQ=[
+ ['Is the consultation really free, and is there a catch?','Yes, and no. We come to your home, walk the space with you, and talk through options, costs, and timelines. You don\'t have to decide anything that day, or ever. If we\'re not the right fit, you still leave with clarity.'],
+ ['Why don\'t you list prices online?','Because a number without seeing the space is a guess, and guesses either scare people off or set them up for a surprise. After the visit you get a written estimate that\'s specific to your home.'],
+ ['How long does the plumbing take?','Most repairs and water heaters are same or next day. The plumbing rough-in for a bathroom or kitchen remodel is usually 1–3 days, with a return visit to set fixtures after tile and cabinets. A basement half-bath with an ejector pit is about a week; a whole-house repipe 2–4 days. The schedule is in writing and on your project page.'],
+ ['Do you do the tile, cabinets and drywall too?','No. We do plumbing, and we do it properly. If your remodel needs tile, cabinets, electrical or drywall, we\'ll tell you who we trust and coordinate our work around theirs so nobody is waiting on anybody.'],
+ ['Who will actually be in my house?','The owner runs every consultation and is on every job. If your project also needs an electrician or tile setter, she\'ll tell you ahead of time and coordinate the schedule so you know who is coming and when.'],
+ ['Are you licensed and insured?','Yes. '+B.license+', and fully insured. Certificate available on request.'],
+ ['How do payments work?','A deposit to reserve your start date, progress payments at agreed milestones, and the balance when you\'re happy with the finished work. Every invoice appears on your project page and can be paid by card or bank transfer.'],
+ ['Do you handle permits?','Yes. We pull the permit with the borough or township (Pottstown, Limerick, Upper Providence and so on all differ) and schedule the rough-in and final inspections. It\'s on the schedule you can see in your project page.'],
+ ['What areas do you serve?',B.serviceAreaLabel+'. If you\'re on the edge of that, just ask.'],
+ ['Can I have someone with me during the visit?','Of course. A partner, a friend, a neighbor, a grown kid on speakerphone — whoever makes you comfortable. Some people like a second pair of ears for the numbers. It never bothers us.'],
+ ['What if I get the estimate and it\'s more than I can do right now?','Tell us. We\'ll show you what\'s essential versus nice-to-have, or split the project into phases. Plenty of clients do the plumbing and layout now and the finishes next year. There\'s no penalty for saying not yet.'],
+ ['I\'m only at the thinking stage. Is it too early to reach out?','No. Early conversations are the easiest ones. Message us and we\'ll talk through it without scheduling anything if that\'s what feels comfortable.']
+];
+
+/* ---------- helpers ---------- */
+document.addEventListener('input',e=>{const t=e.target;if(t.type!=='tel')return;const d=t.value.replace(/\D/g,'').slice(0,10);t.value=d.length>6?`(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`:d.length>3?`(${d.slice(0,3)}) ${d.slice(3)}`:d});
+function bindBusiness(){
+  $$('[data-phone]').forEach(e=>e.textContent=B.phone);
+  $$('[data-tel]').forEach(e=>e.href='tel:'+B.phoneE164);
+  $$('[data-email]').forEach(e=>e.textContent=B.email);
+  $$('[data-mail]').forEach(e=>e.href='mailto:'+B.email);
+  $$('[data-address]').forEach(e=>e.textContent=B.address);
+  $$('[data-hours]').forEach(e=>e.textContent=B.hours);
+  $$('[data-license]').forEach(e=>{const ok=B.license&&!/X{3,}/i.test(B.license);e.textContent=ok?B.license:'PA registered contractor';});
+  $$('[data-years]').forEach(e=>e.textContent=B.yearsInBusiness+'+');
+  const own=(B.ownerName&&!/your name/i.test(B.ownerName))?B.ownerName:'the owner';$$('[data-owner]').forEach(e=>e.textContent=own);$$('[data-owner-cap]').forEach(e=>e.textContent=/your name/i.test(B.ownerName||'')?'Owner':B.ownerName+', owner');
+  $$('[data-area-label]').forEach(e=>e.textContent=B.serviceAreaLabel);
+  $$('[data-ref-reward]').forEach(e=>e.textContent=C.referral.reward);
+  $$('[data-ref-bonus]').forEach(e=>e.textContent=C.referral.bonus);
+  $('#yr').textContent=new Date().getFullYear();
+  $('#areaChips').innerHTML=B.serviceAreas.map(a=>`<span>${a}</span>`).join('');
+  const soc=[['Google',B.googleReviewUrl],['Yelp',B.yelpUrl],['Facebook',B.facebookUrl],['Instagram',B.instagramUrl]].filter(x=>x[1]);
+  $('#socialLinks').innerHTML=soc.length?soc.map(([n,u])=>`<a class="btn g sm" href="${u}" target="_blank" rel="noopener">${n}</a>`).join(''):'<span class="hint">Add links in the config to show them here.</span>';
+  $('#reviewLinks').innerHTML=(B.googleReviewUrl?`<a class="btn p" href="${B.googleReviewUrl}" target="_blank" rel="noopener">Leave a Google review</a>`:'')+(B.yelpUrl?`<a class="btn g" href="${B.yelpUrl}" target="_blank" rel="noopener">Review on Yelp</a>`:'');
+  if(C.sampleContent)$('#sampleBanner').hidden=false;
+}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),3500)}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function photo(label,cls='',key=''){const src=key&&window.DNE_PHOTOS&&window.DNE_PHOTOS[key];return `<div class="photo ${cls}${src?' has':''}">${src?`<img src="${src}" alt="${esc(label)}" loading="lazy">`:''}<span>${src?'':esc(label)}</span></div>`}
+function validPhone(v){return v.replace(/\D/g,'').length===10}
+function validEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)}
+function utm(){const p=new URLSearchParams(location.search);const o={};['utm_source','utm_medium','utm_campaign','utm_content','gclid','fbclid'].forEach(k=>{if(p.get(k))o[k]=p.get(k)});return o}
+async function send(kind,data){
+  const payload={kind,...data,source_page:location.href,submitted_at:new Date().toISOString(),...utm()};
+  store.set('last_'+kind,payload);
+  if(!I.n8nWebhook){console.warn('n8nWebhook not set — payload:',payload);return {ok:true,offline:true}}
+  const r=await fetch(I.n8nWebhook,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  if(!r.ok)throw new Error('Webhook '+r.status);
+  return {ok:true};
+}
+function track(ev,params){try{if(window.gtag)gtag('event',ev,params||{});if(window.fbq)fbq('trackCustom',ev,params||{})}catch{}}
+
+/* ---------- render: services, projects, reviews, faq ---------- */
+function svcCard(s,full){return `<div class="svc"><h3>${s.title}</h3><p>${s.blurb}</p>${full?`<ul>${s.pts.map(p=>`<li>${p}</li>`).join('')}</ul>`:''}<span class="from">${s.time}</span><div style="margin-top:12px"><a class="btn sm" href="#planner?type=${s.id}">Talk about a ${s.id}</a></div></div>`}
+function svcRow(s,i){return `<div class="row"><div><div class="num">0${i+1}</div><h3>${s.title}</h3><div class="time">${s.time}</div></div><div><p>${s.blurb}</p><ul>${s.pts.slice(0,3).map(p=>`<li>${p}</li>`).join('')}</ul><a href="#planner?type=${s.id}" style="font-weight:600">Talk about a ${s.id} →</a></div>${photo(s.title,'',s.img)}</div>`}
+$('#svcGrid').innerHTML=SERVICES.map(svcRow).join('');
+$('#svcGridFull').innerHTML=SERVICES.map(s=>svcCard(s,true)).join('');
+function projCard(p){return `<button class="proj" data-proj="${p.id}">${photo(`After: ${p.title}`,'',p.img)}<div class="body"><span class="tag">${p.type}</span><h3 style="margin:8px 0 0">${p.title}</h3><div class="meta"><span>${p.town}</span><span>${p.weeks}</span></div></div></button>`}
+$('#homeProjects').innerHTML=projCard(PROJECTS[0])+'<div class="side">'+projCard(PROJECTS[1])+projCard(PROJECTS[2])+'</div>';
+let filter='all';
+function renderProjects(){$('#projGrid').innerHTML=PROJECTS.filter(p=>filter==='all'||p.type===filter).map(projCard).join('');
+ $('#projFilters').innerHTML=[['all','All'],['kitchen','Kitchen'],['bathroom','Bathroom'],['basement','Basement'],['repair','Water heaters & repairs']].map(([k,l])=>`<button class="btn sm ${filter===k?'s':'g'}" data-f="${k}">${l}</button>`).join('')}
+renderProjects();
+$('#projFilters').addEventListener('click',e=>{const b=e.target.closest('[data-f]');if(b){filter=b.dataset.f;renderProjects()}});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-proj]');if(!b)return;const p=PROJECTS.find(x=>x.id==b.dataset.proj);
+ openModal(`<span class="tag">${p.type}</span><h2 style="margin-top:8px">${p.title}</h2><p class="hint">${p.town} · ${p.weeks}</p>${p.before?`<div class="ba">${photo('Before','',p.before)}${photo('After','',p.img)}</div>`:photo('After','',p.img)}<p style="margin-top:16px">${p.summary}</p><h3>What we did</h3><ul>${p.scope.map(s=>`<li>${s}</li>`).join('')}</ul><p class="pull" style="margin-top:18px">${p.quote}</p><div class="who">${p.who}</div><a class="btn p" href="#planner?type=${p.type}" style="margin-top:16px" onclick="document.getElementById('modal').classList.remove('on')">Talk about something like this</a>`)});
+function revCard(r){return `<div class="review"><p>${r.text}</p><div class="who">${r.name}<small>${r.town}</small></div></div>`}
+$('#homeReviews').innerHTML=REVIEWS.slice(0,4).map(revCard).join('');
+$('#reviewGrid').innerHTML=REVIEWS.map(revCard).join('');$('#reviewGrid').className='quotes';
+$('#faqList').innerHTML=FAQ.map(([q,a])=>`<details><summary>${q}</summary><p>${a}</p></details>`).join('');
+
+/* ---------- modal ---------- */
+function openModal(html){$('#modalBody').innerHTML=html;$('#modal').classList.add('on');$('#modal .x').focus()}
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal'||e.target.classList.contains('x'))$('#modal').classList.remove('on')});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#modal').classList.remove('on')});
+
+/* ---------- planner (funnel) ---------- */
+const SCORE={timeline:{asap:40,'3months':30,thisyear:20,unsure:10},budget:{'50k+':30,'25-50k':25,'10-25k':15,'5-10k':5,unsure:8},type:{kitchen:20,bathroom:15,basement:10,repair:5}};
+function tier(s){return s>=80?'URGENT':s>=60?'HOT':s>=40?'WARM':'COLD'}
+function buildPlanner(root,compact){
+  root.innerHTML=`
+  <h3>${compact?'A few quick questions':'Your project'}</h3>
+  <p class="hint">Takes about a minute. No obligation.</p>
+  <div class="step-bar"><i class="on"></i><i></i><i></i><i></i></div>
+  <form novalidate>
+   <fieldset class="q on" data-q="1"><label>What are you thinking about?</label><div class="choices">
+     <label><input type="radio" name="type" value="kitchen">Kitchen</label><label><input type="radio" name="type" value="bathroom">Bathroom</label><label><input type="radio" name="type" value="basement">Basement</label><label><input type="radio" name="type" value="repair">Repair / water heater</label></div><div class="err">Pick one to continue.</div></fieldset>
+   <fieldset class="q" data-q="2"><label>Where are you with it?</label><div class="choices">
+     <label><input type="radio" name="timeline" value="asap">Ready soon</label><label><input type="radio" name="timeline" value="3months">Next few months</label><label><input type="radio" name="timeline" value="thisyear">Sometime this year</label><label><input type="radio" name="timeline" value="unsure">Just thinking</label></div><div class="err">Pick the closest one.</div></fieldset>
+   <fieldset class="q" data-q="3"><label>Rough budget in mind? (It's fine if you don't know.)</label><div class="choices">
+     <label><input type="radio" name="budget" value="5-10k">Under $10k</label><label><input type="radio" name="budget" value="10-25k">$10–25k</label><label><input type="radio" name="budget" value="25-50k">$25–50k</label><label><input type="radio" name="budget" value="50k+">$50k+</label><label><input type="radio" name="budget" value="unsure">Not sure yet</label></div><div class="err">Pick one, or "not sure".</div></fieldset>
+   <fieldset class="q" data-q="4">
+     <div class="field"><label>Your name</label><input name="name" autocomplete="name" required><div class="err">Please add your name.</div></div>
+     <div class="field"><label>Phone</label><input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(484) 555-0123" required><div class="err">A 10-digit phone number, please.</div></div>
+     <div class="field"><label>Email</label><input name="email" type="email" autocomplete="email" required><div class="err">That email doesn't look right.</div></div>
+     <div class="field"><label>Town</label><input name="town" autocomplete="address-level2" placeholder="e.g. Pottstown"></div>
+     <div class="field" id="srcField" hidden><label>How did they reach us? (owner use)</label><select name="source"><option value="website">Website</option><option value="facebook">Facebook</option><option value="google">Google profile</option><option value="lsa">Google Local Services</option><option value="yelp">Yelp</option><option value="nextdoor">Nextdoor</option><option value="thumbtack">Thumbtack</option><option value="angi">Angi</option><option value="houzz">Houzz</option><option value="referral">Referral</option><option value="realtor">Realtor</option><option value="phone">Phone call</option></select></div>
+     <div class="field"><label>Anything you want us to know?</label><textarea name="notes" rows="2" placeholder="Optional"></textarea></div>
+     <div class="field"><label>How do you prefer we reach out?</label><div class="choices"><label><input type="radio" name="contact_pref" value="text" checked>Text</label><label><input type="radio" name="contact_pref" value="call">Call</label><label><input type="radio" name="contact_pref" value="email">Email</label></div></div>
+     <input type="text" name="company" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+   </fieldset>
+   <div class="nav"><button type="button" class="btn g" data-back hidden>Back</button><button type="button" class="btn p" data-next>Continue</button><button type="submit" class="btn p" data-submit hidden>Book my free consultation</button></div>
+   <p class="hint" style="margin-top:10px;text-align:center">We'll never share your details or send you anything you didn't ask for.</p>
+  </form>`;
+  const form=$('form',root);let step=1;
+  const draft=store.get('planner_draft',{});Object.entries(draft).forEach(([k,v])=>{const el=form.elements[k];if(!el)return;if(el.length&&el[0].type==='radio'){[...el].forEach(r=>r.checked=r.value===v)}else el.value=v});
+  const qs=new URLSearchParams((location.hash.split('?')[1]||''));if(qs.get('owner')){const sf=$('#srcField',root);if(sf)sf.hidden=false}const pre=qs.get('type');if(pre&&form.elements.type){[...form.elements.type].forEach(r=>r.checked=r.value===pre)}
+  form.addEventListener('change',()=>{const d={};new FormData(form).forEach((v,k)=>{if(k!=='company')d[k]=v});store.set('planner_draft',d)});
+  function show(){$$('.q',form).forEach(q=>q.classList.toggle('on',+q.dataset.q===step));$$('.step-bar i',root).forEach((i,x)=>i.classList.toggle('on',x<step));
+    $('[data-back]',form).hidden=step===1;$('[data-next]',form).hidden=step===4;$('[data-submit]',form).hidden=step!==4;const f=$('.q.on input:not([type=radio]),.q.on input[type=radio]',form);if(f&&!compact)f.focus()}
+  function valid(){const q=$('.q.on',form);let ok=true;
+    if(step<4){ok=!!$('input:checked',q);q.classList.toggle('bad',!ok);$('.err',q).style.display=ok?'none':'block'}
+    else{[['name',v=>v.trim().length>1],['phone',validPhone],['email',validEmail]].forEach(([n,fn])=>{const el=form.elements[n],f=el.closest('.field'),good=fn(el.value);f.classList.toggle('bad',!good);if(!good)ok=false})}
+    return ok}
+  $('[data-next]',form).addEventListener('click',()=>{if(!valid())return;step++;show();track('planner_step',{step})});
+  $('[data-back]',form).addEventListener('click',()=>{step--;show()});
+  form.addEventListener('submit',async e=>{e.preventDefault();if(!valid())return;if(form.elements.company.value)return;
+    const d={};new FormData(form).forEach((v,k)=>{if(k!=='company')d[k]=v.trim()});
+    d.score=(SCORE.timeline[d.timeline]||0)+(SCORE.budget[d.budget]||0)+(SCORE.type[d.type]||0);d.score_tier=tier(d.score);
+    const btn=$('[data-submit]',form);btn.disabled=true;btn.textContent='Sending…';
+    try{const r=await send('lead',d);store.del('planner_draft');track('generate_lead',{project_type:d.type,score:d.score});
+      $('#tyName').textContent=d.name.split(' ')[0];$('#tyType').textContent=d.type==='repair'?'plumbing issue':d.type;
+      $('#tyBook').innerHTML=I.calendlyUrl?`<a class="btn p" href="${I.calendlyUrl}" target="_blank" rel="noopener">Pick a time now</a>`:'';
+      location.hash='#thanks';if(r.offline)toast('Saved locally — connect the n8n webhook in config to send for real.')}
+    catch(err){btn.disabled=false;btn.textContent='Book my free consultation';toast('That didn\'t go through. Try again, or call '+B.phone)}
+  });
+  show();
+}
+buildPlanner($('#plannerHero'),true);buildPlanner($('#plannerFull'),false);
+
+/* ---------- contact + referral forms ---------- */
+function simpleForm(id,kind,fields,okMsg){const f=$(id);f.addEventListener('submit',async e=>{e.preventDefault();let ok=true;const d={};
+  fields.forEach(([sel,key,fn])=>{const el=$(sel,f),v=el.value.trim(),good=!fn||fn(v);el.closest('.field').classList.toggle('bad',!good);if(!good)ok=false;d[key]=v});
+  if(!ok)return;const b=$('button[type=submit]',f);b.disabled=true;
+  try{await send(kind,d);f.reset();toast(okMsg);track(kind+'_submitted')}catch{toast('Couldn\'t send. Call '+B.phone+' instead.')}b.disabled=false})}
+simpleForm('#contactForm','contact',[['#cName','name',v=>v.length>1],['#cPhone','phone',validPhone],['#cEmail','email',validEmail],['#cMsg','message']],'Sent. We reply within one business day.');
+simpleForm('#referForm','referral',[['#rName','referrer_name',v=>v.length>1],['#rPhone','referrer_phone',validPhone],['#fName','friend_name',v=>v.length>1],['#fPhone','friend_contact',v=>v.length>4],['#fNote','note']],'Thank you. We\'ll reach out to them gently.');
+
+/* ---------- client portal ---------- */
+const DEMO={client:'Sample Client',project:'Hall bathroom remodel',stage:'Tile and waterproofing',pct:55,next:'Vanity and fixtures install starts Monday.',done:'Oct 17, 2026',paid:8500,total:17000,due:{amt:4250,date:'Oct 3'},
+ timeline:[['Consultation and estimate','Sep 2','done'],['Contract signed, deposit received','Sep 9','done'],['Demo and rough plumbing','Sep 15–19','done'],['Tile and waterproofing','Sep 22–30','now'],['Vanity, toilet, fixtures','Oct 1–7',''],['Paint, trim, final walkthrough','Oct 8–15',''],['Warranty period begins','Oct 17','']],
+ photos:['Week 1: demo complete','Week 1: new drain rough-in','Week 2: shower pan set','Week 2: membrane cured','Week 3: wall tile started','Week 3: floor tile'],
+ invoices:[['INV-0031','Sep 9','$8,500','Paid'],['INV-0032','Oct 3','$4,250','Due'],['INV-0033','On completion','$4,250','Upcoming']],
+ docs:['Signed contract','Scope of work','Schedule','Permit and inspection record','Product and fixture list','Warranty (issued at completion)'],
+ msgs:[['them','Hi! Tile is going in this week. I posted photos of the shower pan. Any questions, ask away.','Mon 4:12pm'],['me','Looks great. Is the niche going where we discussed?','Mon 6:30pm'],['them','Yes, centered on the back wall at eye height. I\'ll send a photo once it\'s framed.','Mon 6:41pm']]};
+let sb=null;if(I.supabaseUrl&&I.supabaseAnonKey&&window.supabase){sb=window.supabase.createClient(I.supabaseUrl,I.supabaseAnonKey)}else{$('#demoBox').hidden=false}
+function renderPortal(d){
+  $('#portalLogin').hidden=true;$('#portalApp').hidden=false;
+  $('#pClient').textContent=d.client;$('#pProject').textContent=d.project;$('#pTitle').textContent=d.project;$('#pStage').textContent='Current stage: '+d.stage+' · '+d.pct+'% complete';$('#pBar').style.width=d.pct+'%';$('#pNext').textContent=d.next;
+  $('#pDone').textContent=d.done;$('#pPaid').textContent='$'+d.paid.toLocaleString()+' of $'+d.total.toLocaleString();$('#pDue').textContent='$'+d.due.amt.toLocaleString()+' · '+d.due.date;
+  $('#pTimeline').innerHTML=d.timeline.map(([t,w,s])=>`<li class="${s}"><span class="dot"></span><div><b>${t}</b><br><small>${w}</small></div><span class="tag ${s==='done'?'ok':s==='now'?'brass':''}">${s==='done'?'Done':s==='now'?'In progress':'Upcoming'}</span></li>`).join('');
+  $('#pPhotos').innerHTML=d.photos.map(p=>photo(p)).join('');
+  $('#pInvoices').innerHTML=d.invoices.map(([n,due,a,s])=>`<tr><td>${n}</td><td>${due}</td><td>${a}</td><td><span class="tag ${s==='Paid'?'ok':s==='Due'?'brass':''}">${s}</span></td><td>${s==='Due'?'<button class="btn s sm" data-pay>Pay now</button>':s==='Paid'?'<a href="#" class="hint">Receipt</a>':''}</td></tr>`).join('');
+  $('#pDocs').innerHTML=d.docs.map(x=>`<li style="padding:10px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between"><span>${x}</span><a href="#" class="hint">Download</a></li>`).join('');
+  $('#pMsgs').innerHTML=d.msgs.map(([w,t,ts])=>`<div class="msg ${w}">${t}<small>${ts}</small></div>`).join('');
+}
+$('#demoBtn').addEventListener('click',()=>renderPortal(DEMO));
+$('#logoutBtn').addEventListener('click',async()=>{if(sb)await sb.auth.signOut();$('#portalApp').hidden=true;$('#portalLogin').hidden=false});
+$$('.portal aside [data-pf]').forEach(b=>b.addEventListener('click',()=>{$$('.portal aside [data-pf]').forEach(x=>x.classList.remove('on'));b.classList.add('on');$$('.pf').forEach(p=>p.classList.toggle('on',p.id==='pf-'+b.dataset.pf))}));
+$('#loginForm').addEventListener('submit',async e=>{e.preventDefault();if(!sb){toast('Login isn\'t connected yet. Use the sample project below.');return}
+  const {data,error}=await sb.auth.signInWithPassword({email:$('#lEmail').value,password:$('#lPass').value});if(error){toast('Email or password didn\'t match.');return}
+  /* Expected Supabase shape: table "projects" with customer_email, plus views "project_timeline", "project_photos", "invoices", "project_docs", "project_messages" (see setup guide). */
+  try{const {data:p}=await sb.from('projects').select('*').eq('customer_email',data.user.email).order('created_at',{ascending:false}).limit(1).single();
+    if(!p){toast('No project found for this login yet.');return}
+    renderPortal({client:p.customer_name,project:p.title,stage:p.current_stage||'',pct:p.percent_complete||0,next:p.next_step||'',done:p.estimated_completion||'',paid:p.amount_paid||0,total:p.total_cost||0,due:{amt:p.next_payment_amount||0,date:p.next_payment_due||''},timeline:p.timeline||[],photos:p.photos||[],invoices:p.invoices||[],docs:p.docs||[],msgs:p.messages||[]})}
+  catch(err){toast('Logged in, but the project couldn\'t load. Call us and we\'ll sort it.')}});
+$('#forgotLink').addEventListener('click',async e=>{e.preventDefault();if(!sb){toast('Login isn\'t connected yet.');return}const em=$('#lEmail').value;if(!validEmail(em)){toast('Type your email first.');return}await sb.auth.resetPasswordForEmail(em);toast('Reset link sent if that email has an account.')});
+$('#msgForm').addEventListener('submit',e=>{e.preventDefault();const v=$('#msgIn').value.trim();if(!v)return;$('#pMsgs').insertAdjacentHTML('beforeend',`<div class="msg me">${esc(v)}<small>Just now</small></div>`);$('#msgIn').value='';send('portal_message',{message:v}).catch(()=>{});toast('Sent. Replies come by text and appear here.')});
+document.addEventListener('click',e=>{if(e.target.closest('[data-pay]'))toast('Connect Stripe payment links in n8n to enable this button.')});
+
+/* ---------- owner playbook ---------- */
+const PB=[
+ ['Facebook group post (full)',`Hi ladies, I wanted to ask a quick question and share something I've been hearing a lot lately.\n\nHas anyone else ever felt uncomfortable during a contractor visit? Not unsafe, just… unseen. Rushed. Talked over. Pressured to make decisions before you were ready.\n\nI've had so many women homeowners tell me they put off remodeling their kitchen, bathroom, or basement because they dreaded the consultation part more than the actual work. That honestly stuck with me.\n\nSo I wanted to offer something simple. I do free, no-pressure in-home consultations for:\n• Kitchen remodels\n• Bathroom remodels\n• Basement remodels where plumbing is involved\nServing homeowners along the 422 corridor and the greater Philadelphia area.\n\nHere's what that looks like. We walk through your space calmly. We talk through options in plain language. You can ask as many questions as you want. There is zero pressure to decide on the spot.\n\nIf you've been thinking about a remodel but want a conversation that feels respectful and comfortable, you're welcome to message me. Even if you're just in the early thinking stage. And if you're not ready, that's completely okay too.\n\nThanks for reading 🤍`],
+ ['Facebook group post (short)',`Hi ladies, quick question. Has anyone else ever put off a kitchen or bathroom remodel because they didn't want to deal with a pushy or uncomfortable contractor conversation?\n\nI hear this from women all the time. I offer free, no-pressure in-home consultations for kitchen remodels, bathroom remodels, and basement remodels involving plumbing, along the 422 corridor and the greater Philly area.\n\nNo rushing. No talking down. Ask as many questions as you want.\n\nIf you're thinking about a remodel and want a calm, respectful conversation, feel free to message me. Even if you're just starting to think about it 🤍`],
+ ['Personal profile post (shortest)',`If you've been thinking about remodeling but keep putting it off because you dread the contractor part, I get it.\n\nI offer free, no-pressure consultations for kitchens, bathrooms, and plumbing-related basement projects in the 422 corridor and Philly area.\n\nCalm conversation. Clear answers. No rush. Message me if you'd like to talk 🤍`],
+ ['DM 1 — she says "Hi" / "Interested"',`Hi! Thanks for reaching out 😊 What kind of space are you thinking about updating right now, kitchen, bathroom, or basement?`],
+ ['DM 2 — after she names the space',`Got it, thanks for sharing. Are you just starting to think about it, or have you been sitting on the idea for a while?`],
+ ['DM 3 — validation',`That makes total sense. A lot of women I talk to say the same thing, especially when the contractor conversations feel rushed or uncomfortable.\n\nWhat I offer is a calm, no-pressure in-home consultation where we just walk through the space, talk options, and answer questions. No decisions needed that day.`],
+ ['DM 4 — gentle booking ask',`If it helps, we could set up a free consultation just to talk things through and see if it feels like a good fit. If not, that's completely okay too.\n\nWould weekdays or weekends usually work better for you?`],
+ ['DM 5 — she hesitates',`Of course, take your time. If you want, we can also just talk through things without scheduling anything yet. Whatever feels most comfortable for you.`],
+ ['DM 6 — confirmation',`Perfect, I have you down for [day/time]. We'll just walk through the space, talk options, and answer questions. No pressure at all.\n\nIf anything changes or you think of questions beforehand, feel free to message me anytime. Looking forward to meeting you 😊`],
+ ['Comment — "I\'m interested"',`I'm glad this resonated 🤍 Feel free to message me and we can talk through what you're thinking, no pressure at all.`],
+ ['Comment — "Can you message me?"',`Of course, happy to 😊 I'll send you a message.`],
+ ['Comment — "Do you do kitchens or bathrooms?"',`Yes, both 😊 Kitchens, bathrooms, and basement projects where plumbing is involved. If you want, feel free to message me and I'm happy to answer questions.`],
+ ['Comment — "What area?"',`We serve homeowners along the 422 corridor and the greater Philly area. You're welcome to message me if you'd like to see if we're a good fit for your location.`],
+ ['Comment — "How much does it cost?"',`It really depends on the space and what you're hoping to do, and I don't like giving guesses online. If you want, feel free to message me and we can talk through it privately.`],
+ ['Comment — "Following"',`Thanks for following along 🤍 Feel free to reach out anytime if you have questions.`],
+ ['Comment — bad past experience',`I'm really sorry you went through that. Unfortunately I hear that a lot. If you ever want to talk things through at your own pace, you're welcome to message me.`],
+ ['Rules',`Public comments are for warmth, credibility, and safety. DMs are where booking happens.\n• Never quote a price publicly.\n• Never say yes/no to "do you serve X" publicly — invite the DM.\n• Never argue or defend. Validate.\n• 1–2 quality group posts per week. Personal profile post every 2–3 weeks.\n• After a consultation, send the client to the website planner or just book them directly.`]
+];
+$('#playbook').innerHTML=PB.map(([t,b],i)=>`<div class="panel" style="cursor:pointer" data-copy="${i}" title="Tap to copy"><h3 style="display:flex;justify-content:space-between">${t}<span class="tag">copy</span></h3><p style="white-space:pre-wrap;max-width:none;margin:0;color:var(--steel)">${esc(b)}</p></div>`).join('');
+$('#playbook').addEventListener('click',e=>{const p=e.target.closest('[data-copy]');if(!p)return;navigator.clipboard.writeText(PB[p.dataset.copy][1]).then(()=>toast('Copied')).catch(()=>toast('Select and copy manually'))});
+
+/* ---------- routing ---------- */
+const VIEWS=['home','services','projects','about','reviews','faq','contact','planner','refer','portal','thanks','playbook'];
+function route(){let h=(location.hash||'#home').slice(1).split('?')[0];if(!VIEWS.includes(h))h='home';
+  $$('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+h));$$('nav.main a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+h));
+  $('#mainNav').classList.remove('open');$('#burger').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'instant'});
+  const META={home:['D N E Contracting — Women-owned plumber, Pottstown PA','Free, no-pressure in-home consultations for kitchens, bathrooms and basement plumbing across the 422 corridor and greater Philadelphia.'],services:['Kitchen, bathroom & basement plumbing services — Pottstown PA','Kitchen and bathroom remodels, basement bathrooms and laundry, water heaters and plumbing repair. Free in-home consultation.'],projects:['Recent kitchen & bathroom remodels near Pottstown','Before-and-after projects in Royersford, Limerick, Collegeville, Phoenixville and Boyertown.'],about:['About D N E Contracting — women-owned, owner on every job','Why the consultation feels different: we listen first, explain plainly, and you never decide on the spot.'],reviews:['Reviews — D N E Contracting','What homeowners say about working with a calm, no-pressure remodeling contractor.'],faq:['Remodel FAQ — cost, timeline, licensing, service area','Straight answers about consultations, pricing, timelines, permits and payments.'],contact:['Contact D N E Contracting — (484) 939-8535','Call, text or send a note. Pottstown, PA. Even if you are just starting to think about it.'],planner:['Tell us about your space — free consultation','Four quick questions so we come prepared. No obligation.'],refer:['Refer a friend — D N E Contracting','$100 when they book a consultation, $250 if they go ahead with a project.'],portal:['Client portal — D N E Contracting','Your schedule, photos, documents and payments.']};
+  const m=META[h]||META.home;document.title=m[0];const md=document.querySelector('meta[name=description]');if(md)md.content=m[1];const cn=document.getElementById('canon');if(cn)cn.href='https://dnecontracting.com/'+(h==='home'?'':'#'+h);track('page_view',{page:h});
+  if(h==='planner'){const pre=new URLSearchParams((location.hash.split('?')[1]||'')).get('type');if(pre){const f=$('#plannerFull form');[...f.elements.type].forEach(r=>r.checked=r.value===pre)}}}
+window.addEventListener('hashchange',route);
+$('#burger').addEventListener('click',()=>{const n=$('#mainNav');n.classList.toggle('open');$('#burger').setAttribute('aria-expanded',n.classList.contains('open'))});
+
+/* ---------- analytics (optional, only if IDs set) ---------- */
+if(I.ga4Id){const s=document.createElement('script');s.src='https://www.googletagmanager.com/gtag/js?id='+I.ga4Id;s.async=true;document.head.appendChild(s);window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config',I.ga4Id)}
+if(I.metaPixelId){!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init',I.metaPixelId);fbq('track','PageView')}
+
+$$('img[data-photo]').forEach(i=>{const s=window.DNE_PHOTOS[i.dataset.photo];if(s)i.src=s;});bindBusiness();route();
+{const v=['BEGIN:VCARD','VERSION:3.0','FN:'+B.name,'ORG:'+B.name,'TEL;TYPE=CELL:'+B.phoneE164,'EMAIL:'+B.email,'ADR:;;'+B.address,'URL:'+location.origin,'END:VCARD'].join('\r\n');const b=$('#vcardBtn');if(b)b.href='data:text/vcard;charset=utf-8,'+encodeURIComponent(v);}
+})();
+</script>
+</body>
+</html>
