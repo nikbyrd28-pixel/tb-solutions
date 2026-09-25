@@ -283,7 +283,7 @@ th{font-weight:bold;font-size:.9rem;color:var(--mute)}
 .sk-tools{grid-column:1/-1}
 .sk-types{display:flex;gap:8px;margin-bottom:12px}.sk-type{font:inherit;padding:8px 14px;border:1px solid var(--ink);background:#fff;cursor:pointer;border-radius:3px}.sk-type.s{background:var(--ink);color:#fff}
 .sk-dims{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-bottom:12px;font-size:.95rem}.sk-dims label{display:flex;align-items:center;gap:6px;margin:0;font-weight:normal}.sk-dims input{width:72px;padding:6px 8px}.sk-dims select{width:auto;padding:6px 8px}
-.sk-palette{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}.sk-palette .sk-pw{border-style:dashed}
+.sk-palette{display:grid;gap:4px;margin-bottom:6px}.sk-group summary{cursor:pointer;font-weight:bold;font-size:.95rem;padding:6px 0;list-style:none;display:flex;align-items:center;gap:8px}.sk-group summary::before{content:'+';width:18px;height:18px;border:1px solid var(--ink);border-radius:3px;display:inline-grid;place-items:center;font-size:.9rem;line-height:1}.sk-group[open] summary::before{content:'–'}.sk-group div{display:flex;flex-wrap:wrap;gap:6px;padding:2px 0 8px}.sk-palette .sk-pw{border-style:dashed}
 .sk-view{display:flex;gap:0;margin-bottom:10px}.sk-vbtn{font:inherit;padding:8px 16px;border:1px solid var(--ink);background:#fff;cursor:pointer}.sk-vbtn:first-child{border-radius:3px 0 0 3px}.sk-vbtn:last-child{border-radius:0 3px 3px 0;border-left:0}.sk-vbtn.s{background:var(--ink);color:#fff}
 .sk-sel{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;font-weight:bold;margin:10px 0 6px;min-height:40px}.sk-sel.off{visibility:hidden}.sk-sel label{display:inline-flex;align-items:center;gap:5px;margin:0;font-weight:normal;font-size:.95rem}.sk-sel input{width:64px;padding:6px 8px}
 .sk-status{display:inline-flex}.sk-st{font:inherit;font-size:.85rem;padding:5px 10px;border:1px solid var(--ink);background:#fff;cursor:pointer;margin-left:-1px}.sk-st:first-child{border-radius:3px 0 0 3px;margin-left:0}.sk-st:last-child{border-radius:0 3px 3px 0}.sk-st.s{background:var(--red);border-color:var(--red);color:#fff}
@@ -955,14 +955,14 @@ const I={
  glasswall:{l:'Glass partition',w:6,d:.3,h:8,pw:1,c:{nw:[150,350],rm:[300,900]}},
  closet:{l:'Closet',w:4,d:2,h:8,pw:1,c:{nw:[300,900],rm:[500,1500]}}
 };
-const CAT={kitchen:['sink','range','fridge','dish','cab','island','islandsink','pantry','table','door','window','wall','halfwall','glasswall','closet'],
- bathroom:['toilet','vanity','dvanity','tub','shower','shower4','washer','dryer','linen','door','window','wall','halfwall','glasswall','closet'],
- basement:['toilet','vanity','shower','washer','dryer','usink','heater','sump','barsink','sofa','tv','stairs','post','door','egress','wall','halfwall','glasswall','closet']};
+const GROUPS=[['Kitchen',['sink','range','fridge','dish','cab','island','islandsink','pantry','table']],['Bathroom',['toilet','vanity','dvanity','tub','shower','shower4','linen']],['Laundry & utility',['washer','dryer','usink','heater','sump']],['Living & basement',['sofa','tv','barsink','stairs','post']],['Walls & openings',['wall','halfwall','glasswall','closet','door','window','egress']]];
+const OPEN={kitchen:['Kitchen','Walls & openings'],bathroom:['Bathroom','Walls & openings'],basement:['Living & basement','Laundry & utility','Bathroom','Walls & openings']};
 const PRESETS={
  kitchen:{w:12,l:12,plumb:'top',items:[{k:'fridge',x:0,y:0},{k:'cab',x:3,y:0,w:1},{k:'sink',x:4,y:0},{k:'dish',x:7,y:0},{k:'range',x:9,y:0},{k:'island',x:4.5,y:5.5,w:3.5},{k:'door',x:8.5,y:11.5},{k:'window',x:4,y:0}]},
  bathroom:{w:5,l:8,plumb:'left',items:[{k:'vanity',x:0,y:0,r:90},{k:'toilet',x:0,y:3.3,r:270},{k:'tub',x:0,y:5.5},{k:'door',x:4.5,y:.5,r:90},{k:'window',x:1,y:7.5}]},
- basement:{w:14,l:12,plumb:'top',items:[{k:'washer',x:0,y:0},{k:'dryer',x:2.3,y:0},{k:'usink',x:4.6,y:0},{k:'heater',x:12,y:0},{k:'stairs',x:11,y:4},{k:'sofa',x:1,y:7},{k:'tv',x:1.5,y:11},{k:'door',x:8,y:11.5}]}};
-const ROOM={kitchen:{floor:[6,14],paint:[1.5,3],counters:[60,150],light:[800,2500]},bathroom:{floor:[12,25],paint:[1.5,3],light:[500,1500]},basement:{floor:[5,12],paint:[1.5,3],light:[900,2800]}};
+ basement:{w:16,l:13,plumb:'top',items:[{k:'washer',x:0,y:0},{k:'dryer',x:2.3,y:0},{k:'usink',x:4.6,y:0},{k:'heater',x:14,y:0},{k:'post',x:8,y:6},{k:'stairs',x:13,y:4},{k:'sofa',x:1,y:8},{k:'tv',x:1.5,y:12},{k:'door',x:9,y:12.5}]}};
+const ROOM={kitchen:{floor:[6,14],paint:[1.5,3],counters:[60,150],light:[800,2500]},bathroom:{floor:[12,25],paint:[1.5,3],counters:[60,150],light:[500,1500]},basement:{floor:[5,12],paint:[1.5,3],counters:[60,150],light:[900,2800]}};
+const hasCounters=()=>S.items.some(it=>['cab','sink','dish','island','islandsink','range','barsink'].includes(it.k)&&it.s!=='remove');
 let S={type:'kitchen',w:12,l:10,plumb:'top',items:[],opts:{}};let sel=-1,drag=null,scale=28,ox=34,oy=34,view='2d';
 const cv=document.getElementById('skCanvas');if(!cv)return null;const cx=cv.getContext('2d');if(!cx.roundRect)cx.roundRect=function(x,y,w,h){this.rect(x,y,w,h)};
 const $k=id=>document.getElementById(id);
@@ -1016,13 +1016,14 @@ function resizeTo(it,bw,bh){const rot=(it.r||0)%180!==0;bw=Math.max(0.5,Math.min
 function setSize(W,D){if(sel<0)return;const it=S.items[sel];const d=def(it);it.w=Math.max(0.5,Math.min(40,+W||d.w));it.d=(isOpen(it)||(isPart(it)&&it.k!=='closet'))?d.d:Math.max(0.5,Math.min(40,+D||d.d));clamp(it);check();draw();save();sizeUI(it)}
 function sizeUI(it){const d=def(it);$k('skIW').value=it.w||d.w;$k('skID').value=it.d||d.d;$k('skIDwrap').hidden=isOpen(it)||(isPart(it)&&it.k!=='closet');$k('skSelName').textContent=d.l.replace(/ \d.*$/,'');
  $k('skStatus').innerHTML=statusesFor(it).map(s=>`<button type="button" class="sk-st${(it.s||'keep')===s?' s':''}" data-st="${s}">${SLBL[s]}</button>`).join('')}
-function add(k){const d=I[k];const it={k,x:snap(Math.max(0,(S.w-d.w)/2)),y:snap(Math.max(0,(S.l-d.d)/2)),r:0,s:'new'};if(isOpen(it))it.y=S.l-d.d;S.items.push(it);clamp(it);sel=S.items.length-1;ui();check();draw();save()}
+function freeSpot(w,h){const occ=S.items.filter(it=>!isOpen(it)).map(box);for(let y=0;y<=S.l-h+1e-6;y+=.5)for(let x=0;x<=S.w-w+1e-6;x+=.5){const c={x,y,w,h};if(!occ.some(o=>overlap(o,c)))return [x,y]}return [snap(Math.max(0,(S.w-w)/2)),snap(Math.max(0,(S.l-h)/2))]}
+function add(k){$k('skOpts').dataset.dirty='1';const d=I[k];const [fx,fy]=isOpen({k})?[snap(Math.max(0,(S.w-d.w)/2)),S.l-d.d]:freeSpot(d.w,d.d);const it={k,x:fx,y:fy,r:0,s:'new'};S.items.push(it);clamp(it);sel=S.items.length-1;ui();check();draw();save()}
 function rotate(){if(sel<0)return;const it=S.items[sel];it.r=((it.r||0)+90)%360;clamp(it);check();draw();save();sizeUI(it)}
 function del(){if(sel<0)return;S.items.splice(sel,1);sel=-1;ui();check();draw();save()}
 function ui(){$k('skSel').classList.toggle('off',sel<0);if(sel>=0)sizeUI(S.items[sel]);
- $k('skPalette').innerHTML=CAT[S.type].map(k=>`<button type="button" class="btn sm${I[k].pw?' sk-pw':''}" data-add="${k}">${I[k].l}</button>`).join('');
+ if($k('skPalette').dataset.type!==S.type){$k('skPalette').dataset.type=S.type;$k('skPalette').innerHTML=GROUPS.map(([g,keys])=>`<details class="sk-group"${OPEN[S.type].includes(g)?' open':''}><summary>${g}</summary><div>${keys.map(k=>`<button type="button" class="btn sm${I[k].pw?' sk-pw':''}" data-add="${k}">${I[k].l}</button>`).join('')}</div></details>`).join('')}
  $k('skW').value=S.w;$k('skL').value=S.l;$k('skPlumb').value=S.plumb;$$('.sk-type').forEach(b=>b.classList.toggle('s',b.dataset.type===S.type));
- const R=ROOM[S.type];$k('skOpts').innerHTML=[['floor','New flooring'],['paint','Paint'],['counters','New countertops'],['light','Lighting and electrical']].filter(([k])=>R[k]).map(([k,l])=>`<label><input type="checkbox" data-opt="${k}"${S.opts[k]?' checked':''}> ${l}</label>`).join('')}
+ const R=ROOM[S.type];$k('skOpts').innerHTML=[['floor','New flooring'],['paint','Paint'],['counters','New countertops'],['light','Lighting and electrical']].filter(([k])=>R[k]&&(k!=='counters'||hasCounters())).map(([k,l])=>`<label><input type="checkbox" data-opt="${k}"${S.opts[k]?' checked':''}> ${l}</label>`).join('')}
 function gap(a,b){const dx=Math.max(0,Math.max(a.x,b.x)-Math.min(a.x+a.w,b.x+b.w));const dy=Math.max(0,Math.max(a.y,b.y)-Math.min(a.y+a.h,b.y+b.h));return Math.hypot(dx,dy)}
 function overlap(a,b){return a.x<b.x+b.w-0.01&&b.x<a.x+a.w-0.01&&a.y<b.y+b.h-0.01&&b.y<a.y+a.h-0.01}
 function wallDist(b){return {top:b.y,bottom:S.l-(b.y+b.h),left:b.x,right:S.w-(b.x+b.w)}[S.plumb]}
@@ -1037,7 +1038,7 @@ function estimate(){const L=[];let lo=0,hi=0;const R=ROOM[S.type];let work=false
    else if(s==='new'){a=(c.rpl?c.rpl[0]*f:0)+(c.rough?c.rough[0]:0);z=(c.rpl?c.rpl[1]*f:0)+(c.rough?c.rough[1]:0);lab=`New ${name.toLowerCase()}`+(c.perft?` (${ftin(b.W)})`:'');if(c.rough)rough=true}
    if(d.mv&&S.plumb!=='none'&&s!=='new'&&wallDist(b)>2){L.push({l:`${name} moved off the plumbing wall`,a:d.mv[0],z:d.mv[1],mv:1});lo+=d.mv[0];hi+=d.mv[1];rough=true}}
   if(z>0){L.push({l:lab,a,z});lo+=a;hi+=z;work=true}});
- if(S.type==='basement'&&S.items.some(it=>['toilet','shower','shower4'].includes(it.k)&&it.s==='new')){L.push({l:'Sewage ejector pit for a basement bathroom',a:4500,z:8000});lo+=4500;hi+=8000;rough=true}
+ if(S.type==='basement'&&S.items.some(it=>def(it).p&&it.s==='new')){L.push({l:'Ejector or drain pump for new below-grade plumbing',a:3500,z:8000});lo+=3500;hi+=8000;rough=true}
  const area=S.w*S.l,per=2*(S.w+S.l);
  if(S.opts.floor&&R.floor){L.push({l:`New flooring (${Math.round(area)} sq ft)`,a:area*R.floor[0],z:area*R.floor[1]});lo+=area*R.floor[0];hi+=area*R.floor[1];work=true}
  if(S.opts.paint&&R.paint){const sq=per*8;L.push({l:'Paint walls and ceiling',a:sq*R.paint[0],z:sq*R.paint[1]});lo+=sq*R.paint[0];hi+=sq*R.paint[1];work=true}
@@ -1048,13 +1049,13 @@ function estimate(){const L=[];let lo=0,hi=0;const R=ROOM[S.type];let work=false
  return {lo,hi,lines:L,kept:S.items.filter(it=>(it.s||'keep')==='keep'&&kindOf(it)!=='furn').length}}
 function check(){const notes=[];const B=S.items.filter(it=>it.s!=='remove').map(it=>({it,b:box(it)}));const find=k=>B.find(x=>x.it.k===k);
  for(let i=0;i<B.length;i++)for(let j=i+1;j<B.length;j++){if(isOpen(B[i].it)||isOpen(B[j].it))continue;if(overlap(B[i].b,B[j].b))notes.push(['bad',`The ${B[i].b.d.l.toLowerCase()} overlaps the ${B[j].b.d.l.toLowerCase()}.`])}
- if(S.type==='kitchen'){const s=find('sink')||find('islandsink'),r=find('range'),f=find('fridge'),dw=find('dish'),isl=find('island')||find('islandsink');
+ {const s=find('sink')||find('islandsink'),r=find('range'),f=find('fridge'),dw=find('dish'),isl=find('island')||find('islandsink');
   if(s&&r&&f){const c=o=>[o.b.x+o.b.w/2,o.b.y+o.b.h/2];const Ln=(a,b)=>Math.hypot(c(a)[0]-c(b)[0],c(a)[1]-c(b)[1]);const l1=Ln(s,r),l2=Ln(r,f),l3=Ln(f,s),sum=l1+l2+l3;
    if(sum>=13&&sum<=26&&Math.min(l1,l2,l3)>=4&&Math.max(l1,l2,l3)<=9)notes.push(['ok','Sink, stove and fridge make a comfortable working triangle.']);else if(sum>26||Math.max(l1,l2,l3)>9)notes.push(['warn',`Sink, stove and fridge are spread out (${ftin(Math.max(l1,l2,l3))} on the longest leg). Under 9 feet per leg saves a lot of walking.`]);else notes.push(['warn','Sink, stove and fridge are tight together. Four feet between each gives you counter space to work.'])}
   if(s&&dw){if(gap(s.b,dw.b)<=0.6)notes.push(['ok','Dishwasher is right next to the sink, where the drain wants it.']);else notes.push(['warn','Dishwasher is away from the sink. Next to it is cheaper to plumb and easier to load.'])}
   if(isl){let m=Infinity;B.forEach(o=>{if(o===isl||isOpen(o.it))return;m=Math.min(m,gap(isl.b,o.b))});m=Math.min(m,isl.b.x,isl.b.y,S.w-(isl.b.x+isl.b.w),S.l-(isl.b.y+isl.b.h));if(m<3)notes.push(['bad',`Only ${ftin(m)} of walkway around the island. 36 inches is the minimum, 42 is comfortable.`]);else if(m<3.5)notes.push(['warn',`${ftin(m)} of walkway around the island. That works; 42 inches is comfortable for two people.`]);else notes.push(['ok',`${ftin(m)} of walkway around the island. Plenty.`])}
   if(r){const rb=r.b;if(B.find(o=>o.it.k==='window'&&overlap({x:rb.x-0.3,y:rb.y-0.3,w:rb.w+0.6,h:rb.h+0.6},o.b)))notes.push(['warn','A stove under a window makes venting awkward. A sink under the window is the classic move.'])}}
- if(S.type!=='kitchen'){const t=find('toilet');if(t){let side=Infinity;const b=t.b;const rot=(t.it.r||0)%180!==0;const cxp=b.x+b.w/2,cyp=b.y+b.h/2;if(!rot){side=Math.min(cxp,S.w-cxp);B.forEach(o=>{if(o===t||isOpen(o.it))return;if(o.b.y<b.y+b.h&&o.b.y+o.b.h>b.y){if(o.b.x>=cxp)side=Math.min(side,o.b.x-cxp);if(o.b.x+o.b.w<=cxp)side=Math.min(side,cxp-(o.b.x+o.b.w))}})}else{side=Math.min(cyp,S.l-cyp);B.forEach(o=>{if(o===t||isOpen(o.it))return;if(o.b.x<b.x+b.w&&o.b.x+o.b.w>b.x){if(o.b.y>=cyp)side=Math.min(side,o.b.y-cyp);if(o.b.y+o.b.h<=cyp)side=Math.min(side,cyp-(o.b.y+o.b.h))}})}
+ {const t=find('toilet');if(t){let side=Infinity;const b=t.b;const rot=(t.it.r||0)%180!==0;const cxp=b.x+b.w/2,cyp=b.y+b.h/2;if(!rot){side=Math.min(cxp,S.w-cxp);B.forEach(o=>{if(o===t||isOpen(o.it))return;if(o.b.y<b.y+b.h&&o.b.y+o.b.h>b.y){if(o.b.x>=cxp)side=Math.min(side,o.b.x-cxp);if(o.b.x+o.b.w<=cxp)side=Math.min(side,cxp-(o.b.x+o.b.w))}})}else{side=Math.min(cyp,S.l-cyp);B.forEach(o=>{if(o===t||isOpen(o.it))return;if(o.b.x<b.x+b.w&&o.b.x+o.b.w>b.x){if(o.b.y>=cyp)side=Math.min(side,o.b.y-cyp);if(o.b.y+o.b.h<=cyp)side=Math.min(side,cyp-(o.b.y+o.b.h))}})}
    if(side<1.25)notes.push(['bad',`Toilet needs 15 inches from its center to the nearest wall or vanity; this one has ${ftin(side)}.`]);else notes.push(['ok','Toilet has the side clearance code asks for.']);const f=front(t.it,b);if(f<1.75)notes.push(['bad',`Only ${ftin(f)} in front of the toilet. Code wants 21 inches; 24 is comfortable.`]);else if(f<2)notes.push(['warn',`${ftin(f)} in front of the toilet. Legal, but 24 inches feels better.`])}
   const v=find('vanity')||find('dvanity');if(v){const f=front(v.it,v.b);if(f<1.75)notes.push(['bad',`Only ${ftin(f)} in front of the vanity. You want at least 21 inches to stand at it.`])}
   const sh=find('shower')||find('shower4');if(sh){const f=front(sh.it,sh.b);if(f<2)notes.push(['warn',`${ftin(f)} outside the shower entry. 24 inches keeps the door from hitting things.`])}
