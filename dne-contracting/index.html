@@ -35,7 +35,7 @@
 {"@type":"WebSite","@id":"https://dnecontracting.com/#website","url":"https://dnecontracting.com/","name":"D N E Contracting","publisher":{"@id":"https://dnecontracting.com/#business"}},
 {"@type":"FAQPage","@id":"https://dnecontracting.com/#faq","mainEntity":[
  {"@type":"Question","name":"Is the remodel consultation really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. We come to your home, walk the space with you, and talk through options, costs and timelines. You never have to decide that day. If we are not the right fit, you still leave with clarity."}},
- {"@type":"Question","name":"Why doesn't D N E Contracting list prices online?","acceptedAnswer":{"@type":"Answer","text":"A number without seeing the space is a guess. After the in-home visit you get a written estimate specific to your home, with nothing hidden."}},
+ {"@type":"Question","name":"How much does plumbing for a kitchen or bathroom remodel cost?","acceptedAnswer":{"@type":"Answer","text":"Typical ranges for the plumbing side: kitchen $800 to $9,000, bathroom $1,200 to $10,000, tub-to-shower conversion $1,800 to $8,000, basement bathroom $4,500 to $14,000, water heater $1,600 to $8,500, whole-house repipe $7,000 to $18,000. The exact number comes in a written estimate after a free in-home visit."}},
  {"@type":"Question","name":"How long does a bathroom or kitchen remodel take?","acceptedAnswer":{"@type":"Answer","text":"Most repairs and water heaters are same or next day. Plumbing rough-in for a kitchen or bathroom remodel is usually 1 to 3 days plus a fixture-setting visit; a basement half-bath with ejector pit about a week; a whole-house repipe 2 to 4 days."}},
  {"@type":"Question","name":"What areas does D N E Contracting serve?","acceptedAnswer":{"@type":"Answer","text":"The 422 corridor, plus Montgomery, Chester, Bucks, Delaware and Philadelphia counties in Pennsylvania and nearby South Jersey."}},
  {"@type":"Question","name":"Is D N E Contracting licensed and insured?","acceptedAnswer":{"@type":"Answer","text":"Yes. D N E Contracting is a registered Pennsylvania Home Improvement Contractor and fully insured. The owner runs every consultation and is on every job."}},
@@ -277,6 +277,10 @@ th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line)}
 th{font-weight:bold;font-size:.9rem;color:var(--mute)}
 .trust{display:none}
 
+.est{display:grid;grid-template-columns:1.2fr 1fr;gap:40px;align-items:start}
+.est-out{border:1px solid var(--line);padding:22px;background:#fff}
+.est-num{font-family:var(--serif);font-size:2.2rem;line-height:1.1;margin:4px 0 8px}
+@media (max-width:800px){.est{grid-template-columns:1fr}}
 /* views */
 .view{display:none}.view.on{display:block}
 .page-head{padding:40px 0 20px;border-bottom:1px solid var(--line);margin-bottom:32px}
@@ -424,9 +428,9 @@ footer a,footer p{overflow-wrap:anywhere}
       <div>
         <span class="eyebrow">The question everyone asks</span>
         <h2>What does it cost?</h2>
-        <p>We don't put ranges online, because a number picked before anyone has stood in your kitchen is either scary enough to stop you or low enough to disappoint you later. Neither is fair to you.</p>
-        <p>What you get instead: after the walk-through, a written estimate that lists what's included, what it costs, and how long it takes. If it's more than you'd hoped, we'll show you which parts are must-do and which can wait, or split it into phases.</p>
-        <a class="btn s" href="#planner">Get the real number for your space</a>
+        <p>The ballpark ranges further down will get you in the right neighborhood. But a number picked before anyone has stood in your kitchen is a guess, and guesses either scare people off or disappoint them later.</p>
+        <p>What you get after the walk-through: a written estimate that lists what's included, what it costs, and how long it takes. If it's more than you'd hoped, we'll show you which parts are must-do and which can wait, or split it into phases.</p>
+        <a class="btn" href="#estimator">See ballpark ranges</a>
       </div>
       <div><p class="pull">"I was braced for a sales pitch. She gave me three options, told me which one she'd pick for her own house, and it was the cheapest one."</p><div class="who">Homeowner, Royersford</div></div>
     </div>
@@ -461,11 +465,30 @@ footer a,footer p{overflow-wrap:anywhere}
       <div class="planner" id="plannerHero"></div>
     </div>
   </div>
+
+  <div class="sec" id="estimator">
+    <div class="wrap est">
+      <div>
+        <h2>Ballpark estimator</h2>
+        <p>Rough ranges for the plumbing side of each job, so you're not guessing before we've met. Every house is different; the real number comes in writing after the visit.</p>
+        <div class="grid g2">
+          <div class="field"><label for="estType">What are you looking at?</label><select id="estType"></select></div>
+          <div class="field"><label for="estScope">How much is changing?</label><select id="estScope"></select></div>
+        </div>
+      </div>
+      <div class="est-out">
+        <div class="hint">Typical range</div>
+        <div class="est-num" id="estNum">—</div>
+        <p class="hint" id="estNote"></p>
+        <a class="btn p" id="estCta" href="#planner">Get the real number for your home</a>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- ============ SERVICES ============ -->
 <section class="view" id="v-services">
-  <div class="wrap page-head"><h1>Plumbing, done calmly</h1><p>The plumbing side of kitchen, bathroom and basement projects, plus water heaters and repairs. We don't quote prices online because every house is different, but you'll get honest numbers in writing after the visit.</p></div>
+  <div class="wrap page-head"><h1>Plumbing, done calmly</h1><p>The plumbing side of kitchen, bathroom and basement projects, plus water heaters and repairs. Ballpark ranges are on the home page; the real number comes in writing after the visit.</p></div>
   <div class="sec" style="padding-top:0"><div class="wrap"><div class="grid g3" id="svcGridFull"></div></div></div>
   <div class="sec alt"><div class="wrap">
     <h2>Emergencies</h2>
@@ -679,7 +702,7 @@ const REVIEWS=[
 ];
 const FAQ=[
  ['Is the consultation really free, and is there a catch?','Yes, and no. We come to your home, walk the space with you, and talk through options, costs, and timelines. You don\'t have to decide anything that day, or ever. If we\'re not the right fit, you still leave with clarity.'],
- ['Why don\'t you list prices online?','Because a number without seeing the space is a guess, and guesses either scare people off or set them up for a surprise. After the visit you get a written estimate that\'s specific to your home.'],
+ ['Are the estimator ranges what I\'ll actually pay?','They\'re typical ranges for the plumbing side of each job in our area, to help you plan. Your number depends on the house and comes in writing after the visit. Fixtures, tile, cabinets and permits are separate.'],
  ['How long does the plumbing take?','Most repairs and water heaters are same or next day. The plumbing rough-in for a bathroom or kitchen remodel is usually 1–3 days, with a return visit to set fixtures after tile and cabinets. A basement half-bath with an ejector pit is about a week; a whole-house repipe 2–4 days. The schedule is in writing and on your project page.'],
  ['Do you do the tile, cabinets and drywall too?','No. We do plumbing, and we do it properly. If your remodel needs tile, cabinets, electrical or drywall, we\'ll tell you who we trust and coordinate our work around theirs so nobody is waiting on anybody.'],
  ['Who will actually be in my house?','The owner runs every consultation and is on every job. If your project also needs an electrician or tile setter, she\'ll tell you ahead of time and coordinate the schedule so you know who is coming and when.'],
@@ -808,6 +831,24 @@ function buildPlanner(root,compact){
 }
 buildPlanner($('#plannerHero'),true);buildPlanner($('#plannerFull'),false);
 
+/* ---------- ballpark estimator (edit these ranges) ---------- */
+const EST={
+ kitchen:{label:'Kitchen plumbing',planner:'kitchen',scopes:[['Fixtures stay where they are',800,2000,'New sink, faucet, disposal or dishwasher hookups in the existing spots.'],['Sink or dishwasher moves',2500,5500,'New supply and drain lines to a new location, re-vented to code.'],['Island sink or full rework',5000,9000,'Island prep sink, pot filler, or a whole new plumbing layout.']]},
+ bathroom:{label:'Bathroom plumbing',planner:'bathroom',scopes:[['Same layout, new fixtures',1200,2800,'Toilet, vanity and shower valve replaced in place.'],['Something moves',3000,6500,'Relocating a toilet, vanity or shower; new drain and vent work.'],['New layout, full rough-in',6000,10000,'Everything moves. Full rough-in and finish plumbing.']]},
+ tubshower:{label:'Tub-to-shower conversion',planner:'bathroom',scopes:[['Valve and drain, same spot',1800,3500,'New pressure-balanced valve and shower drain where the tub was.'],['Drain moves',3500,5500,'Linear or center drain in a new position, re-vented.'],['Curbless with relocation',5000,8000,'Curbless entry, linear drain, and relocated supply.']]},
+ basement:{label:'Basement bathroom or laundry',planner:'basement',scopes:[['Laundry hookup only',1200,3000,'Supply, drain and vent for a washer where there wasn\'t one.'],['Half-bath with ejector pit',4500,8000,'Sealed sewage ejector, toilet and sink rough-in and finish.'],['Full bath plus laundry',8000,14000,'Ejector system, shower, toilet, sink and laundry.']]},
+ heater:{label:'Water heater',planner:'repair',scopes:[['Tank replaced with tank',1600,2800,'Like-for-like 40 or 50 gallon, code updates included.'],['Tank to tankless',3800,6500,'Condensing tankless unit, venting and isolation valves.'],['Tankless with gas upsizing',5500,8500,'Gas line upsized and new venting where needed.']]},
+ repipe:{label:'Repipe',planner:'repair',scopes:[['One bathroom or one run',3000,6000,'Replace the worst galvanized runs with PEX.'],['Whole house, up to two baths',7000,12000,'Every supply line replaced, manifold with per-fixture shut-offs.'],['Larger house or three-plus baths',12000,18000,'Full repipe with wall patching where opened.']]},
+ repair:{label:'Repair or service call',planner:'repair',scopes:[['Small fix',150,450,'Leaky faucet, running toilet, shut-off valve, minor drain clearing.'],['Typical repair',450,1200,'Leak in a wall or ceiling, disposal, sump pump swap, main shut-off.'],['Bigger repair',1200,2800,'Burst pipe repair with drywall access, sewer line section, backwater valve.']]}
+};
+const $$t=$('#estType'),$$s=$('#estScope');
+if($$t){$$t.innerHTML=Object.entries(EST).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
+ const fmt=n=>'$'+n.toLocaleString();
+ function estScopes(){const e=EST[$$t.value];$$s.innerHTML=e.scopes.map((s,i)=>`<option value="${i}">${s[0]}</option>`).join('');estShow()}
+ function estShow(){const e=EST[$$t.value],s=e.scopes[+$$s.value];$('#estNum').textContent=fmt(s[1])+' – '+fmt(s[2]);$('#estNote').textContent=s[3]+' Plumbing labor and rough materials; permits, fixtures, tile and cabinets are separate.';$('#estCta').href='#planner?type='+e.planner;store.set('est',{type:$$t.value,scope:+$$s.value});track('estimator',{type:$$t.value,scope:+$$s.value})}
+ $$t.addEventListener('change',estScopes);$$s.addEventListener('change',estShow);
+ const saved=store.get('est',null);if(saved&&EST[saved.type]){$$t.value=saved.type;estScopes();$$s.value=saved.scope;estShow()}else estScopes();}
+
 /* ---------- contact + referral forms ---------- */
 function simpleForm(id,kind,fields,okMsg){const f=$(id);f.addEventListener('submit',async e=>{e.preventDefault();let ok=true;const d={};
   fields.forEach(([sel,key,fn])=>{const el=$(sel,f),v=el.value.trim(),good=!fn||fn(v);el.closest('.field').classList.toggle('bad',!good);if(!good)ok=false;d[key]=v});
@@ -873,7 +914,7 @@ $('#playbook').addEventListener('click',e=>{const p=e.target.closest('[data-copy
 
 /* ---------- routing ---------- */
 const VIEWS=['home','services','projects','about','reviews','faq','contact','planner','refer','portal','thanks','playbook'];
-function route(){let h=(location.hash||'#home').slice(1).split('?')[0];if(!VIEWS.includes(h))h='home';
+function route(){let h=(location.hash||'#home').slice(1).split('?')[0];if(h==='estimator'){h='home';setTimeout(()=>{const el=$('#estimator');if(el)el.scrollIntoView({behavior:'smooth'})},50)}if(!VIEWS.includes(h))h='home';
   $$('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+h));$$('nav.main a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+h));
   $('#mainNav').classList.remove('open');$('#burger').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'instant'});
   const META={home:['D N E Contracting — Women-owned plumber, 422 corridor & greater Philadelphia','Free, no-pressure in-home consultations for kitchens, bathrooms and basement plumbing across the 422 corridor and greater Philadelphia.'],services:['Kitchen, bathroom & basement plumbing — 422 corridor & greater Philadelphia','Kitchen and bathroom remodels, basement bathrooms and laundry, water heaters and plumbing repair. Free in-home consultation.'],projects:['Recent kitchen & bathroom plumbing projects','Before-and-after projects in Royersford, Limerick, Collegeville, Phoenixville and Boyertown.'],about:['About D N E Contracting — women-owned, owner on every job','Why the consultation feels different: we listen first, explain plainly, and you never decide on the spot.'],reviews:['Reviews — D N E Contracting','What homeowners say about working with a calm, no-pressure remodeling contractor.'],faq:['Remodel FAQ — cost, timeline, licensing, service area','Straight answers about consultations, pricing, timelines, permits and payments.'],contact:['Contact D N E Contracting — (484) 939-8535','Call, text or send a note. Even if you are just starting to think about it.'],planner:['Tell us about your space — free consultation','Four quick questions so we come prepared. No obligation.'],refer:['Refer a friend — D N E Contracting','$100 when they book a consultation, $250 if they go ahead with a project.'],portal:['Client portal — D N E Contracting','Your schedule, photos, documents and payments.']};

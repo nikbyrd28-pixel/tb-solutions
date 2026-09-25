@@ -72,3 +72,6 @@ The site ships with Unsplash stock photos embedded so it looks finished in previ
 2. In `index.html`, replace the base64 values in `window.DNE_PHOTOS` with paths: `owner:"img/portrait.jpg"`, `kitchen1:"img/royersford-kitchen.jpg"`, etc. Keys used: owner, kitchen1, kitchen2, bath1, bath2, bath3, bathBefore, basement1, basement2, onsite. Add `before:` keys to any project that has a before shot.
 3. Set `sampleContent:false` and replace the `REVIEWS` array with her real Google reviews (name, town, text).
 Stock originals are in `stock-photos/` for reference only. Do not run ads to a page that shows stock work as hers.
+
+## Ballpark estimator
+Home page, after the consultation form (`#estimator`). Ranges live in the `EST` table in the JS (search `ballpark estimator`): 7 job types × 3 scopes, each `[label, low, high, note]`. Change the numbers there; nothing else needs touching. The FAQ schema answer quotes the outer ranges, so update that line too if the numbers move a lot.
