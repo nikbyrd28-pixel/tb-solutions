@@ -286,7 +286,7 @@ th{font-weight:bold;font-size:.9rem;color:var(--mute)}
 .sk-types{display:flex;gap:8px;margin-bottom:12px}.sk-type{font:inherit;padding:8px 14px;border:1px solid var(--ink);background:#fff;cursor:pointer;border-radius:3px}.sk-type.s{background:var(--ink);color:#fff}
 .sk-dims{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-bottom:12px;font-size:.95rem}.sk-dims label{display:flex;align-items:center;gap:6px;margin:0;font-weight:normal}.sk-dims input{width:72px;padding:6px 8px}.sk-dims select{width:auto;padding:6px 8px}
 .sk-palette{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.sk-sel{display:flex;gap:8px;align-items:center;font-weight:bold;margin-bottom:6px}
+.sk-sel{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;font-weight:bold;margin:10px 0 6px;min-height:40px}.sk-sel.off{visibility:hidden}.sk-sel label{display:inline-flex;align-items:center;gap:5px;margin:0;font-weight:normal;font-size:.95rem}.sk-sel input{width:64px;padding:6px 8px}
 .sk-canvas{overflow:auto}.sk-canvas canvas{touch-action:none;display:block;max-width:100%;border:1px solid var(--line);background:#fff}
 .sk-notes,.sk-costs{list-style:none;padding:0;margin:0}.sk-notes li,.sk-costs li{padding:8px 0 8px 22px;border-bottom:1px solid var(--line);position:relative;font-size:.95rem}.sk-notes li:last-child,.sk-costs li:last-child{border-bottom:0}
 .sk-notes li::before{content:"\2022";position:absolute;left:4px;font-size:1.3rem;line-height:1;top:6px}.sk-notes li.ok::before{color:var(--ok)}.sk-notes li.warn::before{color:#B07A00}.sk-notes li.bad::before{color:var(--red)}.sk-costs li::before{content:"$";position:absolute;left:6px;color:var(--mute)}.sk-costs li.hint::before{content:""}
@@ -659,9 +659,8 @@ footer a,footer p{overflow-wrap:anywhere}
       <div class="sk-types"><button type="button" class="sk-type" data-type="kitchen">Kitchen</button><button type="button" class="sk-type" data-type="bathroom">Bathroom</button><button type="button" class="sk-type" data-type="basement">Basement</button></div>
       <div class="sk-dims"><label>Width <input id="skW" type="number" inputmode="decimal" min="4" max="40" step="0.5"> ft</label><label>Length <input id="skL" type="number" inputmode="decimal" min="4" max="40" step="0.5"> ft</label><label>Plumbing is on the <select id="skPlumb"><option value="top">top wall</option><option value="right">right wall</option><option value="bottom">bottom wall</option><option value="left">left wall</option><option value="none">not sure</option></select></label></div>
       <div class="sk-palette" id="skPalette"></div>
-      <div class="sk-sel" id="skSel" hidden><span id="skSelName"></span><button type="button" class="btn sm" id="skRotate">Rotate</button><button type="button" class="btn sm" id="skDelete">Remove</button></div>
     </div>
-    <div class="sk-canvas"><canvas id="skCanvas" width="600" height="400" aria-label="Room sketch"></canvas><p class="hint">Drag to move. Tap an item to see its distance to each wall. Things snap to 6 inches.</p></div>
+    <div class="sk-canvas"><canvas id="skCanvas" width="600" height="400" aria-label="Room sketch"></canvas><div class="sk-sel off" id="skSel"><span id="skSelName">Nothing selected</span><label>Size <input id="skIW" type="number" inputmode="decimal" step="0.5" min="0.5" max="40"> ft</label><span id="skIDwrap"><label>× <input id="skID" type="number" inputmode="decimal" step="0.5" min="0.5" max="40"> ft</label></span><button type="button" class="btn sm" id="skRotate">Rotate</button><button type="button" class="btn sm" id="skDelete">Remove</button></div><p class="hint">Drag to move. Tap an item to see its distance to each wall, then drag the corner square to resize it, or type a size above. Things snap to 6 inches.</p></div>
     <div class="sk-side">
       <div class="panel"><h3>What we notice</h3><ul class="sk-notes" id="skNotes"></ul></div>
       <div class="panel" id="skCostWrap"><h3>Cost signals</h3><ul class="sk-costs" id="skCosts"></ul></div>
@@ -968,7 +967,8 @@ let S={type:'kitchen',w:12,l:10,plumb:'top',items:[]};let sel=-1,drag=null,scale
 const cv=document.getElementById('skCanvas');if(!cv)return null;const cx=cv.getContext('2d');if(!cx.roundRect)cx.roundRect=function(x,y,w,h){this.rect(x,y,w,h)};
 const $k=id=>document.getElementById(id);
 const dims=it=>{const d=CAT[S.type].find(c=>c[0]===it.k)||CAT.kitchen.find(c=>c[0]===it.k)||CAT.bathroom.find(c=>c[0]===it.k)||CAT.basement.find(c=>c[0]===it.k);return d};
-const box=it=>{const d=dims(it);const rot=it.r%180!==0;return {x:it.x,y:it.y,w:rot?d[3]:d[2],h:rot?d[2]:d[3],d}};
+const box=it=>{const d=dims(it);const W=it.w||d[2],D=it.d||d[3];const rot=it.r%180!==0;return {x:it.x,y:it.y,w:rot?D:W,h:rot?W:D,d}};
+const HANDLE=9;
 const ftin=v=>{const f=Math.floor(v+1e-6),i=Math.round((v-f)*12);return i===12?`${f+1}'`:i?`${f}' ${i}"`:`${f}'`};
 const isWall=k=>['door','window','egress'].includes(k);
 function fit(){const holder=cv.parentElement;const W=Math.min(holder.clientWidth,760);const maxH=Math.max(320,Math.min(560,window.innerHeight*0.6));scale=Math.max(12,Math.min((W-ox*2)/S.w,(maxH-oy*2)/S.l));cv.width=Math.round(S.w*scale+ox*2);cv.height=Math.round(S.l*scale+oy*2);cv.style.width=cv.width+'px';draw()}
@@ -1009,18 +1009,22 @@ function draw(){cx.clearRect(0,0,cv.width,cv.height);cx.fillStyle='#fff';cx.fill
  // selected item: distances to walls
  if(sel>=0&&S.items[sel]){const b=box(S.items[sel]);const cxp=b.x+b.w/2,cyp=b.y+b.h/2;cx.setLineDash([4,4]);cx.strokeStyle='#B8322B';cx.lineWidth=1;cx.fillStyle='#B8322B';cx.font='11px Arial';
   const segs=[[cxp,0,cxp,b.y,b.y],[cxp,b.y+b.h,cxp,S.l,S.l-(b.y+b.h)],[0,cyp,b.x,cyp,b.x],[b.x+b.w,cyp,S.w,cyp,S.w-(b.x+b.w)]];
-  segs.forEach(([x1,y1,x2,y2,d])=>{if(d<0.24)return;const [a,b2]=P(x1,y1),[c,e]=P(x2,y2);cx.beginPath();cx.moveTo(a,b2);cx.lineTo(c,e);cx.stroke();cx.fillText(ftin(d),(a+c)/2+(y1===y2?0:14),(b2+e)/2+(y1===y2?-8:0))});cx.setLineDash([])}
+  segs.forEach(([x1,y1,x2,y2,d])=>{if(d<0.24)return;const [a,b2]=P(x1,y1),[c,e]=P(x2,y2);cx.beginPath();cx.moveTo(a,b2);cx.lineTo(c,e);cx.stroke();cx.fillText(ftin(d),(a+c)/2+(y1===y2?0:14),(b2+e)/2+(y1===y2?-8:0))});cx.setLineDash([]);
+  const [hx,hy]=P(b.x+b.w,b.y+b.h);cx.fillStyle='#fff';cx.strokeStyle='#B8322B';cx.lineWidth=2;cx.beginPath();cx.rect(hx-HANDLE,hy-HANDLE,HANDLE*2,HANDLE*2);cx.fill();cx.stroke();cx.fillStyle='#B8322B';cx.font='11px Arial';cx.textAlign='right';cx.textBaseline='bottom';cx.fillText(ftin(b.w)+' × '+ftin(b.h),hx-HANDLE-4,hy-HANDLE-3);cx.textBaseline='middle'}
 }
 function hit(px,py){const fx=(px-ox)/scale,fy=(py-oy)/scale;for(let i=S.items.length-1;i>=0;i--){const b=box(S.items[i]);if(fx>=b.x&&fx<=b.x+b.w&&fy>=b.y&&fy<=b.y+b.h)return i}return -1}
 function pos(e){const r=cv.getBoundingClientRect();return [(e.clientX-r.left)*(cv.width/r.width),(e.clientY-r.top)*(cv.height/r.height)]}
-cv.addEventListener('pointerdown',e=>{const [px,py]=pos(e);const i=hit(px,py);sel=i;if(i>=0){const it=S.items[i];drag={i,dx:(px-ox)/scale-it.x,dy:(py-oy)/scale-it.y};cv.setPointerCapture(e.pointerId)}ui();draw()});
-cv.addEventListener('pointermove',e=>{if(!drag)return;const [px,py]=pos(e);const it=S.items[drag.i];it.x=snap((px-ox)/scale-drag.dx);it.y=snap((py-oy)/scale-drag.dy);clamp(it);draw()});
+cv.addEventListener('pointerdown',e=>{const [px,py]=pos(e);if(sel>=0&&S.items[sel]){const b=box(S.items[sel]);const [hx,hy]=P(b.x+b.w,b.y+b.h);if(Math.abs(px-hx)<=HANDLE+8&&Math.abs(py-hy)<=HANDLE+8){drag={i:sel,resize:true};cv.setPointerCapture(e.pointerId);return}}const i=hit(px,py);sel=i;if(i>=0){const it=S.items[i];drag={i,dx:(px-ox)/scale-it.x,dy:(py-oy)/scale-it.y};cv.setPointerCapture(e.pointerId)}ui();draw()});
+cv.addEventListener('pointermove',e=>{if(!drag){const [px,py]=pos(e);let c='default';if(sel>=0&&S.items[sel]){const b=box(S.items[sel]);const [hx,hy]=P(b.x+b.w,b.y+b.h);if(Math.abs(px-hx)<=HANDLE+8&&Math.abs(py-hy)<=HANDLE+8)c='nwse-resize'}if(c==='default'&&hit(px,py)>=0)c='move';cv.style.cursor=c;return}const [px,py]=pos(e);const it=S.items[drag.i];if(drag.resize){resizeTo(it,(px-ox)/scale-it.x,(py-oy)/scale-it.y);draw();sizeUI(it);return}it.x=snap((px-ox)/scale-drag.dx);it.y=snap((py-oy)/scale-drag.dy);clamp(it);draw()});
 const end=()=>{if(drag){drag=null;check();save()}};cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);
 document.addEventListener('keydown',e=>{if(!document.getElementById('v-sketch').classList.contains('on')||sel<0||/input|select|textarea/i.test(e.target.tagName))return;const it=S.items[sel];const m={ArrowUp:[0,-.5],ArrowDown:[0,.5],ArrowLeft:[-.5,0],ArrowRight:[.5,0]}[e.key];if(m){it.x+=m[0];it.y+=m[1];clamp(it);e.preventDefault()}else if(e.key==='r'||e.key==='R')rotate();else if(e.key==='Delete'||e.key==='Backspace'){del();e.preventDefault()}check();draw();save()});
+function resizeTo(it,bw,bh){const wall=isWall(it.k);const rot=it.r%180!==0;bw=Math.max(0.5,Math.min(S.w-it.x,snap(bw)));bh=Math.max(0.5,Math.min(S.l-it.y,snap(bh)));if(wall){if(rot){it.w=bh}else{it.w=bw}it.d=0.5;return}it.w=rot?bh:bw;it.d=rot?bw:bh}
+function setSize(W,D){if(sel<0)return;const it=S.items[sel];const d=dims(it);it.w=Math.max(0.5,Math.min(40,+W||d[2]));it.d=isWall(it.k)?0.5:Math.max(0.5,Math.min(40,+D||d[3]));clamp(it);check();draw();save();sizeUI(it)}
+function sizeUI(it){const d=dims(it);$k('skIW').value=it.w||d[2];$k('skID').value=it.d||d[3];$k('skIDwrap').hidden=isWall(it.k);$k('skSelName').textContent=d[1].replace(/ \d.*$/,'')}
 function add(k){const d=CAT[S.type].find(c=>c[0]===k);const it={k,x:snap(Math.max(0,(S.w-d[2])/2)),y:snap(Math.max(0,(S.l-d[3])/2)),r:0};if(isWall(k)){it.y=S.l-d[3]}S.items.push(it);clamp(it);sel=S.items.length-1;ui();check();draw();save()}
-function rotate(){if(sel<0)return;const it=S.items[sel];it.r=(it.r+90)%360;clamp(it);check();draw();save()}
+function rotate(){if(sel<0)return;const it=S.items[sel];it.r=(it.r+90)%360;clamp(it);check();draw();save();sizeUI(it)}
 function del(){if(sel<0)return;S.items.splice(sel,1);sel=-1;ui();check();draw();save()}
-function ui(){$k('skSel').hidden=sel<0;if(sel>=0)$k('skSelName').textContent=box(S.items[sel]).d[1];
+function ui(){$k('skSel').classList.toggle('off',sel<0);if(sel>=0)sizeUI(S.items[sel]);
  $k('skPalette').innerHTML=CAT[S.type].map(c=>`<button type="button" class="btn sm" data-add="${c[0]}">${c[1]}</button>`).join('');
  $k('skW').value=S.w;$k('skL').value=S.l;$k('skPlumb').value=S.plumb;$$('.sk-type').forEach(b=>b.classList.toggle('s',b.dataset.type===S.type))}
 function gap(a,b){const dx=Math.max(0,Math.max(a.x,b.x)-Math.min(a.x+a.w,b.x+b.w));const dy=Math.max(0,Math.max(a.y,b.y)-Math.min(a.y+a.h,b.y+b.h));return Math.hypot(dx,dy)}
@@ -1068,6 +1072,7 @@ $k('skW').addEventListener('change',()=>{S.w=Math.max(4,Math.min(40,+$k('skW').v
 $k('skL').addEventListener('change',()=>{S.l=Math.max(4,Math.min(40,+$k('skL').value||S.l));S.items.forEach(clamp);fit();check();save()});
 $k('skPlumb').addEventListener('change',()=>{S.plumb=$k('skPlumb').value;draw();check();save()});
 $k('skRotate').addEventListener('click',rotate);$k('skDelete').addEventListener('click',del);
+$k('skIW').addEventListener('change',()=>setSize($k('skIW').value,$k('skID').value));$k('skID').addEventListener('change',()=>setSize($k('skIW').value,$k('skID').value));
 $k('skClear').addEventListener('click',()=>{S.items=[];sel=-1;ui();check();draw();save()});
 $k('skReset').addEventListener('click',()=>setType(S.type));
 $k('skPng').addEventListener('click',()=>{const a=document.createElement('a');a.href=png();a.download='dne-room-sketch.png';a.click()});
