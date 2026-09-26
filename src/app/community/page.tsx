@@ -17,11 +17,11 @@ export default async function Community() {
 
   return (
     <main className="mx-auto max-w-2xl px-4 pb-24 pt-8">
-      <h1 className="flex items-center gap-2 text-2xl font-black"><Users className="text-brand" /> Community</h1>
+      <h1 className="font-display flex items-center gap-2 text-3xl font-800"><Users className="text-brand" /> Community</h1>
       <p className="mt-1 text-sm text-muted">Where the real ones hang. Members see everything.</p>
 
       {!user && (
-        <div className="mt-6 rounded-2xl border border-brand/40 bg-brand/10 p-4 text-sm">
+        <div className="gborder mt-6 rounded-2xl bg-brand/10 p-4 text-sm">
           <Link href="/login?next=/community" className="font-semibold text-brand">Sign in</Link> to see and post. <Link href="/join" className="underline">Join</Link> to unlock the members wall.
         </div>
       )}
@@ -30,7 +30,7 @@ export default async function Community() {
         {posts.map((p) => {
           const ok = canWatch(tier, p.min_tier);
           return (
-            <li key={p.id} className="rounded-2xl border border-line bg-bg-2 p-4">
+            <li key={p.id} className="card fade-up rounded-2xl p-4">
               <p className="text-xs text-muted"><span className="font-semibold text-fg">{p.nb_profiles?.display_name ?? "Nick"}</span> · {timeAgo(p.created_at)}</p>
               {ok ? (
                 <>
@@ -42,13 +42,13 @@ export default async function Community() {
                 <div className="mt-2 flex items-center gap-3 rounded-xl bg-bg-3 p-3 text-sm">
                   <Lock size={16} className="text-brand" />
                   <span className="blur-sm select-none">{p.body.slice(0, 80)}</span>
-                  <Link href={`/join?tier=${p.min_tier}`} className="ml-auto shrink-0 rounded-full bg-brand px-3 py-1 text-xs font-semibold text-white">Unlock</Link>
+                  <Link href={`/join?tier=${p.min_tier}`} className="btn btn-primary ml-auto h-7 shrink-0 px-3 text-xs">Unlock</Link>
                 </div>
               )}
             </li>
           );
         })}
-        {posts.length === 0 && <p className="text-sm text-muted">No posts yet — insert into nb_posts from Supabase or the admin panel.</p>}
+        {posts.length === 0 && <p className="text-sm text-muted">No posts yet. First one drops soon.</p>}
       </ul>
     </main>
   );

@@ -10,8 +10,8 @@ Your own YouTube + TikTok + funnel. Next.js 16 · Supabase (project "Base") · V
 - `/community` — members wall (locked posts blur + "Unlock")
 - `/slept-on` — **Slept On**: weekly hand-picked underground rap drops, city/scene filter, fire reactions, in-page players (SoundCloud / YouTube / Audiomack / Spotify / mp3), listener signup + artist track submissions
 - `/login` — magic link + Google
-- `/admin/upload` — upload video/thumbnail to Supabase Storage, publish (ADMIN_EMAILS only)
-- `/admin/slept-on` — create drops, add tracks, publish, review artist submissions (ADMIN_EMAILS + `nb_admins`)
+- `/studio/videos/new` — upload video/thumbnail to Supabase Storage, publish (ADMIN_EMAILS only)
+- `/studio/slept-on` — create drops, add tracks, publish, review artist submissions (ADMIN_EMAILS + `nb_admins`)
 
 ## Setup
 1. Migrations `001_init` + `002_slept_on` are already applied to Base (tables prefixed `nb_`, buckets `videos` + `thumbnails`, 5 seed videos).

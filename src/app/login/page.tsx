@@ -22,19 +22,19 @@ function LoginInner() {
 
   return (
     <main className="mx-auto flex min-h-[70dvh] max-w-sm flex-col justify-center px-4 pb-24">
-      <h1 className="text-2xl font-black">Sign in</h1>
+      <h1 className="font-display text-3xl font-800">Sign in</h1>
       <p className="mt-1 text-sm text-muted">No password. Just your email.</p>
       {sent ? (
-        <p className="mt-6 rounded-2xl border border-brand/40 bg-brand/10 p-4 text-sm">Check your email for the magic link.</p>
+        <p className="gborder mt-6 rounded-2xl bg-brand/10 p-4 text-sm">Check your email for the magic link.</p>
       ) : (
         <>
           <form onSubmit={magic} className="mt-6 flex flex-col gap-2">
             <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com"
-              className="rounded-full border border-line bg-bg-2 px-4 py-3 outline-none focus:border-brand" />
-            <button className="rounded-full bg-brand py-3 font-semibold text-white">Send magic link</button>
+              className="input rounded-full px-4 py-3" />
+            <button className="btn btn-primary py-3">Send magic link</button>
           </form>
           <div className="my-4 flex items-center gap-3 text-xs text-muted"><span className="h-px flex-1 bg-line" />or<span className="h-px flex-1 bg-line" /></div>
-          <button onClick={google} className="rounded-full border border-line bg-bg-2 py-3 font-semibold hover:bg-bg-3">Continue with Google</button>
+          <button onClick={google} className="btn btn-ghost py-3">Continue with Google</button>
           {err && <p className="mt-3 text-sm text-brand-2">{err}</p>}
         </>
       )}

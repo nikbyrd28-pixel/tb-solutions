@@ -25,8 +25,8 @@ export default function Engagement({ videoId, likes, slug, loggedIn, vertical = 
 
   const btn = vertical
     ? "flex flex-col items-center gap-1 text-xs"
-    : "flex items-center gap-2 rounded-full bg-bg-3 px-4 py-2 text-sm font-semibold hover:bg-line";
-  const ico = vertical ? "flex h-12 w-12 items-center justify-center rounded-full bg-black/50 backdrop-blur" : "";
+    : "btn btn-ghost h-10 px-4 text-sm";
+  const ico = vertical ? "flex h-12 w-12 items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/10" : "";
 
   return (
     <div className={`flex ${vertical ? "flex-col gap-5" : "gap-2"}`}>

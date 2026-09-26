@@ -24,8 +24,8 @@ export default function Comments({ videoId, initial, loggedIn }: { videoId: stri
       {loggedIn ? (
         <form onSubmit={post} className="mb-5 flex gap-2">
           <input value={body} onChange={(e) => setBody(e.target.value)} placeholder="Say something…" maxLength={2000}
-            className="flex-1 rounded-full border border-line bg-bg-2 px-4 py-2.5 outline-none focus:border-brand" />
-          <button disabled={busy} className="rounded-full bg-fg px-4 py-2 text-sm font-semibold text-bg disabled:opacity-60">Post</button>
+            className="input flex-1 rounded-full px-4 py-2.5" />
+          <button disabled={busy} className="btn btn-white px-4 py-2 text-sm disabled:opacity-60">Post</button>
         </form>
       ) : (
         <p className="mb-5 text-sm text-muted"><Link href="/login" className="text-brand">Sign in</Link> to comment.</p>

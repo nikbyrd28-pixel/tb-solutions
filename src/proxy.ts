@@ -19,7 +19,8 @@ export async function proxy(req: NextRequest) {
   );
   const { data } = await sb.auth.getUser();
 
-  if (req.nextUrl.pathname.startsWith("/admin")) {
+  if (req.nextUrl.pathname.startsWith("/admin")) { const u = req.nextUrl.clone(); u.pathname = "/studio/videos/new"; return NextResponse.redirect(u); }
+  if (req.nextUrl.pathname.startsWith("/studio")) {
     const admins = (process.env.ADMIN_EMAILS ?? "").split(",").map((e) => e.trim().toLowerCase());
     if (!data.user || !admins.includes((data.user.email ?? "").toLowerCase())) {
       const url = req.nextUrl.clone();

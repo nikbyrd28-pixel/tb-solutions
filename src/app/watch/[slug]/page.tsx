@@ -28,7 +28,7 @@ export default async function Watch({ params }: Props) {
   return (
     <main className="mx-auto max-w-7xl px-4 pb-24 pt-5 lg:grid lg:grid-cols-[1fr_360px] lg:gap-6">
       <div>
-        <div className="relative aspect-video overflow-hidden rounded-2xl bg-black">
+        <div className="gborder relative aspect-video overflow-hidden rounded-3xl bg-black glow fade-up">
           {allowed ? (
             <Player src={v.video_url} poster={v.thumbnail_url ?? undefined} videoId={v.id} />
           ) : (
@@ -39,26 +39,26 @@ export default async function Watch({ params }: Props) {
                 <span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand text-white"><Lock /></span>
                 <h2 className="text-xl font-bold">This one&apos;s for the {v.min_tier.replace("_", " ")}</h2>
                 <p className="max-w-sm text-sm text-muted">Uncut, unreleased, and not going on YouTube. Unlock it and everything else behind the wall.</p>
-                <Link href={`/join?tier=${v.min_tier}&from=${v.slug}`} className="rounded-full bg-brand px-5 py-2.5 font-semibold text-white">Unlock for $5/mo</Link>
+                <Link href={`/join?tier=${v.min_tier}&from=${v.slug}`} className="btn btn-primary h-11 px-6">Unlock for $5/mo</Link>
               </div>
             </div>
           )}
         </div>
 
-        <h1 className="mt-4 text-xl font-bold sm:text-2xl">{v.title}</h1>
+        <h1 className="font-display mt-5 text-2xl font-700 leading-tight sm:text-3xl">{v.title}</h1>
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-brand to-brand-2" />
+            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-brand via-brand-2 to-brand-3 p-[2px]"><div className="h-full w-full rounded-full bg-bg" /></div>
             <div>
               <p className="font-semibold leading-tight">Nick Byrd</p>
               <p className="text-xs text-muted">Philly Suburbs Chaos</p>
             </div>
-            <Link href="/join" className="ml-2 rounded-full bg-fg px-4 py-1.5 text-sm font-semibold text-bg">Join</Link>
+            <Link href="/join" className="btn btn-white ml-2 h-9 px-4 text-sm">Join</Link>
           </div>
           <Engagement videoId={v.id} likes={v.like_count} slug={v.slug} loggedIn={!!user} />
         </div>
 
-        <div className="mt-4 rounded-2xl bg-bg-2 p-4 text-sm">
+        <div className="card mt-4 rounded-2xl p-4 text-sm">
           <p className="font-semibold">{fmtViews(v.view_count)} views · {timeAgo(v.published_at)}</p>
           <p className="mt-1 whitespace-pre-wrap text-muted">{v.description}</p>
           {v.tags.length > 0 && <p className="mt-2 text-brand">{v.tags.map((t) => `#${t}`).join(" ")}</p>}
@@ -68,12 +68,12 @@ export default async function Watch({ params }: Props) {
       </div>
 
       <aside className="mt-8 lg:mt-0">
-        <h2 className="mb-3 font-bold">Up next</h2>
+        <h2 className="font-display mb-4 text-lg font-700">Up next</h2>
         <div className="flex flex-col gap-3">{upNext.map((m) => <VideoCard key={m.id} v={m} compact />)}</div>
-        <div className="mt-6 rounded-2xl border border-brand/40 bg-brand/10 p-4">
+        <div className="gborder relative mt-6 overflow-hidden rounded-2xl bg-brand/10 p-5">
           <p className="font-bold">Want the uncut version?</p>
           <p className="mt-1 text-sm text-muted">Inner Circle gets everything I can&apos;t post on YouTube.</p>
-          <Link href={`/join?from=${v.slug}`} className="mt-3 block rounded-full bg-brand py-2 text-center text-sm font-semibold text-white">See what&apos;s inside</Link>
+          <Link href={`/join?from=${v.slug}`} className="btn btn-primary mt-4 w-full py-2.5 text-sm">See what&apos;s inside</Link>
         </div>
       </aside>
     </main>

@@ -1,9 +1,9 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Flame, Users, Sparkles, LogOut, Upload, Disc3 } from "lucide-react";
+import { Home, Flame, Users, Sparkles, LogOut, LayoutDashboard, Disc3 } from "lucide-react";
 
-type U = { email: string; name: string | null; tier: string } | null;
+type U = { email: string; name: string | null; tier: string; admin: boolean } | null;
 
 const links = [
   { href: "/", label: "Home", icon: Home },
@@ -14,53 +14,58 @@ const links = [
 
 export default function Nav({ user }: { user: U }) {
   const path = usePathname();
-  if (path.startsWith("/feed")) return null; // feed is full-screen
+  if (path.startsWith("/feed") || path.startsWith("/studio")) return null;
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-line bg-bg/80 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4">
-          <Link href="/" className="flex items-center gap-2 font-black tracking-tight">
-            <span className="relative inline-block h-2.5 w-2.5 rounded-full bg-brand-2 live-dot" />
-            <span className="text-lg">NICK<span className="gradient-text">BYRD</span></span>
-            <span className="hidden text-xs font-medium text-muted sm:inline">TV</span>
+      <header className="sticky top-0 z-40 border-b border-line bg-bg/60 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
+          <Link href="/" className="flex items-center gap-2.5">
+            <span className="live-dot inline-block h-2.5 w-2.5 rounded-full bg-brand-2" />
+            <span className="font-display text-xl font-800 tracking-tight">NICK<span className="gradient-text">BYRD</span></span>
           </Link>
-          <nav className="ml-6 hidden items-center gap-1 md:flex">
+          <nav className="ml-8 hidden items-center gap-1 md:flex">
             {links.map(({ href, label, icon: Icon }) => (
               <Link key={href} href={href}
-                className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-sm transition ${path === href ? "bg-bg-3 text-fg" : "text-muted hover:text-fg"}`}>
-                <Icon size={16} /> {label}
+                className={`flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition ${path === href ? "bg-white/8 text-fg" : "text-muted hover:bg-white/5 hover:text-fg"}`}>
+                <Icon size={15} /> {label}
               </Link>
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-2">
             {user ? (
               <>
-                {user.tier !== "free" && <span className="rounded-full bg-brand/20 px-2 py-0.5 text-xs text-brand">{user.tier.replace("_", " ")}</span>}
-                <Link href="/admin/upload" className="hidden rounded-full p-2 text-muted hover:bg-bg-3 hover:text-fg sm:block" title="Upload"><Upload size={18} /></Link>
-                <Link href="/admin/slept-on" className="hidden rounded-full p-2 text-muted hover:bg-bg-3 hover:text-fg sm:block" title="Slept On admin"><Disc3 size={18} /></Link>
+                {user.tier !== "free" && <span className="chip bg-brand/15 text-brand">{user.tier.replace("_", " ")}</span>}
+                {user.admin && (
+                  <Link href="/studio" className="btn btn-ghost h-9 px-3.5 text-sm"><LayoutDashboard size={15} /> Studio</Link>
+                )}
                 <span className="hidden text-sm text-muted sm:inline">{user.name ?? user.email}</span>
                 <form action="/api/auth/signout" method="post">
-                  <button className="rounded-full p-2 text-muted hover:bg-bg-3 hover:text-fg" title="Sign out"><LogOut size={18} /></button>
+                  <button className="rounded-full p-2 text-muted transition hover:bg-white/5 hover:text-fg" title="Sign out"><LogOut size={17} /></button>
                 </form>
               </>
             ) : (
               <>
-                <Link href="/login" className="text-sm text-muted hover:text-fg">Sign in</Link>
-                <Link href="/join" className="flex items-center gap-1.5 rounded-full bg-brand px-4 py-1.5 text-sm font-semibold text-white shadow-lg shadow-brand/30 hover:brightness-110">
-                  <Sparkles size={14} /> Join
-                </Link>
+                <Link href="/login" className="hidden text-sm font-medium text-muted transition hover:text-fg sm:inline">Sign in</Link>
+                <Link href="/join" className="btn btn-primary h-9 px-4 text-sm"><Sparkles size={14} /> Join</Link>
               </>
             )}
           </div>
         </div>
       </header>
-      {/* mobile bottom bar */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex border-t border-line bg-bg/95 backdrop-blur md:hidden">
-        {[...links, { href: "/join", label: "Join", icon: Sparkles }].map(({ href, label, icon: Icon }) => (
-          <Link key={href} href={href} className={`flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] ${path === href ? "text-fg" : "text-muted"}`}>
-            <Icon size={20} /> {label}
-          </Link>
-        ))}
+
+      {/* floating mobile pill */}
+      <nav className="fixed inset-x-4 bottom-4 z-40 md:hidden" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+        <div className="glass flex rounded-full p-1.5 shadow-2xl shadow-black/60">
+          {[...links, { href: "/join", label: "Join", icon: Sparkles }].map(({ href, label, icon: Icon }) => {
+            const active = path === href;
+            return (
+              <Link key={href} href={href}
+                className={`flex flex-1 flex-col items-center gap-0.5 rounded-full py-2 text-[10.5px] font-medium transition ${active ? "bg-white/10 text-fg" : "text-muted"}`}>
+                <Icon size={19} className={active && href === "/join" ? "text-brand" : ""} /> {label}
+              </Link>
+            );
+          })}
+        </div>
       </nav>
     </>
   );
