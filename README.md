@@ -8,11 +8,13 @@ Your own YouTube + TikTok + funnel. Next.js 16 · Supabase (project "Base") · V
 - `/feed` — TikTok-style vertical snap feed; join card slides in after 3 swipes
 - `/join` — 2-step funnel: free email → Inner Circle ($5) / Day One ($20)
 - `/community` — members wall (locked posts blur + "Unlock")
+- `/slept-on` — **Slept On**: weekly hand-picked underground rap drops, city/scene filter, fire reactions, in-page players (SoundCloud / YouTube / Audiomack / Spotify / mp3), listener signup + artist track submissions
 - `/login` — magic link + Google
 - `/admin/upload` — upload video/thumbnail to Supabase Storage, publish (ADMIN_EMAILS only)
+- `/admin/slept-on` — create drops, add tracks, publish, review artist submissions (ADMIN_EMAILS + `nb_admins`)
 
 ## Setup
-1. Migration is already applied to Base (tables prefixed `nb_`, buckets `videos` + `thumbnails`, 5 seed videos).
+1. Migrations `001_init` + `002_slept_on` are already applied to Base (tables prefixed `nb_`, buckets `videos` + `thumbnails`, 5 seed videos).
 2. `.env.local` — add `SUPABASE_SERVICE_ROLE_KEY` (Supabase → Settings → API). URL + anon key are filled in.
 3. Supabase → Auth → URL Configuration: add `https://YOUR-DOMAIN/auth/callback` to redirect URLs. Enable Google provider if you want it.
 4. `npm run dev`

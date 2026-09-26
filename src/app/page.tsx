@@ -1,13 +1,14 @@
 import Link from "next/link";
-import { Flame, Play, ArrowRight } from "lucide-react";
+import { Flame, Play, ArrowRight, Disc3 } from "lucide-react";
 import VideoCard from "@/components/VideoCard";
 import LeadForm from "@/components/LeadForm";
 import { getVideos, fmtViews } from "@/lib/data";
+import { getDrop, dropLabel } from "@/lib/sleptOn";
 
 export const revalidate = 60;
 
 export default async function Home() {
-  const [longs, shorts] = await Promise.all([getVideos("long", 12), getVideos("short", 8)]);
+  const [longs, shorts, slept] = await Promise.all([getVideos("long", 12), getVideos("short", 8), getDrop()]);
   const hero = longs[0];
 
   return (
@@ -53,6 +54,42 @@ export default async function Home() {
           </div>
         </section>
       )}
+
+      {/* slept on rail */}
+      <section className="mb-10 rounded-3xl border border-line bg-bg-2 p-5 sm:p-6">
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <div>
+            <h2 className="flex items-center gap-2 text-lg font-bold"><Disc3 className="text-brand" size={20} /> Slept On</h2>
+            <p className="text-sm text-muted">{slept.drop ? `${dropLabel(slept.drop.number)} — underground rap you haven't heard yet` : "Underground rap, hand-picked. First drop coming soon."}</p>
+          </div>
+          <Link href="/slept-on" className="flex shrink-0 items-center gap-1 text-sm text-muted hover:text-fg">{slept.drop ? "Full drop" : "Get in"} <ArrowRight size={14} /></Link>
+        </div>
+        {slept.tracks.length > 0 ? (
+          <ol className="grid gap-2 sm:grid-cols-2">
+            {slept.tracks.slice(0, 4).map((t, i) => (
+              <li key={t.id}>
+                <Link href="/slept-on#drop" className="flex items-center gap-3 rounded-xl bg-bg-3 p-2.5 hover:bg-line">
+                  <span className="w-5 text-center font-mono text-xs text-muted">{i + 1}</span>
+                  <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-bg">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    {t.cover_url ? <img src={t.cover_url} alt="" className="h-full w-full object-cover" loading="lazy" /> : <Disc3 size={18} className="absolute inset-0 m-auto text-muted" />}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold">{t.title}</span>
+                    <span className="block truncate text-xs text-muted">{t.artist}{t.city ? ` · ${t.city}` : ""}</span>
+                  </span>
+                  <span className="text-xs text-muted">🔥 {t.fire_count}</span>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            <Link href="/slept-on" className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white">Get the first drop</Link>
+            <Link href="/slept-on#submit" className="rounded-full border border-line px-4 py-2 text-sm font-semibold hover:bg-bg-3">I make music</Link>
+          </div>
+        )}
+      </section>
 
       {/* grid */}
       <section>

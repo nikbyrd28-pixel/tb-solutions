@@ -1,13 +1,14 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Flame, Users, Sparkles, LogOut, Upload } from "lucide-react";
+import { Home, Flame, Users, Sparkles, LogOut, Upload, Disc3 } from "lucide-react";
 
 type U = { email: string; name: string | null; tier: string } | null;
 
 const links = [
   { href: "/", label: "Home", icon: Home },
   { href: "/feed", label: "Chaos Feed", icon: Flame },
+  { href: "/slept-on", label: "Slept On", icon: Disc3 },
   { href: "/community", label: "Community", icon: Users },
 ];
 
@@ -36,6 +37,7 @@ export default function Nav({ user }: { user: U }) {
               <>
                 {user.tier !== "free" && <span className="rounded-full bg-brand/20 px-2 py-0.5 text-xs text-brand">{user.tier.replace("_", " ")}</span>}
                 <Link href="/admin/upload" className="hidden rounded-full p-2 text-muted hover:bg-bg-3 hover:text-fg sm:block" title="Upload"><Upload size={18} /></Link>
+                <Link href="/admin/slept-on" className="hidden rounded-full p-2 text-muted hover:bg-bg-3 hover:text-fg sm:block" title="Slept On admin"><Disc3 size={18} /></Link>
                 <span className="hidden text-sm text-muted sm:inline">{user.name ?? user.email}</span>
                 <form action="/api/auth/signout" method="post">
                   <button className="rounded-full p-2 text-muted hover:bg-bg-3 hover:text-fg" title="Sign out"><LogOut size={18} /></button>
