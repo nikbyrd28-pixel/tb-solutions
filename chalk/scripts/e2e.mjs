@@ -197,6 +197,10 @@ if (process.env.LOCAL_PG !== "0") {
   r = await nick.post("/api/match/enter", { code: t1, stake_cents: 500, tip_cents: 0, method: "demo" });
   const m5 = r.match_id;
   psql(`update chalk_matches set opened_at = now() - interval '20 minutes' where id = '${m5}'`);
+  r = await nick.get(`/api/cron/sweep?key=${process.env.CRON_SECRET || "localcron"}`);
+  check(r.ok, "cron sweep runs with the secret", r);
+  r = await nick.get(`/api/cron/sweep?key=wrong`);
+  check(r.status === 401, "cron sweep refuses a bad secret", r);
   r = await nick.get(`/api/station/${t1}`);
   check(r.match === null, "stale open game swept away", r.match);
   check(psql(`select status || ':' || void_reason from chalk_matches where id = '${m5}'`) === "voided:no opponent showed up", "…voided with reason");
@@ -207,6 +211,7 @@ if (process.env.LOCAL_PG !== "0") {
   await mike.post("/api/match/enter", { code: t1, join_match_id: m6, method: "demo" });
   await nick.post("/api/match/pick", { match_id: m6, winner_id: nickId });
   psql(`update chalk_matches set first_pick_at = now() - interval '16 minutes' where id = '${m6}'`);
+  await nick.get(`/api/cron/sweep?key=${process.env.CRON_SECRET || "localcron"}`);
   r = await nick.get(`/api/station/${t1}`);
   check(r.match?.status === "disputed", "one-sided pick after 15 min -> bartender", r.match);
   r = await bart.post("/api/staff/settle", { match_id: m6, winner_id: nickId });

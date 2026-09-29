@@ -61,18 +61,17 @@ export function StationScreen({ code }: { code: string }) {
   const m = v?.match;
   const inMatch = !!(me && m && (m.a?.id === me.id || m.b?.id === me.id));
 
-  // If the match moved on while we were mid-flow, drop the local flow.
-  useEffect(() => {
-    if (!v) return;
-    if (step !== "idle" && v.match && !(v.match.status === "open" && v.match.a?.id !== v.me?.id) && !inMatch) {
+  // If the match moved on while we were mid-flow (opponent joined, game went live), drop the local flow.
+  const [prevKey, setPrevKey] = useState<string | null>(null);
+  const key = v ? (m ? `${m.id}:${m.status}:${inMatch}` : "none") : null;
+  if (key !== null && key !== prevKey) {
+    setPrevKey(key);
+    const joinable = !!(m && m.status === "open" && m.a?.id !== me?.id);
+    if ((inMatch || (m && !joinable)) && (step !== "idle" || pay)) {
       setStep("idle");
       setPay(null);
     }
-    if (inMatch && step !== "idle") {
-      setStep("idle");
-      setPay(null);
-    }
-  }, [v, step, inMatch]);
+  }
 
   const startFlow = (stakeCents: number | null, join: string | null) => {
     setErr(null);

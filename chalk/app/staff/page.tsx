@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Big, Notice, PhoneInput, fmtWhen, money, post, timeAgo, usePoll } from "@/components/ui";
 
 type State = {
@@ -203,10 +204,7 @@ function Login({ onDone }: { onDone: () => Promise<void> | void }) {
   const [phone, setPhone] = useState("");
   const [pin, setPin] = useState("");
   const [err, setErr] = useState<string | null>(null);
-  const [venue, setVenue] = useState<string>("");
-  useEffect(() => {
-    setVenue(new URLSearchParams(window.location.search).get("v") || "");
-  }, []);
+  const venue = useSearchParams().get("v") || "";
   return (
     <main className="shell">
       <div>

@@ -101,19 +101,6 @@ export async function post<T = Record<string, unknown>>(url: string, body?: unkn
   return j as T;
 }
 
-export function useCountdown(until: string | null | undefined) {
-  const [, setTick] = useState(0);
-  useEffect(() => {
-    const i = setInterval(() => setTick((t) => t + 1), 1000);
-    return () => clearInterval(i);
-  }, []);
-  if (!until) return null;
-  const left = Math.max(0, Math.floor((new Date(until).getTime() - Date.now()) / 1000));
-  const m = Math.floor(left / 60);
-  const s = left % 60;
-  return `${m}:${String(s).padStart(2, "0")}`;
-}
-
 export function PhoneInput({ value, onChange, autoFocus }: { value: string; onChange: (v: string) => void; autoFocus?: boolean }) {
   const fmt = (raw: string) => {
     const d = raw.replace(/\D/g, "").slice(0, 10);

@@ -22,7 +22,6 @@ export async function createIntent(opts: {
     currency: "usd",
     automatic_payment_methods: { enabled: true },
     description: opts.description,
-    statement_descriptor_suffix: "CHALK",
     metadata: { paymentId: opts.paymentId, ...(opts.metadata || {}) },
   });
   return pi;

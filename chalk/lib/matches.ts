@@ -352,7 +352,18 @@ export async function runRefunds(pays: Payment[]) {
 
 // ------------------------------------------------------------------ sweep (lazy expiry, no cron needed)
 
+// Phones poll every few seconds; one sweep per scope per 20s is plenty.
+const lastSweep = new Map<string, number>();
+
 export async function sweep(scope: { stationId?: string; venueId?: string } = {}) {
+  const key = scope.stationId || scope.venueId || "*";
+  const now = Date.now();
+  if (key !== "*" && now - (lastSweep.get(key) || 0) < 20_000) return;
+  lastSweep.set(key, now);
+  return sweepNow(scope);
+}
+
+async function sweepNow(scope: { stationId?: string; venueId?: string }) {
   const refunds = await tx(async (t) => {
     const where = scope.stationId
       ? t`station_id = ${scope.stationId}`

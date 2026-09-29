@@ -40,7 +40,7 @@ export function Bracket({ view, big, onPick }: { view: EventViewT; big?: boolean
   const rounds = Array.from({ length: view.rounds }, (_, i) => i + 1);
   const roundName = (r: number) => (r === view.rounds ? "Final" : r === view.rounds - 1 ? "Semis" : r === view.rounds - 2 ? "Quarters" : `Round ${r}`);
   return (
-    <div style={{ display: "flex", gap: big ? 24 : 12, overflowX: "auto", paddingBottom: 8 }}>
+    <div style={{ display: "flex", gap: big ? 24 : 12, overflowX: "auto", paddingBottom: 8, height: big ? "100%" : undefined }}>
       {rounds.map((r) => (
         <div key={r} style={{ display: "flex", flexDirection: "column", justifyContent: "space-around", gap: 10, minWidth: big ? 300 : 200, flex: 1 }}>
           <div className="eyebrow" style={{ textAlign: "center" }}>{roundName(r)}</div>

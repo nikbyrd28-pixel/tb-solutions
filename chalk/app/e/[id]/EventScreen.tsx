@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { PayBox } from "@/components/PayBox";
 import { Bracket, type EventViewT } from "@/components/Bracket";
 import { Big, Notice, PhoneInput, fmtWhen, money, post, usePoll } from "@/components/ui";
@@ -18,12 +19,12 @@ export function EventScreen({ id }: { id: string }) {
   const [err, setErr] = useState<string | null>(null);
   const [ok, setOk] = useState<string | null>(null);
   const [pay, setPay] = useState<PayState | null>(null);
-  const [staffMode, setStaffMode] = useState(false);
+  const params = useSearchParams();
+  const staffMode = params.get("staff") === "1";
   const [walkup, setWalkup] = useState("");
 
   useEffect(() => {
     const u = new URL(window.location.href);
-    setStaffMode(u.searchParams.get("staff") === "1");
     const pid = u.searchParams.get("pay");
     if (pid) {
       post("/api/pay/confirm", { payment_id: pid }).catch(() => {}).finally(() => {
