@@ -282,10 +282,19 @@ async function endOfCall(b: Business | null, msg: any) {
   if (saved?.id && call.id) {
     await db(`rx_jobs?vapi_call_id=eq.${encodeURIComponent(call.id)}`, { method: "PATCH", body: JSON.stringify({ call_id: saved.id }) }).catch(() => {});
   }
+  // Missed-call text-back: caller hung up before anything happened → text them so the lead isn't lost
+  const short = (row.duration_s ?? 0) < 12;
+  const abandoned = short || row.outcome === "abandoned" || /no-answer|did-not-answer|silence|pipeline-error|voicemail/i.test(row.ended_reason || "");
+  if (b && callerPhone && abandoned && !["booked", "message"].includes(row.outcome || "")) {
+    const ok = await sms(callerPhone, `Hey, this is ${b.name} — sorry we missed you! Text us what's going on (or call back anytime) and we'll get you on the schedule. Reply STOP to opt out.`);
+    if (ok && saved?.id) await db(`rx_calls?id=eq.${saved.id}`, { method: "PATCH", body: JSON.stringify({ caller_texted: true }) });
+  }
   // Owner gets a summary for anything that wasn't already texted as a job/message
   const to = b?.owner_phone || FALLBACK_PHONE;
-  if (to && row.summary && !["booked", "message"].includes(row.outcome || "")) {
-    const ok = await sms(to, `CALL (${row.outcome || "ended"}) ${callerPhone || ""} — ${row.summary}`);
+  if (to && (row.summary || abandoned) && !["booked", "message"].includes(row.outcome || "")) {
+    const ok = await sms(to, abandoned
+      ? `MISSED CALL ${callerPhone || "(unknown number)"} — hung up before booking. ${callerPhone ? "We texted them back." : ""}`
+      : `CALL (${row.outcome || "ended"}) ${callerPhone || ""} — ${row.summary}`);
     if (ok && saved?.id) await db(`rx_calls?id=eq.${saved.id}`, { method: "PATCH", body: JSON.stringify({ owner_notified: true }) });
   }
 }

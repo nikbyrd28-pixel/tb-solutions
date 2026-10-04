@@ -68,6 +68,7 @@ create table if not exists public.rx_calls (
   recording_url   text,
   ended_reason    text,
   owner_notified  boolean not null default false,
+  caller_texted   boolean not null default false,       -- missed-call text-back sent
   raw             jsonb,
   created_at      timestamptz not null default now()
 );
