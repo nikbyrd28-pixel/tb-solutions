@@ -13,6 +13,7 @@
 | Lead Engine (Google LSA setup + management) | $497 setup + $147/mo (lead spend paid to Google directly) | tbsol.net/leads/ | LIVE (selling; delivery = LSA application, weekly tuning, dispute filing) |
 | └ LSA migration front door (same offer, urgency angle: Google moved LSA into Google Ads, missed calls billable since Oct 1 2026) | sells Lead Engine, upsells Front Office | tbsol.net/lsa/ | LIVE — calculator + free-audit form → edge fn `lsa-intake` → table `lsa_leads` |
 | Full Front Office (all three) | $797 setup + $297/mo | hub | LIVE (selling) |
+| **Offer sheet** (all of the above on one page, printable) | — | tbsol.net/offers/ | LIVE — text this link to prospects |
 
 ## Live stack
 | Piece | What | Where |
