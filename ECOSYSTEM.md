@@ -2,13 +2,14 @@
 *The one source of truth for what exists, where it lives, and whether it's alive. Updated Oct 4, 2026.*
 
 ## The business (what we sell)
-**TB Solutions = the front office for the trades** (plumbers, HVAC, electricians). One hub, three offers, one bundle:
+**TB Solutions = the front office for the trades** (plumbers, HVAC, electricians). One hub, four offers, one bundle:
 
 | Offer | Price | Funnel | Status |
 |---|---|---|---|
 | Never Miss a Call (AI receptionist) | $497 setup ($297 founding) + $197/mo | tbsol.net/receptionist/ | **LIVE** — demo (610) 998-6138 |
 | Job-Ready Website | $497 build + $47/mo care | tbsol.net/websites/ | LIVE (selling) |
 | Review Engine | $97/mo, no setup | tbsol.net/reviews/ | LIVE (selling; delivery = n8n flow, build on first sale) |
+| Remodel Planner (blueprint-to-quote funnel) | $697 build + $67/mo, or $297 added to a website | tbsol.net/planner/ | LIVE (selling; delivery = DNE planner templatized, de-brand on first sale) |
 | Full Front Office (all three) | $797 setup + $297/mo | hub | LIVE (selling) |
 
 ## Live stack

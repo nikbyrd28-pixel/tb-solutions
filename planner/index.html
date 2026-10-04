@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Remodel Planner — blueprint-to-quote funnel for remodelers | TB Solutions</title>
+<meta name="description" content="An interactive planner for your website: homeowners pick the project, upload their plans, and send you a qualified remodel lead with scope and budget attached. $697 build, or $297 added to a Job-Ready Website.">
+<meta name="theme-color" content="#B5542B">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23B5542B'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial Black,Arial' font-weight='900' font-size='28' fill='%23FFF8E1'%3E▤%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=swap" rel="stylesheet">
+<script defer src="/track.js"></script>
+<style>
+:root{--copper:#B5542B;--copper-deep:#8E3F1E;--ink:#14110F;--paper:#FFF8E1;--yellow:#FFD23F;--blue:#1B4FD8;--green:#1F9D55;--blueprint:#123C78;--max:1080px;--gutter:clamp(16px,4vw,40px)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"Bricolage Grotesque",system-ui,sans-serif;background:var(--copper);color:var(--paper);font-size:clamp(17px,1.6vw,20px);line-height:1.45}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gutter)}
+h1,h2,h3{font-weight:800;line-height:.95;letter-spacing:-.02em;font-variation-settings:"opsz" 96,"wdth" 92}
+h2{font-size:clamp(32px,5.5vw,58px);margin-bottom:.5em}
+p{max-width:34em}
+a{color:inherit}
+.btn{display:inline-flex;align-items:center;gap:.5em;background:var(--yellow);color:var(--ink);text-decoration:none;font-weight:700;padding:.85em 1.3em;border-radius:999px;border:3px solid var(--yellow);transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:transparent;color:var(--paper);border-color:var(--paper)}
+a:focus-visible{outline:4px solid var(--yellow);outline-offset:3px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0;font-weight:700}
+nav .brand{text-decoration:none}
+nav .brand b{background:var(--yellow);color:var(--ink);padding:.1em .45em;border-radius:6px;margin-right:.4em}
+.hero{padding:clamp(28px,6vw,72px) 0 clamp(40px,6vw,80px)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,5vw,64px);align-items:center}
+@media(max-width:860px){.two{grid-template-columns:1fr}}
+.hero h1{font-size:clamp(38px,7vw,78px);font-variation-settings:"opsz" 96,"wdth" 85}
+.hero .lead{font-size:clamp(19px,2vw,24px);font-weight:500;margin:.9em 0 1.2em;max-width:26em}
+
+/* blueprint demo */
+.bp{background:var(--blueprint);border:3px solid var(--ink);border-radius:22px;box-shadow:12px 12px 0 var(--ink);padding:18px;max-width:430px;margin:0 auto;position:relative;overflow:hidden}
+.bp .grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);background-size:22px 22px}
+.bp svg{position:relative;display:block;width:100%;height:auto}
+.bp .room{fill:none;stroke:#BFD6F5;stroke-width:2.5;stroke-dasharray:1200;stroke-dashoffset:1200}
+.bp.play .room{animation:draw 2.2s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.bp .fill{opacity:0}
+.bp.play .fill{animation:fillin .8s ease 2.3s forwards}
+@keyframes fillin{to{opacity:1}}
+.bp .tag2{font-family:inherit;font-weight:700;font-size:13px;fill:#BFD6F5}
+.bp .lead-card{position:relative;margin-top:14px;background:var(--paper);color:var(--ink);border-radius:14px;border:3px solid var(--ink);padding:12px 14px;font-size:14.5px;font-weight:600;transform:translateY(14px);opacity:0}
+.bp.play .lead-card{animation:pop .45s cubic-bezier(.2,1.5,.4,1) 3.3s forwards}
+@keyframes pop{to{transform:none;opacity:1}}
+.bp .lead-card b{display:block;font-size:.8em;opacity:.6;letter-spacing:.03em}
+
+section{padding:clamp(48px,7vw,96px) 0}
+.paper{background:var(--paper);color:var(--ink)}
+.steps{list-style:none;counter-reset:n;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,3vw,32px);margin-top:1.2em}
+@media(max-width:860px){.steps{grid-template-columns:1fr}}
+.steps li{counter-increment:n;border-top:3px solid var(--ink);padding-top:14px}
+.steps li::before{content:counter(n);font-size:2.4em;font-weight:800;color:var(--copper);display:block;line-height:1}
+.steps h3{font-size:1.2em;margin:.3em 0 .25em}
+.why{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:1.2em}
+@media(max-width:700px){.why{grid-template-columns:1fr}}
+.why div{border:3px solid var(--ink);border-radius:16px;padding:16px;background:#fff;font-weight:600}
+.why b{display:block;font-size:1.1em;margin-bottom:.2em}
+.price-row{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,4vw,48px);align-items:center}
+@media(max-width:860px){.price-row{grid-template-columns:1fr}}
+.tag{background:var(--yellow);color:var(--ink);border-radius:24px;padding:26px;transform:rotate(-1deg);box-shadow:10px 10px 0 var(--ink)}
+.tag .big{font-size:clamp(52px,8vw,92px);font-weight:800;line-height:.9;letter-spacing:-.04em}
+.tag .big small{font-size:.3em;font-weight:700;vertical-align:top}
+.tag .alt{font-weight:700;font-size:1.15em;margin-top:.2em}
+.tag ul{list-style:none;margin-top:16px;display:grid;gap:8px;font-weight:600}
+.tag li::before{content:"✓";margin-right:.6em;color:var(--green);font-weight:800}
+details{border-top:3px solid var(--ink);padding:16px 0}
+details:last-of-type{border-bottom:3px solid var(--ink)}
+summary{cursor:pointer;font-weight:700;font-size:1.1em;list-style:none;display:flex;justify-content:space-between;gap:1em}
+summary::after{content:"+";font-weight:800;font-size:1.3em;transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{margin-top:.5em}
+footer{padding:26px 0 40px;font-size:.85em;font-weight:500;display:flex;flex-wrap:wrap;gap:1em 2em;justify-content:space-between}
+footer a{text-decoration:underline}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important}.bp .room{stroke-dashoffset:0}.bp .fill,.bp .lead-card{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <nav>
+    <a class="brand" href="/"><b>TB</b> Solutions</a>
+    <a href="/" style="font-size:.9em;text-decoration:underline">← all services</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap two">
+    <div>
+      <h1>Turn "just looking" into a qualified remodel lead.</h1>
+      <p class="lead">The Remodel Planner sits on your website and interviews the homeowner for you: pick the project, set the scope, upload the plans or photos — and what lands on your phone isn't "call me," it's a job with a budget attached.</p>
+      <a class="btn" href="sms:+14848418501?&body=Hey%20Nick%2C%20I%20want%20the%20remodel%20planner%20on%20my%20site.">Text Nick — add it to your site</a>
+      <a class="btn ghost" href="https://dnecontracting.com" target="_blank" rel="noopener">See it live on a contractor's site</a>
+    </div>
+    <div>
+      <div class="bp" id="bp" aria-hidden="true">
+        <div class="grid"></div>
+        <svg viewBox="0 0 390 230">
+          <path class="room" d="M20 20 H370 V210 H20 Z M20 120 H200 M200 20 V210 M270 20 V90 M270 90 H370"/>
+          <g class="fill">
+            <rect x="24" y="124" width="172" height="82" fill="#B5542B" opacity=".85"/>
+            <rect x="204" y="24" width="62" height="62" fill="#1F9D55" opacity=".8"/>
+            <text class="tag2" x="30" y="145" fill="#FFF8E1">NEW KITCHEN</text>
+            <text class="tag2" x="208" y="44" fill="#FFF8E1">BATH</text>
+            <text class="tag2" x="30" y="40">bedroom</text>
+            <text class="tag2" x="278" y="40">closet</text>
+            <text class="tag2" x="278" y="130">living</text>
+          </g>
+        </svg>
+        <div class="lead-card">
+          <b>NEW REMODEL LEAD → your phone</b>
+          Kitchen + hall bath · "plans attached" · $40–60K budget · wants to start in Jan · Phoenixville · (610) 555-0142
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="paper">
+  <div class="wrap">
+    <h2>Why remodel leads need this.</h2>
+    <p>A $400 drain call books off one phone ring. A $45,000 kitchen doesn't — the homeowner isn't ready to talk, so your "Contact us" form gets nothing. The planner gives them something to do instead of leave.</p>
+    <div class="why">
+      <div><b>They qualify themselves</b>Project type, rooms, finish level, timeline, budget range — answered while they're excited, at 9pm on the couch.</div>
+      <div><b>The blueprint upload</b>Plans, sketches, Pinterest screenshots, photos of the ugly bathroom — attached to the lead so you walk in already knowing the job.</div>
+      <div><b>Instant ballpark ranges</b>Honest "projects like this usually run" numbers you approve up front. Filters the $5K dreamers off your calendar before they're on it.</div>
+      <div><b>Lead hits your phone in seconds</b>Scope, budget, attachments, callback number — texted to you and saved to your list. Follow up while they're still on your site.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap price-row">
+    <div>
+      <h2 style="color:var(--paper)">Built for remodelers.</h2>
+      <p>Kitchen &amp; bath shops, basement finishers, GCs, design-build — anyone whose jobs are quoted in weeks, not hours. We load your project types, your real price ranges, and your photos, and wire the leads to your phone.</p>
+      <p style="margin-top:.8em">Live in 5 days. No contract on the monthly.</p>
+    </div>
+    <div class="tag">
+      <div style="font-weight:800">THE REMODEL PLANNER</div>
+      <div class="big">$697<small>build</small></div>
+      <div class="alt">or $297 added to a <a href="/websites/">Job-Ready Website</a></div>
+      <div class="alt">then $67 / month</div>
+      <ul>
+        <li>Interactive planner on your domain</li>
+        <li>Blueprint / photo upload on every lead</li>
+        <li>Your price ranges, approved by you</li>
+        <li>Leads texted to you + saved to a list</li>
+        <li>Updates anytime — just text Nick</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="paper">
+  <div class="wrap">
+    <h2>What remodelers ask.</h2>
+    <details><summary>Won't showing ranges scare people off?</summary><p>It scares off the people who were never going to pay you — that's the point. The ones with real budgets relax, because you're the first contractor who didn't make pricing a mystery. The exact number still comes from you after the walkthrough.</p></details>
+    <details><summary>I get my work from referrals.</summary><p>Referrals look you up before calling. Right now they find a phone number. With the planner, a referred homeowner shows up to the first call with scope and budget already on paper — your walkthrough gets twice as productive.</p></details>
+    <details><summary>What do I do when a lead comes in?</summary><p>Call them back. That's it. Everything you'd normally drag out of them on a 20-minute first call is already in the text. Pair it with the <a href="/receptionist/">receptionist</a> and even the callback gets handled.</p></details>
+    <details><summary>Does it work without a website?</summary><p>It needs a home — that's the $297 bundle with the <a href="/websites/">Job-Ready Website</a>: site + planner together for less than the planner alone.</p></details>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 style="color:var(--paper)">Your next kitchen is on someone's couch right now.</h2>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:1em">
+      <a class="btn" href="sms:+14848418501?&body=Hey%20Nick%2C%20I%20want%20the%20remodel%20planner%20on%20my%20site.">Text Nick — (484) 841-8501</a>
+      <a class="btn ghost" href="https://dnecontracting.com" target="_blank" rel="noopener">See the live example</a>
+    </div>
+  </div>
+  <footer class="wrap">
+    <span>A <a href="/">TB Solutions</a> service · Nick Byrd, Chester County, PA</span>
+    <span><a href="/sms-terms/">SMS terms</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+  </footer>
+</section>
+
+<script>
+const bp = document.getElementById("bp");
+new IntersectionObserver((es,o)=>{ if(es[0].isIntersecting){ bp.classList.add("play"); o.disconnect();
+  setInterval(()=>{ bp.classList.remove("play"); void bp.offsetWidth; bp.classList.add("play"); }, 9000);
+}},{threshold:.35}).observe(bp);
+</script>
+</body>
+</html>

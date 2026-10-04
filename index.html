@@ -47,7 +47,7 @@ nav .links a:hover{border-bottom-color:var(--ink)}
 
 .pick{background:var(--paper);padding:clamp(48px,7vw,96px) 0}
 .pick h2{max-width:14em}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,2.5vw,28px);margin-top:1.4em}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(14px,2.5vw,28px);margin-top:1.4em}
 @media(max-width:860px){.cards{grid-template-columns:1fr}}
 .card{background:#fff;border:3px solid var(--ink);border-radius:22px;padding:24px;text-decoration:none;display:flex;flex-direction:column;gap:12px;box-shadow:8px 8px 0 var(--ink);transition:transform .15s,box-shadow .15s;opacity:0;transform:translateY(18px)}
 .card.in{animation:dealIn .5s cubic-bezier(.2,1.3,.4,1) forwards}
@@ -62,6 +62,7 @@ nav .links a:hover{border-bottom-color:var(--ink)}
 .card.rx{border-top:10px solid var(--copper)}
 .card.web{border-top:10px solid var(--blue)}
 .card.rev{border-top:10px solid var(--green)}
+.card.pln{border-top:10px solid var(--copper)}
 
 .bundle{padding:clamp(48px,7vw,96px) 0;background:var(--ink);color:var(--paper)}
 .bundle h2{color:var(--yellow)}
@@ -100,6 +101,7 @@ footer a{color:var(--yellow)}
       <a href="/receptionist/">Phones</a>
       <a href="/websites/">Websites</a>
       <a href="/reviews/">Reviews</a>
+      <a href="/planner/">Planner</a>
       <a href="/portal/">Client login</a>
     </span>
     <a class="btn ghost" href="sms:+14848418501?&body=Hey%20Nick%2C%20saw%20tbsol.net.%20Got%2010%20min%3F" style="padding:.5em 1em;font-size:.9em">Text Nick</a>
@@ -131,6 +133,12 @@ footer a{color:var(--yellow)}
         <span class="fix">The Job-Ready Website — one fast page built to turn a visitor into a booked call: tap-to-call, instant quote form that texts you, your services and area, live in 5 days.</span>
         <span class="price">$497 build · $47/mo care</span>
         <span class="go">Fix my website <span>→</span></span>
+      </a>
+      <a class="card pln" href="/planner/">
+        <span class="pain"><q>Remodel leads say "just looking" and vanish.</q></span>
+        <span class="fix">The Remodel Planner — an interactive planner on your site: homeowners pick the project, upload blueprints or photos, and you get a lead with scope and budget attached.</span>
+        <span class="price">$697 build · $67/mo <small>· or $297 added to a website</small></span>
+        <span class="go">Fix my remodel leads <span>→</span></span>
       </a>
       <a class="card rev" href="/reviews/">
         <span class="pain"><q>The other guy has 200 reviews. I have 12.</q></span>
