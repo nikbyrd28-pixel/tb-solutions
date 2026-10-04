@@ -84,6 +84,25 @@ h2{font-size:20px;font-weight:800;margin:18px 0 8px}
 .bar button.save{background:var(--ink);color:var(--yellow)}
 .bar .st{font-size:13px;font-weight:700;color:var(--green)}
 .tog{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px}
+.ed.edit{padding:14px 12px}
+details.sec{border:2px solid var(--line);border-radius:14px;margin-bottom:10px;background:#fff}
+details.sec summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+details.sec summary::-webkit-details-marker{display:none}
+details.sec summary b{display:block;font-size:16px}
+details.sec summary small{display:block;font-size:13px;color:var(--muted);font-weight:600;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70vw}
+details.sec summary i{font-style:normal;font-size:22px;font-weight:800;transition:transform .2s;color:var(--muted)}
+details.sec[open] summary i{transform:rotate(90deg)}
+details.sec[open]{border-color:var(--ink)}
+.secb{padding:4px 14px 14px;border-top:2px solid var(--line)}
+.hint{font-size:13px;color:var(--muted);font-weight:600;margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chips button{font:inherit;font-size:12px;font-weight:700;border:2px solid var(--line);border-radius:999px;padding:4px 10px;background:#fff;cursor:pointer;color:var(--ink)}
+.chips button:hover{border-color:var(--ink)}
+.pv{background:var(--ink);color:var(--paper);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.pvh{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--yellow);margin-bottom:6px}
+.pv p{font-size:15px;line-height:1.35;margin-top:6px;opacity:.95}
+.pv .miss{color:var(--yellow);font-weight:700}
+.bar button.save.dirty{background:var(--copper);border-color:var(--copper);color:#fff}
 .tog input{width:auto}
 @media (max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}}
 </style>
@@ -250,38 +269,48 @@ async function openBiz(id){
   cur=data; const b=data.business, h=b.hours||{};
   const inp=(k,label,type='text',extra='')=>`<label class="f">${label}<input data-k="${k}" type="${type}" value="${esc(b[k]??'')}" ${extra}></label>`;
   $('bizList').classList.add('hidden'); $('bizEdit').classList.remove('hidden');
-  $('bizEdit').innerHTML=`<div class="ed">
-    <div class="acts" style="margin:0 0 12px"><button id="back">← All clients</button><span class="tog" style="margin-left:auto"><input type="checkbox" id="active" ${b.active?'checked':''}> Line active</span></div>
-    <h3>Business</h3>
-    <div class="g2">${inp('name','Company name')}<label class="f">Trade<select data-k="trade">${TRADES.map(t=>`<option ${t===b.trade?'selected':''}>${t}</option>`).join('')}</select></label></div>
-    <div class="g2">${inp('owner_name','Owner name')}${inp('owner_phone','Owner cell (gets the texts)','tel')}</div>
-    <div class="g2">${inp('agent_name','Receptionist name (how it introduces itself)')}${inp('agent_number','Agent phone line (from provision.mjs)','tel')}</div>
-    <h3>Money</h3>
-    <div class="g3"><label class="f">Dispatch fee $<input data-k="service_fee_cents" type="number" value="${b.service_fee_cents!=null?b.service_fee_cents/100:''}"></label>
-      <label class="f">After-hours fee $<input data-k="after_hours_fee_cents" type="number" value="${b.after_hours_fee_cents!=null?b.after_hours_fee_cents/100:''}"></label>
-      <label class="f">Free estimates?<select data-k="free_estimates"><option value="true" ${b.free_estimates?'selected':''}>Yes</option><option value="false" ${!b.free_estimates?'selected':''}>No</option></select></label></div>
-    <h3>Service area</h3>
-    ${inp('service_zips','Zip codes (comma separated, blank = don\'t check)','text','placeholder="19460, 19464, 19380"')}
-    <label class="f">Area in plain words (what it says to callers)<input data-k="service_area_note" value="${esc(b.service_area_note||'')}" placeholder="Chester and Montgomery counties, about 30 minutes from Phoenixville"></label>
-    <h3>Hours &amp; arrival windows</h3>
-    <div class="hrs" id="hrs">${DAYS.map(d=>`<div><span>${d}</span><input type="time" data-d="${d}" data-i="0" value="${h[d]?h[d][0]:''}" ${h[d]?'':'disabled'}><input type="time" data-d="${d}" data-i="1" value="${h[d]?h[d][1]:''}" ${h[d]?'':'disabled'}><label class="tog"><input type="checkbox" data-open="${d}" ${h[d]?'checked':''}>open</label></div>`).join('')}</div>
-    <div class="g2" style="margin-top:10px"><label class="f">Arrival windows, one per line (start-end)<textarea data-k="windows" style="min-height:90px">${esc((b.windows||[]).map(w=>w[0]+'-'+w[1]).join('\n'))}</textarea></label>
-      <div><label class="f">Jobs per window<input data-k="jobs_per_window" type="number" min="1" value="${b.jobs_per_window||2}"></label>
-      <label class="f">Emergencies after hours<select data-k="emergency_policy">${[['after_hours_dispatch','Offer after-hours dispatch'],['message_only','Take message, tech calls back'],['transfer','Transfer live to tech']].map(([v,l])=>`<option value="${v}" ${v===b.emergency_policy?'selected':''}>${l}</option>`).join('')}</select></label>
-      ${inp('transfer_number','Transfer / on-call number (if transferring)','tel')}</div></div>
-    <h3>Knowledge — anything else it should know or say</h3>
-    <label class="f big"><span>Plain English. Brands you service, what you don't do, promos, how to pronounce the name, warranty policy, "we don't do mobile homes", etc. Goes straight into the receptionist's brief.</span><textarea data-k="knowledge">${esc(b.knowledge||'')}</textarea></label>
-    <h3>Sends booked jobs to</h3>
-    <div class="g2">
-      <label class="f">Housecall Pro API key <span style="font-weight:500">(their HCP → Settings → API. Blank keeps current${(data.integrations||[]).some(x=>x.provider==='housecallpro'&&x.has_key)?' ····'+esc((data.integrations.find(x=>x.provider==='housecallpro')||{}).key_tail):''})</span><input id="hcp_key" type="password" autocomplete="off" placeholder="${(data.integrations||[]).some(x=>x.provider==='housecallpro'&&x.has_key)?'saved':'paste key'}"></label>
-      <label class="f">Push to Housecall Pro?<select id="hcp_active"><option value="true" ${(data.integrations||[]).some(x=>x.provider==='housecallpro'&&x.active)?'selected':''}>On</option><option value="false" ${(data.integrations||[]).some(x=>x.provider==='housecallpro'&&x.active)?'':'selected'}>Off</option></select></label>
-    </div>
-    <div style="font-size:13px;color:var(--muted);font-weight:600;margin:-4px 0 8px">Jobber: coming. Every job the receptionist books appears on their HCP schedule with customer, address, window and dispatch fee. Last syncs: <span id="syncLog">—</span></div>
-    <h3>Services it can book <button id="addSvc" style="font:inherit;font-size:12px;border:2px solid var(--ink);border-radius:999px;padding:2px 10px;background:var(--yellow);font-weight:800;cursor:pointer;margin-left:6px">+ add</button></h3>
-    <div id="svcs">${data.services.map(svcRow).join('')}</div>
+  const hcp=(data.integrations||[]).find(x=>x.provider==='housecallpro')||{};
+  const money=c=>c!=null?'$'+(c/100):'—';
+  const openDays=DAYS.filter(d=>h[d]); const hrsSum=openDays.length?`${openDays[0]}–${openDays[openDays.length-1]} ${h[openDays[0]][0].replace(/^0/,'')}–${h[openDays[0]][1].replace(/^0/,'')}`:'closed';
+  const sec=(id,title,summary,body,open)=>`<details class="sec" id="sec-${id}" ${open?'open':''}><summary><span><b>${title}</b><small>${summary}</small></span><i>›</i></summary><div class="secb">${body}</div></details>`;
+  $('bizEdit').innerHTML=`<div class="ed edit">
+    <div class="acts" style="margin:0 0 14px"><button id="back">← All clients</button><span class="tog" style="margin-left:auto"><input type="checkbox" id="active" ${b.active?'checked':''}> Line is live</span></div>
+    <div class="preview" id="preview"></div>
+    ${sec('biz','Business',`${esc(b.name||'')} · ${esc(b.trade||'')}`,`
+      <div class="g2">${inp('name','Company name')}<label class="f">Trade<select data-k="trade">${TRADES.map(t=>`<option ${t===b.trade?'selected':''}>${t}</option>`).join('')}</select></label></div>
+      <div class="g2">${inp('owner_name','Owner')}<label class="f">Owner cell · gets every job by text<input data-k="owner_phone" type="tel" class="ph" value="${esc(fmtPhone(b.owner_phone))}" placeholder="(610) 555-0100"></label></div>
+      <div class="g2"><label class="f">Receptionist's name<input data-k="agent_name" value="${esc(b.agent_name||'')}" placeholder="Dana"></label><label class="f">The line callers reach ${b.agent_number?'':'<span class="pill" style="background:var(--yellow)">not set up yet</span>'}<input data-k="agent_number" type="tel" class="ph" value="${esc(fmtPhone(b.agent_number))}" placeholder="assigned by Nick"></label></div>`,true)}
+    ${sec('money','Money',`${money(b.service_fee_cents)} dispatch · ${money(b.after_hours_fee_cents)} after hours · ${b.free_estimates?'free':'paid'} estimates`,`
+      <div class="g3"><label class="f">Dispatch fee $<input data-k="service_fee_cents" type="number" inputmode="decimal" value="${b.service_fee_cents!=null?b.service_fee_cents/100:''}"></label>
+        <label class="f">After-hours fee $<input data-k="after_hours_fee_cents" type="number" inputmode="decimal" value="${b.after_hours_fee_cents!=null?b.after_hours_fee_cents/100:''}"></label>
+        <label class="f">Estimates<select data-k="free_estimates"><option value="true" ${b.free_estimates?'selected':''}>Free</option><option value="false" ${!b.free_estimates?'selected':''}>Tech quotes</option></select></label></div>
+      <div class="hint">It says the dispatch fee once, plainly, right before booking. It never quotes a repair price.</div>`)}
+    ${sec('area','Service area',(b.service_zips||[]).length?`${b.service_zips.length} zips`:(b.service_area_note?esc(b.service_area_note):'not set — books anyone'),`
+      <label class="f">Zip codes it books<input data-k="service_zips" value="${esc((b.service_zips||[]).join(', '))}" placeholder="19460, 19464, 19380 — blank books anyone"></label>
+      <label class="f">How it describes the area out loud<input data-k="service_area_note" value="${esc(b.service_area_note||'')}" placeholder="Chester and Montgomery counties, about 30 minutes from Phoenixville"></label>`)}
+    ${sec('hours','Hours &amp; scheduling',`${hrsSum} · ${(b.windows||[]).length} windows/day · ${b.jobs_per_window||2} jobs each`,`
+      <div class="hrs" id="hrs">${DAYS.map(d=>`<div><span>${d}</span><input type="time" data-d="${d}" data-i="0" value="${h[d]?h[d][0]:''}" ${h[d]?'':'disabled'}><input type="time" data-d="${d}" data-i="1" value="${h[d]?h[d][1]:''}" ${h[d]?'':'disabled'}><label class="tog"><input type="checkbox" data-open="${d}" ${h[d]?'checked':''}>open</label></div>`).join('')}</div>
+      <div class="g2" style="margin-top:12px"><label class="f">Arrival windows it offers (one per line)<textarea data-k="windows" style="min-height:96px">${esc((b.windows||[]).map(w=>w[0]+'-'+w[1]).join('\n'))}</textarea></label>
+        <div><label class="f">Jobs per window<input data-k="jobs_per_window" type="number" min="1" inputmode="numeric" value="${b.jobs_per_window||2}"></label>
+        <label class="f">After-hours emergency<select data-k="emergency_policy">${[['after_hours_dispatch','Offer same-night dispatch'],['message_only','Take message, tech calls back'],['transfer','Transfer live to a tech']].map(([v,l])=>`<option value="${v}" ${v===b.emergency_policy?'selected':''}>${l}</option>`).join('')}</select></label>
+        <label class="f">Transfer to<input data-k="transfer_number" type="tel" class="ph" value="${esc(fmtPhone(b.transfer_number))}" placeholder="on-call cell"></label></div></div>`)}
+    ${sec('know','Knowledge',(b.knowledge||'').trim()?esc(b.knowledge.trim().split(/[.\n]/)[0]).slice(0,60)+'…':'nothing extra yet',`
+      <div class="chips" id="kchips">${['Family-owned, licensed and insured in PA.','We take cash, check and all major cards.','Senior and veteran discount: 10% off labor.','We do not do new construction.','We do not service mobile homes.','Water heaters: all brands.','Free second opinions on replacements.','Financing available on jobs over $1,000.'].map(t=>`<button type="button" data-chip="${esc(t)}">+ ${esc(t.replace(/\.$/,''))}</button>`).join('')}</div>
+      <label class="f big"><span>Plain English. Brands, what you don't do, promos, how to say the name. It reads this before every call.</span><textarea data-k="knowledge" placeholder="Family-owned since 2009. We service all water heater brands. We don't do septic.">${esc(b.knowledge||'')}</textarea></label>`)}
+    ${sec('svc','Services it books',`${data.services.filter(x=>x.active).length} on · ${data.services.filter(x=>x.urgency==='emergency').length} emergency`,`
+      <div class="acts" style="margin:0 0 10px"><button id="addSvc" style="background:var(--yellow)">+ Add a service</button></div>
+      <div id="svcs">${data.services.map(svcRow).join('')}</div>`)}
+    ${sec('int','Sends booked jobs to',hcp.has_key?`Housecall Pro ····${esc(hcp.key_tail)} · ${hcp.active?'on':'off'}`:'text only (no app connected)',`
+      <div class="g2">
+        <label class="f">Housecall Pro API key${hcp.has_key?' <span class="pill booked">saved ····'+esc(hcp.key_tail)+'</span>':''}<input id="hcp_key" type="password" autocomplete="off" placeholder="${hcp.has_key?'paste to replace':'paste key from HCP → Settings → API'}"></label>
+        <label class="f">Push jobs to Housecall Pro<select id="hcp_active"><option value="true" ${hcp.active?'selected':''}>On</option><option value="false" ${hcp.active?'':'selected'}>Off</option></select></label>
+      </div>
+      <div class="hint">Every job it books shows up on their HCP schedule with customer, address, window and fee. Jobber next. Recent syncs: <span id="syncLog">—</span></div>`)}
     <div class="bar"><button class="save" id="saveBiz">Save</button><span class="st" id="saveSt"></span><button id="testCall" style="margin-left:auto" ${b.agent_number?'':'disabled'}>Call this line</button></div>
   </div>`;
-  const zipEl=$('bizEdit').querySelector('[data-k=service_zips]'); zipEl.value=(b.service_zips||[]).join(', ');
+  renderPreview(); $('bizEdit').querySelectorAll('input,select,textarea').forEach(el=>el.addEventListener('input',()=>{ renderPreview(); $('saveBiz').textContent='Save changes'; $('saveBiz').classList.add('dirty'); }));
+  $('kchips').querySelectorAll('button').forEach(c=>c.onclick=()=>{ const t=$('bizEdit').querySelector('[data-k=knowledge]'); if(t.value.includes(c.dataset.chip)) return; t.value=(t.value.trim()?t.value.trim()+' ':'')+c.dataset.chip; t.dispatchEvent(new Event('input')); });
+  $('bizEdit').querySelectorAll('input.ph').forEach(i=>i.addEventListener('blur',()=>{ i.value=fmtPhone(i.value)||i.value; }));
   $('back').onclick=()=>{ $('bizEdit').classList.add('hidden'); $('bizList').classList.remove('hidden'); };
   $('bizEdit').querySelectorAll('[data-open]').forEach(c=>c.onchange=()=>$('bizEdit').querySelectorAll(`[data-d=${c.dataset.open}]`).forEach(i=>{ i.disabled=!c.checked; if(c.checked&&!i.value) i.value=i.dataset.i==='0'?'07:00':'17:00'; }));
   $('saveBiz').onclick=saveBiz;
@@ -317,19 +346,29 @@ function wireSvcs(){
     };
   });
 }
+function e164(v){ const d=String(v||'').replace(/\D/g,''); return d.length===10?'+1'+d:d.length===11&&d[0]==='1'?'+'+d:(v||'').trim()?v:''; }
+function renderPreview(){
+  const root=$('bizEdit'); if(!root||!$('preview')) return; const g=k=>{const el=root.querySelector(`[data-k=${k}]`);return el?el.value:''};
+  const fee=g('service_fee_cents'), ah=g('after_hours_fee_cents'), area=g('service_area_note'), name=g('name')||'your company', agent=g('agent_name')||'the receptionist';
+  const lines=[`<b>${esc(name)}, this is ${esc(agent)}.</b> What's going on?`,
+    fee?`The dispatch fee is $${esc(fee)}${ah?`, or $${esc(ah)} after hours`:''}. The tech gives you the exact number before he touches anything.`:`<span class="miss">Set a dispatch fee so it knows what to say about money.</span>`,
+    area?`We cover ${esc(area)}.`:`<span class="miss">Add the service area in plain words.</span>`,
+    `I've got ${(g('windows')||'').split('\n').filter(Boolean).slice(0,2).map(w=>w.replace(/^0/,'').replace('-',' to ').replace(/:00/g,'')).join(' or ')||'two windows'} tomorrow. Which one?`];
+  $('preview').innerHTML=`<div class="pv"><div class="pvh">What callers hear</div>${lines.map(l=>`<p>“${l}”</p>`).join('')}</div>`;
+}
 async function saveBiz(){
   const root=$('bizEdit'), g=k=>root.querySelector(`[data-k=${k}]`).value;
   const hours={}; DAYS.forEach(d=>{ const on=root.querySelector(`[data-open=${d}]`).checked; hours[d]=on?[root.querySelector(`[data-d=${d}][data-i="0"]`).value,root.querySelector(`[data-d=${d}][data-i="1"]`).value]:null; });
   const windows=g('windows').split('\n').map(l=>l.trim()).filter(Boolean).map(l=>l.split(/\s*[-–]\s*/)).filter(w=>w.length===2);
-  const p={name:g('name'),trade:g('trade'),owner_name:g('owner_name'),owner_phone:g('owner_phone'),agent_name:g('agent_name'),agent_number:g('agent_number'),
+  const p={name:g('name'),trade:g('trade'),owner_name:g('owner_name'),owner_phone:e164(g('owner_phone')),agent_name:g('agent_name'),agent_number:e164(g('agent_number')),
     service_fee_cents:g('service_fee_cents')===''?null:Math.round(+g('service_fee_cents')*100),after_hours_fee_cents:g('after_hours_fee_cents')===''?null:Math.round(+g('after_hours_fee_cents')*100),
     free_estimates:g('free_estimates')==='true',service_zips:g('service_zips').split(',').map(x=>x.trim()).filter(Boolean),service_area_note:g('service_area_note'),
-    hours,windows,jobs_per_window:+g('jobs_per_window')||2,emergency_policy:g('emergency_policy'),transfer_number:g('transfer_number'),knowledge:g('knowledge'),active:$('active').checked};
+    hours,windows,jobs_per_window:+g('jobs_per_window')||2,emergency_policy:g('emergency_policy'),transfer_number:e164(g('transfer_number')),knowledge:g('knowledge'),active:$('active').checked};
   const {error}=await supa.rpc('hq_rx_business_save',{p_id:cur.business.id,p});
   if(error){ alert(error.message); return; }
   const hk=$('hcp_key').value.trim(), ha=$('hcp_active').value==='true';
   if(hk||cur.integrations.some(x=>x.provider==='housecallpro')){ const r2=await supa.rpc('hq_rx_integration_save',{p_business:cur.business.id,p_provider:'housecallpro',p_api_key:hk,p_active:ha,p_settings:{}}); if(r2.error){ alert('Integration: '+r2.error.message); return; } $('hcp_key').value=''; }
-  $('saveSt').textContent='Saved — live on the next call'; setTimeout(()=>$('saveSt').textContent='',2500);
+  $('saveSt').textContent='Saved. Live on the next call.'; $('saveBiz').textContent='Save'; $('saveBiz').classList.remove('dirty'); setTimeout(()=>$('saveSt').textContent='',2500);
   const r=await supa.rpc('hq_rx',{p_days:30}); rx=r.data; renderRx();
 }
 </script>
