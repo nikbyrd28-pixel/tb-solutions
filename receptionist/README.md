@@ -37,4 +37,7 @@ Vapi ≈ $0.05–0.13/min all-in (model+voice+transcription), Twilio number $1.1
 
 ## Not built yet (next)
 - Owner dashboard page (`/receptionist/owner/`) reading `rx_jobs` + `rx_calls` via the RLS policies already in place.
-- Jobber / Housecall Pro push (write `external_ref` on `rx_jobs`).
+- Jobber push (Housecall Pro is DONE: `rx-sync` edge fn + `rx_integrations` table + pg_net trigger on `rx_jobs` insert; key entered in HQ → Edit brain → Sends booked jobs to. Field names follow HCP public API docs — verify against the first client's real key; errors land in `rx_sync_log`).
+
+## Integrations
+- `supabase/004_rx_integrations.sql` + `supabase/functions/rx-sync/` — Housecall Pro job push (per-business API key, set in HQ).

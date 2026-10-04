@@ -20,6 +20,7 @@
 | Hosting | Vercel project `tb-solutions` → tbsol.net (auto-deploys `main`) | this repo |
 | Database | Supabase **"Base"** `qgbjiqdwzgkjkmqyjsmc` | — |
 | Receptionist brain | edge function `rx-agent` (Vapi webhook: persona, booking, SMS) | `receptionist/supabase/functions/rx-agent/` |
+| Field-service sync | edge fn `rx-sync` — booked `rx_jobs` → Housecall Pro (per-client key in `rx_integrations`, set from HQ); Jobber planned | `receptionist/supabase/functions/rx-sync/` |
 | SMS consent intake | edge function `rx-optin` + `/receptionist/sms-consent/` page | `receptionist/` |
 | LSA audit intake | edge function `lsa-intake` → `lsa_leads` (set `NICK_PHONE` secret to get texted) | `lsa/supabase/` |
 | Receptionist data | tables `rx_*` (businesses, services, jobs, calls, messages, optins, config) | Supabase |

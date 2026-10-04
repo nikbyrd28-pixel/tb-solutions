@@ -213,7 +213,7 @@ function renderRx(){
   $('jobs').innerHTML=(rx.jobs||[]).length?rx.jobs.map(j=>`<div class="card">
       <div class="top"><div><h3>${esc(j.customer_name||'(no name)')}</h3><div class="biz">${esc(j.business)} · ${esc(j.address||'')}</div></div><span class="pill ${esc(j.status)}">${esc(j.status)}</span></div>
       <div class="sum">${j.urgency?`<span class="pill ${esc(j.urgency)}">${esc(j.urgency)}</span>`:''}${esc(j.issue||'')}</div>
-      <div class="when">${j.window_start?new Date(j.window_start).toLocaleString([], {weekday:'short',month:'short',day:'numeric',hour:'numeric'})+'–'+new Date(j.window_end).toLocaleTimeString([], {hour:'numeric'}):''} ${j.fee?'· $'+j.fee:''} · ${ago(j.created_at)}</div>
+      <div class="when">${j.external_ref?'<span class="pill booked">in HCP</span> ':''}${j.window_start?new Date(j.window_start).toLocaleString([], {weekday:'short',month:'short',day:'numeric',hour:'numeric'})+'–'+new Date(j.window_end).toLocaleTimeString([], {hour:'numeric'}):''} ${j.fee?'· $'+j.fee:''} · ${ago(j.created_at)}</div>
       <div class="acts">${j.customer_phone?`<a class="call" href="tel:${tel(j.customer_phone)}">Call</a>`:''}
         <select data-job="${j.id}">${['booked','confirmed','done','cancelled','no_show'].map(x=>`<option ${x===j.status?'selected':''}>${x}</option>`).join('')}</select></div>
     </div>`).join(''):'<div class="empty">No jobs booked yet. Call the demo line and book one.</div>';
@@ -245,6 +245,8 @@ $('newBiz').onclick=async()=>{
 };
 async function openBiz(id){
   const {data,error}=await supa.rpc('hq_rx_business',{p_id:id}); if(error||!data){ alert(error?error.message:'not found'); return; }
+  const [ints,log]=await Promise.all([supa.rpc('hq_rx_integrations',{p_business:id}),supa.rpc('hq_rx_sync_log',{p_business:id})]);
+  data.integrations=ints.data||[]; data.synclog=log.data||[];
   cur=data; const b=data.business, h=b.hours||{};
   const inp=(k,label,type='text',extra='')=>`<label class="f">${label}<input data-k="${k}" type="${type}" value="${esc(b[k]??'')}" ${extra}></label>`;
   $('bizList').classList.add('hidden'); $('bizEdit').classList.remove('hidden');
@@ -269,6 +271,12 @@ async function openBiz(id){
       ${inp('transfer_number','Transfer / on-call number (if transferring)','tel')}</div></div>
     <h3>Knowledge — anything else it should know or say</h3>
     <label class="f big"><span>Plain English. Brands you service, what you don't do, promos, how to pronounce the name, warranty policy, "we don't do mobile homes", etc. Goes straight into the receptionist's brief.</span><textarea data-k="knowledge">${esc(b.knowledge||'')}</textarea></label>
+    <h3>Sends booked jobs to</h3>
+    <div class="g2">
+      <label class="f">Housecall Pro API key <span style="font-weight:500">(their HCP → Settings → API. Blank keeps current${(data.integrations||[]).some(x=>x.provider==='housecallpro'&&x.has_key)?' ····'+esc((data.integrations.find(x=>x.provider==='housecallpro')||{}).key_tail):''})</span><input id="hcp_key" type="password" autocomplete="off" placeholder="${(data.integrations||[]).some(x=>x.provider==='housecallpro'&&x.has_key)?'saved':'paste key'}"></label>
+      <label class="f">Push to Housecall Pro?<select id="hcp_active"><option value="true" ${(data.integrations||[]).some(x=>x.provider==='housecallpro'&&x.active)?'selected':''}>On</option><option value="false" ${(data.integrations||[]).some(x=>x.provider==='housecallpro'&&x.active)?'':'selected'}>Off</option></select></label>
+    </div>
+    <div style="font-size:13px;color:var(--muted);font-weight:600;margin:-4px 0 8px">Jobber: coming. Every job the receptionist books appears on their HCP schedule with customer, address, window and dispatch fee. Last syncs: <span id="syncLog">—</span></div>
     <h3>Services it can book <button id="addSvc" style="font:inherit;font-size:12px;border:2px solid var(--ink);border-radius:999px;padding:2px 10px;background:var(--yellow);font-weight:800;cursor:pointer;margin-left:6px">+ add</button></h3>
     <div id="svcs">${data.services.map(svcRow).join('')}</div>
     <div class="bar"><button class="save" id="saveBiz">Save</button><span class="st" id="saveSt"></span><button id="testCall" style="margin-left:auto" ${b.agent_number?'':'disabled'}>Call this line</button></div>
@@ -279,6 +287,7 @@ async function openBiz(id){
   $('saveBiz').onclick=saveBiz;
   $('addSvc').onclick=()=>{ $('svcs').insertAdjacentHTML('afterbegin',svcRow({id:'',name:'',keywords:[],urgency:'standard',fee_cents:null,safety_steps:'',active:true},true)); wireSvcs(); };
   $('testCall').onclick=()=>location.href='tel:'+tel(b.agent_number);
+  $('syncLog').textContent=data.synclog.length?data.synclog.slice(0,3).map(l=>ago(l.created_at)+' '+JSON.stringify(l.results).slice(0,60)).join(' · '):'none yet';
   wireSvcs();
 }
 function svcRow(s,open){
@@ -318,6 +327,8 @@ async function saveBiz(){
     hours,windows,jobs_per_window:+g('jobs_per_window')||2,emergency_policy:g('emergency_policy'),transfer_number:g('transfer_number'),knowledge:g('knowledge'),active:$('active').checked};
   const {error}=await supa.rpc('hq_rx_business_save',{p_id:cur.business.id,p});
   if(error){ alert(error.message); return; }
+  const hk=$('hcp_key').value.trim(), ha=$('hcp_active').value==='true';
+  if(hk||cur.integrations.some(x=>x.provider==='housecallpro')){ const r2=await supa.rpc('hq_rx_integration_save',{p_business:cur.business.id,p_provider:'housecallpro',p_api_key:hk,p_active:ha,p_settings:{}}); if(r2.error){ alert('Integration: '+r2.error.message); return; } $('hcp_key').value=''; }
   $('saveSt').textContent='Saved — live on the next call'; setTimeout(()=>$('saveSt').textContent='',2500);
   const r=await supa.rpc('hq_rx',{p_days:30}); rx=r.data; renderRx();
 }
