@@ -120,12 +120,18 @@ details.sec[open]{border-color:var(--ink)}
 
 <div id="app" class="hidden">
   <div class="tabs">
-    <button data-tab="leads" class="on">Leads<i id="nLeads"></i></button>
+    <button data-tab="prospects" class="on">Call list<i id="nPros"></i></button>
+    <button data-tab="leads">Leads<i id="nLeads"></i></button>
     <button data-tab="rx">Receptionist<i id="nRx"></i></button>
     <button data-tab="clients">RX Clients</button>
   </div>
   <main>
-    <section id="t-leads">
+    <section id="t-prospects">
+      <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">Best cold calls first. Score = how badly they need the phone answered. Tap Call, then set the result. New ones land every Monday.</div>
+      <div class="filters" id="proFilters"></div>
+      <div id="pros"></div>
+    </section>
+    <section id="t-leads" class="hidden">
       <div class="stats" id="leadStats"></div>
       <div class="filters" id="leadFilters"></div>
       <div id="leads"></div>
@@ -151,7 +157,7 @@ const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 const supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
 const $=id=>document.getElementById(id), esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const STATUSES=['new','contacted','audit_sent','quoted','won','lost'];
-let leads=[], rx=null, filter='open';
+let leads=[], rx=null, filter='open', pros=[], pfilter='new';
 
 function ago(ts){ if(!ts) return ''; const d=(Date.now()-new Date(ts))/6e4; if(d<60) return Math.round(d)+'m ago'; if(d<1440) return Math.round(d/60)+'h ago'; if(d<10080) return Math.round(d/1440)+'d ago'; return new Date(ts).toLocaleDateString(); }
 function tel(p){ return (p||'').replace(/[^\d+]/g,''); }
@@ -172,13 +178,36 @@ async function enter(u){
 // ---- tabs ----
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
-  ['leads','rx','clients'].forEach(t=>$('t-'+t).classList.toggle('hidden',t!==b.dataset.tab));
+  ['prospects','leads','rx','clients'].forEach(t=>$('t-'+t).classList.toggle('hidden',t!==b.dataset.tab));
 });
 
 async function load(){
-  const [p,r]=await Promise.all([supa.rpc('hq_pipeline',{p_days:180}), supa.rpc('hq_rx',{p_days:30})]);
+  const [p,r,pr]=await Promise.all([supa.rpc('hq_pipeline',{p_days:180}), supa.rpc('hq_rx',{p_days:30}), supa.rpc('hq_prospects')]);
+  pros=pr.data||[]; renderPros();
   if(p.error){ $('leads').innerHTML='<div class="empty">'+esc(p.error.message)+'</div>'; } else { leads=p.data||[]; renderLeads(); }
   if(r.error){ $('jobs').innerHTML='<div class="empty">'+esc(r.error.message)+'</div>'; } else { rx=r.data; renderRx(); }
+}
+
+// ---- prospects (cold call list) ----
+const PSTAT=['new','called','voicemail','talking','meeting','won','dead'];
+function renderPros(){
+  const fresh=pros.filter(p=>p.status==='new'); $('nPros').textContent=fresh.length||''; $('nPros').style.display=fresh.length?'':'none';
+  $('proFilters').innerHTML=[['new','To call'],['talking','Talking'],['meeting','Meetings'],['voicemail','Voicemail'],['all','All']].map(([k,l])=>`<button data-f="${k}" class="${pfilter===k?'on':''}">${l}</button>`).join('');
+  $('proFilters').querySelectorAll('button').forEach(b=>b.onclick=()=>{ pfilter=b.dataset.f; renderPros(); });
+  const list=pros.filter(p=>pfilter==='all'||p.status===pfilter);
+  $('pros').innerHTML=list.length?list.map(p=>`<div class="card ${p.status==='won'?'won':p.status==='dead'?'lost':''}">
+      <div class="top"><div><h3>${esc(p.name)}</h3><div class="biz">${esc(p.trade||'')} · ${esc(p.city||'')} · ${p.rating?p.rating+'★ ('+p.reviews+')':''}</div></div><span class="src" style="background:${p.score>=70?'var(--red)':p.score>=50?'var(--copper)':'var(--yellow)'};color:${p.score>=50?'#fff':'var(--ink)'}">${p.score}</span></div>
+      <div class="sum"><b>Why:</b> ${esc(p.why||'')}</div>
+      <div class="val">Lead with: ${esc(p.pitch||'')}</div>
+      ${p.notes?`<div class="when">${esc(p.notes)}</div>`:''}
+      <div class="acts">${p.phone?`<a class="call" href="tel:${tel(p.phone)}">Call ${esc(fmtPhone(p.phone))}</a>`:''}<a href="https://www.google.com/search?q=${encodeURIComponent(p.name+' '+(p.city||''))}" target="_blank">Google</a>
+        <select data-pid="${p.id}" class="${p.status}">${PSTAT.map(x=>`<option ${x===p.status?'selected':''}>${x}</option>`).join('')}</select>
+        <button class="pn" data-pid="${p.id}">Note</button></div>
+      <textarea class="note" id="pnote-${p.id}" data-pid="${p.id}" placeholder="What they said…"></textarea>
+    </div>`).join(''):'<div class="empty">List is empty. New prospects arrive Monday morning.</div>';
+  $('pros').querySelectorAll('select').forEach(sel=>sel.onchange=async()=>{ const {error}=await supa.rpc('hq_prospect_update',{p_id:sel.dataset.pid,p_status:sel.value}); if(error){alert(error.message);return;} const p=pros.find(x=>x.id===sel.dataset.pid); p.status=sel.value; renderPros(); });
+  $('pros').querySelectorAll('button.pn').forEach(b=>b.onclick=()=>{ const t=$('pnote-'+b.dataset.pid); t.classList.toggle('show'); t.focus(); });
+  $('pros').querySelectorAll('textarea').forEach(t=>t.onblur=async()=>{ if(!t.value.trim()) return; const p=pros.find(x=>x.id===t.dataset.pid); const note=(p.notes?p.notes+' | ':'')+new Date().toLocaleDateString()+': '+t.value.trim(); const {error}=await supa.rpc('hq_prospect_update',{p_id:p.id,p_status:p.status,p_notes:note}); if(!error){ p.notes=note; t.value=''; renderPros(); } });
 }
 
 // ---- leads ----
