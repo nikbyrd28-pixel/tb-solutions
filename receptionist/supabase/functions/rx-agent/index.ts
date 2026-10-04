@@ -17,11 +17,16 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 const SB_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const REST = { apikey: SERVICE, Authorization: `Bearer ${SERVICE}`, "Content-Type": "application/json", Prefer: "return=representation" };
-const WEBHOOK_SECRET = Deno.env.get("VAPI_WEBHOOK_SECRET") || "";
-const TW_SID = Deno.env.get("TWILIO_ACCOUNT_SID") || "";
-const TW_TOKEN = Deno.env.get("TWILIO_AUTH_TOKEN") || "";
-const TW_FROM = Deno.env.get("TWILIO_FROM") || "";
-const FALLBACK_PHONE = Deno.env.get("OWNER_FALLBACK_PHONE") || "";
+// Config: env vars win; anything missing is read once from public.rx_config (service-role only table).
+let CFG: Record<string,string> = {};
+async function loadConfig() {
+  if (Object.keys(CFG).length) return;
+  try {
+    const r = await fetch(`${SB_URL}/rest/v1/rx_config?select=key,value`, { headers: REST });
+    if (r.ok) for (const row of await r.json()) CFG[row.key] = row.value;
+  } catch (e) { console.error("rx_config load failed", e); }
+}
+const cfg = (k: string) => Deno.env.get(k) || CFG[k] || "";
 
 type Business = {
   id: string; slug: string; name: string; trade: string; owner_name: string | null; owner_phone: string;
@@ -94,11 +99,13 @@ function isAfterHours(b: Business, now = new Date()): boolean {
 }
 
 async function sms(to: string, body: string): Promise<boolean> {
-  if (!TW_SID || !TW_TOKEN || !TW_FROM) { console.log("[sms disabled]", to, body); return false; }
-  const r = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${TW_SID}/Messages.json`, {
+  const sid = cfg("TWILIO_ACCOUNT_SID"), from = cfg("TWILIO_FROM");
+  const user = cfg("TWILIO_API_KEY") || sid, pass = cfg("TWILIO_API_SECRET") || cfg("TWILIO_AUTH_TOKEN");
+  if (!sid || !user || !pass || !from) { console.log("[sms disabled]", to, body); return false; }
+  const r = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${sid}/Messages.json`, {
     method: "POST",
-    headers: { Authorization: `Basic ${btoa(`${TW_SID}:${TW_TOKEN}`)}`, "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ To: to, From: TW_FROM, Body: body }),
+    headers: { Authorization: `Basic ${btoa(`${user}:${pass}`)}`, "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ To: to, From: from, Body: body }),
   });
   if (!r.ok) { console.error("twilio", r.status, await r.text()); return false; }
   return true;
@@ -160,8 +167,8 @@ YOUR JOB, IN ORDER:
 2. If it's an emergency (active leak you can't stop, sewage backup, gas smell, no heat in freezing weather, sparking/burning smell), give the SAFETY step for that issue first, then move fast to booking. Gas smell or sparking: tell them to leave the house and call 911 or the gas company, then still take their info.
 3. Confirm they're in our service area (ask for the zip or town if unsure). If out of area, call out_of_area and politely let them go.
 4. State the fee plainly when relevant (${feeLine} ${ahLine}). ${b.free_estimates ? "Estimates for replacements and new installs are free." : "We charge for estimates; tell them the tech will quote the estimate fee."} NEVER quote a full job price. Say: "the tech will give you an exact price before any work starts."
-5. Call check_availability for the day they want, offer at most two windows, and book with book_job. Get: full name, address, zip, best callback number (confirm the number they're calling from), and a one-line description of the issue.
-6. After booking, tell them they'll get a text confirmation and that the tech will text when he's on the way. Then end the call warmly.
+5. Call check_availability for the day they want, offer at most two windows, and book with book_job. Get: full name, address, zip, best callback number (confirm the number they're calling from), and a one-line description of the issue. Before booking ask once: "Want me to text you the confirmation and a heads-up when the tech is on the way? It's optional." Pass their answer as sms_ok.
+6. After booking, tell them they'll get a text confirmation (if they said yes) and that the tech will text when he's on the way. Then end the call warmly.
 
 RULES:
 - Keep every reply under 2 sentences unless giving a safety step. Sound human: contractions, "got it", "okay". No corporate phrasing.
@@ -189,11 +196,12 @@ function tools(b: Business) {
       issue: { type: "string", description: "One line: what's wrong, in the caller's words." },
       urgency: { type: "string", enum: ["emergency", "urgent", "standard", "estimate"] },
       window_start: { type: "string", description: "ISO start from check_availability" }, window_end: { type: "string", description: "ISO end from check_availability" },
+      sms_ok: { type: "boolean", description: "true only if the caller clearly agreed to receive text messages about this service call" },
       notes: { type: "string", description: "Gate code, dog, parking, anything the tech should know." } }, required: ["customer_name", "customer_phone", "address", "issue", "urgency", "window_start", "window_end"] } } },
     { type: "function", async: false, function: { name: "take_message", description: "Record a message for the owner when booking isn't right (existing job question, complaint, wants the owner, commercial bid).", parameters: { type: "object", properties: { caller_name: { type: "string" }, caller_phone: { type: "string" }, body: { type: "string" }, callback_pref: { type: "string", description: "When they want a callback" } }, required: ["caller_phone", "body"] } } },
     { type: "function", async: false, function: { name: "out_of_area", description: "Log that a caller was outside the service area.", parameters: { type: "object", properties: { zip_or_town: { type: "string" }, issue: { type: "string" } }, required: ["zip_or_town"] } } },
   ];
-  if (b.emergency_policy === "transfer" && (b.transfer_number || true)) {
+  if (b.emergency_policy === "transfer") {
     t.push({ type: "transferCall", destinations: [{ type: "number", number: b.transfer_number || b.owner_phone, message: "Hang on one second, I'm connecting you to our on-call tech now." }], function: { name: "transfer_call", description: "Connect the caller live to the on-call technician. Emergencies and escalations only." } });
   }
   return t;
@@ -236,20 +244,22 @@ async function handleTool(b: Business, name: string, a: any, callId: string | un
       const issue = String(a.issue || "").toLowerCase();
       const svc = svcs.find(s => s.keywords.some(k => issue.includes(k.toLowerCase())) || issue.includes(s.name.toLowerCase()));
       const fee = svc?.fee_cents ?? (isAfterHours(b) ? b.after_hours_fee_cents : b.service_fee_cents) ?? null;
+      const smsOk = a.sms_ok === true || a.sms_ok === "true";
       const [job] = await db<any[]>("rx_jobs", { method: "POST", body: JSON.stringify({
         business_id: b.id, vapi_call_id: callId, customer_name: a.customer_name, customer_phone: phone, address: a.address, zip: a.zip,
         issue: a.issue, service_id: svc?.id || null, urgency: a.urgency || svc?.urgency || "standard", window_start: a.window_start, window_end: a.window_end,
-        quoted_fee_cents: fee, notes: a.notes || null, status: "scheduled" }) });
+        quoted_fee_cents: fee, notes: (a.notes || "") + (smsOk ? " [sms consent: yes]" : " [sms consent: no]"), status: "scheduled" }) });
       const ws = new Date(a.window_start), we = new Date(a.window_end);
       const when = fmtWindow(ws, we, b.timezone);
-      // text the customer
-      if (phone) {
-        const ok = await sms(phone, `${b.name}: you're booked for ${when}. Issue: ${a.issue}. ${fee ? `Dispatch fee ${money(fee)}. ` : ""}The tech will text when he's on the way. Reply STOP to opt out.`);
+      // text the customer only with consent (verbal, recorded on the call)
+      if (phone && smsOk) {
+        await db("rx_sms_optins", { method: "POST", body: JSON.stringify({ phone, name: a.customer_name || null, business_slug: b.slug, service_texts: true, promo_texts: false, source: "verbal:" + (callId || "call") }) }).catch(() => {});
+        const ok = await sms(phone, `${b.name}: you're booked for ${when}. Issue: ${a.issue}. ${fee ? `Dispatch fee ${money(fee)}. ` : ""}The tech will text when he's on the way. Reply STOP to opt out, HELP for help.`);
         if (ok) await db(`rx_jobs?id=eq.${job.id}`, { method: "PATCH", body: JSON.stringify({ customer_texted: true }) });
       }
       // text the owner right away (don't wait for end-of-call)
       await sms(b.owner_phone, `NEW JOB (${(a.urgency || "standard").toUpperCase()}) — ${a.customer_name}, ${a.address}${a.zip ? " " + a.zip : ""}\n${a.issue}\n${when}\nCallback: ${phone || "unknown"}${a.notes ? "\nNotes: " + a.notes : ""}`);
-      return `Booked. Job ${job.id.slice(0, 8)} for ${when}. Tell the caller they'll get a text confirmation now.`;
+      return `Booked. Job ${job.id.slice(0, 8)} for ${when}. ${smsOk ? "Tell the caller they'll get a text confirmation now." : "Read the window back to the caller since they declined texts."}`;
     }
     case "take_message": {
       await db("rx_messages", { method: "POST", body: JSON.stringify({ business_id: b.id, caller_name: a.caller_name || null, caller_phone: normPhone(a.caller_phone) || callerPhone, body: a.body, callback_pref: a.callback_pref || null }) });
@@ -282,18 +292,22 @@ async function endOfCall(b: Business | null, msg: any) {
   if (saved?.id && call.id) {
     await db(`rx_jobs?vapi_call_id=eq.${encodeURIComponent(call.id)}`, { method: "PATCH", body: JSON.stringify({ call_id: saved.id }) }).catch(() => {});
   }
-  // Missed-call text-back: caller hung up before anything happened → text them so the lead isn't lost
+  // Missed call: owner is alerted. The caller is only texted back if they have previously opted in (rx_sms_optins).
   const short = (row.duration_s ?? 0) < 12;
   const abandoned = short || row.outcome === "abandoned" || /no-answer|did-not-answer|silence|pipeline-error|voicemail/i.test(row.ended_reason || "");
+  let textedBack = false;
   if (b && callerPhone && abandoned && !["booked", "message"].includes(row.outcome || "")) {
-    const ok = await sms(callerPhone, `Hey, this is ${b.name} — sorry we missed you! Text us what's going on (or call back anytime) and we'll get you on the schedule. Reply STOP to opt out.`);
-    if (ok && saved?.id) await db(`rx_calls?id=eq.${saved.id}`, { method: "PATCH", body: JSON.stringify({ caller_texted: true }) });
+    const optin = await db<any[]>(`rx_sms_optins?phone=eq.${encodeURIComponent(callerPhone)}&service_texts=is.true&limit=1`).catch(() => []);
+    if (optin.length) {
+      textedBack = await sms(callerPhone, `Hey, this is ${b.name} — sorry we missed you! Text us what's going on (or call back anytime) and we'll get you on the schedule. Reply STOP to opt out.`);
+      if (textedBack && saved?.id) await db(`rx_calls?id=eq.${saved.id}`, { method: "PATCH", body: JSON.stringify({ caller_texted: true }) });
+    }
   }
   // Owner gets a summary for anything that wasn't already texted as a job/message
-  const to = b?.owner_phone || FALLBACK_PHONE;
+  const to = b?.owner_phone || cfg("OWNER_FALLBACK_PHONE");
   if (to && (row.summary || abandoned) && !["booked", "message"].includes(row.outcome || "")) {
     const ok = await sms(to, abandoned
-      ? `MISSED CALL ${callerPhone || "(unknown number)"} — hung up before booking. ${callerPhone ? "We texted them back." : ""}`
+      ? `MISSED CALL ${callerPhone || "(unknown number)"} — hung up before booking. ${textedBack ? "We texted them back." : "Call them back."}`
       : `CALL (${row.outcome || "ended"}) ${callerPhone || ""} — ${row.summary}`);
     if (ok && saved?.id) await db(`rx_calls?id=eq.${saved.id}`, { method: "PATCH", body: JSON.stringify({ owner_notified: true }) });
   }
@@ -303,7 +317,9 @@ async function endOfCall(b: Business | null, msg: any) {
 Deno.serve(async (req: Request) => {
   if (req.method === "GET") return json({ ok: true, service: "rx-agent" });
   if (req.method !== "POST") return new Response("POST only", { status: 405 });
-  if (WEBHOOK_SECRET && req.headers.get("x-vapi-secret") !== WEBHOOK_SECRET) return new Response("unauthorized", { status: 401 });
+  await loadConfig();
+  const secret = cfg("VAPI_WEBHOOK_SECRET");
+  if (secret && req.headers.get("x-vapi-secret") !== secret) return new Response("unauthorized", { status: 401 });
 
   let body: any;
   try { body = await req.json(); } catch { return new Response("bad json", { status: 400 }); }
@@ -339,7 +355,7 @@ Deno.serve(async (req: Request) => {
       const oc = b ? await onCall(b) : [];
       const today = b ? weekdayNum(new Date(), b.timezone) : new Date().getDay();
       const pick = oc.find(o => o.days.includes(today)) || oc[0];
-      const number = pick?.phone || b?.transfer_number || b?.owner_phone || FALLBACK_PHONE;
+      const number = pick?.phone || b?.transfer_number || b?.owner_phone || cfg("OWNER_FALLBACK_PHONE");
       if (!number) return json({ error: "No transfer destination configured." });
       return json({ destination: { type: "number", number, message: `Connecting you to ${pick?.name || "the on-call tech"} now.` } });
     }
