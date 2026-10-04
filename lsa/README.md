@@ -1,21 +1,13 @@
-# LSA Shield — TB Solutions
+# Lead Engine — LSA migration front door (tbsol.net/lsa/)
+
+**This is not a new offer.** It is the Oct-2026 urgency angle on the existing Lead Engine (tbsol.net/leads/, $497 + $147/mo). Prices here must match `/leads/` and ECOSYSTEM.md.
 
 Offer built around Google's Oct 2026 Local Services Ads change: LSA folds into Google Ads (PMax pay-per-lead), old dashboard retires, manual bidding gone, history deleted unless exported, and **since Oct 1 missed calls (~20s hold) bill as leads**.
 
 ## The offer
-| | LSA Shield | Migration only |
-|---|---|---|
-| Price | **$497 setup + $297/mo** (first 5 in Oct: $297 setup) | **$497 once** |
-| Migration + history export | ✓ | ✓ |
-| Campaign rebuilt in Google Ads (budget cap, area, hours, GBP match) | ✓ | ✓ |
-| AI receptionist on LSA line (the `receptionist/` product) | ✓ | — |
-| Weekly lead review + dispute filing | ✓ | — |
-| Budget watch + Monday scorecard | ✓ | — |
-
-Existing Never Miss a Call customers: Shield add-on is +$100/mo.
-Guarantee: disputes won + jobs booked < monthly fee in first 60 days → month 3 free.
-
-Why $297: receptionist is already $197/mo. +$100 for ~30 min/wk of dispute filing + budget watch. Hard cost per client ≈ $20–40/mo (Vapi/Twilio). Migration-only is pure margin, ~2 hrs of work.
+- **Lead Engine** $497 setup + $147/mo (first 5 in Oct: $297 setup): migration + history export + campaign rebuild + weekly disputes + budget watch + scorecard. Lead spend paid to Google.
+- **Full Front Office** $797 setup + $297/mo: Lead Engine + Never Miss a Call receptionist + Review Engine. Receptionist is what stops missed-call charges.
+- Guarantee: disputes won + jobs booked < monthly fee in first 60 days → month 3 free.
 
 ## Backend
 - `supabase/001_lsa_schema.sql` — `lsa_leads` table (RLS on, no anon policy; writes via function only).
@@ -25,7 +17,7 @@ Why $297: receptionist is already $197/mo. +$100 for ~30 min/wk of dispute filin
 Pipeline: `lsa_leads.status` = new → contacted → audit_sent → won → lost. Query newest:
 `select created_at, business, name, phone, trade, lsa_status, monthly_spend, est_total_mo, status from lsa_leads order by created_at desc;`
 
-## Delivery checklist (Shield client)
+## Delivery checklist
 1. Audit call (10 min): get LSA login or add Nick as manager, confirm migration date from the email, pull lead cost + last-30-day lead list.
 2. **Export everything** from the LSA dashboard before migration day (leads CSV, charges). Save to Drive under the client.
 3. On/after migration: in Google Ads → the PMax pay-per-lead campaign → set budget cap, service area, job types, hours. Confirm GBP phone = LSA number.

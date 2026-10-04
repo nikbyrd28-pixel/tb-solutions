@@ -11,6 +11,7 @@
 | Review Engine | $97/mo, no setup | tbsol.net/reviews/ | LIVE (selling; delivery = n8n flow, build on first sale) |
 | Remodel Planner (blueprint-to-quote funnel) | $697 build + $67/mo, or $297 added to a website | tbsol.net/planner/ | LIVE (selling; delivery = DNE planner templatized, de-brand on first sale) |
 | Lead Engine (Google LSA setup + management) | $497 setup + $147/mo (lead spend paid to Google directly) | tbsol.net/leads/ | LIVE (selling; delivery = LSA application, weekly tuning, dispute filing) |
+| └ LSA migration front door (same offer, urgency angle: Google moved LSA into Google Ads, missed calls billable since Oct 1 2026) | sells Lead Engine, upsells Front Office | tbsol.net/lsa/ | LIVE — calculator + free-audit form → edge fn `lsa-intake` → table `lsa_leads` |
 | Full Front Office (all three) | $797 setup + $297/mo | hub | LIVE (selling) |
 
 ## Live stack
@@ -20,6 +21,7 @@
 | Database | Supabase **"Base"** `qgbjiqdwzgkjkmqyjsmc` | — |
 | Receptionist brain | edge function `rx-agent` (Vapi webhook: persona, booking, SMS) | `receptionist/supabase/functions/rx-agent/` |
 | SMS consent intake | edge function `rx-optin` + `/receptionist/sms-consent/` page | `receptionist/` |
+| LSA audit intake | edge function `lsa-intake` → `lsa_leads` (set `NICK_PHONE` secret to get texted) | `lsa/supabase/` |
 | Receptionist data | tables `rx_*` (businesses, services, jobs, calls, messages, optins, config) | Supabase |
 | Secrets | `rx_config` table (Twilio keys, Vapi webhook secret) — env vars override | Supabase |
 | Voice | Vapi — number (610) 998-6138 → rx-agent; provision new clients with `receptionist/vapi/provision.mjs` | dashboard.vapi.ai |
