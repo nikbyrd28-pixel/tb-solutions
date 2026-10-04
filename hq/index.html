@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TB HQ</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#14110F">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2314110F'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial Black,Arial' font-weight='900' font-size='28' fill='%23FFD23F'%3EHQ%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--yellow:#FFD23F;--ink:#14110F;--paper:#FFF8E1;--copper:#B5542B;--blue:#1B4FD8;--green:#1F9D55;--red:#D7263D;--card:#fff;--line:#e6dfc8;--muted:#6b645a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Bricolage Grotesque",system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:16px;line-height:1.4;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit}
+a{color:inherit}
+header{position:sticky;top:0;z-index:5;background:var(--ink);color:var(--yellow);padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));display:flex;align-items:center;gap:12px}
+header b{background:var(--yellow);color:var(--ink);padding:2px 8px;border-radius:6px;font-weight:800}
+header .sp{flex:1}
+header button{background:transparent;border:2px solid var(--yellow);color:var(--yellow);border-radius:999px;padding:4px 12px;font-weight:700;cursor:pointer}
+.tabs{display:flex;gap:6px;padding:10px 16px;overflow-x:auto;background:var(--ink)}
+.tabs button{flex:0 0 auto;background:transparent;color:var(--paper);border:2px solid #3a342c;border-radius:999px;padding:6px 14px;font-weight:700;cursor:pointer;white-space:nowrap}
+.tabs button.on{background:var(--yellow);color:var(--ink);border-color:var(--yellow)}
+.tabs button i{font-style:normal;background:var(--red);color:#fff;border-radius:999px;padding:0 6px;font-size:12px;margin-left:6px}
+main{padding:14px 16px 90px;max-width:900px;margin:0 auto}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.stats div{background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:10px;text-align:center}
+.stats .n{font-size:26px;font-weight:800;line-height:1;letter-spacing:-.02em}
+.stats .l{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:4px}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.filters button{background:var(--card);border:2px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:13px;cursor:pointer;color:var(--muted)}
+.filters button.on{border-color:var(--ink);color:var(--ink)}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:14px;margin-bottom:10px;box-shadow:4px 4px 0 var(--ink)}
+.card.won{box-shadow:4px 4px 0 var(--green)}
+.card.lost{opacity:.55;box-shadow:none}
+.card .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.card h3{font-size:18px;line-height:1.1;font-weight:800}
+.card .biz{font-weight:600;color:var(--muted);font-size:14px}
+.src{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:3px 8px;border-radius:6px;background:var(--yellow);white-space:nowrap}
+.src.lsa{background:var(--red);color:#fff}.src.rx-msg{background:var(--blue);color:#fff}.src.dne{background:var(--copper);color:#fff}.src.intake{background:var(--ink);color:var(--yellow)}
+.sum{font-size:14px;margin:8px 0 4px;color:#3a342c}
+.val{font-weight:800;color:var(--copper);font-size:14px}
+.when{font-size:12px;color:var(--muted);font-weight:600}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.acts a,.acts button{border:2px solid var(--ink);border-radius:999px;padding:6px 12px;font-weight:700;font-size:14px;text-decoration:none;background:var(--card);cursor:pointer}
+.acts a.call{background:var(--ink);color:var(--yellow)}
+.acts select{border:2px solid var(--ink);border-radius:10px;padding:6px 8px;font-weight:700;background:#fff}
+.acts select.new{background:var(--yellow)}.acts select.won{background:var(--green);color:#fff}.acts select.lost{background:#ddd}
+.note{width:100%;margin-top:8px;border:2px solid var(--line);border-radius:10px;padding:8px;font-size:14px;min-height:40px;resize:vertical;display:none}
+.note.show{display:block}
+.empty{text-align:center;color:var(--muted);padding:40px 10px;font-weight:600}
+.login{max-width:360px;margin:60px auto;padding:0 16px}
+.login h1{font-size:34px;font-weight:800;margin-bottom:12px;letter-spacing:-.02em}
+.login input{width:100%;border:2px solid var(--ink);border-radius:12px;padding:12px;margin-bottom:10px}
+.login button{width:100%;background:var(--ink);color:var(--yellow);border:0;border-radius:999px;padding:12px;font-weight:800;cursor:pointer}
+.msg{margin-top:10px;font-weight:700;color:var(--red)}
+.hidden{display:none}
+h2{font-size:20px;font-weight:800;margin:18px 0 8px}
+.call .tr{font-size:13px;color:var(--muted);margin-top:4px}
+.pill{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px;background:#eee;margin-right:4px;text-transform:uppercase}
+.pill.emergency,.pill.urgent{background:var(--red);color:#fff}.pill.booked{background:var(--green);color:#fff}
+@media (max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header><b>TB</b> HQ <span class="sp"></span><span id="who" style="font-size:13px;opacity:.7"></span><button id="out" class="hidden">Log out</button></header>
+
+<div class="login" id="login">
+  <h1>HQ.</h1>
+  <input id="em" type="email" placeholder="Email" autocomplete="username">
+  <input id="pw" type="password" placeholder="Password" autocomplete="current-password">
+  <button id="go">Log in</button>
+  <div class="msg" id="lmsg"></div>
+</div>
+
+<div id="app" class="hidden">
+  <div class="tabs">
+    <button data-tab="leads" class="on">Leads<i id="nLeads"></i></button>
+    <button data-tab="rx">Receptionist<i id="nRx"></i></button>
+    <button data-tab="clients">RX Clients</button>
+  </div>
+  <main>
+    <section id="t-leads">
+      <div class="stats" id="leadStats"></div>
+      <div class="filters" id="leadFilters"></div>
+      <div id="leads"></div>
+    </section>
+    <section id="t-rx" class="hidden">
+      <div class="stats" id="rxStats"></div>
+      <h2>Booked jobs</h2><div id="jobs"></div>
+      <h2>Calls (30 days)</h2><div id="calls"></div>
+    </section>
+    <section id="t-clients" class="hidden">
+      <div id="bizs"></div>
+      <p style="font-size:14px;color:var(--muted);margin-top:14px">New client: run <code>receptionist/supabase/new_client_template.sql</code>, then <code>provision.mjs</code>. See receptionist/README.md.</p>
+    </section>
+  </main>
+</div>
+
+<script>
+const SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+const supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+const $=id=>document.getElementById(id), esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const STATUSES=['new','contacted','audit_sent','quoted','won','lost'];
+let leads=[], rx=null, filter='open';
+
+function ago(ts){ if(!ts) return ''; const d=(Date.now()-new Date(ts))/6e4; if(d<60) return Math.round(d)+'m ago'; if(d<1440) return Math.round(d/60)+'h ago'; if(d<10080) return Math.round(d/1440)+'d ago'; return new Date(ts).toLocaleDateString(); }
+function tel(p){ return (p||'').replace(/[^\d+]/g,''); }
+function fmtPhone(p){ const d=(p||'').replace(/\D/g,'').replace(/^1/,''); return d.length===10?`(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`:p||''; }
+
+// ---- auth ----
+supa.auth.getSession().then(r=>{ if(r.data.session) enter(r.data.session.user); });
+$('go').onclick=login; $('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') login(); });
+async function login(){ const {data,error}=await supa.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value}); if(error){ $('lmsg').textContent=error.message; return; } enter(data.user); }
+$('out').onclick=async()=>{ await supa.auth.signOut(); location.reload(); };
+async function enter(u){
+  const {data:ok}=await supa.rpc('is_hq_admin');
+  if(!ok){ $('lmsg').textContent='This account is not an HQ admin.'; await supa.auth.signOut(); return; }
+  $('login').classList.add('hidden'); $('app').classList.remove('hidden'); $('out').classList.remove('hidden'); $('who').textContent=u.email;
+  load();
+}
+
+// ---- tabs ----
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  ['leads','rx','clients'].forEach(t=>$('t-'+t).classList.toggle('hidden',t!==b.dataset.tab));
+});
+
+async function load(){
+  const [p,r]=await Promise.all([supa.rpc('hq_pipeline',{p_days:180}), supa.rpc('hq_rx',{p_days:30})]);
+  if(p.error){ $('leads').innerHTML='<div class="empty">'+esc(p.error.message)+'</div>'; } else { leads=p.data||[]; renderLeads(); }
+  if(r.error){ $('jobs').innerHTML='<div class="empty">'+esc(r.error.message)+'</div>'; } else { rx=r.data; renderRx(); }
+}
+
+// ---- leads ----
+function renderLeads(){
+  const open=leads.filter(l=>!['won','lost'].includes(l.status));
+  const fresh=leads.filter(l=>l.status==='new');
+  const won=leads.filter(l=>l.status==='won');
+  $('nLeads').textContent=fresh.length||''; $('nLeads').style.display=fresh.length?'':'none';
+  $('leadStats').innerHTML=[[fresh.length,'New'],[open.length,'Open'],[won.length,'Won'],[leads.filter(l=>l.src==='lsa').length,'LSA audits']].map(([n,l])=>`<div><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+  const srcs=[...new Set(leads.map(l=>l.src.split(':')[0]))];
+  $('leadFilters').innerHTML=[['open','Open'],['new','New'],['all','All'],['won','Won'],...srcs.map(s=>[s,s.toUpperCase()])].map(([k,l])=>`<button data-f="${k}" class="${filter===k?'on':''}">${l}</button>`).join('');
+  $('leadFilters').querySelectorAll('button').forEach(b=>b.onclick=()=>{ filter=b.dataset.f; renderLeads(); });
+  const list=leads.filter(l=> filter==='all' || (filter==='open'?!['won','lost'].includes(l.status): filter==='new'||filter==='won'? l.status===filter : l.src.split(':')[0]===filter));
+  $('leads').innerHTML=list.length?list.map(card).join(''):'<div class="empty">Nothing here. Go make the phone ring.</div>';
+  $('leads').querySelectorAll('select').forEach(s=>s.onchange=e=>setStatus(e.target));
+  $('leads').querySelectorAll('button.n').forEach(b=>b.onclick=()=>{ const t=$('note-'+b.dataset.k); t.classList.toggle('show'); t.focus(); });
+  $('leads').querySelectorAll('textarea').forEach(t=>t.onblur=()=>saveNote(t));
+}
+function card(l){
+  const k=(l.src+'_'+l.id).replace(/[^a-z0-9_]/gi,'_'), srcCls=l.src.split(':')[0];
+  const opts=(STATUSES.includes(l.status)?STATUSES:[l.status,...STATUSES]).map(s=>`<option ${s===l.status?'selected':''}>${s}</option>`).join('');
+  return `<div class="card ${l.status}" id="c-${k}">
+    <div class="top"><div><h3>${esc(l.name||'(no name)')}</h3><div class="biz">${esc(l.business||'')}</div></div><span class="src ${srcCls}">${esc(l.src)}</span></div>
+    <div class="sum">${esc(l.summary||'')}</div>
+    ${l.value_hint?`<div class="val">${esc(l.value_hint)}</div>`:''}
+    <div class="when">${ago(l.created_at)}${l.email?' · '+esc(l.email):''}</div>
+    <div class="acts">
+      ${l.phone?`<a class="call" href="tel:${tel(l.phone)}">Call ${esc(fmtPhone(l.phone))}</a><a href="sms:${tel(l.phone)}">Text</a>`:''}
+      <select class="${l.status}" data-src="${esc(l.src)}" data-id="${esc(l.id)}" ${l.src==='dne'?'disabled title="Manage in DNE portal"':''}>${opts}</select>
+      <button class="n" data-k="${k}">Note</button>
+    </div>
+    <textarea class="note ${l.notes?'show':''}" id="note-${k}" data-src="${esc(l.src)}" data-id="${esc(l.id)}" placeholder="Notes…">${esc(l.notes||'')}</textarea>
+  </div>`;
+}
+async function setStatus(sel){
+  const {error}=await supa.rpc('hq_set_status',{p_src:sel.dataset.src,p_id:sel.dataset.id,p_status:sel.value});
+  if(error){ alert(error.message); return; }
+  const l=leads.find(x=>x.src===sel.dataset.src&&x.id===sel.dataset.id); if(l) l.status=sel.value; renderLeads();
+}
+async function saveNote(t){
+  const l=leads.find(x=>x.src===t.dataset.src&&x.id===t.dataset.id); if(!l||(l.notes||'')===t.value) return;
+  const {error}=await supa.rpc('hq_set_status',{p_src:l.src,p_id:l.id,p_status:l.status,p_notes:t.value}); if(error) alert(error.message); else l.notes=t.value;
+}
+
+// ---- receptionist ----
+function renderRx(){
+  if(!rx){ return; }
+  const s=rx.stats||{};
+  $('nRx').textContent=s.unhandled_msgs||''; $('nRx').style.display=s.unhandled_msgs?'':'none';
+  $('rxStats').innerHTML=[[s.calls||0,'Calls / 30d'],[s.jobs||0,'Jobs booked'],['$'+Math.round(s.booked_value||0).toLocaleString(),'Fees booked'],[(rx.businesses||[]).filter(b=>b.active).length,'Active lines']].map(([n,l])=>`<div><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+  $('jobs').innerHTML=(rx.jobs||[]).length?rx.jobs.map(j=>`<div class="card">
+      <div class="top"><div><h3>${esc(j.customer_name||'(no name)')}</h3><div class="biz">${esc(j.business)} · ${esc(j.address||'')}</div></div><span class="pill ${esc(j.status)}">${esc(j.status)}</span></div>
+      <div class="sum">${j.urgency?`<span class="pill ${esc(j.urgency)}">${esc(j.urgency)}</span>`:''}${esc(j.issue||'')}</div>
+      <div class="when">${j.window_start?new Date(j.window_start).toLocaleString([], {weekday:'short',month:'short',day:'numeric',hour:'numeric'})+'–'+new Date(j.window_end).toLocaleTimeString([], {hour:'numeric'}):''} ${j.fee?'· $'+j.fee:''} · ${ago(j.created_at)}</div>
+      <div class="acts">${j.customer_phone?`<a class="call" href="tel:${tel(j.customer_phone)}">Call</a>`:''}
+        <select data-job="${j.id}">${['booked','confirmed','done','cancelled','no_show'].map(x=>`<option ${x===j.status?'selected':''}>${x}</option>`).join('')}</select></div>
+    </div>`).join(''):'<div class="empty">No jobs booked yet. Call the demo line and book one.</div>';
+  $('jobs').querySelectorAll('select').forEach(sel=>sel.onchange=async()=>{ const {error}=await supa.rpc('hq_rx_job_status',{p_id:sel.dataset.job,p_status:sel.value}); if(error) alert(error.message); });
+  $('calls').innerHTML=(rx.calls||[]).length?rx.calls.map(c=>`<div class="card call">
+      <div class="top"><div><h3>${esc(fmtPhone(c.caller_phone)||'unknown')}</h3><div class="biz">${esc(c.business)} · ${c.duration_s?Math.round(c.duration_s/60*10)/10+' min':''}</div></div>
+        <span>${c.urgency?`<span class="pill ${esc(c.urgency)}">${esc(c.urgency)}</span>`:''}<span class="pill">${esc(c.outcome||'?')}</span></span></div>
+      <div class="sum">${esc(c.summary||'')}</div>
+      <div class="tr">${ago(c.started_at)}${c.owner_notified?' · owner texted':''}${c.caller_texted?' · caller texted':''}${c.recording_url?` · <a href="${esc(c.recording_url)}" target="_blank">recording</a>`:''}</div>
+    </div>`).join(''):'<div class="empty">No calls in the last 30 days.</div>';
+  $('bizs').innerHTML=(rx.businesses||[]).map(b=>`<div class="card">
+      <div class="top"><div><h3>${esc(b.name)}</h3><div class="biz">${esc(b.trade||'')} · /${esc(b.slug)}</div></div><span class="pill ${b.active?'booked':''}">${b.active?'active':'off'}</span></div>
+      <div class="sum">Owner: ${esc(b.owner_name||'—')} ${esc(fmtPhone(b.owner_phone))}<br>Agent line: <b>${esc(fmtPhone(b.agent_number)||'not provisioned')}</b></div>
+      <div class="acts">${b.owner_phone?`<a class="call" href="tel:${tel(b.owner_phone)}">Call owner</a>`:''}${b.agent_number?`<a href="tel:${tel(b.agent_number)}">Call agent</a>`:''}</div>
+    </div>`).join('');
+}
+</script>
+</body>
+</html>
