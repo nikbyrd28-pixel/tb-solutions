@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Job-Ready Website — websites that book jobs for trades | TB Solutions</title>
+<meta name="description" content="A one-page website for plumbers, HVAC and electricians built to do one thing: turn a visitor into a booked call. $497 build, $47/month care. Live in 5 days.">
+<meta name="theme-color" content="#1B4FD8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231B4FD8'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial Black,Arial' font-weight='900' font-size='28' fill='%23FFF8E1'%3ETB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=swap" rel="stylesheet">
+<script defer src="/track.js"></script>
+<style>
+:root{--blue:#1B4FD8;--blue-deep:#143CA6;--ink:#14110F;--paper:#FFF8E1;--yellow:#FFD23F;--green:#1F9D55;--red:#D7263D;--max:1080px;--gutter:clamp(16px,4vw,40px)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"Bricolage Grotesque",system-ui,sans-serif;background:var(--blue);color:var(--paper);font-size:clamp(17px,1.6vw,20px);line-height:1.45}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gutter)}
+h1,h2,h3{font-weight:800;line-height:.95;letter-spacing:-.02em;font-variation-settings:"opsz" 96,"wdth" 92}
+h2{font-size:clamp(32px,5.5vw,58px);margin-bottom:.5em}
+p{max-width:34em}
+a{color:inherit}
+.btn{display:inline-flex;align-items:center;gap:.5em;background:var(--yellow);color:var(--ink);text-decoration:none;font-weight:700;padding:.85em 1.3em;border-radius:999px;border:3px solid var(--yellow);transition:transform .15s;cursor:pointer}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:transparent;color:var(--paper);border-color:var(--paper)}
+a:focus-visible{outline:4px solid var(--yellow);outline-offset:3px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0;font-weight:700}
+nav .brand{text-decoration:none}
+nav .brand b{background:var(--yellow);color:var(--ink);padding:.1em .45em;border-radius:6px;margin-right:.4em}
+.hero{padding:clamp(28px,6vw,72px) 0 clamp(40px,6vw,80px)}
+.two{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,5vw,64px);align-items:center}
+@media(max-width:860px){.two{grid-template-columns:1fr}}
+.hero h1{font-size:clamp(40px,7.5vw,84px);font-variation-settings:"opsz" 96,"wdth" 85}
+.hero h1 em{font-style:normal;background:var(--yellow);color:var(--ink);padding:0 .12em;border-radius:.12em;box-shadow:0 .1em 0 var(--ink)}
+.hero .lead{font-size:clamp(19px,2vw,24px);font-weight:500;margin:.9em 0 1.2em;max-width:26em}
+/* phone demo */
+.phone{background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:30px;box-shadow:12px 12px 0 var(--ink);max-width:360px;margin:0 auto;overflow:hidden;font-size:15px}
+.phone .site{padding:16px}
+.phone .site .nm{font-weight:800;font-size:1.15em}
+.phone .site .call{display:block;background:var(--green);color:#fff;font-weight:800;text-align:center;border-radius:12px;padding:.7em;margin:10px 0;text-decoration:none}
+.phone .form{border:2px solid #ECEAE4;border-radius:12px;padding:12px;display:grid;gap:8px}
+.phone .form b{font-size:.95em}
+.phone .fld{border:2px solid #ECEAE4;border-radius:8px;padding:.5em .6em;min-height:2.1em;color:#333;background:#FAFAF7;white-space:nowrap;overflow:hidden}
+.phone .fld .caret{display:inline-block;width:2px;height:1em;background:var(--ink);vertical-align:-.15em;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.phone .send{background:var(--blue);color:#fff;font-weight:800;text-align:center;border-radius:8px;padding:.6em;opacity:.95}
+.toast{position:relative;margin:-10px 12px 14px;background:var(--ink);color:var(--yellow);font-weight:700;border-radius:12px;padding:.7em .9em;transform:translateY(16px);opacity:0;font-size:.95em}
+.toast.show{animation:pop .45s cubic-bezier(.2,1.5,.4,1) forwards}
+@keyframes pop{to{transform:none;opacity:1}}
+section{padding:clamp(48px,7vw,96px) 0}
+.paper{background:var(--paper);color:var(--ink)}
+.have{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:1.2em}
+@media(max-width:700px){.have{grid-template-columns:1fr}}
+.have div{border:3px solid var(--ink);border-radius:16px;padding:16px;background:#fff;font-weight:600}
+.have b{display:block;font-size:1.1em;margin-bottom:.2em}
+.price-row{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,4vw,48px);align-items:center}
+@media(max-width:860px){.price-row{grid-template-columns:1fr}}
+.tag{background:var(--yellow);color:var(--ink);border-radius:24px;padding:26px;transform:rotate(-1deg);box-shadow:10px 10px 0 var(--ink)}
+.tag .big{font-size:clamp(52px,8vw,96px);font-weight:800;line-height:.9;letter-spacing:-.04em}
+.tag .big small{font-size:.32em;font-weight:700;vertical-align:top}
+.tag .mo{font-size:clamp(22px,2.8vw,32px);font-weight:700}
+.tag ul{list-style:none;margin-top:16px;display:grid;gap:8px;font-weight:600}
+.tag li::before{content:"✓";margin-right:.6em;color:var(--green);font-weight:800}
+details{border-top:3px solid var(--ink);padding:16px 0}
+details:last-of-type{border-bottom:3px solid var(--ink)}
+summary{cursor:pointer;font-weight:700;font-size:1.1em;list-style:none;display:flex;justify-content:space-between;gap:1em}
+summary::after{content:"+";font-weight:800;font-size:1.3em;transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{margin-top:.5em}
+footer{padding:26px 0 40px;font-size:.85em;font-weight:500;display:flex;flex-wrap:wrap;gap:1em 2em;justify-content:space-between}
+footer a{text-decoration:underline}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important}.toast{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <nav>
+    <a class="brand" href="/"><b>TB</b> Solutions</a>
+    <a href="/" style="font-size:.9em;text-decoration:underline">← all services</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap two">
+    <div>
+      <h1>Your website should <em>book jobs</em>, not just sit there.</h1>
+      <p class="lead">Most trades sites are a digital business card from 2014. The Job-Ready Website is one fast page with one purpose: a homeowner lands on it, and thirty seconds later their quote request is a text on your phone.</p>
+      <a class="btn" href="sms:+14848418501?&body=Hey%20Nick%2C%20I%20need%20the%20job-ready%20website.%20Got%2010%20min%3F">Text Nick — get yours started</a>
+      <a class="btn ghost" href="https://dnecontracting.com" target="_blank" rel="noopener">See one live</a>
+    </div>
+    <div>
+      <div class="phone" aria-hidden="true">
+        <div class="site">
+          <div class="nm">Keystone Plumbing</div>
+          <div style="font-size:.9em;opacity:.7">Serving the 422 corridor · Licensed &amp; insured</div>
+          <span class="call">📞 Tap to call now</span>
+          <div class="form">
+            <b>Get a quote in 2 hours</b>
+            <div class="fld" id="f1"></div>
+            <div class="fld" id="f2"></div>
+            <div class="fld" id="f3"></div>
+            <div class="send">Send my quote request</div>
+          </div>
+        </div>
+        <div class="toast" id="toast">📲 NEW LEAD — Dave K, water heater, 19460. Texted to you.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="paper">
+  <div class="wrap">
+    <h2>What's on it. Nothing that isn't.</h2>
+    <p>No sliders, no stock handshakes, no "welcome to our website." Every block exists to move a homeowner toward calling you.</p>
+    <div class="have">
+      <div><b>Tap-to-call everywhere</b>On a phone, your number is one thumb away at all times. That's where 80% of your visitors are.</div>
+      <div><b>Quote form → your phone</b>Name, issue, town, number. The second they hit send, it's a text in your pocket — not an email you find Tuesday.</div>
+      <div><b>Your services, priced honest</b>What you do, your service area, your dispatch fee policy — stated plainly, the way you'd say it.</div>
+      <div><b>Your reviews, front and center</b>Pulls your real Google rating and reviews onto the page. (12 reviews? Pair it with the <a href="/reviews/">Review Engine</a>.)</div>
+      <div><b>Fast and findable</b>Loads in under a second on a phone, set up for "plumber near me" searches in your towns.</div>
+      <div><b>Works with the receptionist</b>Add <a href="/receptionist/">Never Miss a Call</a> and the site's number gets answered 24/7 and booked automatically.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap price-row">
+    <div>
+      <h2 style="color:var(--paper)">One price. Live in 5 days.</h2>
+      <p>You send me your logo (or just your name), your services, and your towns. I build it, you say "yeah that's us," it goes live on your domain. The care plan keeps it fast, backed up, and updated whenever you text me a change.</p>
+      <p style="margin-top:.8em">No contract. Cancel the care plan any time; the site is yours.</p>
+    </div>
+    <div class="tag">
+      <div style="font-weight:800">THE JOB-READY WEBSITE</div>
+      <div class="big">$497<small>build</small></div>
+      <div class="mo">then $47 / month care</div>
+      <ul>
+        <li>One-page job-getter on your domain</li>
+        <li>Quote form texted straight to you</li>
+        <li>Hosting, backups, security included</li>
+        <li>Unlimited small changes — just text Nick</li>
+        <li>Live in 5 business days</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="paper">
+  <div class="wrap">
+    <h2>What owners ask.</h2>
+    <details><summary>I already have a website.</summary><p>Does it text you a lead within a minute of someone filling the form? If yes, keep it. If it's a brochure, this replaces it — or sits on a new domain next to it and we send your ads there.</p></details>
+    <details><summary>Do I need this if I have the receptionist?</summary><p>They cover different doors. The receptionist catches people who call. The website catches people who search first — and most homeowners under 50 look you up before dialing.</p></details>
+    <details><summary>Why one page?</summary><p>Because a homeowner with water in the basement doesn't browse. One page, one decision: call or request a quote. More pages mostly give people places to leave.</p></details>
+    <details><summary>Who owns the domain and the site?</summary><p>You do, both. If you ever cancel, I hand over everything and it keeps running wherever you host it.</p></details>
+    <details><summary>Can you do more than one page?</summary><p>Yeah — town pages and service pages for search are an add-on once the main page is earning. Start with the one that books jobs.</p></details>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 style="color:var(--paper)">Five days from now, it's booking.</h2>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:1em">
+      <a class="btn" href="sms:+14848418501?&body=Hey%20Nick%2C%20I%20need%20the%20job-ready%20website.%20Got%2010%20min%3F">Text Nick — (484) 841-8501</a>
+      <a class="btn ghost" href="tel:+16109986138">Or call the receptionist demo</a>
+    </div>
+  </div>
+  <footer class="wrap">
+    <span>A <a href="/">TB Solutions</a> service · Nick Byrd, Chester County, PA</span>
+    <span><a href="/sms-terms/">SMS terms</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+  </footer>
+</section>
+
+<script>
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const fields = [["f1","Dave Kerr"],["f2","Water heater leaking — basement"],["f3","Phoenixville, 19460 · (610) 555-0199"]];
+const toast = document.getElementById("toast");
+async function type(id, text){
+  const el = document.getElementById(id);
+  el.innerHTML = '<span class="caret"></span>';
+  for (let i = 1; i <= text.length; i++){ el.innerHTML = text.slice(0,i) + '<span class="caret"></span>'; await new Promise(r=>setTimeout(r, 34)); }
+  el.textContent = text;
+}
+async function play(){
+  if (reduce){ fields.forEach(([id,t])=>document.getElementById(id).textContent=t); toast.classList.add("show"); return; }
+  while (true){
+    fields.forEach(([id])=>document.getElementById(id).textContent=""); toast.classList.remove("show");
+    await new Promise(r=>setTimeout(r,700));
+    for (const [id,t] of fields) await type(id,t);
+    await new Promise(r=>setTimeout(r,500));
+    toast.classList.add("show");
+    await new Promise(r=>setTimeout(r,4200));
+  }
+}
+new IntersectionObserver((es,o)=>{ if(es[0].isIntersecting){ play(); o.disconnect(); } },{threshold:.3}).observe(document.querySelector(".phone"));
+</script>
+</body>
+</html>
