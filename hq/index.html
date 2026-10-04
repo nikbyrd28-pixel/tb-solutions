@@ -61,6 +61,30 @@ h2{font-size:20px;font-weight:800;margin:18px 0 8px}
 .call .tr{font-size:13px;color:var(--muted);margin-top:4px}
 .pill{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px;background:#eee;margin-right:4px;text-transform:uppercase}
 .pill.emergency,.pill.urgent{background:var(--red);color:#fff}.pill.booked{background:var(--green);color:#fff}
+.ed{background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:4px 4px 0 var(--ink)}
+.ed h3{font-size:16px;font-weight:800;margin:14px 0 6px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.ed h3:first-child{margin-top:0}
+.f{display:grid;gap:4px;margin-bottom:10px;font-size:13px;font-weight:700;color:var(--muted)}
+.f input,.f select,.f textarea{border:2px solid var(--line);border-radius:10px;padding:8px 10px;font-size:15px;font-weight:600;color:var(--ink);background:#fff;width:100%}
+.f textarea{min-height:120px;resize:vertical;font-weight:500;line-height:1.4}
+.f.big textarea{min-height:220px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media (max-width:480px){.g3{grid-template-columns:1fr 1fr}}
+.hrs{display:grid;gap:6px}
+.hrs div{display:grid;grid-template-columns:3.2em 1fr 1fr 3em;gap:6px;align-items:center;font-weight:700;font-size:13px}
+.hrs input[type=time]{border:2px solid var(--line);border-radius:8px;padding:5px;font-weight:600}
+.svc{border:2px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px}
+.svc.off{opacity:.5}
+.svc .h{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:800;cursor:pointer}
+.svc .body{display:none;margin-top:8px}
+.svc.open .body{display:block}
+.bar{position:sticky;bottom:0;background:var(--paper);padding:10px 0 max(10px,env(safe-area-inset-bottom));display:flex;gap:8px;align-items:center;border-top:2px solid var(--line);margin-top:10px}
+.bar button{border:2px solid var(--ink);border-radius:999px;padding:10px 18px;font-weight:800;cursor:pointer;background:var(--card)}
+.bar button.save{background:var(--ink);color:var(--yellow)}
+.bar .st{font-size:13px;font-weight:700;color:var(--green)}
+.tog{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px}
+.tog input{width:auto}
 @media (max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
@@ -93,8 +117,11 @@ h2{font-size:20px;font-weight:800;margin:18px 0 8px}
       <h2>Calls (30 days)</h2><div id="calls"></div>
     </section>
     <section id="t-clients" class="hidden">
-      <div id="bizs"></div>
-      <p style="font-size:14px;color:var(--muted);margin-top:14px">New client: run <code>receptionist/supabase/new_client_template.sql</code>, then <code>provision.mjs</code>. See receptionist/README.md.</p>
+      <div id="bizList">
+        <div class="acts" style="margin:0 0 12px"><button id="newBiz" class="call" style="background:var(--ink);color:var(--yellow)">+ New client line</button></div>
+        <div id="bizs"></div>
+      </div>
+      <div id="bizEdit" class="hidden"></div>
     </section>
   </main>
 </div>
@@ -200,8 +227,99 @@ function renderRx(){
   $('bizs').innerHTML=(rx.businesses||[]).map(b=>`<div class="card">
       <div class="top"><div><h3>${esc(b.name)}</h3><div class="biz">${esc(b.trade||'')} · /${esc(b.slug)}</div></div><span class="pill ${b.active?'booked':''}">${b.active?'active':'off'}</span></div>
       <div class="sum">Owner: ${esc(b.owner_name||'—')} ${esc(fmtPhone(b.owner_phone))}<br>Agent line: <b>${esc(fmtPhone(b.agent_number)||'not provisioned')}</b></div>
-      <div class="acts">${b.owner_phone?`<a class="call" href="tel:${tel(b.owner_phone)}">Call owner</a>`:''}${b.agent_number?`<a href="tel:${tel(b.agent_number)}">Call agent</a>`:''}</div>
+      <div class="acts"><button class="edit" data-id="${b.id}" style="background:var(--yellow)">Edit brain</button>${b.owner_phone?`<a href="tel:${tel(b.owner_phone)}">Call owner</a>`:''}${b.agent_number?`<a href="tel:${tel(b.agent_number)}">Call agent</a>`:''}</div>
     </div>`).join('');
+  $('bizs').querySelectorAll('button.edit').forEach(b=>b.onclick=()=>openBiz(b.dataset.id));
+}
+
+// ---- client brain editor ----
+const DAYS=['mon','tue','wed','thu','fri','sat','sun'], URG=['emergency','urgent','standard','estimate'];
+const TRADES=['plumbing','hvac','electrical','roofing','general contractor','other'];
+let cur=null;
+$('newBiz').onclick=async()=>{
+  const name=prompt('Business name (e.g. Keystone Plumbing)'); if(!name) return;
+  const owner_phone=prompt('Owner cell (10 digits)')||''; const trade=prompt('Trade: '+TRADES.join(' / '),'plumbing')||'plumbing';
+  const {data,error}=await supa.rpc('hq_rx_business_create',{p:{name,owner_phone:owner_phone?'+1'+owner_phone.replace(/\D/g,'').replace(/^1/,''):null,trade}});
+  if(error){ alert(error.message); return; }
+  const r=await supa.rpc('hq_rx',{p_days:30}); rx=r.data; renderRx(); openBiz(data);
+};
+async function openBiz(id){
+  const {data,error}=await supa.rpc('hq_rx_business',{p_id:id}); if(error||!data){ alert(error?error.message:'not found'); return; }
+  cur=data; const b=data.business, h=b.hours||{};
+  const inp=(k,label,type='text',extra='')=>`<label class="f">${label}<input data-k="${k}" type="${type}" value="${esc(b[k]??'')}" ${extra}></label>`;
+  $('bizList').classList.add('hidden'); $('bizEdit').classList.remove('hidden');
+  $('bizEdit').innerHTML=`<div class="ed">
+    <div class="acts" style="margin:0 0 12px"><button id="back">← All clients</button><span class="tog" style="margin-left:auto"><input type="checkbox" id="active" ${b.active?'checked':''}> Line active</span></div>
+    <h3>Business</h3>
+    <div class="g2">${inp('name','Company name')}<label class="f">Trade<select data-k="trade">${TRADES.map(t=>`<option ${t===b.trade?'selected':''}>${t}</option>`).join('')}</select></label></div>
+    <div class="g2">${inp('owner_name','Owner name')}${inp('owner_phone','Owner cell (gets the texts)','tel')}</div>
+    <div class="g2">${inp('agent_name','Receptionist name (how it introduces itself)')}${inp('agent_number','Agent phone line (from provision.mjs)','tel')}</div>
+    <h3>Money</h3>
+    <div class="g3"><label class="f">Dispatch fee $<input data-k="service_fee_cents" type="number" value="${b.service_fee_cents!=null?b.service_fee_cents/100:''}"></label>
+      <label class="f">After-hours fee $<input data-k="after_hours_fee_cents" type="number" value="${b.after_hours_fee_cents!=null?b.after_hours_fee_cents/100:''}"></label>
+      <label class="f">Free estimates?<select data-k="free_estimates"><option value="true" ${b.free_estimates?'selected':''}>Yes</option><option value="false" ${!b.free_estimates?'selected':''}>No</option></select></label></div>
+    <h3>Service area</h3>
+    ${inp('service_zips','Zip codes (comma separated, blank = don\'t check)','text','placeholder="19460, 19464, 19380"')}
+    <label class="f">Area in plain words (what it says to callers)<input data-k="service_area_note" value="${esc(b.service_area_note||'')}" placeholder="Chester and Montgomery counties, about 30 minutes from Phoenixville"></label>
+    <h3>Hours &amp; arrival windows</h3>
+    <div class="hrs" id="hrs">${DAYS.map(d=>`<div><span>${d}</span><input type="time" data-d="${d}" data-i="0" value="${h[d]?h[d][0]:''}" ${h[d]?'':'disabled'}><input type="time" data-d="${d}" data-i="1" value="${h[d]?h[d][1]:''}" ${h[d]?'':'disabled'}><label class="tog"><input type="checkbox" data-open="${d}" ${h[d]?'checked':''}>open</label></div>`).join('')}</div>
+    <div class="g2" style="margin-top:10px"><label class="f">Arrival windows, one per line (start-end)<textarea data-k="windows" style="min-height:90px">${esc((b.windows||[]).map(w=>w[0]+'-'+w[1]).join('\n'))}</textarea></label>
+      <div><label class="f">Jobs per window<input data-k="jobs_per_window" type="number" min="1" value="${b.jobs_per_window||2}"></label>
+      <label class="f">Emergencies after hours<select data-k="emergency_policy">${[['after_hours_dispatch','Offer after-hours dispatch'],['message_only','Take message, tech calls back'],['transfer','Transfer live to tech']].map(([v,l])=>`<option value="${v}" ${v===b.emergency_policy?'selected':''}>${l}</option>`).join('')}</select></label>
+      ${inp('transfer_number','Transfer / on-call number (if transferring)','tel')}</div></div>
+    <h3>Knowledge — anything else it should know or say</h3>
+    <label class="f big"><span>Plain English. Brands you service, what you don't do, promos, how to pronounce the name, warranty policy, "we don't do mobile homes", etc. Goes straight into the receptionist's brief.</span><textarea data-k="knowledge">${esc(b.knowledge||'')}</textarea></label>
+    <h3>Services it can book <button id="addSvc" style="font:inherit;font-size:12px;border:2px solid var(--ink);border-radius:999px;padding:2px 10px;background:var(--yellow);font-weight:800;cursor:pointer;margin-left:6px">+ add</button></h3>
+    <div id="svcs">${data.services.map(svcRow).join('')}</div>
+    <div class="bar"><button class="save" id="saveBiz">Save</button><span class="st" id="saveSt"></span><button id="testCall" style="margin-left:auto" ${b.agent_number?'':'disabled'}>Call this line</button></div>
+  </div>`;
+  const zipEl=$('bizEdit').querySelector('[data-k=service_zips]'); zipEl.value=(b.service_zips||[]).join(', ');
+  $('back').onclick=()=>{ $('bizEdit').classList.add('hidden'); $('bizList').classList.remove('hidden'); };
+  $('bizEdit').querySelectorAll('[data-open]').forEach(c=>c.onchange=()=>$('bizEdit').querySelectorAll(`[data-d=${c.dataset.open}]`).forEach(i=>{ i.disabled=!c.checked; if(c.checked&&!i.value) i.value=i.dataset.i==='0'?'07:00':'17:00'; }));
+  $('saveBiz').onclick=saveBiz;
+  $('addSvc').onclick=()=>{ $('svcs').insertAdjacentHTML('afterbegin',svcRow({id:'',name:'',keywords:[],urgency:'standard',fee_cents:null,safety_steps:'',active:true},true)); wireSvcs(); };
+  $('testCall').onclick=()=>location.href='tel:'+tel(b.agent_number);
+  wireSvcs();
+}
+function svcRow(s,open){
+  return `<div class="svc ${s.active?'':'off'} ${open?'open':''}" data-id="${s.id||''}">
+    <div class="h"><span>${esc(s.name||'New service')} <span class="pill ${esc(s.urgency)}">${esc(s.urgency)}</span></span><span>${s.fee_cents!=null?'$'+(s.fee_cents/100):''} ▾</span></div>
+    <div class="body">
+      <div class="g2"><label class="f">Name<input data-s="name" value="${esc(s.name||'')}" placeholder="Water heater leak"></label>
+        <label class="f">Urgency<select data-s="urgency">${URG.map(u=>`<option ${u===s.urgency?'selected':''}>${u}</option>`).join('')}</select></label></div>
+      <label class="f">Words callers use (comma separated)<input data-s="keywords" value="${esc((s.keywords||[]).join(', '))}" placeholder="water heater, no hot water, tank leaking"></label>
+      <div class="g2"><label class="f">Fee override $ (blank = business fee)<input data-s="fee_cents" type="number" value="${s.fee_cents!=null?s.fee_cents/100:''}"></label>
+        <label class="f">Bookable?<select data-s="active"><option value="true" ${s.active?'selected':''}>Yes</option><option value="false" ${!s.active?'selected':''}>Off</option></select></label></div>
+      <label class="f">Safety steps it tells the caller first<textarea data-s="safety_steps" style="min-height:70px">${esc(s.safety_steps||'')}</textarea></label>
+      <div class="acts"><button class="saveSvc">Save service</button><span class="st"></span></div>
+    </div></div>`;
+}
+function wireSvcs(){
+  $('svcs').querySelectorAll('.svc').forEach(el=>{
+    el.querySelector('.h').onclick=()=>el.classList.toggle('open');
+    el.querySelector('.saveSvc').onclick=async()=>{
+      const g=k=>el.querySelector(`[data-s=${k}]`).value;
+      const p={id:el.dataset.id||null,name:g('name'),urgency:g('urgency'),keywords:g('keywords').split(',').map(x=>x.trim()).filter(Boolean),fee_cents:g('fee_cents')===''?null:Math.round(+g('fee_cents')*100),safety_steps:g('safety_steps'),active:g('active')==='true'};
+      if(!p.name){ alert('Name it first.'); return; }
+      const {data,error}=await supa.rpc('hq_rx_service_save',{p_business:cur.business.id,p});
+      if(error){ alert(error.message); return; }
+      el.dataset.id=data; el.classList.toggle('off',!p.active); el.querySelector('.h span').innerHTML=esc(p.name)+' <span class="pill '+esc(p.urgency)+'">'+esc(p.urgency)+'</span>';
+      const st=el.querySelector('.st'); st.textContent='Saved'; setTimeout(()=>st.textContent='',1500);
+    };
+  });
+}
+async function saveBiz(){
+  const root=$('bizEdit'), g=k=>root.querySelector(`[data-k=${k}]`).value;
+  const hours={}; DAYS.forEach(d=>{ const on=root.querySelector(`[data-open=${d}]`).checked; hours[d]=on?[root.querySelector(`[data-d=${d}][data-i="0"]`).value,root.querySelector(`[data-d=${d}][data-i="1"]`).value]:null; });
+  const windows=g('windows').split('\n').map(l=>l.trim()).filter(Boolean).map(l=>l.split(/\s*[-–]\s*/)).filter(w=>w.length===2);
+  const p={name:g('name'),trade:g('trade'),owner_name:g('owner_name'),owner_phone:g('owner_phone'),agent_name:g('agent_name'),agent_number:g('agent_number'),
+    service_fee_cents:g('service_fee_cents')===''?null:Math.round(+g('service_fee_cents')*100),after_hours_fee_cents:g('after_hours_fee_cents')===''?null:Math.round(+g('after_hours_fee_cents')*100),
+    free_estimates:g('free_estimates')==='true',service_zips:g('service_zips').split(',').map(x=>x.trim()).filter(Boolean),service_area_note:g('service_area_note'),
+    hours,windows,jobs_per_window:+g('jobs_per_window')||2,emergency_policy:g('emergency_policy'),transfer_number:g('transfer_number'),knowledge:g('knowledge'),active:$('active').checked};
+  const {error}=await supa.rpc('hq_rx_business_save',{p_id:cur.business.id,p});
+  if(error){ alert(error.message); return; }
+  $('saveSt').textContent='Saved — live on the next call'; setTimeout(()=>$('saveSt').textContent='',2500);
+  const r=await supa.rpc('hq_rx',{p_days:30}); rx=r.data; renderRx();
 }
 </script>
 </body>
