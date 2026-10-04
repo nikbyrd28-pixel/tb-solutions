@@ -169,6 +169,8 @@ HOW YOU TALK
 - React like a human first, then handle it. "Ugh, in the basement? Okay." before the next question.
 - Mirror them. If they're stressed, slow down and get practical. If they're casual, be casual.
 - Never say: "I understand", "certainly", "absolutely", "I'd be happy to", "great question", "I apologize", "assist", "at this time", "please be advised". Never list options with "first/second/third". Never say "as an AI".
+- LISTEN BEFORE YOU MOVE. Phone audio is rough. If a word doesn't fit the context ("blinking" on a plumbing line, a name when you asked for a town), you misheard: say back the likely word as a quick check ("Leaking, gotcha.") or ask "say that one more time?" Never guess, never answer a question they didn't ask, never jump to the next step until the current one makes sense. If they go quiet mid-sentence, wait; they're thinking, not done.
+- One question at a time, then stop talking. Do not stack a reaction and two questions in one turn.
 - Don't over-explain. Don't repeat their name. Don't repeat phone numbers or addresses back more than once, and when you do, do it fast.
 - If asked straight out whether you're a real person: "Ha, I'm the automated line for ${b.name}, but I can book you right now, same as ${ownerFirst} would." Then keep going. Don't volunteer it otherwise.
 
@@ -226,16 +228,19 @@ function tools(b: Business) {
 function assistantFor(b: Business, svcs: Service[], oc: OnCall[]) {
   return {
     name: `${b.name} — ${b.agent_name}`,
-    firstMessage: `${b.name}, this is ${b.agent_name}.`,
-    model: { provider: "openai", model: "gpt-4o", temperature: 0.7, maxTokens: 120, messages: [{ role: "system", content: systemPrompt(b, svcs, oc) }], tools: tools(b) },
+    firstMessage: `${b.name}, this is ${b.agent_name}. What's going on?`,
+    model: { provider: "openai", model: "gpt-4o", temperature: 0.5, maxTokens: 110, messages: [{ role: "system", content: systemPrompt(b, svcs, oc) }], tools: tools(b) },
     // Natural, slightly imperfect delivery. Lower stability = more human variation.
     voice: { provider: "11labs", voiceId: "cgSgspJ2msm6clMCkdW9", model: "eleven_turbo_v2_5", stability: 0.35, similarityBoost: 0.8, style: 0.45, useSpeakerBoost: true, optimizeStreamingLatency: 3 },
-    transcriber: { provider: "deepgram", model: "nova-2-phonecall", language: "en", endpointing: 220 },
-    backgroundSound: "office",
-    backchannelingEnabled: true,
+    // Listening. The 3:36pm Oct 4 test call: "leaking"→"blinking", caller cut off mid-sentence, a name taken as a town.
+    // nova-3 + trade vocabulary boost, smart endpointing so it waits for a real pause, and it stops talking only on 2+ real words.
+    transcriber: { provider: "deepgram", model: "nova-3", language: "en", smartFormat: true,
+      keyterm: ["leaking", "leak", "water heater", "sump pump", "sewer line", "clogged drain", "main line", "garbage disposal", "no hot water", "no heat", "furnace", "boiler", "AC not cooling", "thermostat", "breaker", "outlet", "panel", "shutoff valve", "toilet", "faucet", "backing up", "gas smell", "Phoenixville", "Pottstown", "West Chester", "Royersford", "Collegeville", "Exton", "Downingtown", b.name] },
+    startSpeakingPlan: { waitSeconds: 0.7, smartEndpointingEnabled: true, transcriptionEndpointingPlan: { onPunctuationSeconds: 0.4, onNoPunctuationSeconds: 1.3, onNumberSeconds: 0.8 } },
+    stopSpeakingPlan: { numWords: 2, voiceSeconds: 0.3, backoffSeconds: 1.2 },
+    backgroundSound: "off",
+    backchannelingEnabled: false,
     backgroundDenoisingEnabled: true,
-    responseDelaySeconds: 0.3,
-    llmRequestDelaySeconds: 0.1,
     silenceTimeoutSeconds: 25,
     maxDurationSeconds: 900,
     endCallMessage: "Alright, you're all set. Talk soon.",
