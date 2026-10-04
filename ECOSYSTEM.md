@@ -29,6 +29,7 @@
 | Voice | Vapi — number (610) 998-6138 → rx-agent; provision new clients with `receptionist/vapi/provision.mjs` | dashboard.vapi.ai |
 | SMS | Twilio — toll-free (833) 736-5726 (verification pending); trial = verified numbers only | console.twilio.com |
 | Automation | self-hosted n8n — import `n8n/rx-weekly-report.json` (Mon 7am scorecard) | `n8n/` |
+| **Owner app** | tbsol.net/receptionist/app/ — each client logs in to see jobs/calls/messages and edit what their receptionist says (`rx_owner_*` RPCs, invites via HQ) | `receptionist/app/` |
 | **HQ (Nick's CRM)** | tbsol.net/hq/ — all leads + receptionist backend in one screen; RPCs `hq_*`, admins in `hq_admins` | `hq/` |
 | Analytics | `track.js` → `track-visitor` edge fn → `visitors`/`pageviews` | root |
 | Onboarding | `receptionist/supabase/new_client_template.sql` — 20-min new client | — |

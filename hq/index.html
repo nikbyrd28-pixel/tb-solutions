@@ -264,8 +264,8 @@ $('newBiz').onclick=async()=>{
 };
 async function openBiz(id){
   const {data,error}=await supa.rpc('hq_rx_business',{p_id:id}); if(error||!data){ alert(error?error.message:'not found'); return; }
-  const [ints,log]=await Promise.all([supa.rpc('hq_rx_integrations',{p_business:id}),supa.rpc('hq_rx_sync_log',{p_business:id})]);
-  data.integrations=ints.data||[]; data.synclog=log.data||[];
+  const [ints,log,own]=await Promise.all([supa.rpc('hq_rx_integrations',{p_business:id}),supa.rpc('hq_rx_sync_log',{p_business:id}),supa.rpc('hq_rx_owners',{p_business:id})]);
+  data.integrations=ints.data||[]; data.synclog=log.data||[]; data.owners=own.data||{users:[],invites:[]};
   cur=data; const b=data.business, h=b.hours||{};
   const inp=(k,label,type='text',extra='')=>`<label class="f">${label}<input data-k="${k}" type="${type}" value="${esc(b[k]??'')}" ${extra}></label>`;
   $('bizList').classList.add('hidden'); $('bizEdit').classList.remove('hidden');
@@ -300,6 +300,10 @@ async function openBiz(id){
     ${sec('svc','Services it books',`${data.services.filter(x=>x.active).length} on · ${data.services.filter(x=>x.urgency==='emergency').length} emergency`,`
       <div class="acts" style="margin:0 0 10px"><button id="addSvc" style="background:var(--yellow)">+ Add a service</button></div>
       <div id="svcs">${data.services.map(svcRow).join('')}</div>`)}
+    ${sec('own','Owner login',(data.owners&&data.owners.users.length)?data.owners.users.map(u=>esc(u.email)).join(', '):'nobody invited yet',`
+      <div class="hint" style="margin-bottom:8px">They log in at <b>tbsol.net/receptionist/app/</b> to see jobs, calls, messages and change what it says. Enter their email; their first login links them.</div>
+      <div id="ownList">${(data.owners?[...data.owners.users.map(u=>'✓ '+esc(u.email)),...data.owners.invites.filter(i=>!i.claimed).map(i=>'⏳ '+esc(i.email)+' (not logged in yet)')]:[]).map(x=>`<div style="font-weight:600;font-size:14px;margin-bottom:4px">${x}</div>`).join('')}</div>
+      <div class="g2" style="align-items:end"><label class="f">Owner email<input id="inviteEmail" type="email" placeholder="owner@shop.com"></label><button id="inviteBtn" style="border:2px solid var(--ink);border-radius:999px;padding:9px 16px;font-weight:800;background:var(--yellow);cursor:pointer;margin-bottom:10px">Invite</button></div>`)}
     ${sec('int','Sends booked jobs to',hcp.has_key?`Housecall Pro ····${esc(hcp.key_tail)} · ${hcp.active?'on':'off'}`:'text only (no app connected)',`
       <div class="g2">
         <label class="f">Housecall Pro API key${hcp.has_key?' <span class="pill booked">saved ····'+esc(hcp.key_tail)+'</span>':''}<input id="hcp_key" type="password" autocomplete="off" placeholder="${hcp.has_key?'paste to replace':'paste key from HCP → Settings → API'}"></label>
@@ -311,6 +315,7 @@ async function openBiz(id){
   renderPreview(); $('bizEdit').querySelectorAll('input,select,textarea').forEach(el=>el.addEventListener('input',()=>{ renderPreview(); $('saveBiz').textContent='Save changes'; $('saveBiz').classList.add('dirty'); }));
   $('kchips').querySelectorAll('button').forEach(c=>c.onclick=()=>{ const t=$('bizEdit').querySelector('[data-k=knowledge]'); if(t.value.includes(c.dataset.chip)) return; t.value=(t.value.trim()?t.value.trim()+' ':'')+c.dataset.chip; t.dispatchEvent(new Event('input')); });
   $('bizEdit').querySelectorAll('input.ph').forEach(i=>i.addEventListener('blur',()=>{ i.value=fmtPhone(i.value)||i.value; }));
+  $('inviteBtn').onclick=async()=>{ const em=$('inviteEmail').value.trim(); if(!em) return; const {error}=await supa.rpc('hq_rx_invite',{p_business:cur.business.id,p_email:em}); if(error){ alert(error.message); return; } openBiz(cur.business.id); document.querySelector('#sec-own')?.setAttribute('open',''); };
   $('back').onclick=()=>{ $('bizEdit').classList.add('hidden'); $('bizList').classList.remove('hidden'); };
   $('bizEdit').querySelectorAll('[data-open]').forEach(c=>c.onchange=()=>$('bizEdit').querySelectorAll(`[data-d=${c.dataset.open}]`).forEach(i=>{ i.disabled=!c.checked; if(c.checked&&!i.value) i.value=i.dataset.i==='0'?'07:00':'17:00'; }));
   $('saveBiz').onclick=saveBiz;

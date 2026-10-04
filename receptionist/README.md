@@ -35,8 +35,10 @@ Insert an `rx_businesses` row (`slug`, `name`, `owner_phone`, fees, `service_are
 ## Costs (rough, per client)
 Vapi ≈ $0.05–0.13/min all-in (model+voice+transcription), Twilio number $1.15/mo + ~$0.008/SMS. A shop doing 150 calls × 2 min ≈ $20–40/mo in hard cost against a $300–500/mo price.
 
+## Owner app — tbsol.net/receptionist/app/ (DONE Oct 4)
+The client's own login: Today (stats, messages, jobs with status), Calls (summaries + recordings), What it says (same brain editor as HQ minus slug/line/active). RPCs `rx_owner_*` in `supabase/005_rx_owner_app.sql`, scoped by `rx_business_users`. Onboarding: HQ → Edit brain → Owner login → enter their email → they create an account with that email at the app URL and it links on first login.
+
 ## Not built yet (next)
-- Owner dashboard page (`/receptionist/owner/`) reading `rx_jobs` + `rx_calls` via the RLS policies already in place.
 - Jobber push (Housecall Pro is DONE: `rx-sync` edge fn + `rx_integrations` table + pg_net trigger on `rx_jobs` insert; key entered in HQ → Edit brain → Sends booked jobs to. Field names follow HCP public API docs — verify against the first client's real key; errors land in `rx_sync_log`).
 
 ## Integrations
