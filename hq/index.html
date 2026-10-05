@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="call-scripts.js"></script>
 <style>
 :root{--yellow:#FFD23F;--ink:#14110F;--paper:#FFF8E1;--copper:#B5542B;--blue:#1B4FD8;--green:#1F9D55;--red:#D7263D;--card:#fff;--line:#e6dfc8;--muted:#6b645a}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -105,6 +106,40 @@ details.sec[open]{border-color:var(--ink)}
 .bar button.save.dirty{background:var(--copper);border-color:var(--copper);color:#fff}
 .tog input{width:auto}
 @media (max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}}
+/* --- call list --- */
+.filters button b{font-style:normal;opacity:.6;margin-left:3px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 2px}
+.tag{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:3px 8px;border-radius:999px;background:#f0ece0;color:var(--muted)}
+.tag.hot{background:var(--red);color:#fff}
+details.log{margin-top:8px;font-size:13px}
+details.log summary{cursor:pointer;color:var(--muted);font-weight:700;list-style:none}
+details.log summary::-webkit-details-marker{display:none}
+details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf7ec;border-radius:10px;padding:8px;margin-top:6px;color:#3a342c}
+.oc{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;border-top:2px dashed var(--line);padding-top:10px}
+.oc button{border:2px solid var(--line);border-radius:999px;padding:6px 11px;font-weight:700;font-size:13px;background:#fff;cursor:pointer}
+.oc button:active{transform:translateY(1px)}
+.oc button.on{background:var(--ink);color:var(--yellow);border-color:var(--ink)}
+.np{display:none;margin-top:10px}
+.np.show{display:block}
+.np textarea{width:100%;border:2px solid var(--line);border-radius:10px;padding:8px;font-size:14px;min-height:54px;resize:vertical}
+.cbs{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px;font-size:13px;font-weight:700;color:var(--muted)}
+.cbs button{border:2px solid var(--line);border-radius:999px;padding:4px 10px;font-weight:700;font-size:12px;background:#fff;cursor:pointer}
+.cbs button.on{background:var(--yellow);border-color:var(--ink);color:var(--ink)}
+.cbs input{border:2px solid var(--line);border-radius:10px;padding:4px 8px;font-size:13px;font-weight:600}
+.acts button.save{background:var(--ink);color:var(--yellow)}
+/* --- script panel --- */
+#scrim{position:fixed;inset:0;background:rgba(20,17,15,.6);z-index:20;display:none;align-items:flex-end}
+#scrim.show{display:flex}
+#sc{background:var(--paper);width:100%;max-height:88vh;overflow:auto;border-radius:20px 20px 0 0;padding:16px 16px max(16px,env(safe-area-inset-bottom));max-width:900px;margin:0 auto}
+#sc .hd{display:flex;align-items:flex-start;gap:10px;position:sticky;top:-16px;background:var(--paper);padding:4px 0 10px}
+#sc .hd h3{font-size:19px;font-weight:800;flex:1;line-height:1.15}
+#sc .hd small{display:block;color:var(--muted);font-weight:700;font-size:13px;margin-top:2px}
+#sc .hd button{border:2px solid var(--ink);border-radius:999px;padding:5px 12px;font-weight:800;background:#fff;cursor:pointer}
+#sc .scn{background:var(--yellow);border:2px solid var(--ink);border-radius:12px;padding:9px 12px;font-weight:700;font-size:14px;margin-bottom:12px}
+#sc p.say{font-size:17px;line-height:1.4;font-weight:600;border-left:4px solid var(--ink);padding:2px 0 2px 12px;margin-bottom:12px}
+#sc p.dir{font-size:14px;color:var(--muted);font-weight:700;font-style:italic;margin:-6px 0 12px 16px}
+#sc h4{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:18px 0 8px}
+#sc p.obj{font-size:14px;line-height:1.4;margin-bottom:10px;background:#fff;border:2px solid var(--line);border-radius:12px;padding:9px 11px}
 </style>
 </head>
 <body>
@@ -127,7 +162,7 @@ details.sec[open]{border-color:var(--ink)}
   </div>
   <main>
     <section id="t-prospects">
-      <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">Best cold calls first. Score = how badly they need the phone answered. Tap Call, then set the result. New ones land every Monday.</div>
+      <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">Call the top of Today, tap what happened, and it schedules itself. Anything you couldn't reach leaves the list and comes back when it's due. Fresh ones land every morning.</div>
       <div class="filters" id="proFilters"></div>
       <div id="pros"></div>
     </section>
@@ -151,13 +186,18 @@ details.sec[open]{border-color:var(--ink)}
   </main>
 </div>
 
+<div id="scrim"><div id="sc">
+  <div class="hd"><div><h3 id="scTitle"></h3><small id="scWho"></small></div><button id="scCopy">Copy</button><button id="scX">Close</button></div>
+  <div id="scBody"></div>
+</div></div>
+
 <script>
 const SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
 const supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
 const $=id=>document.getElementById(id), esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const STATUSES=['new','contacted','audit_sent','quoted','won','lost'];
-let leads=[], rx=null, filter='open', pros=[], pfilter='new';
+let leads=[], rx=null, filter='open', pros=[], pfilter='today';
 
 function ago(ts){ if(!ts) return ''; const d=(Date.now()-new Date(ts))/6e4; if(d<60) return Math.round(d)+'m ago'; if(d<1440) return Math.round(d/60)+'h ago'; if(d<10080) return Math.round(d/1440)+'d ago'; return new Date(ts).toLocaleDateString(); }
 function tel(p){ return (p||'').replace(/[^\d+]/g,''); }
@@ -175,6 +215,9 @@ async function enter(u){
   load();
 }
 
+$('scX').onclick=()=>$('scrim').classList.remove('show');
+$('scrim').onclick=e=>{ if(e.target.id==='scrim') $('scrim').classList.remove('show'); };
+
 // ---- tabs ----
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
@@ -188,26 +231,101 @@ async function load(){
   if(r.error){ $('jobs').innerHTML='<div class="empty">'+esc(r.error.message)+'</div>'; } else { rx=r.data; renderRx(); }
 }
 
-// ---- prospects (cold call list) ----
-const PSTAT=['new','called','voicemail','talking','meeting','won','dead'];
+// ---- prospects (the call list) ----
+// Buckets, not statuses. "Today" is the only one you work: new prospects plus every
+// callback that's come due. Anything scheduled ahead is out of sight until it's time.
+const PBUCKETS=[['today','Today'],['later','Scheduled'],['talking','Talking'],['meeting','Meetings'],['all','All']];
+const OUTCOMES=[['no_answer','No answer'],['voicemail','Voicemail'],['callback','Call back'],['talking','Talking'],['meeting','Meeting'],['won','Won'],['dead','Dead']];
+const due=p=>p.callback_at&&new Date(p.callback_at)<=new Date();
+const bucketOf=p=>['won','dead'].includes(p.status)?'done':p.status==='talking'?'talking':p.status==='meeting'?'meeting':(p.status==='new'||due(p))?'today':'later';
+function whenTxt(ts){ if(!ts) return ''; const d=new Date(ts), now=new Date();
+  if(d<=now) return 'Due now';
+  const days=Math.round((d-now)/864e5);
+  return (days<1?'Today ':days<2?'Tomorrow ':d.toLocaleDateString([], {weekday:'short'})+' ')+d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}); }
+// callback presets, computed client-side so the chips read exactly what you'll get
+function slot(kind){ const d=new Date();
+  if(kind==='3h'){ d.setHours(d.getHours()+3); return d; }
+  if(kind==='tom'){ d.setDate(d.getDate()+1); d.setHours(9,0,0,0); if(d.getDay()===6)d.setDate(d.getDate()+2); if(d.getDay()===0)d.setDate(d.getDate()+1); return d; }
+  if(kind==='3d'){ d.setDate(d.getDate()+3); d.setHours(9,0,0,0); if(d.getDay()===6)d.setDate(d.getDate()+2); if(d.getDay()===0)d.setDate(d.getDate()+1); return d; }
+  d.setDate(d.getDate()+(8-d.getDay())%7||7); d.setHours(9,0,0,0); return d; }
+
 function renderPros(){
-  const fresh=pros.filter(p=>p.status==='new'); $('nPros').textContent=fresh.length||''; $('nPros').style.display=fresh.length?'':'none';
-  $('proFilters').innerHTML=[['new','To call'],['talking','Talking'],['meeting','Meetings'],['voicemail','Voicemail'],['all','All']].map(([k,l])=>`<button data-f="${k}" class="${pfilter===k?'on':''}">${l}</button>`).join('');
+  const counts={}; PBUCKETS.forEach(([k])=>counts[k]=0);
+  pros.forEach(p=>{ const b=bucketOf(p); if(counts[b]!==undefined)counts[b]++; counts.all++; });
+  $('nPros').textContent=counts.today||''; $('nPros').style.display=counts.today?'':'none';
+  $('proFilters').innerHTML=PBUCKETS.map(([k,l])=>`<button data-f="${k}" class="${pfilter===k?'on':''}">${l}${counts[k]?' <b>'+counts[k]+'</b>':''}</button>`).join('');
   $('proFilters').querySelectorAll('button').forEach(b=>b.onclick=()=>{ pfilter=b.dataset.f; renderPros(); });
-  const list=pros.filter(p=>pfilter==='all'||p.status===pfilter);
-  $('pros').innerHTML=list.length?list.map(p=>`<div class="card ${p.status==='won'?'won':p.status==='dead'?'lost':''}">
-      <div class="top"><div><h3>${esc(p.name)}</h3><div class="biz">${esc(p.trade||'')} · ${esc(p.city||'')} · ${p.rating?p.rating+'★ ('+p.reviews+')':''}</div></div><span class="src" style="background:${p.score>=70?'var(--red)':p.score>=50?'var(--copper)':'var(--yellow)'};color:${p.score>=50?'#fff':'var(--ink)'}">${p.score}</span></div>
+
+  const list=pros.filter(p=>pfilter==='all'||bucketOf(p)===pfilter);
+  $('pros').innerHTML=list.length?list.map(p=>{
+    const log=(p.notes||'').trim().split('\n').filter(Boolean);
+    return `<div class="card ${p.status==='won'?'won':p.status==='dead'?'lost':''}">
+      <div class="top"><div><h3>${esc(p.name)}</h3>
+        <div class="biz">${esc(p.trade||'')} · ${esc(p.city||'')}${p.rating?' · '+p.rating+'★ ('+p.reviews+')':''}</div>
+        ${p.owner_name?`<div class="biz" style="color:var(--ink);font-weight:800">Ask for ${esc(p.owner_name)}</div>`:''}</div>
+        <span class="src" style="background:${p.score>=70?'var(--red)':p.score>=50?'var(--copper)':'var(--yellow)'};color:${p.score>=50?'#fff':'var(--ink)'}">${p.score}</span></div>
+      <div class="tags">${p.callback_at?`<span class="tag ${due(p)?'hot':''}">${whenTxt(p.callback_at)}</span>`:''}${p.attempts?`<span class="tag">${p.attempts} ${p.attempts===1?'try':'tries'}</span>`:''}${p.status!=='new'?`<span class="tag">${esc(p.status.replace('_',' '))}</span>`:''}</div>
       <div class="sum"><b>Why:</b> ${esc(p.why||'')}</div>
       <div class="val">Lead with: ${esc(p.pitch||'')}</div>
-      ${p.notes?`<div class="when">${esc(p.notes)}</div>`:''}
-      <div class="acts">${p.phone?`<a class="call" href="tel:${tel(p.phone)}">Call ${esc(fmtPhone(p.phone))}</a>`:''}<a href="https://www.google.com/search?q=${encodeURIComponent(p.name+' '+(p.city||''))}" target="_blank">Google</a>
-        <select data-pid="${p.id}" class="${p.status}">${PSTAT.map(x=>`<option ${x===p.status?'selected':''}>${x}</option>`).join('')}</select>
-        <button class="pn" data-pid="${p.id}">Note</button></div>
-      <textarea class="note" id="pnote-${p.id}" data-pid="${p.id}" placeholder="What they said…"></textarea>
-    </div>`).join(''):'<div class="empty">List is empty. New prospects arrive Monday morning.</div>';
-  $('pros').querySelectorAll('select').forEach(sel=>sel.onchange=async()=>{ const {error}=await supa.rpc('hq_prospect_update',{p_id:sel.dataset.pid,p_status:sel.value}); if(error){alert(error.message);return;} const p=pros.find(x=>x.id===sel.dataset.pid); p.status=sel.value; renderPros(); });
-  $('pros').querySelectorAll('button.pn').forEach(b=>b.onclick=()=>{ const t=$('pnote-'+b.dataset.pid); t.classList.toggle('show'); t.focus(); });
-  $('pros').querySelectorAll('textarea').forEach(t=>t.onblur=async()=>{ if(!t.value.trim()) return; const p=pros.find(x=>x.id===t.dataset.pid); const note=(p.notes?p.notes+' | ':'')+new Date().toLocaleDateString()+': '+t.value.trim(); const {error}=await supa.rpc('hq_prospect_update',{p_id:p.id,p_status:p.status,p_notes:note}); if(!error){ p.notes=note; t.value=''; renderPros(); } });
+      ${log.length?`<details class="log"><summary>${log.length} note${log.length>1?'s':''} · ${esc(log[log.length-1].slice(0,52))}…</summary><pre>${esc(log.join('\n'))}</pre></details>`:''}
+      <div class="acts">
+        ${p.phone?`<a class="call" href="tel:${tel(p.phone)}">Call ${esc(fmtPhone(p.phone))}</a>`:''}
+        <button class="sc" data-pid="${p.id}">Script</button>
+        <a href="https://www.google.com/search?q=${encodeURIComponent(p.name+' '+(p.city||''))}" target="_blank">Google</a>
+        ${p.email?`<button class="em" data-pid="${p.id}">Email</button>`:''}
+      </div>
+      <div class="oc">${OUTCOMES.map(([k,l])=>`<button data-pid="${p.id}" data-oc="${k}" class="${p.status===k?'on':''}">${l}</button>`).join('')}</div>
+      <div class="np" id="np-${p.id}">
+        <textarea id="pnote-${p.id}" placeholder="What he said…"></textarea>
+        <div class="cbs">Call back:
+          ${[['3h','Later today'],['tom','Tomorrow 9a'],['3d','In 3 days'],['wk','Next week']].map(([k,l])=>`<button data-pid="${p.id}" data-slot="${k}">${l}</button>`).join('')}
+          <input type="datetime-local" id="cbat-${p.id}">
+        </div>
+        <div class="acts" style="margin-top:8px"><button class="save" data-pid="${p.id}">Save</button></div>
+      </div>
+    </div>`;}).join('')
+    :`<div class="empty">${pfilter==='today'?'Nothing due. Fresh prospects land tomorrow morning — or check Scheduled.':'Nothing here.'}</div>`;
+
+  // outcome buttons: one tap logs the dial, bumps the attempt count and schedules the next touch
+  $('pros').querySelectorAll('.oc button').forEach(b=>b.onclick=()=>{
+    const p=pros.find(x=>x.id===b.dataset.pid);
+    if(b.dataset.oc==='callback'){ $('np-'+p.id).classList.add('show'); $('cbat-'+p.id).focus(); return; }
+    logDial(p, b.dataset.oc, ($('pnote-'+p.id)||{}).value);
+  });
+  $('pros').querySelectorAll('.cbs button').forEach(b=>b.onclick=()=>{
+    const d=slot(b.dataset.slot), i=$('cbat-'+b.dataset.pid);
+    i.value=new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,16);
+    i.closest('.cbs').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+  });
+  $('pros').querySelectorAll('button.save').forEach(b=>b.onclick=()=>{
+    const p=pros.find(x=>x.id===b.dataset.pid), at=$('cbat-'+p.id).value;
+    logDial(p, at?'callback':'note', $('pnote-'+p.id).value, at?new Date(at).toISOString():null);
+  });
+  $('pros').querySelectorAll('button.sc').forEach(b=>b.onclick=()=>openScript(pros.find(x=>x.id===b.dataset.pid)));
+  $('pros').querySelectorAll('button.em').forEach(b=>b.onclick=()=>{
+    const p=pros.find(x=>x.id===b.dataset.pid), d=CALL_SCRIPTS.emailDraft(p);
+    location.href=`mailto:${encodeURIComponent(p.email)}?subject=${encodeURIComponent(d.subject)}&body=${encodeURIComponent(d.body)}`;
+  });
+}
+
+async function logDial(p, outcome, note, callbackAt){
+  const {data,error}=await supa.rpc('hq_prospect_log',{p_id:p.id,p_outcome:outcome,p_note:(note||'').trim()||null,p_callback_at:callbackAt||null});
+  if(error){ alert(error.message); return; }
+  Object.assign(p, data);            // server decides the status — it may have retired him at 6 tries
+  renderPros();
+}
+
+// ---- script panel ----
+function openScript(p){
+  const s=CALL_SCRIPTS.script(p, CALL_SCRIPTS.stageFor(p));
+  $('scTitle').textContent=s.title;
+  $('scWho').textContent=p.name+(p.city?' · '+p.city:'');
+  $('scBody').innerHTML=`<p class="scn">${esc(s.note)}</p>`
+    +s.lines.map(l=>l.startsWith('—')?`<p class="dir">${esc(l)}</p>`:`<p class="say">${esc(l)}</p>`).join('')
+    +`<h4>When he pushes back</h4>`
+    +CALL_SCRIPTS.OBJECTIONS.map(([q,a])=>`<p class="obj"><b>${esc(q)}</b><br>${esc(a)}</p>`).join('');
+  $('scCopy').onclick=()=>{ navigator.clipboard.writeText(s.lines.join('\n\n')); $('scCopy').textContent='Copied'; setTimeout(()=>$('scCopy').textContent='Copy',1200); };
+  $('scrim').classList.add('show');
 }
 
 // ---- leads ----
