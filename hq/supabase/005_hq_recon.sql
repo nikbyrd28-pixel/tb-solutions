@@ -10,6 +10,10 @@
 --
 -- Run after 004_hq_billing.sql. Idempotent.
 
+-- 007_client_tools.sql adds this too; repeated here so recon can be run on its own.
+alter table public.rx_prospects add column if not exists business_id uuid
+  references public.rx_businesses(id) on delete cascade;
+
 alter table public.rx_prospects add column if not exists audit jsonb;
 alter table public.rx_prospects add column if not exists audited_at timestamptz;
 create index if not exists rx_prospects_audit_idx on public.rx_prospects(audited_at nulls first)
