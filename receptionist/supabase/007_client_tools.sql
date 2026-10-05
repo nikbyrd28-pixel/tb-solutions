@@ -164,3 +164,24 @@ end $$;
 
 grant execute on function public.rx_owner_prospects(), public.rx_owner_prospect_log(uuid,text,text,timestamptz),
   public.rx_owner_billing(), public.rx_prospect_slots(uuid) to authenticated;
+
+-- A client asking to pay one of their own invoices. Returns only what Checkout needs.
+-- Refuses drafts, refuses invoices already paid, refuses anything that is not theirs.
+create or replace function public.rx_owner_invoice_for_pay(p_invoice uuid)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare v uuid := rx_owner_business_id(); r record;
+begin
+  if v is null then raise exception 'not signed in'; end if;
+  if to_regclass('public.hq_invoices') is null then raise exception 'billing not installed'; end if;
+  select i.id, i.total_cents, i.status, i.period_start, i.period_end, i.stripe_session_id, b.name
+    into r from hq_invoices i join rx_businesses b on b.id = i.business_id
+    where i.id = p_invoice and i.business_id = v;
+  if not found then raise exception 'not your invoice'; end if;
+  if r.status = 'paid' then raise exception 'already paid'; end if;
+  if r.status <> 'sent' then raise exception 'not payable yet'; end if;
+  if r.total_cents <= 0 then raise exception 'nothing to pay'; end if;
+  return jsonb_build_object('id', r.id, 'amount_cents', r.total_cents, 'name', r.name,
+    'period_start', r.period_start, 'period_end', r.period_end);
+end $$;
+
+grant execute on function public.rx_owner_invoice_for_pay(uuid) to authenticated;

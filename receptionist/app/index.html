@@ -367,6 +367,10 @@ function renderDesk(){
 // ---- money ----
 const usd=c=>'$'+(c/100).toFixed(c%100?2:0);
 async function loadMoney(){
+  // Coming back from Stripe: the webhook may take a second, so say so rather than showing "due".
+  const paid=new URLSearchParams(location.search).get('paid');
+  if(paid==='1'){ history.replaceState({},'',location.pathname); $('money').innerHTML='<div class="empty">Payment received — updating your invoices…</div>'; await new Promise(r=>setTimeout(r,2500)); }
+  else if(paid==='0'){ history.replaceState({},'',location.pathname); }
   const {data}=await supa.rpc('rx_owner_billing');
   if(!data||data.enabled===false){ $('money').innerHTML='<div class="empty">Billing isn\'t switched on yet.</div>'; return; }
   const inv=data.invoices||[];
@@ -385,9 +389,22 @@ async function loadMoney(){
         ${(i.lines||[]).map(l=>`<div class="sum">${esc(l.description)} — ${usd(l.amount_cents)}</div>`).join('')}
         ${i.credit_cents?`<div class="sum" style="color:var(--green);font-weight:700">Credit applied — ${usd(i.credit_cents)}</div>`:''}
         <div class="when">${i.status==='paid'?'Paid '+esc(i.paid_on||''):i.due_on?'Due '+esc(i.due_on):''}</div>
+        ${i.status==='sent'&&i.total_cents>0?`<div class="acts"><button class="pay call" data-inv="${i.id}">Pay ${usd(i.total_cents)} by card</button></div>`:''}
       </div>`).join('')
       :'<div class="empty">No invoices yet.</div>'}
     <div class="card"><div class="sum">Questions on any of this? Text Nick at <a href="sms:+14848418501">(484) 841-8501</a>.</div></div>`;
+  // Card payment. The amount is decided by the database, never by this page.
+  $('money').querySelectorAll('button.pay').forEach(b=>b.onclick=async()=>{
+    b.disabled=true; const was=b.textContent; b.textContent='Opening Stripe…';
+    try{
+      const {data:{session}}=await supa.auth.getSession();
+      const r=await fetch(SUPA_URL+'/functions/v1/rx-pay',{method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
+        body:JSON.stringify({invoice_id:b.dataset.inv})});
+      const j=await r.json();
+      if(j.url) location.href=j.url; else { alert(j.error||'Could not start payment.'); b.disabled=false; b.textContent=was; }
+    }catch(e){ alert('Could not reach payments. Text Nick and he will sort it.'); b.disabled=false; b.textContent=was; }
+  });
 }
 
 $('scX').onclick=()=>$('scrim').classList.remove('show');

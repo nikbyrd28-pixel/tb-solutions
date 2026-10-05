@@ -278,6 +278,7 @@ function renderPros(){
         <span class="src" style="background:${p.score>=70?'var(--red)':p.score>=50?'var(--copper)':'var(--yellow)'};color:${p.score>=50?'#fff':'var(--ink)'}">${p.score}</span></div>
       <div class="tags">${p.callback_at?`<span class="tag ${due(p)?'hot':''}">${whenTxt(p.callback_at)}</span>`:''}${p.attempts?`<span class="tag">${p.attempts} ${p.attempts===1?'try':'tries'}</span>`:''}${p.status!=='new'?`<span class="tag">${esc(p.status.replace('_',' '))}</span>`:''}</div>
       <div class="sum"><b>Why:</b> ${esc(p.why||'')}</div>
+      ${auditBlock(p)}
       <div class="val">Lead with: ${esc(p.pitch||'')}</div>
       ${log.length?`<details class="log"><summary>${log.length} note${log.length>1?'s':''} · ${esc(log[log.length-1].slice(0,52))}…</summary><pre>${esc(log.join('\n'))}</pre></details>`:''}
       <div class="acts">
@@ -330,6 +331,32 @@ async function logDial(p, outcome, note, callbackAt){
   if(error){ alert(error.message); return; }
   Object.assign(p, data);            // server decides the status — it may have retired him at 6 tries
   renderPros();
+}
+
+// ---- recon ----
+// The audit the recon agent writes. Everything here is public: their own site, their Google
+// profile, the Guaranteed badge in search results, and Meta's own ad library.
+function auditBlock(p){
+  const a = p.audit;
+  if(!a) return p.status==='new' ? '<div class="when">Not audited yet</div>' : '';
+  const chips = [];
+  if(a.lsa?.badge) chips.push(['paying for LSA','hot']);
+  if(a.ads?.meta_active) chips.push([`${a.ads.meta_count||''} Meta ad${a.ads.meta_count===1?'':'s'} live`.trim(),'hot']);
+  if(a.gmb && a.gmb.hours_listed===false) chips.push(['no hours on Google','hot']);
+  if(a.gmb && a.gmb.responds===false) chips.push(['never replies to reviews','']);
+  if(a.site && a.site.exists===false) chips.push(['no website','hot']);
+  else if(a.site && a.site.booking===false) chips.push(['site cannot book','']);
+  if(a.site && a.site.mobile_ok===false) chips.push(['site breaks on mobile','']);
+  (a.gaps||[]).forEach(g=>chips.push([g,'']));
+  const det = [
+    a.site?.url ? `Site: ${a.site.url}${a.site.note?' — '+a.site.note:''}` : null,
+    a.gmb ? `Google: ${a.gmb.reviews??'?'} reviews${a.gmb.rating?' at '+a.gmb.rating+'★':''}${a.gmb.last_review?', last '+a.gmb.last_review:''}${a.gmb.note?' — '+a.gmb.note:''}` : null,
+    a.lsa ? `LSA: ${a.lsa.badge?'Google Guaranteed badge showing':'no badge'}${a.lsa.note?' — '+a.lsa.note:''}` : null,
+    a.ads ? `Ads: ${a.ads.meta_active?'running Meta ads':'no Meta ads'}${a.ads.google?', Google Ads too':''}${a.ads.note?' — '+a.ads.note:''}` : null,
+    (a.rivals||[]).length ? `Above them: ${a.rivals.map(r=>`${r.name}${r.reviews?' ('+r.reviews+')':''}`).join(', ')}` : null,
+  ].filter(Boolean);
+  return `<div class="tags">${chips.map(([t,c])=>`<span class="tag ${c}">${esc(t)}</span>`).join('')}</div>
+    ${det.length?`<details class="log"><summary>Audit · ${esc(ago(p.audited_at))}</summary><pre>${esc(det.join('\n'))}</pre></details>`:''}`;
 }
 
 // ---- script panel ----

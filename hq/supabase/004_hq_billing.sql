@@ -281,3 +281,39 @@ grant execute on function public.hq_sub_save(uuid, text, int, int, text, date, t
 grant execute on function public.hq_invoice_build(uuid, date) to authenticated;
 grant execute on function public.hq_invoice_set(uuid, text, text, date, text) to authenticated;
 grant execute on function public.hq_credit_add(uuid, int, text, text) to authenticated;
+
+-- Stripe Checkout. Idempotency lives here: a session id is recorded when the invoice is sent
+-- for payment, and the webhook refuses to pay the same session twice.
+alter table public.hq_invoices add column if not exists stripe_session_id text;
+alter table public.hq_invoices add column if not exists stripe_payment_intent text;
+create unique index if not exists hq_invoices_stripe_session_idx on public.hq_invoices(stripe_session_id)
+  where stripe_session_id is not null;
+
+-- Called by the rx-pay edge function with the service role after Stripe confirms payment.
+-- Writing this as a function rather than a raw update keeps the paid rules in one place.
+create or replace function public.hq_invoice_mark_paid(p_session text, p_intent text default null)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare r public.hq_invoices;
+begin
+  update public.hq_invoices set
+    status  = 'paid',
+    paid_on = coalesce(paid_on, (now() at time zone 'America/New_York')::date),
+    method  = coalesce(method, 'stripe'),
+    stripe_payment_intent = coalesce(p_intent, stripe_payment_intent)
+  where stripe_session_id = p_session and status <> 'paid'
+  returning * into r;
+  -- Already paid, or no such session: say so rather than pretending something happened.
+  if not found then
+    return jsonb_build_object('updated', false,
+      'reason', case when exists (select 1 from public.hq_invoices where stripe_session_id = p_session)
+                     then 'already paid' else 'unknown session' end);
+  end if;
+  return jsonb_build_object('updated', true, 'invoice', to_jsonb(r));
+end $$;
+
+-- The edge function records the Checkout session id before sending the client to Stripe.
+create or replace function public.hq_invoice_set_session(p_invoice uuid, p_session text)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  update public.hq_invoices set stripe_session_id = p_session where id = p_invoice and status = 'sent';
+end $$;
