@@ -3,8 +3,16 @@
 Daily scheduled task (6:50am ET, every morning) that tops up HQ → Call list with scored,
 owner-operated plumbers / HVAC / electricians in the 422 corridor + Chester County.
 
-**~10 a day from 1–2 towns**, not a weekly dump. A morning's worth, so the list stays
-callable instead of piling up faster than the phone can get through it.
+**The call list is capped at 30 uncalled prospects.** Each morning the Prospector tops it
+back up to 30 and stops — it never runs past the cap. Ask the database how many to add:
+
+```sql
+select hq_prospect_slots();   -- 30 minus the rows still sitting at status 'new'
+```
+
+Zero means add nothing today. That is a normal result, not a failure: it means the list is
+full and the bottleneck is the phone, not the prospecting. Pick 1–2 towns and fill only the
+slots you are given.
 
 ## How it scores (0–100, higher = call first)
 Base 20
@@ -46,6 +54,12 @@ Kennett Square, Coatesville, Malvern, Paoli, Limerick, Boyertown, Norristown, Co
 
 Pick the 1–2 towns with the fewest rows each morning. Sixteen towns at ~10/day means a town
 comes back around roughly every two weeks — long enough for new shops to appear.
+
+## Why the cap exists
+
+A list that grows faster than it gets called is the same as no list. Thirty is roughly a
+morning of dialling, so what you see on the Call list is always work you can actually finish.
+Rows leaving `new` — called, booked, retired — free the slots back up automatically.
 
 ## Not detected (yet)
 Google Guaranteed / LSA badge isn't in the Places data. The task also runs a web search per town

@@ -109,3 +109,11 @@ $$;
 
 grant execute on function public.hq_prospect_log(uuid, text, text, timestamptz) to authenticated;
 grant execute on function public.hq_next_business_morning(int) to authenticated;
+
+-- The call list is capped at 30 uncalled prospects. The Prospector asks this how many it
+-- may add, and 0 means add nothing today — the bottleneck is the phone, not the prospecting.
+create or replace function public.hq_prospect_slots(p_cap int default 30)
+returns int language sql stable as $$
+  select greatest(0, p_cap - (select count(*)::int from public.rx_prospects where status = 'new'))
+$$;
+grant execute on function public.hq_prospect_slots(int) to authenticated;

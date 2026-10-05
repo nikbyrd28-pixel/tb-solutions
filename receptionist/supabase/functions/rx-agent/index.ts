@@ -34,6 +34,7 @@ type Business = {
   service_fee_cents: number | null; after_hours_fee_cents: number | null; free_estimates: boolean;
   hours: Record<string, [string, string] | null>; windows: [string, string][]; jobs_per_window: number;
   emergency_policy: string; transfer_number: string | null; knowledge: string | null; active: boolean;
+  record_calls: boolean; recording_notice: string | null;
 };
 type Service = { id: string; name: string; keywords: string[]; urgency: string; fee_cents: number | null; safety_steps: string | null };
 type OnCall = { name: string; phone: string; days: number[]; priority: number };
@@ -171,6 +172,7 @@ HOW YOU TALK
 - Never say: "I understand", "certainly", "absolutely", "I'd be happy to", "great question", "I apologize", "assist", "at this time", "please be advised". Never list options with "first/second/third". Never say "as an AI".
 - LISTEN BEFORE YOU MOVE. Phone audio is rough. If a word doesn't fit the context ("blinking" on a plumbing line, a name when you asked for a town), you misheard: say back the likely word as a quick check ("Leaking, gotcha.") or ask "say that one more time?" Never guess, never answer a question they didn't ask, never jump to the next step until the current one makes sense. If they go quiet mid-sentence, wait; they're thinking, not done.
 - One question at a time, then stop talking. Do not stack a reaction and two questions in one turn.
+- The recording notice is in your opening line. Say it once there and never bring it up again unless they ask, and if they ask, confirm it plainly.
 - Don't over-explain. Don't repeat their name. Don't repeat phone numbers or addresses back more than once, and when you do, do it fast.
 - If asked straight out whether you're a real person: "Ha, I'm the automated line for ${b.name}, but I can book you right now, same as ${ownerFirst} would." Then keep going. Don't volunteer it otherwise.
 
@@ -225,10 +227,19 @@ function tools(b: Business) {
   return t;
 }
 
+// The recording notice, or nothing when the business records without one / does not record.
+function notice(b: Business): string {
+  if (b.record_calls === false) return "";
+  const n = (b.recording_notice || "").trim();
+  return n ? ` ${n}` : "";
+}
+
 function assistantFor(b: Business, svcs: Service[], oc: OnCall[]) {
   return {
     name: `${b.name} — ${b.agent_name}`,
-    firstMessage: `${b.name}, this is ${b.agent_name}. What's going on?`,
+    // PA is an all-party consent state (18 Pa.C.S. ch. 57) — a recorded call needs notice up
+    // front, and carrying on after it is the consent. Short, said once, then straight to work.
+    firstMessage: `${b.name}, this is ${b.agent_name}.${notice(b)} What's going on?`,
     model: { provider: "openai", model: "gpt-4o", temperature: 0.5, maxTokens: 110, messages: [{ role: "system", content: systemPrompt(b, svcs, oc) }], tools: tools(b) },
     // Natural, slightly imperfect delivery. Lower stability = more human variation.
     voice: { provider: "11labs", voiceId: "cgSgspJ2msm6clMCkdW9", model: "eleven_turbo_v2_5", stability: 0.35, similarityBoost: 0.8, style: 0.45, useSpeakerBoost: true, optimizeStreamingLatency: 3 },
@@ -246,6 +257,9 @@ function assistantFor(b: Business, svcs: Service[], oc: OnCall[]) {
     endCallMessage: "Alright, you're all set. Talk soon.",
     endCallPhrases: ["bye now", "talk soon", "take care now"],
     serverMessages: ["tool-calls", "end-of-call-report", "transfer-destination-request", "status-update"],
+    // Record every call, including the ones that hang up in two seconds — those are the
+    // missed-call text-backs. Never record when the business has opted out.
+    artifactPlan: { recordingEnabled: b.record_calls !== false, videoRecordingEnabled: false, transcriptPlan: { enabled: true } },
     analysisPlan: {
       summaryPrompt: "Summarize this call for a busy contractor in 2 sentences: who called, what's wrong, what happened (booked/message/out of area/other), and anything the tech must know.",
       structuredDataSchema: { type: "object", properties: { outcome: { type: "string", enum: ["booked", "message", "transferred", "out_of_area", "info_only", "spam", "abandoned"] }, urgency: { type: "string", enum: ["emergency", "urgent", "standard", "estimate", "none"] } } },
