@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Text message consent — Never Miss a Call | TB Solutions</title>
+<meta name="description" content="How customers of businesses using TB Solutions' Never Miss a Call receptionist opt in to text messages. Texting is optional. Reply STOP to cancel, HELP for help.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=swap" rel="stylesheet">
+<style>
+:root{--yellow:#FFD23F;--ink:#14110F;--paper:#FFF8E1;--copper:#B5542B;--blue:#1B4FD8;--green:#1F9D55;--red:#D7263D}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Bricolage Grotesque",system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:18px;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto;padding:28px 20px 80px}
+nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:40px;font-weight:700}
+nav a{text-decoration:none;color:inherit}
+nav .brand b{background:var(--ink);color:var(--yellow);padding:.1em .45em;border-radius:6px;margin-right:.4em}
+h1{font-size:clamp(36px,7vw,56px);line-height:.95;letter-spacing:-.02em;font-weight:800;margin-bottom:.4em}
+h2{font-size:26px;font-weight:800;letter-spacing:-.01em;margin:44px 0 10px}
+p,li{max-width:36em}
+p{margin-bottom:.9em}
+ul{padding-left:1.2em;margin-bottom:.9em}
+.short{background:var(--yellow);border:3px solid var(--ink);border-radius:18px;padding:18px 20px;font-weight:600;margin:0 0 28px}
+.card{background:#fff;border:3px solid var(--ink);border-radius:20px;padding:22px;box-shadow:8px 8px 0 var(--ink);margin:14px 0 24px}
+.card label.field{display:block;font-weight:700;margin-bottom:14px}
+.card input[type=text],.card input[type=tel]{display:block;width:100%;font:inherit;font-size:1.05em;padding:.55em .7em;border:3px solid var(--ink);border-radius:12px;margin-top:6px}
+.opt{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start;padding:14px;border:3px solid #ECEAE4;border-radius:14px;margin:10px 0;cursor:pointer}
+.opt input{width:24px;height:24px;margin-top:3px;accent-color:var(--blue)}
+.opt b{display:block}
+.opt small{display:block;font-size:.85em;opacity:.8;margin-top:2px}
+.optional{display:inline-block;background:#ECEAE4;border-radius:6px;padding:.05em .5em;font-size:.75em;font-weight:700;vertical-align:middle}
+button{font:inherit;font-weight:700;background:var(--ink);color:var(--yellow);border:3px solid var(--ink);border-radius:999px;padding:.8em 1.4em;cursor:pointer;margin-top:10px}
+button:focus-visible,input:focus-visible{outline:4px solid var(--blue);outline-offset:3px}
+.fine{font-size:.85em;opacity:.85;margin-top:14px}
+.msg{font-weight:700;margin-top:12px;min-height:1.4em}
+.msg.ok{color:var(--green)}.msg.err{color:var(--red)}
+blockquote{border-left:5px solid var(--copper);padding:.4em 0 .4em 1em;margin:.6em 0 1em;font-style:italic;max-width:34em}
+code{background:#fff;border:2px solid #ECEAE4;border-radius:6px;padding:.05em .4em;font-family:ui-monospace,monospace;font-size:.9em}
+table{border-collapse:collapse;width:100%;max-width:640px;margin:8px 0 20px;font-size:.95em}
+td,th{text-align:left;padding:8px 10px;border-bottom:2px solid #ECEAE4;vertical-align:top}
+th{font-weight:800}
+footer{margin-top:60px;padding-top:18px;border-top:3px solid var(--ink);font-size:.85em;display:flex;flex-wrap:wrap;gap:1em 2em;justify-content:space-between}
+footer a{color:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav><a class="brand" href="/receptionist/"><b>TB</b>Never Miss a Call</a><a href="/receptionist/">Back</a></nav>
+
+<h1>Text message consent</h1>
+<div class="short">Short version: texting is optional. Choose which texts you want, one at a time. Reply STOP to any message to cancel, HELP for help. We never sell or share your number for marketing.</div>
+
+<p>Never Miss a Call is a phone receptionist service from TB Solutions used by local plumbing, HVAC and electrical companies. When you call a participating business, the receptionist can book your service call. Separately, and only if you choose to, it can text you about that service call, and the business can text you occasional offers.</p>
+<p>You can book a service call, get a quote, or do anything else with the business without agreeing to any text messages.</p>
+
+<h2>Choose your texts</h2>
+<p>Each box below is a separate choice. Check none, one, or both.</p>
+<form class="card" id="f" novalidate>
+  <label class="field">Your name (optional)<input type="text" name="name" autocomplete="name"></label>
+  <label class="field">Mobile number<input type="tel" name="phone" autocomplete="tel" inputmode="tel" placeholder="(610) 555-0123" required></label>
+
+  <label class="opt"><input type="checkbox" name="service_texts">
+    <span><b>Service call texts <span class="optional">optional</span></b>
+    <small>Booking confirmation, arrival window, "tech is on the way", and a follow-up after the job. About 2–4 texts per service call. Sent by the business you called, in its name.</small></span></label>
+
+  <label class="opt"><input type="checkbox" name="promo_texts">
+    <span><b>Offers and reminders <span class="optional">optional</span></b>
+    <small>Seasonal maintenance reminders and occasional promotions from that business. No more than 2 per month. Completely separate from service call texts.</small></span></label>
+
+  <button type="submit">Save my choices</button>
+  <div class="msg" id="msg" aria-live="polite"></div>
+  <p class="fine">By checking a box and saving, you agree to receive that type of automated text message from the business you called, sent through TB Solutions, at the number you entered. Consent is not a condition of purchase. Message frequency varies as described above. Message and data rates may apply. Reply STOP to cancel, HELP for help. <a href="/sms-terms/">SMS terms</a> · <a href="/privacy/">Privacy policy</a>.</p>
+</form>
+
+<h2>Consent given on the phone</h2>
+<p>Most people never see this page; they're on the phone with the receptionist. Consent for service call texts is asked for out loud, one question, and recorded in the call log:</p>
+<blockquote>"Want me to text you the confirmation and a heads-up when the tech is on the way? It's optional — I can just read it to you instead."</blockquote>
+<p>Only a clear yes turns on service call texts. The receptionist never asks about offers or reminders on the phone; those require this page. Every call is recorded and the yes/no is stored with the booking.</p>
+
+<h2>What you'll get</h2>
+<table>
+<tr><th>Type</th><th>Example</th><th>How often</th></tr>
+<tr><td>Service call</td><td>"Keystone Plumbing: you're booked for Monday, Oct 6, 7–9 AM. Issue: water heater leak. Dispatch fee $89. The tech will text when he's on the way. Reply STOP to opt out."</td><td>2–4 per service call</td></tr>
+<tr><td>Offers and reminders</td><td>"Keystone Plumbing: it's been a year since your water heater service — $20 off a flush this month. Reply STOP to opt out."</td><td>Up to 2 per month</td></tr>
+</table>
+
+<h2>Stopping, help, and your data</h2>
+<ul>
+<li>Reply <code>STOP</code> to any message to cancel that business's texts. You get one confirmation text and nothing more.</li>
+<li>Reply <code>HELP</code> for help, or email <a href="mailto:nikbyrd28@gmail.com">nikbyrd28@gmail.com</a>.</li>
+<li>Message and data rates may apply. Carriers aren't liable for delayed or undelivered messages.</li>
+<li>Your number is used only to send the texts you chose. It is never sold or shared with third parties for their marketing. It is shared only with our messaging carrier (Twilio) to deliver messages. See the <a href="/privacy/">privacy policy</a>.</li>
+</ul>
+
+<footer><span>TB Solutions · Chester County, PA</span><span><a href="/sms-terms/">SMS terms</a> &nbsp; <a href="/privacy/">Privacy</a> &nbsp; <a href="/terms/">Terms</a></span></footer>
+</div>
+<script>
+const f = document.getElementById("f"), m = document.getElementById("msg");
+f.addEventListener("submit", async e => {
+  e.preventDefault(); m.className = "msg"; m.textContent = "Saving…";
+  const d = Object.fromEntries(new FormData(f).entries());
+  const body = { name: d.name, phone: d.phone, service_texts: !!d.service_texts, promo_texts: !!d.promo_texts, business_slug: new URLSearchParams(location.search).get("b") || "demo" };
+  try {
+    const r = await fetch("https://qgbjiqdwzgkjkmqyjsmc.supabase.co/functions/v1/rx-optin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const j = await r.json();
+    if (j.ok) { m.className = "msg ok"; m.textContent = "Saved. You'll only get the texts you checked. Reply STOP any time."; f.querySelector("button").disabled = true; }
+    else { m.className = "msg err"; m.textContent = j.error || "Something went wrong."; }
+  } catch { m.className = "msg err"; m.textContent = "Couldn't reach the server. Try again in a minute."; }
+});
+</script>
+</body>
+</html>

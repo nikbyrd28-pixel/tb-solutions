@@ -68,6 +68,7 @@ create table if not exists public.rx_calls (
   recording_url   text,
   ended_reason    text,
   owner_notified  boolean not null default false,
+  caller_texted   boolean not null default false,       -- missed-call text-back sent
   raw             jsonb,
   created_at      timestamptz not null default now()
 );
@@ -148,3 +149,17 @@ create policy rx_messages_owner_rw on public.rx_messages for all to authenticate
   with check (business_id in (select business_id from public.rx_business_users where user_id = auth.uid()));
 create policy rx_services_owner_read on public.rx_services for select to authenticated
   using (business_id in (select business_id from public.rx_business_users where user_id = auth.uid()));
+
+-- SMS consent records (web form at /receptionist/sms-consent/ or verbal on the call). Service role only.
+create table if not exists public.rx_sms_optins (
+  id uuid primary key default gen_random_uuid(),
+  phone text not null, name text, business_slug text,
+  service_texts boolean not null default false, promo_texts boolean not null default false,
+  source text not null default 'web', ip text, user_agent text,
+  created_at timestamptz not null default now()
+);
+alter table public.rx_sms_optins enable row level security;
+
+-- Runtime config read by rx-agent when env vars are not set (Twilio creds, webhook secret). Service role only.
+create table if not exists public.rx_config (key text primary key, value text not null, updated_at timestamptz not null default now());
+alter table public.rx_config enable row level security;

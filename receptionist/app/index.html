@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Never Miss a Call — your line</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#14110F">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23FFD23F'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial Black,Arial' font-weight='900' font-size='34' fill='%2314110F'%3E%E2%98%8E%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--yellow:#FFD23F;--ink:#14110F;--paper:#FFF8E1;--copper:#B5542B;--blue:#1B4FD8;--green:#1F9D55;--red:#D7263D;--card:#fff;--line:#e6dfc8;--muted:#6b645a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Bricolage Grotesque",system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:16px;line-height:1.4;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit}
+a{color:inherit}
+header{position:sticky;top:0;z-index:5;background:var(--ink);color:var(--yellow);padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));display:flex;align-items:center;gap:12px}
+header b{background:var(--yellow);color:var(--ink);padding:2px 8px;border-radius:6px;font-weight:800}
+header .sp{flex:1}
+header button{background:transparent;border:2px solid var(--yellow);color:var(--yellow);border-radius:999px;padding:4px 12px;font-weight:700;cursor:pointer}
+.tabs{display:flex;gap:6px;padding:10px 16px;overflow-x:auto;background:var(--ink)}
+.tabs button{flex:0 0 auto;background:transparent;color:var(--paper);border:2px solid #3a342c;border-radius:999px;padding:6px 14px;font-weight:700;cursor:pointer;white-space:nowrap}
+.tabs button.on{background:var(--yellow);color:var(--ink);border-color:var(--yellow)}
+.tabs button i{font-style:normal;background:var(--red);color:#fff;border-radius:999px;padding:0 6px;font-size:12px;margin-left:6px}
+main{padding:14px 16px 90px;max-width:900px;margin:0 auto}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.stats div{background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:10px;text-align:center}
+.stats .n{font-size:26px;font-weight:800;line-height:1;letter-spacing:-.02em}
+.stats .l{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:4px}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.filters button{background:var(--card);border:2px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:13px;cursor:pointer;color:var(--muted)}
+.filters button.on{border-color:var(--ink);color:var(--ink)}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:14px;margin-bottom:10px;box-shadow:4px 4px 0 var(--ink)}
+.card.won{box-shadow:4px 4px 0 var(--green)}
+.card.lost{opacity:.55;box-shadow:none}
+.card .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.card h3{font-size:18px;line-height:1.1;font-weight:800}
+.card .biz{font-weight:600;color:var(--muted);font-size:14px}
+.src{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:3px 8px;border-radius:6px;background:var(--yellow);white-space:nowrap}
+.src.lsa{background:var(--red);color:#fff}.src.rx-msg{background:var(--blue);color:#fff}.src.dne{background:var(--copper);color:#fff}.src.intake{background:var(--ink);color:var(--yellow)}
+.sum{font-size:14px;margin:8px 0 4px;color:#3a342c}
+.val{font-weight:800;color:var(--copper);font-size:14px}
+.when{font-size:12px;color:var(--muted);font-weight:600}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.acts a,.acts button{border:2px solid var(--ink);border-radius:999px;padding:6px 12px;font-weight:700;font-size:14px;text-decoration:none;background:var(--card);cursor:pointer}
+.acts a.call{background:var(--ink);color:var(--yellow)}
+.acts select{border:2px solid var(--ink);border-radius:10px;padding:6px 8px;font-weight:700;background:#fff}
+.acts select.new{background:var(--yellow)}.acts select.won{background:var(--green);color:#fff}.acts select.lost{background:#ddd}
+.note{width:100%;margin-top:8px;border:2px solid var(--line);border-radius:10px;padding:8px;font-size:14px;min-height:40px;resize:vertical;display:none}
+.note.show{display:block}
+.empty{text-align:center;color:var(--muted);padding:40px 10px;font-weight:600}
+.login{max-width:360px;margin:60px auto;padding:0 16px}
+.login h1{font-size:34px;font-weight:800;margin-bottom:12px;letter-spacing:-.02em}
+.login input{width:100%;border:2px solid var(--ink);border-radius:12px;padding:12px;margin-bottom:10px}
+.login button{width:100%;background:var(--ink);color:var(--yellow);border:0;border-radius:999px;padding:12px;font-weight:800;cursor:pointer}
+.msg{margin-top:10px;font-weight:700;color:var(--red)}
+.hidden{display:none}
+h2{font-size:20px;font-weight:800;margin:18px 0 8px}
+.call .tr{font-size:13px;color:var(--muted);margin-top:4px}
+.pill{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px;background:#eee;margin-right:4px;text-transform:uppercase}
+.pill.emergency,.pill.urgent{background:var(--red);color:#fff}.pill.booked{background:var(--green);color:#fff}
+.ed{background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:4px 4px 0 var(--ink)}
+.ed h3{font-size:16px;font-weight:800;margin:14px 0 6px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.ed h3:first-child{margin-top:0}
+.f{display:grid;gap:4px;margin-bottom:10px;font-size:13px;font-weight:700;color:var(--muted)}
+.f input,.f select,.f textarea{border:2px solid var(--line);border-radius:10px;padding:8px 10px;font-size:15px;font-weight:600;color:var(--ink);background:#fff;width:100%}
+.f textarea{min-height:120px;resize:vertical;font-weight:500;line-height:1.4}
+.f.big textarea{min-height:220px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media (max-width:480px){.g3{grid-template-columns:1fr 1fr}}
+.hrs{display:grid;gap:6px}
+.hrs div{display:grid;grid-template-columns:3.2em 1fr 1fr 3em;gap:6px;align-items:center;font-weight:700;font-size:13px}
+.hrs input[type=time]{border:2px solid var(--line);border-radius:8px;padding:5px;font-weight:600}
+.svc{border:2px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px}
+.svc.off{opacity:.5}
+.svc .h{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:800;cursor:pointer}
+.svc .body{display:none;margin-top:8px}
+.svc.open .body{display:block}
+.bar{position:sticky;bottom:0;background:var(--paper);padding:10px 0 max(10px,env(safe-area-inset-bottom));display:flex;gap:8px;align-items:center;border-top:2px solid var(--line);margin-top:10px}
+.bar button{border:2px solid var(--ink);border-radius:999px;padding:10px 18px;font-weight:800;cursor:pointer;background:var(--card)}
+.bar button.save{background:var(--ink);color:var(--yellow)}
+.bar .st{font-size:13px;font-weight:700;color:var(--green)}
+.tog{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px}
+.ed.edit{padding:14px 12px}
+details.sec{border:2px solid var(--line);border-radius:14px;margin-bottom:10px;background:#fff}
+details.sec summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+details.sec summary::-webkit-details-marker{display:none}
+details.sec summary b{display:block;font-size:16px}
+details.sec summary small{display:block;font-size:13px;color:var(--muted);font-weight:600;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70vw}
+details.sec summary i{font-style:normal;font-size:22px;font-weight:800;transition:transform .2s;color:var(--muted)}
+details.sec[open] summary i{transform:rotate(90deg)}
+details.sec[open]{border-color:var(--ink)}
+.secb{padding:4px 14px 14px;border-top:2px solid var(--line)}
+.hint{font-size:13px;color:var(--muted);font-weight:600;margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chips button{font:inherit;font-size:12px;font-weight:700;border:2px solid var(--line);border-radius:999px;padding:4px 10px;background:#fff;cursor:pointer;color:var(--ink)}
+.chips button:hover{border-color:var(--ink)}
+.pv{background:var(--ink);color:var(--paper);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.pvh{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--yellow);margin-bottom:6px}
+.pv p{font-size:15px;line-height:1.35;margin-top:6px;opacity:.95}
+.pv .miss{color:var(--yellow);font-weight:700}
+.bar button.save.dirty{background:var(--copper);border-color:var(--copper);color:#fff}
+.tog input{width:auto}
+@media (max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+.hero{background:var(--ink);color:var(--paper);padding:14px 16px 18px}
+.hero h1{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1}
+.hero .line{color:var(--yellow);font-weight:700;margin-top:4px;font-size:14px}
+.login p{color:var(--muted);font-weight:600;margin-bottom:14px}
+.login .swap{display:block;text-align:center;margin-top:12px;font-weight:700;font-size:14px}
+.nolink{max-width:420px;margin:50px auto;padding:0 16px;text-align:center;font-weight:600}
+.today .n{font-size:30px}
+.sticker{background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px}
+</style>
+</head>
+<body>
+<header><b>☎</b> <span id="bizName">Never Miss a Call</span><span class="sp"></span><button id="out" class="hidden">Log out</button></header>
+
+<div class="login" id="login">
+  <h1>Your line.</h1>
+  <p>Jobs it booked, calls it took, and the knobs to change what it says. Use the email Nick set you up with.</p>
+  <input id="em" type="email" placeholder="Email" autocomplete="username">
+  <input id="pw" type="password" placeholder="Password" autocomplete="current-password">
+  <button id="go">Log in</button>
+  <a href="#" class="swap" id="swap">First time? Create your account</a>
+  <div class="msg" id="lmsg"></div>
+</div>
+<div class="nolink hidden" id="nolink">This email isn't linked to a line yet. Text Nick at <a href="sms:+14848418501">(484) 841-8501</a> with the email you just used and he'll connect it.</div>
+
+<div id="app" class="hidden">
+  <div class="hero"><h1 id="h1">—</h1><div class="line" id="h1line"></div></div>
+  <div class="tabs">
+    <button data-tab="today" class="on">Today<i id="nMsgs"></i></button>
+    <button data-tab="calls">Calls</button>
+    <button data-tab="settings">What it says</button>
+  </div>
+  <main>
+    <section id="t-today">
+      <div class="stats today" id="stats"></div>
+      <h2>Messages for you</h2><div id="msgs"></div>
+      <h2>Jobs it booked</h2><div id="jobs"></div>
+    </section>
+    <section id="t-calls" class="hidden"><div id="calls"></div></section>
+    <section id="t-settings" class="hidden"><div id="bizEdit"></div></section>
+  </main>
+</div>
+
+<script>
+const SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+const supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+const $=id=>document.getElementById(id), esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const STATUSES=['new','contacted','audit_sent','quoted','won','lost'];
+let leads=[], rx=null, filter='open';
+
+function ago(ts){ if(!ts) return ''; const d=(Date.now()-new Date(ts))/6e4; if(d<60) return Math.round(d)+'m ago'; if(d<1440) return Math.round(d/60)+'h ago'; if(d<10080) return Math.round(d/1440)+'d ago'; return new Date(ts).toLocaleDateString(); }
+function tel(p){ return (p||'').replace(/[^\d+]/g,''); }
+function fmtPhone(p){ const d=(p||'').replace(/\D/g,'').replace(/^1/,''); return d.length===10?`(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`:p||''; }
+
+
+const DAYS=['mon','tue','wed','thu','fri','sat','sun'], URG=['emergency','urgent','standard','estimate'];
+let me=null, mode='in';
+
+// ---- auth ----
+supa.auth.getSession().then(r=>{ if(r.data.session) enter(); });
+$('go').onclick=login; $('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') login(); });
+$('swap').onclick=e=>{ e.preventDefault(); mode=mode==='in'?'up':'in'; $('go').textContent=mode==='up'?'Create account':'Log in'; $('swap').textContent=mode==='up'?'Have an account? Log in':'First time? Create your account'; };
+async function login(){
+  const email=$('em').value.trim(), password=$('pw').value;
+  const r= mode==='up'? await supa.auth.signUp({email,password}) : await supa.auth.signInWithPassword({email,password});
+  if(r.error){ $('lmsg').textContent=r.error.message; return; }
+  if(mode==='up'&&!r.data.session){ $('lmsg').style.color='var(--green)'; $('lmsg').textContent='Check your email to confirm, then log in.'; return; }
+  enter();
+}
+$('out').onclick=async()=>{ await supa.auth.signOut(); location.reload(); };
+async function enter(){
+  const {data,error}=await supa.rpc('rx_owner_me',{p_days:30});
+  $('login').classList.add('hidden'); $('out').classList.remove('hidden');
+  if(error||!data){ $('nolink').classList.remove('hidden'); return; }
+  me=data; $('app').classList.remove('hidden'); render();
+}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  ['today','calls','settings'].forEach(t=>$('t-'+t).classList.toggle('hidden',t!==b.dataset.tab));
+  if(b.dataset.tab==='settings'&&!$('bizEdit').innerHTML) openEditor();
+});
+
+function render(){
+  const b=me.business, s=me.stats;
+  $('bizName').textContent=b.name; $('h1').textContent=b.name;
+  $('h1line').textContent=(b.agent_name||'Your receptionist')+' is '+(b.active?'answering on '+(fmtPhone(b.agent_number)||'your line'):'not live yet — Nick is finishing setup');
+  $('nMsgs').textContent=s.unhandled_msgs||''; $('nMsgs').style.display=s.unhandled_msgs?'':'none';
+  $('stats').innerHTML=[[s.calls,'Calls answered'],[s.jobs,'Jobs booked'],['$'+Math.round(s.booked_value).toLocaleString(),'Dispatch fees booked'],[s.after_hours_jobs,'Booked after hours']].map(([n,l])=>`<div><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+  $('msgs').innerHTML=me.messages.length?me.messages.map(m=>`<div class="card ${m.handled?'lost':''}">
+      <div class="top"><div><h3>${esc(m.caller_name||fmtPhone(m.caller_phone)||'Caller')}</h3><div class="biz">${ago(m.created_at)}${m.callback_pref?' · wants callback '+esc(m.callback_pref):''}</div></div></div>
+      <div class="sum">${esc(m.body||'')}</div>
+      <div class="acts">${m.caller_phone?`<a class="call" href="tel:${tel(m.caller_phone)}">Call back</a><a href="sms:${tel(m.caller_phone)}">Text</a>`:''}<button data-msg="${m.id}" data-h="${!m.handled}">${m.handled?'Mark open':'Done'}</button></div>
+    </div>`).join(''):'<div class="empty">No messages. Everything got booked or handled.</div>';
+  $('msgs').querySelectorAll('button[data-msg]').forEach(x=>x.onclick=async()=>{ await supa.rpc('rx_owner_message_handled',{p_id:x.dataset.msg,p_handled:x.dataset.h==='true'}); reload(); });
+  $('jobs').innerHTML=me.jobs.length?me.jobs.map(j=>`<div class="card">
+      <div class="top"><div><h3>${esc(j.customer_name||'(no name)')}</h3><div class="biz">${esc(j.address||'')}${j.zip?' '+esc(j.zip):''}</div></div><span class="pill ${esc(j.status)}">${esc(j.status)}</span></div>
+      <div class="sum">${j.urgency&&j.urgency!=='standard'?`<span class="pill ${esc(j.urgency)}">${esc(j.urgency)}</span> `:''}${esc(j.issue||'')}</div>
+      <div class="when">${j.window_start?new Date(j.window_start).toLocaleString([],{weekday:'short',month:'short',day:'numeric',hour:'numeric'})+'–'+new Date(j.window_end).toLocaleTimeString([],{hour:'numeric'}):''}${j.quoted_fee_cents?' · $'+(j.quoted_fee_cents/100)+' dispatch':''}${j.external_ref?' · in Housecall Pro':''}</div>
+      <div class="acts">${j.customer_phone?`<a class="call" href="tel:${tel(j.customer_phone)}">Call</a><a href="sms:${tel(j.customer_phone)}">Text</a>`:''}${j.address?`<a href="https://maps.google.com/?q=${encodeURIComponent(j.address+' '+(j.zip||''))}" target="_blank">Map</a>`:''}
+        <select data-job="${j.id}">${['scheduled','confirmed','en_route','completed','cancelled','no_show'].map(x=>`<option ${x===j.status?'selected':''}>${x.replace('_',' ')}</option>`).join('')}</select></div>
+    </div>`).join(''):'<div class="empty">Nothing booked yet in the last 30 days.</div>';
+  $('jobs').querySelectorAll('select').forEach(sel=>sel.onchange=async()=>{ const {error}=await supa.rpc('rx_owner_job_status',{p_id:sel.dataset.job,p_status:sel.value.replace(' ','_')}); if(error) alert(error.message); });
+  $('calls').innerHTML=me.calls.length?me.calls.map(c=>`<div class="card call">
+      <div class="top"><div><h3>${esc(fmtPhone(c.caller_phone)||'unknown')}</h3><div class="biz">${ago(c.started_at)}${c.duration_s?' · '+Math.round(c.duration_s/60*10)/10+' min':''}</div></div>
+        <span>${c.urgency&&c.urgency!=='standard'?`<span class="pill ${esc(c.urgency)}">${esc(c.urgency)}</span>`:''}<span class="pill">${esc(c.outcome||'?')}</span></span></div>
+      <div class="sum">${esc(c.summary||'')}</div>
+      <div class="tr">${c.recording_url?`<a href="${esc(c.recording_url)}" target="_blank">Listen</a> · `:''}${c.caller_phone?`<a href="tel:${tel(c.caller_phone)}">Call back</a>`:''}</div>
+    </div>`).join(''):'<div class="empty">No calls yet. Forward your line and give it a ring.</div>';
+}
+async function reload(){ const {data}=await supa.rpc('rx_owner_me',{p_days:30}); if(data){ me=data; render(); } }
+
+// ---- settings (what it says) ----
+function e164(v){ const d=String(v||'').replace(/\D/g,''); return d.length===10?'+1'+d:d.length===11&&d[0]==='1'?'+'+d:(v||'').trim()?v:''; }
+function renderPreview(){
+  const root=$('bizEdit'); if(!root||!$('preview')) return; const g=k=>{const el=root.querySelector(`[data-k=${k}]`);return el?el.value:''};
+  const fee=g('service_fee_cents'), ah=g('after_hours_fee_cents'), area=g('service_area_note'), name=g('name')||'your company', agent=g('agent_name')||'the receptionist';
+  const lines=[`<b>${esc(name)}, this is ${esc(agent)}.</b> What's going on?`,
+    fee?`The dispatch fee is $${esc(fee)}${ah?`, or $${esc(ah)} after hours`:''}. The tech gives you the exact number before he touches anything.`:`<span class="miss">Set a dispatch fee so it knows what to say about money.</span>`,
+    area?`We cover ${esc(area)}.`:`<span class="miss">Add the service area in plain words.</span>`,
+    `I've got ${(g('windows')||'').split('\n').filter(Boolean).slice(0,2).map(w=>w.replace(/^0/,'').replace('-',' to ').replace(/:00/g,'')).join(' or ')||'two windows'} tomorrow. Which one?`];
+  $('preview').innerHTML=`<div class="pv"><div class="pvh">What callers hear</div>${lines.map(l=>`<p>“${l}”</p>`).join('')}</div>`;
+}
+
+function svcRow(s,open){
+  return `<div class="svc ${s.active?'':'off'} ${open?'open':''}" data-id="${s.id||''}">
+    <div class="h"><span>${esc(s.name||'New service')} <span class="pill ${esc(s.urgency)}">${esc(s.urgency)}</span></span><span>${s.fee_cents!=null?'$'+(s.fee_cents/100):''} ▾</span></div>
+    <div class="body">
+      <div class="g2"><label class="f">Name<input data-s="name" value="${esc(s.name||'')}" placeholder="Water heater leak"></label>
+        <label class="f">Urgency<select data-s="urgency">${URG.map(u=>`<option ${u===s.urgency?'selected':''}>${u}</option>`).join('')}</select></label></div>
+      <label class="f">Words callers use (comma separated)<input data-s="keywords" value="${esc((s.keywords||[]).join(', '))}" placeholder="water heater, no hot water, tank leaking"></label>
+      <div class="g2"><label class="f">Fee override $ (blank = business fee)<input data-s="fee_cents" type="number" value="${s.fee_cents!=null?s.fee_cents/100:''}"></label>
+        <label class="f">Bookable?<select data-s="active"><option value="true" ${s.active?'selected':''}>Yes</option><option value="false" ${!s.active?'selected':''}>Off</option></select></label></div>
+      <label class="f">Safety steps it tells the caller first<textarea data-s="safety_steps" style="min-height:70px">${esc(s.safety_steps||'')}</textarea></label>
+      <div class="acts"><button class="saveSvc">Save service</button><span class="st"></span></div>
+    </div></div>`;
+}
+
+function openEditor(){
+  const b=me.business, h=b.hours||{};
+  const inp=(k,label,type='text',extra='')=>`<label class="f">${label}<input data-k="${k}" type="${type}" value="${esc(b[k]??'')}" ${extra}></label>`;
+  const money=c=>c!=null?'$'+(c/100):'—';
+  const openDays=DAYS.filter(d=>h[d]); const hrsSum=openDays.length?`${openDays[0]}–${openDays[openDays.length-1]} ${h[openDays[0]][0].replace(/^0/,'')}–${h[openDays[0]][1].replace(/^0/,'')}`:'closed';
+  const sec=(id,title,summary,body,open)=>`<details class="sec" ${open?'open':''}><summary><span><b>${title}</b><small>${summary}</small></span><i>›</i></summary><div class="secb">${body}</div></details>`;
+  $('bizEdit').innerHTML=`<div class="ed edit">
+    <div class="sticker">Change anything here and it's live on the very next call. No waiting on anyone.</div>
+    <div class="preview" id="preview"></div>
+    ${sec('biz','You',`${esc(b.owner_name||'')} · ${esc(fmtPhone(b.owner_phone))}`,`
+      <div class="g2">${inp('owner_name','Your name')}<label class="f">Your cell · every job gets texted here<input data-k="owner_phone" type="tel" class="ph" value="${esc(fmtPhone(b.owner_phone))}"></label></div>
+      <label class="f">What the receptionist calls itself<input data-k="agent_name" value="${esc(b.agent_name||'')}" placeholder="Dana"></label>`,true)}
+    ${sec('money','Money',`${money(b.service_fee_cents)} dispatch · ${money(b.after_hours_fee_cents)} after hours · ${b.free_estimates?'free':'paid'} estimates`,`
+      <div class="g3"><label class="f">Dispatch fee $<input data-k="service_fee_cents" type="number" inputmode="decimal" value="${b.service_fee_cents!=null?b.service_fee_cents/100:''}"></label>
+        <label class="f">After-hours fee $<input data-k="after_hours_fee_cents" type="number" inputmode="decimal" value="${b.after_hours_fee_cents!=null?b.after_hours_fee_cents/100:''}"></label>
+        <label class="f">Estimates<select data-k="free_estimates"><option value="true" ${b.free_estimates?'selected':''}>Free</option><option value="false" ${!b.free_estimates?'selected':''}>Tech quotes</option></select></label></div>
+      <div class="hint">It says the dispatch fee once, right before booking. It never quotes a repair price.</div>`)}
+    ${sec('area','Service area',(b.service_zips||[]).length?`${b.service_zips.length} zips`:(b.service_area_note?esc(b.service_area_note):'books anyone'),`
+      <label class="f">Zip codes you take jobs in<input data-k="service_zips" value="${esc((b.service_zips||[]).join(', '))}" placeholder="19460, 19464 — blank takes anyone"></label>
+      <label class="f">How it describes your area<input data-k="service_area_note" value="${esc(b.service_area_note||'')}" placeholder="Chester and Montgomery counties"></label>`)}
+    ${sec('hours','Hours &amp; scheduling',`${hrsSum} · ${(b.windows||[]).length} windows · ${b.jobs_per_window||2} jobs each`,`
+      <div class="hrs">${DAYS.map(d=>`<div><span>${d}</span><input type="time" data-d="${d}" data-i="0" value="${h[d]?h[d][0]:''}" ${h[d]?'':'disabled'}><input type="time" data-d="${d}" data-i="1" value="${h[d]?h[d][1]:''}" ${h[d]?'':'disabled'}><label class="tog"><input type="checkbox" data-open="${d}" ${h[d]?'checked':''}>open</label></div>`).join('')}</div>
+      <div class="g2" style="margin-top:12px"><label class="f">Arrival windows it offers (one per line)<textarea data-k="windows" style="min-height:96px">${esc((b.windows||[]).map(w=>w[0]+'-'+w[1]).join('\n'))}</textarea></label>
+        <div><label class="f">Jobs per window<input data-k="jobs_per_window" type="number" min="1" inputmode="numeric" value="${b.jobs_per_window||2}"></label>
+        <label class="f">After-hours emergency<select data-k="emergency_policy">${[['after_hours_dispatch','Offer same-night dispatch'],['message_only','Take message, I call back'],['transfer','Transfer live to me']].map(([v,l])=>`<option value="${v}" ${v===b.emergency_policy?'selected':''}>${l}</option>`).join('')}</select></label>
+        <label class="f">Transfer to<input data-k="transfer_number" type="tel" class="ph" value="${esc(fmtPhone(b.transfer_number))}" placeholder="on-call cell"></label></div></div>`)}
+    ${sec('know','Things it should know',(b.knowledge||'').trim()?esc(b.knowledge.trim().split(/[.\n]/)[0]).slice(0,60)+'…':'nothing extra yet',`
+      <label class="f big"><span>Plain English. Brands you service, what you don't do, promos, how to say your name. It reads this before every call.</span><textarea data-k="knowledge">${esc(b.knowledge||'')}</textarea></label>`)}
+    ${sec('svc','Jobs it can book',`${me.services.filter(x=>x.active).length} on`,`
+      <div class="acts" style="margin:0 0 10px"><button id="addSvc" style="background:var(--yellow)">+ Add a job type</button></div>
+      <div id="svcs">${me.services.map(svcRow).join('')}</div>`)}
+    <div class="bar"><button class="save" id="saveBiz">Save</button><span class="st" id="saveSt"></span>${b.agent_number?`<a href="tel:${tel(b.agent_number)}" style="margin-left:auto;font-weight:800;text-decoration:none;border:2px solid var(--ink);border-radius:999px;padding:10px 18px">Call my line</a>`:''}</div>
+  </div>`;
+  renderPreview(); $('bizEdit').querySelectorAll('input,select,textarea').forEach(el=>el.addEventListener('input',()=>{ renderPreview(); $('saveBiz').textContent='Save changes'; $('saveBiz').classList.add('dirty'); }));
+  $('bizEdit').querySelectorAll('[data-open]').forEach(c=>c.onchange=()=>$('bizEdit').querySelectorAll(`[data-d=${c.dataset.open}]`).forEach(i=>{ i.disabled=!c.checked; if(c.checked&&!i.value) i.value=i.dataset.i==='0'?'07:00':'17:00'; }));
+  $('bizEdit').querySelectorAll('input.ph').forEach(i=>i.addEventListener('blur',()=>{ i.value=fmtPhone(i.value)||i.value; }));
+  $('saveBiz').onclick=saveBiz;
+  $('addSvc').onclick=()=>{ $('svcs').insertAdjacentHTML('afterbegin',svcRow({id:'',name:'',keywords:[],urgency:'standard',fee_cents:null,safety_steps:'',active:true},true)); wireSvcs(); };
+  wireSvcs();
+}
+function renderPreview(){
+  const root=$('bizEdit'); const g=k=>{const el=root.querySelector(`[data-k=${k}]`);return el?el.value:''};
+  const fee=g('service_fee_cents'), ah=g('after_hours_fee_cents'), area=g('service_area_note'), name=me.business.name, agent=g('agent_name')||'the receptionist';
+  const lines=[`<b>${esc(name)}, this is ${esc(agent)}.</b> What's going on?`,
+    fee?`The dispatch fee is $${esc(fee)}${ah?`, or $${esc(ah)} after hours`:''}. The tech gives you the exact number before he touches anything.`:`<span class="miss">Set a dispatch fee so it knows what to say about money.</span>`,
+    area?`We cover ${esc(area)}.`:`<span class="miss">Add your service area in plain words.</span>`,
+    `I've got ${(g('windows')||'').split('\n').filter(Boolean).slice(0,2).map(w=>w.replace(/^0/,'').replace('-',' to ').replace(/:00/g,'')).join(' or ')||'two windows'} tomorrow. Which one?`];
+  $('preview').innerHTML=`<div class="pv"><div class="pvh">What callers hear</div>${lines.map(l=>`<p>“${l}”</p>`).join('')}</div>`;
+}
+function wireSvcs(){
+  $('svcs').querySelectorAll('.svc').forEach(el=>{
+    el.querySelector('.h').onclick=()=>el.classList.toggle('open');
+    el.querySelector('.saveSvc').onclick=async()=>{
+      const g=k=>el.querySelector(`[data-s=${k}]`).value;
+      const p={id:el.dataset.id||null,name:g('name'),urgency:g('urgency'),keywords:g('keywords').split(',').map(x=>x.trim()).filter(Boolean),fee_cents:g('fee_cents')===''?null:Math.round(+g('fee_cents')*100),safety_steps:g('safety_steps'),active:g('active')==='true'};
+      if(!p.name){ alert('Name it first.'); return; }
+      const {data,error}=await supa.rpc('rx_owner_service_save',{p});
+      if(error){ alert(error.message); return; }
+      el.dataset.id=data; el.classList.toggle('off',!p.active); el.querySelector('.h span').innerHTML=esc(p.name)+' <span class="pill '+esc(p.urgency)+'">'+esc(p.urgency)+'</span>';
+      const st=el.querySelector('.st'); st.textContent='Saved'; setTimeout(()=>st.textContent='',1500);
+    };
+  });
+}
+async function saveBiz(){
+  const root=$('bizEdit'), g=k=>root.querySelector(`[data-k=${k}]`).value;
+  const hours={}; DAYS.forEach(d=>{ const on=root.querySelector(`[data-open=${d}]`).checked; hours[d]=on?[root.querySelector(`[data-d=${d}][data-i="0"]`).value,root.querySelector(`[data-d=${d}][data-i="1"]`).value]:null; });
+  const windows=g('windows').split('\n').map(l=>l.trim()).filter(Boolean).map(l=>l.split(/\s*[-–]\s*/)).filter(w=>w.length===2);
+  const p={owner_name:g('owner_name'),owner_phone:e164(g('owner_phone')),agent_name:g('agent_name'),
+    service_fee_cents:g('service_fee_cents')===''?null:Math.round(+g('service_fee_cents')*100),after_hours_fee_cents:g('after_hours_fee_cents')===''?null:Math.round(+g('after_hours_fee_cents')*100),
+    free_estimates:g('free_estimates')==='true',service_zips:g('service_zips').split(',').map(x=>x.trim()).filter(Boolean),service_area_note:g('service_area_note'),
+    hours,windows,jobs_per_window:+g('jobs_per_window')||2,emergency_policy:g('emergency_policy'),transfer_number:e164(g('transfer_number')),knowledge:g('knowledge')};
+  const {error}=await supa.rpc('rx_owner_save',{p});
+  if(error){ alert(error.message); return; }
+  $('saveSt').textContent='Saved. Live on the next call.'; $('saveBiz').textContent='Save'; $('saveBiz').classList.remove('dirty'); setTimeout(()=>$('saveSt').textContent='',2500);
+  reload();
+}
+</script>
+</body>
+</html>
