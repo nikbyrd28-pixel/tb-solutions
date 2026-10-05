@@ -51,6 +51,39 @@ main{padding:14px 16px 90px;max-width:900px;margin:0 auto}
 .note{width:100%;margin-top:8px;border:2px solid var(--line);border-radius:10px;padding:8px;font-size:14px;min-height:40px;resize:vertical;display:none}
 .note.show{display:block}
 .empty{text-align:center;color:var(--muted);padding:40px 10px;font-weight:600}
+/* --- leads / desk / money --- */
+.filters button b{font-style:normal;opacity:.6;margin-left:3px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 2px}
+.tag{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:3px 8px;border-radius:999px;background:#f0ece0;color:var(--muted)}
+.tag.hot{background:var(--red,#D7263D);color:#fff}
+details.log{margin-top:8px;font-size:13px}
+details.log summary{cursor:pointer;color:var(--muted);font-weight:700;list-style:none}
+details.log summary::-webkit-details-marker{display:none}
+details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf7ec;border-radius:10px;padding:8px;margin-top:6px}
+.oc{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;border-top:2px dashed var(--line);padding-top:10px}
+.oc button{border:2px solid var(--line);border-radius:999px;padding:6px 11px;font-weight:700;font-size:13px;background:#fff;cursor:pointer}
+.oc button.on{background:var(--ink);color:var(--yellow);border-color:var(--ink)}
+.np{display:none;margin-top:10px}
+.np.show{display:block}
+.np textarea{width:100%;border:2px solid var(--line);border-radius:10px;padding:8px;font-size:14px;min-height:54px;resize:vertical}
+.cbs{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px;font-size:13px;font-weight:700;color:var(--muted)}
+.cbs button{border:2px solid var(--line);border-radius:999px;padding:4px 10px;font-weight:700;font-size:12px;background:#fff;cursor:pointer}
+.cbs button.on{background:var(--yellow);border-color:var(--ink);color:var(--ink)}
+.cbs input{border:2px solid var(--line);border-radius:10px;padding:4px 8px;font-size:13px;font-weight:600}
+.acts button.lsave{background:var(--ink);color:var(--yellow)}
+.note{background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px}
+#scrim{position:fixed;inset:0;background:rgba(20,17,15,.6);z-index:20;display:none;align-items:flex-end}
+#scrim.show{display:flex}
+#sc{background:var(--paper);width:100%;max-height:88vh;overflow:auto;border-radius:20px 20px 0 0;padding:16px 16px max(16px,env(safe-area-inset-bottom));max-width:760px;margin:0 auto}
+#sc .hd{display:flex;align-items:flex-start;gap:10px;position:sticky;top:-16px;background:var(--paper);padding:4px 0 10px}
+#sc .hd h3{font-size:19px;font-weight:800;flex:1;line-height:1.15}
+#sc .hd small{display:block;color:var(--muted);font-weight:700;font-size:13px;margin-top:2px}
+#sc .hd button{border:2px solid var(--ink);border-radius:999px;padding:5px 12px;font-weight:800;background:#fff;cursor:pointer}
+#sc .scn{background:var(--yellow);border:2px solid var(--ink);border-radius:12px;padding:9px 12px;font-weight:700;font-size:14px;margin-bottom:12px}
+#sc p.say{font-size:17px;line-height:1.4;font-weight:600;border-left:4px solid var(--ink);padding:2px 0 2px 12px;margin-bottom:12px}
+#sc p.dir{font-size:14px;color:var(--muted);font-weight:700;font-style:italic;margin:-6px 0 12px 16px}
+#sc h4{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:18px 0 8px}
+#sc p.obj{font-size:14px;line-height:1.4;margin-bottom:10px;background:#fff;border:2px solid var(--line);border-radius:12px;padding:9px 11px}
 .login{max-width:360px;margin:60px auto;padding:0 16px}
 .login h1{font-size:34px;font-weight:800;margin-bottom:12px;letter-spacing:-.02em}
 .login input{width:100%;border:2px solid var(--ink);border-radius:12px;padding:12px;margin-bottom:10px}
@@ -130,11 +163,15 @@ details.sec[open]{border-color:var(--ink)}
 </div>
 <div class="nolink hidden" id="nolink">This email isn't linked to a line yet. Text Nick at <a href="sms:+14848418501">(484) 841-8501</a> with the email you just used and he'll connect it.</div>
 
+<script src="client-scripts.js"></script>
 <div id="app" class="hidden">
   <div class="hero"><h1 id="h1">—</h1><div class="line" id="h1line"></div></div>
   <div class="tabs">
     <button data-tab="today" class="on">Today<i id="nMsgs"></i></button>
     <button data-tab="calls">Calls</button>
+    <button data-tab="leads">Leads<i id="nLeads"></i></button>
+    <button data-tab="desk">Desk</button>
+    <button data-tab="money">Money</button>
     <button data-tab="settings">What it says</button>
   </div>
   <main>
@@ -144,9 +181,24 @@ details.sec[open]{border-color:var(--ink)}
       <h2>Jobs it booked</h2><div id="jobs"></div>
     </section>
     <section id="t-calls" class="hidden"><div id="calls"></div></section>
+    <section id="t-leads" class="hidden">
+      <div class="note" id="leadsNote"></div>
+      <div class="filters" id="leadFilters"></div>
+      <div id="leads"></div>
+    </section>
+    <section id="t-desk" class="hidden">
+      <div class="note">What to say when <b>you</b> pick up the phone. The AI handles the rest.</div>
+      <div id="desk"></div>
+    </section>
+    <section id="t-money" class="hidden"><div id="money"></div></section>
     <section id="t-settings" class="hidden"><div id="bizEdit"></div></section>
   </main>
 </div>
+
+<div id="scrim"><div id="sc">
+  <div class="hd"><div><h3 id="scTitle"></h3><small id="scWho"></small></div><button id="scX">Close</button></div>
+  <div id="scBody"></div>
+</div></div>
 
 <script>
 const SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
@@ -184,8 +236,11 @@ async function enter(){
 }
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
-  ['today','calls','settings'].forEach(t=>$('t-'+t).classList.toggle('hidden',t!==b.dataset.tab));
+  ['today','calls','leads','desk','money','settings'].forEach(t=>$('t-'+t).classList.toggle('hidden',t!==b.dataset.tab));
   if(b.dataset.tab==='settings'&&!$('bizEdit').innerHTML) openEditor();
+  if(b.dataset.tab==='leads') loadLeads();
+  if(b.dataset.tab==='desk') renderDesk();
+  if(b.dataset.tab==='money') loadMoney();
 });
 
 function render(){
@@ -215,6 +270,127 @@ function render(){
       <div class="tr">${c.recording_url?`<a href="${esc(c.recording_url)}" target="_blank">Listen</a> · `:''}${c.caller_phone?`<a href="tel:${tel(c.caller_phone)}">Call back</a>`:''}</div>
     </div>`).join(''):'<div class="empty">No calls yet. Forward your line and give it a ring.</div>';
 }
+// ---- leads: the shop's own call list ----
+// Same rules as Nick's HQ list, scoped by rx_owner_* so a shop only ever sees its own.
+let leadData=null, lfilter='today';
+const L_OUT=[['no_answer','No answer'],['voicemail','Voicemail'],['callback','Call back'],['talking','Talking'],['meeting','Meeting'],['won','Won'],['dead','Dead']];
+const ldue=p=>p.callback_at&&new Date(p.callback_at)<=new Date();
+const lbucket=p=>['won','dead'].includes(p.status)?'done':p.status==='meeting'?'meeting':p.status==='talking'?'talking':(p.status==='new'||ldue(p))?'today':'later';
+function lwhen(ts){ if(!ts) return ''; const d=new Date(ts); if(d<=new Date()) return 'Due now';
+  const days=Math.round((d-new Date())/864e5);
+  return (days<1?'Today ':days<2?'Tomorrow ':d.toLocaleDateString([],{weekday:'short'})+' ')+d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); }
+function lslot(k){ const d=new Date();
+  if(k==='3h'){ d.setHours(d.getHours()+3); return d; }
+  if(k==='tom'){ d.setDate(d.getDate()+1); d.setHours(9,0,0,0); }
+  else if(k==='3d'){ d.setDate(d.getDate()+3); d.setHours(9,0,0,0); }
+  else { d.setDate(d.getDate()+(8-d.getDay())%7||7); d.setHours(9,0,0,0); return d; }
+  if(d.getDay()===6)d.setDate(d.getDate()+2); if(d.getDay()===0)d.setDate(d.getDate()+1); return d; }
+
+async function loadLeads(){
+  const {data}=await supa.rpc('rx_owner_prospects');
+  leadData=data||{prospects:[],slots:0,target:null};
+  renderLeads();
+}
+function renderLeads(){
+  const list=leadData?.prospects||[], t=leadData?.target;
+  const todayN=list.filter(p=>lbucket(p)==='today').length;
+  $('nLeads').textContent=todayN||''; $('nLeads').style.display=todayN?'':'none';
+
+  $('leadsNote').innerHTML = !t || !t.enabled
+    ? `Lead list isn't switched on for you yet. It finds the people who hand out repeat work — property managers, realtors, builders — and scores them. Text Nick at <a href="sms:+14848418501">(484) 841-8501</a> to turn it on.`
+    : `Call the top of Today and tap what happened. Anything you can't reach schedules itself and comes back when it's due.${t.looking_for?.length?` Looking for: <b>${esc(t.looking_for.join(', '))}</b>.`:''}`;
+
+  const buckets=[['today','Today'],['later','Scheduled'],['talking','Talking'],['meeting','Meetings'],['all','All']];
+  const counts={}; buckets.forEach(([k])=>counts[k]=0);
+  list.forEach(p=>{ const b=lbucket(p); if(counts[b]!==undefined)counts[b]++; counts.all++; });
+  $('leadFilters').innerHTML=buckets.map(([k,l])=>`<button data-f="${k}" class="${lfilter===k?'on':''}">${l}${counts[k]?' <b>'+counts[k]+'</b>':''}</button>`).join('');
+  $('leadFilters').querySelectorAll('button').forEach(b=>b.onclick=()=>{ lfilter=b.dataset.f; renderLeads(); });
+
+  const shown=list.filter(p=>lfilter==='all'||lbucket(p)===lfilter);
+  $('leads').innerHTML = shown.length ? shown.map(p=>{
+    const log=(p.notes||'').trim().split('\n').filter(Boolean);
+    return `<div class="card">
+      <div class="top"><div><h3>${esc(p.name)}</h3><div class="biz">${esc(p.trade||'')}${p.city?' · '+esc(p.city):''}</div>
+        ${p.owner_name?`<div class="biz" style="color:var(--ink);font-weight:800">Ask for ${esc(p.owner_name)}</div>`:''}</div>
+        <span class="src">${p.score}</span></div>
+      <div class="tags">${p.callback_at?`<span class="tag ${ldue(p)?'hot':''}">${lwhen(p.callback_at)}</span>`:''}${p.attempts?`<span class="tag">${p.attempts} ${p.attempts===1?'try':'tries'}</span>`:''}</div>
+      ${p.why?`<div class="sum"><b>Why:</b> ${esc(p.why)}</div>`:''}
+      ${log.length?`<details class="log"><summary>${log.length} note${log.length>1?'s':''}</summary><pre>${esc(log.join('\n'))}</pre></details>`:''}
+      <div class="acts">${p.phone?`<a class="call" href="tel:${tel(p.phone)}">Call ${esc(fmtPhone(p.phone))}</a>`:''}<button class="lsc" data-id="${p.id}">Script</button></div>
+      <div class="oc">${L_OUT.map(([k,l])=>`<button data-id="${p.id}" data-oc="${k}" class="${p.status===k?'on':''}">${l}</button>`).join('')}</div>
+      <div class="np" id="lnp-${p.id}">
+        <textarea id="lnote-${p.id}" placeholder="What they said…"></textarea>
+        <div class="cbs">Call back:${[['3h','Later today'],['tom','Tomorrow 9a'],['3d','In 3 days'],['wk','Next week']].map(([k,l])=>`<button data-id="${p.id}" data-slot="${k}">${l}</button>`).join('')}<input type="datetime-local" id="lcb-${p.id}"></div>
+        <div class="acts" style="margin-top:8px"><button class="lsave" data-id="${p.id}">Save</button></div>
+      </div>
+    </div>`; }).join('')
+    : `<div class="empty">${lfilter==='today'?'Nothing due right now.':'Nothing here.'}</div>`;
+
+  $('leads').querySelectorAll('.oc button').forEach(b=>b.onclick=()=>{
+    const p=list.find(x=>x.id===b.dataset.id);
+    if(b.dataset.oc==='callback'){ $('lnp-'+p.id).classList.add('show'); $('lcb-'+p.id).focus(); return; }
+    logLead(p, b.dataset.oc, ($('lnote-'+p.id)||{}).value);
+  });
+  $('leads').querySelectorAll('.cbs button').forEach(b=>b.onclick=()=>{
+    const d=lslot(b.dataset.slot), i=$('lcb-'+b.dataset.id);
+    i.value=new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,16);
+    i.closest('.cbs').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+  });
+  $('leads').querySelectorAll('button.lsave').forEach(b=>b.onclick=()=>{
+    const p=list.find(x=>x.id===b.dataset.id), at=$('lcb-'+p.id).value;
+    logLead(p, at?'callback':'note', $('lnote-'+p.id).value, at?new Date(at).toISOString():null);
+  });
+  $('leads').querySelectorAll('button.lsc').forEach(b=>b.onclick=()=>openLeadScript(list.find(x=>x.id===b.dataset.id)));
+}
+async function logLead(p, outcome, note, cb){
+  const {data,error}=await supa.rpc('rx_owner_prospect_log',{p_id:p.id,p_outcome:outcome,p_note:(note||'').trim()||null,p_callback_at:cb||null});
+  if(error){ alert(error.message); return; }
+  Object.assign(p, data); renderLeads();
+}
+function openLeadScript(p){
+  const sc=CLIENT_SCRIPTS.script(p, CLIENT_SCRIPTS.stageFor(p), me?.business||{});
+  $('scTitle').textContent=sc.title; $('scWho').textContent=p.name;
+  $('scBody').innerHTML=`<p class="scn">${esc(sc.note)}</p>`
+    +sc.lines.map(l=>l.startsWith('—')?`<p class="dir">${esc(l)}</p>`:`<p class="say">${esc(l)}</p>`).join('')
+    +`<h4>When they push back</h4>`
+    +CLIENT_SCRIPTS.OBJECTIONS.map(([q,a])=>`<p class="obj"><b>${esc(q)}</b><br>${esc(a)}</p>`).join('');
+  $('scrim').classList.add('show');
+}
+
+// ---- desk: what to say when a human picks up ----
+function renderDesk(){
+  $('desk').innerHTML=CLIENT_SCRIPTS.DESK.map(([t,b])=>`<div class="card"><h3>${esc(t)}</h3><div class="sum">${esc(b)}</div></div>`).join('');
+}
+
+// ---- money ----
+const usd=c=>'$'+(c/100).toFixed(c%100?2:0);
+async function loadMoney(){
+  const {data}=await supa.rpc('rx_owner_billing');
+  if(!data||data.enabled===false){ $('money').innerHTML='<div class="empty">Billing isn\'t switched on yet.</div>'; return; }
+  const inv=data.invoices||[];
+  $('money').innerHTML=`
+    <div class="stats today">
+      <div><div class="n">${usd(data.monthly_cents||0)}</div><div class="l">per month</div></div>
+      <div><div class="n">${usd(inv.filter(i=>i.status==='sent').reduce((a,i)=>a+i.total_cents,0))}</div><div class="l">due now</div></div>
+      <div><div class="n">${usd(data.credit_cents||0)}</div><div class="l">credit</div></div>
+    </div>
+    ${(data.subs||[]).length?`<h2>What you're on</h2>`+data.subs.map(s=>`<div class="card"><h3>${esc(s.plan)}</h3><div class="biz">${usd(s.monthly_cents)}/mo · since ${esc(s.started_on)}${s.status!=='active'?' · '+esc(s.status):''}</div></div>`).join(''):''}
+    ${data.credit_cents?`<div class="card" style="box-shadow:4px 4px 0 var(--green)"><h3>${usd(data.credit_cents)} credit on your account</h3><div class="sum">It comes off your next invoice automatically. Nothing for you to do.</div></div>`:''}
+    <h2>Invoices</h2>
+    ${inv.length?inv.map(i=>`<div class="card">
+        <div class="top"><div><h3>${usd(i.total_cents)}</h3><div class="biz">${esc(i.period_start||i.issued_on)}${i.period_end?' – '+esc(i.period_end):''}</div></div>
+          <span class="src" style="background:${i.status==='paid'?'var(--green)':i.status==='sent'?'var(--copper)':'#eee'};color:${i.status==='draft'?'var(--ink)':'#fff'}">${esc(i.status)}</span></div>
+        ${(i.lines||[]).map(l=>`<div class="sum">${esc(l.description)} — ${usd(l.amount_cents)}</div>`).join('')}
+        ${i.credit_cents?`<div class="sum" style="color:var(--green);font-weight:700">Credit applied — ${usd(i.credit_cents)}</div>`:''}
+        <div class="when">${i.status==='paid'?'Paid '+esc(i.paid_on||''):i.due_on?'Due '+esc(i.due_on):''}</div>
+      </div>`).join('')
+      :'<div class="empty">No invoices yet.</div>'}
+    <div class="card"><div class="sum">Questions on any of this? Text Nick at <a href="sms:+14848418501">(484) 841-8501</a>.</div></div>`;
+}
+
+$('scX').onclick=()=>$('scrim').classList.remove('show');
+$('scrim').onclick=e=>{ if(e.target.id==='scrim') $('scrim').classList.remove('show'); };
+
 async function reload(){ const {data}=await supa.rpc('rx_owner_me',{p_days:30}); if(data){ me=data; render(); } }
 
 // ---- settings (what it says) ----
