@@ -106,6 +106,11 @@ details.sec[open]{border-color:var(--ink)}
 .bar button.save.dirty{background:var(--copper);border-color:var(--copper);color:#fff}
 .tog input{width:auto}
 @media (max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}}
+/* --- agent cards --- */
+.astats{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(76px,1fr));margin:12px 0 0}
+.astats div{background:#faf7ec;border:2px solid var(--line);border-radius:12px;padding:8px 6px;text-align:center;min-width:0}
+.astats b{display:block;font-size:22px;font-weight:800;line-height:1.05;letter-spacing:-.02em}
+.astats span{display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-top:3px;overflow-wrap:anywhere}
 /* --- call list --- */
 .filters button b{font-style:normal;opacity:.6;margin-left:3px}
 .tags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 2px}
@@ -159,6 +164,7 @@ details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf
     <button data-tab="leads">Leads<i id="nLeads"></i></button>
     <button data-tab="rx">Receptionist<i id="nRx"></i></button>
     <button data-tab="clients">RX Clients</button>
+    <button data-tab="agents">Agents</button>
   </div>
   <main>
     <section id="t-prospects">
@@ -182,6 +188,10 @@ details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf
         <div id="bizs"></div>
       </div>
       <div id="bizEdit" class="hidden"></div>
+    </section>
+    <section id="t-agents" class="hidden">
+      <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">The two agents that run without you. Status is read from what they actually produced, not from what they claim.</div>
+      <div id="agents"></div>
     </section>
   </main>
 </div>
@@ -221,12 +231,12 @@ $('scrim').onclick=e=>{ if(e.target.id==='scrim') $('scrim').classList.remove('s
 // ---- tabs ----
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
-  ['prospects','leads','rx','clients'].forEach(t=>$('t-'+t).classList.toggle('hidden',t!==b.dataset.tab));
+  ['prospects','leads','rx','clients','agents'].forEach(t=>$('t-'+t).classList.toggle('hidden',t!==b.dataset.tab));
 });
 
 async function load(){
   const [p,r,pr]=await Promise.all([supa.rpc('hq_pipeline',{p_days:180}), supa.rpc('hq_rx',{p_days:30}), supa.rpc('hq_prospects')]);
-  pros=pr.data||[]; renderPros();
+  pros=pr.data||[]; renderPros(); renderAgents();
   if(p.error){ $('leads').innerHTML='<div class="empty">'+esc(p.error.message)+'</div>'; } else { leads=p.data||[]; renderLeads(); }
   if(r.error){ $('jobs').innerHTML='<div class="empty">'+esc(r.error.message)+'</div>'; } else { rx=r.data; renderRx(); }
 }
@@ -348,6 +358,60 @@ function openScript(p){
   cp($('scCopyT'), t.body); cp($('scCopyE'), e.subject+'\n\n'+e.body);
   $('scCopy').onclick=()=>{ navigator.clipboard.writeText(s.lines.join('\n\n')); $('scCopy').textContent='Copied'; setTimeout(()=>$('scCopy').textContent='Copy',1200); };
   $('scrim').classList.add('show');
+}
+
+// ---- agents ----
+// Both run as scheduled Claude routines, which HQ cannot query. So instead of asking them
+// how they are doing, this reads what they left behind: the Prospector's rows in the call
+// list, and the JSON the SEO build writes on every run.
+const CAP=30;
+function nextRunTxt(hourET, minET){
+  const now=new Date();
+  // the routines run on America/New_York; compare in that zone
+  const et=new Date(now.toLocaleString('en-US',{timeZone:'America/New_York'}));
+  const next=new Date(et); next.setHours(hourET,minET,0,0);
+  if(next<=et) next.setDate(next.getDate()+1);
+  const mins=Math.round((next-et)/6e4);
+  return `${next.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})} ET · in ${mins<60?mins+'m':Math.round(mins/60)+'h'}`;
+}
+function agentCard({name,what,sched,next,stats,note,tone}){
+  return `<div class="card">
+    <div class="top"><div><h3>${esc(name)}</h3><div class="biz">${esc(what)}</div></div>
+      <span class="src" style="background:${tone==='idle'?'#f0ece0':'var(--green)'};color:${tone==='idle'?'var(--muted)':'#fff'}">${tone==='idle'?'IDLE':'RUNNING'}</span></div>
+    <div class="tags"><span class="tag">${esc(sched)}</span><span class="tag">next ${esc(next)}</span></div>
+    <div class="astats">
+      ${stats.map(([n,l])=>`<div><b>${esc(String(n))}</b><span>${esc(l)}</span></div>`).join('')}</div>
+    ${note?`<div class="sum" style="margin-top:10px">${note}</div>`:''}
+  </div>`;
+}
+let seoAgent=null;
+async function renderAgents(){
+  if(seoAgent===null){ try{ const r=await fetch('/hq/agents/seo.json',{cache:'no-store'}); seoAgent=r.ok?await r.json():false; }catch{ seoAgent=false; } }
+  const today=new Date(); today.setHours(0,0,0,0);
+  const addedToday=pros.filter(p=>p.created_at&&new Date(p.created_at)>=today).length;
+  const uncalled=pros.filter(p=>p.status==='new').length;
+  const slots=Math.max(0,CAP-uncalled);
+  const newest=pros.map(p=>p.created_at).filter(Boolean).sort().pop();
+
+  const lead=agentCard({
+    name:'Prospector — lead agent', what:'Finds owner-operated plumbers, HVAC and electricians and scores them by how badly they need the phone answered.',
+    sched:'daily 6:50am ET', next:nextRunTxt(6,50), tone:slots?'run':'idle',
+    stats:[[uncalled+'/'+CAP,'uncalled'],[slots,'slots free'],[addedToday,'added today'],[pros.length,'total']],
+    note: slots===0
+      ? `List is full, so tomorrow's run adds <b>nothing</b> — that's the cap doing its job. Work the list down and the slots open themselves.`
+      : `Tomorrow it tops the list back up to ${CAP}, best-scoring first.${newest?` Last added ${esc(ago(newest))}.`:''}`,
+  });
+
+  const seo = seoAgent===false
+    ? agentCard({ name:'SEO build — SEO agent', what:'Generates the search pages from tools/seo-data.mjs and checks them against the quality gate.',
+        sched:'daily 7:00am ET', next:nextRunTxt(7,0), tone:'idle', stats:[['—','pages'],['—','last build']],
+        note:`No status file yet. It appears at <code>/hq/agents/seo.json</code> the first time the build runs on the live site.` })
+    : agentCard({ name:'SEO build — SEO agent', what:'Generates the search pages from tools/seo-data.mjs and checks them against the quality gate.',
+        sched:'daily 7:00am ET', next:nextRunTxt(7,0), tone:'run',
+        stats:[[seoAgent.pages,'pages'],[seoAgent.clusters.services,'services'],[seoAgent.clusters.trades,'trades'],[seoAgent.clusters.guides,'guides']],
+        note:`Last build ${esc(ago(seoAgent.lastBuild))} · ${seoAgent.sitemapUrls} urls in the sitemap. It only ships pages that pass <code>seo-check</code>, and it is told to skip anything it can't say something real about.` });
+
+  $('agents').innerHTML = lead + seo;
 }
 
 // ---- leads ----

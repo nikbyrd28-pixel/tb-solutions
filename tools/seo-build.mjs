@@ -227,6 +227,25 @@ Demo line (hear the receptionist): ${SITE.phoneDemo}
 Nick: ${SITE.cell} · ${SITE.domain}
 `);
 
+// ---- hq/agents/seo.json: what HQ shows on the SEO agent card ----
+// Written on every build, committed by the daily routine, read by the Agents tab.
+// No database, no secrets — the file IS the status.
+mkdirSync(join(ROOT, 'hq', 'agents'), { recursive: true });
+writeFileSync(join(ROOT, 'hq', 'agents', 'seo.json'), JSON.stringify({
+  agent: 'seo',
+  name: 'SEO build',
+  lastBuild: new Date().toISOString(),
+  pages: urls.length,
+  sitemapUrls: all.length,
+  clusters: {
+    services: urls.filter(u => u.startsWith('/services/')).length,
+    trades: urls.filter(u => u.startsWith('/for/')).length,
+    guides: urls.filter(u => u.startsWith('/guides/')).length,
+  },
+  counts: { services: SERVICES.length, trades: TRADES.length, towns: TOWNS.length, guides: GUIDES.length },
+  urls,
+}, null, 2) + '\n');
+
 console.log(`${urls.length} pages:`);
 for (const u of urls) console.log('  ' + u);
 console.log(`sitemap.xml: ${all.length} urls (${kept.length} kept, ${urls.length} generated)`);

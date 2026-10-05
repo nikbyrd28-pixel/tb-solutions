@@ -1,0 +1,31 @@
+{
+  "agent": "seo",
+  "name": "SEO build",
+  "lastBuild": "2026-10-05T13:20:07.709Z",
+  "pages": 11,
+  "sitemapUrls": 21,
+  "clusters": {
+    "services": 5,
+    "trades": 3,
+    "guides": 3
+  },
+  "counts": {
+    "services": 4,
+    "trades": 3,
+    "towns": 16,
+    "guides": 2
+  },
+  "urls": [
+    "/services/ai-receptionist-for-contractors/",
+    "/services/google-local-services-ads-management/",
+    "/services/google-review-automation/",
+    "/services/websites-for-contractors/",
+    "/services/",
+    "/for/plumbers/",
+    "/for/hvac-companies/",
+    "/for/electricians/",
+    "/guides/what-a-missed-call-costs-a-contractor/",
+    "/guides/why-contractors-lose-weekend-calls/",
+    "/guides/"
+  ]
+}
