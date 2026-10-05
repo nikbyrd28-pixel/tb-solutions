@@ -271,6 +271,7 @@ function renderPros(){
       <div class="acts">
         ${p.phone?`<a class="call" href="tel:${tel(p.phone)}">Call ${esc(fmtPhone(p.phone))}</a>`:''}
         <button class="sc" data-pid="${p.id}">Script</button>
+        ${p.phone?`<button class="tx" data-pid="${p.id}">Text</button>`:''}
         <a href="https://www.google.com/search?q=${encodeURIComponent(p.name+' '+(p.city||''))}" target="_blank">Google</a>
         ${p.email?`<button class="em" data-pid="${p.id}">Email</button>`:''}
       </div>
@@ -302,8 +303,12 @@ function renderPros(){
     logDial(p, at?'callback':'note', $('pnote-'+p.id).value, at?new Date(at).toISOString():null);
   });
   $('pros').querySelectorAll('button.sc').forEach(b=>b.onclick=()=>openScript(pros.find(x=>x.id===b.dataset.pid)));
+  $('pros').querySelectorAll('button.tx').forEach(b=>b.onclick=()=>{
+    const p=pros.find(x=>x.id===b.dataset.pid);
+    location.href=`sms:${tel(p.phone)}?&body=${encodeURIComponent(CALL_SCRIPTS.sms(p, SMS_STAGE[CALL_SCRIPTS.stageFor(p)]||'first').body)}`;
+  });
   $('pros').querySelectorAll('button.em').forEach(b=>b.onclick=()=>{
-    const p=pros.find(x=>x.id===b.dataset.pid), d=CALL_SCRIPTS.emailDraft(p);
+    const p=pros.find(x=>x.id===b.dataset.pid), d=CALL_SCRIPTS.emailDraft(p, EMAIL_STAGE[CALL_SCRIPTS.stageFor(p)]);
     location.href=`mailto:${encodeURIComponent(p.email)}?subject=${encodeURIComponent(d.subject)}&body=${encodeURIComponent(d.body)}`;
   });
 }
@@ -316,6 +321,10 @@ async function logDial(p, outcome, note, callbackAt){
 }
 
 // ---- script panel ----
+// Which text / email goes with where you are in the chase.
+const SMS_STAGE={first:'first',retry:'after_no_answer',voicemail:'after_voicemail',callback:'after_talk',talking:'after_talk',meeting:'confirm'};
+const EMAIL_STAGE={first:'cold',retry:'cold',voicemail:'followup',callback:'followup',talking:'followup',meeting:'followup'};
+
 function openScript(p){
   const s=CALL_SCRIPTS.script(p, CALL_SCRIPTS.stageFor(p));
   $('scTitle').textContent=s.title;
@@ -324,6 +333,19 @@ function openScript(p){
     +s.lines.map(l=>l.startsWith('—')?`<p class="dir">${esc(l)}</p>`:`<p class="say">${esc(l)}</p>`).join('')
     +`<h4>When he pushes back</h4>`
     +CALL_SCRIPTS.OBJECTIONS.map(([q,a])=>`<p class="obj"><b>${esc(q)}</b><br>${esc(a)}</p>`).join('');
+  // the follow-up that actually gets replies: send it before you forget
+  const t=CALL_SCRIPTS.sms(p, SMS_STAGE[CALL_SCRIPTS.stageFor(p)]||'first');
+  const e=CALL_SCRIPTS.emailDraft(p, EMAIL_STAGE[CALL_SCRIPTS.stageFor(p)]);
+  $('scBody').innerHTML+=`<h4>Text after this call</h4>
+    <p class="scn" style="background:#fff;border-color:var(--line);font-weight:600">${esc(t.label)}</p>
+    <p class="say" style="font-size:15px">${esc(t.body)}</p>
+    <div class="acts">${p.phone?`<a class="call" href="sms:${tel(p.phone)}?&body=${encodeURIComponent(t.body)}">Send text</a>`:''}<button id="scCopyT">Copy text</button></div>
+    <h4>Email</h4>
+    <p class="scn" style="background:#fff;border-color:var(--line);font-weight:600">Subject: ${esc(e.subject)}</p>
+    <p class="say" style="font-size:15px;white-space:pre-wrap">${esc(e.body)}</p>
+    <div class="acts">${p.email?`<a class="call" href="mailto:${encodeURIComponent(p.email)}?subject=${encodeURIComponent(e.subject)}&body=${encodeURIComponent(e.body)}">Send email</a>`:'<span class="when">No email on file for this shop</span>'}<button id="scCopyE">Copy email</button></div>`;
+  const cp=(el,txt)=>{ el.onclick=()=>{ navigator.clipboard.writeText(txt); const o=el.textContent; el.textContent='Copied'; setTimeout(()=>el.textContent=o,1200); }; };
+  cp($('scCopyT'), t.body); cp($('scCopyE'), e.subject+'\n\n'+e.body);
   $('scCopy').onclick=()=>{ navigator.clipboard.writeText(s.lines.join('\n\n')); $('scCopy').textContent='Copied'; setTimeout(()=>$('scCopy').textContent='Copy',1200); };
   $('scrim').classList.add('show');
 }

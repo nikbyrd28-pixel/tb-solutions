@@ -34,6 +34,8 @@
   const greet = (p) => first(p) ? `Hey, is this ${first(p)}?` : 'Hey, is the owner around?';
   // "listed closed weekends — every Saturday call hits voicemail; 82 reviews…" → the first clause only
   const hook = (p) => (p.why || '').split(/[;—]/)[0].trim().replace(/^listed /, 'your Google says ');
+  // Same clause with no framing, for lines that already mention Google.
+  const hookBare = (p) => (p.why || '').split(/[;—]/)[0].trim().replace(/^listed /, '');
   const offer = (p) => OFFERS[(p.pitch || '').split('+')[0].trim()] || OFFERS['Never Miss a Call'];
   const second = (p) => (p.pitch || '').includes('+') ? OFFERS[(p.pitch.split('+')[1] || '').trim()] : null;
 
@@ -143,21 +145,84 @@
     return 'first';
   }
 
-  function emailDraft(p) {
-    const o = offer(p);
-    return {
-      subject: `${p.city || 'Local'} ${p.trade || 'shop'} — the calls you miss on Saturday`,
+  // ---- texts ----
+  // The Chester County kid angle: he's local, he's young, he says so first and it disarms them.
+  // Nobody local is cold-texting a plumber about AI. That's exactly why it gets read.
+  // Keep every one under ~320 characters and always give them an easy out — it converts better
+  // than pretending you won't text again.
+  function sms(p, stage) {
+    const o = offer(p), n = first(p), hi = n ? `${n},` : 'Hey —';
+    const town = p.city || 'the county';
+
+    switch (stage) {
+      case 'after_no_answer': return {
+        label: 'After a no-answer — send it the same hour',
+        body: `${hi} Nick — tried your office line just now, didn't want to keep ringing you on a job. I'm the kid out of Pottstown that sets up the phone-answering for trades around here. ${hook(p)} — that's all I called about. Want me to try you later or just text?`,
+      };
+      case 'after_voicemail': return {
+        label: 'After a voicemail — same day, so the name sticks',
+        body: `${hi} left you a voicemail — Nick, local kid from Pottstown. Short version: call ${DEMO} and you'll hear exactly what I'd put on your line when you can't pick up. 40 seconds. If it's not for you, say the word and I'll quit texting.`,
+      };
+      case 'after_talk': return {
+        label: 'Right after a good call — recap and lock the next step',
+        body: `${hi} good talking. Recap: it answers in your name after your line rings out, books into your windows, texts you the job. ${o.first5} setup, ${o.monthly}/mo, no contract. ${o.proof} I'll call you ${'{{when}}'} — Nick, ${CELL}`,
+      };
+      case 'confirm': return {
+        label: 'Day before the meeting',
+        body: `${hi} Nick — we're on for ${'{{when}}'}, 20 minutes, I'll call you. Nothing to prep. If a job runs over just text me and we'll move it. ${CELL}`,
+      };
+      case 'breakup': return {
+        label: 'Last touch — the one that gets the most replies',
+        body: `${hi} Nick from Pottstown — I'll stop bugging you. If the Saturday calls ever start bothering you, the demo's at ${DEMO} and I'm at this number. Good luck out there this winter.`,
+      };
+      default: return {
+        label: 'First text — if he never picks up the phone',
+        body: `${hi} I'm Nick — local kid, Pottstown. I build the phone-answering setup for ${town} trades so the calls you can't grab still get booked. Saw ${hook(p)}. Not pitching over text: call ${DEMO} and hear it. Tell me to buzz off and I won't text again.`,
+      };
+    }
+  }
+
+  // ---- emails ----
+  function emailDraft(p, stage) {
+    const o = offer(p), n = first(p), town = p.city || 'your area';
+    const sign = `— Nick Byrd\nTB Solutions · Pottstown, PA\n${CELL} · tbsol.net`;
+
+    if (stage === 'followup') return {
+      subject: `following up — ${p.name || 'your shop'}`,
       body: [
-        `${first(p) ? first(p) + ',' : 'Hey,'}`, '',
-        `Nick Byrd — I'm local, out of Pottstown. I called earlier, figured I'd write instead of keep bothering you.`, '',
-        `I noticed ${hook(p)}. Every one of those is a homeowner who called the next guy.`, '',
-        `I set up ${o.what}. ${o.does}`, '',
-        `${o.first5} to set up, ${o.monthly} a month, no contract. ${o.proof}`, '',
-        `Don't take my word for it — call ${DEMO} and you'll hear exactly what goes on your line.`, '',
-        `— Nick, ${CELL}`, `tbsol.net`,
+        n ? `${n},` : 'Hey,', '',
+        `Nick again, the kid from Pottstown. Not going to keep filling up your inbox.`, '',
+        `One number and I'll leave it: a service call around here runs a few hundred dollars. If the thing catches one call a month you'd otherwise lose, it has paid for itself four times over. ${o.first5} to set up, ${o.monthly} a month, no contract.`, '',
+        `Still the easiest way to judge it: call ${DEMO} and listen.`, '',
+        sign,
+      ].join('\n'),
+    };
+
+    if (stage === 'breakup') return {
+      subject: `closing the loop`,
+      body: [
+        n ? `${n},` : 'Hey,', '',
+        `I'll get out of your hair — figure you're busy, which is kind of the whole point of what I do.`, '',
+        `If the weekend calls ever start costing you real money, the demo line is ${DEMO} and I'm at ${CELL}. No hard feelings either way.`, '',
+        `Good luck this season.`, '',
+        sign,
+      ].join('\n'),
+    };
+
+    return {
+      subject: `${town} ${p.trade || 'shop'} — the calls going to voicemail`,
+      body: [
+        n ? `${n},` : 'Hey,', '',
+        `I'm Nick — I'm a young guy out of Pottstown and I only work with trades in Chester County and up the 422. Figured I'd write instead of calling you again mid-job.`, '',
+        `I was on your Google listing. Here's what I noticed: ${hookBare(p)}. Those calls don't wait around — they ring the next shop on the list. That's the only reason I reached out.`, '',
+        `What I set up: ${o.does}`, '',
+        `${o.first5} to set up, ${o.monthly} a month, no contract, cancel by texting me. ${o.proof}`, '',
+        `Don't take my word for it — call ${DEMO}. That's the actual thing, and it's what would go on your line.`, '',
+        `If it's not for you just reply "no" and I'll leave you alone.`, '',
+        sign,
       ].join('\n'),
     };
   }
 
-  window.CALL_SCRIPTS = { script, stageFor, emailDraft, OBJECTIONS, OFFERS, BUNDLE, DEMO, CELL };
+  window.CALL_SCRIPTS = { script, stageFor, sms, emailDraft, OBJECTIONS, OFFERS, BUNDLE, DEMO, CELL };
 })();
