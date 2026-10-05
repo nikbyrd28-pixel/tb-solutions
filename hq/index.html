@@ -361,8 +361,8 @@ function auditBlock(p){
 
 // ---- script panel ----
 // Which text / email goes with where you are in the chase.
-const SMS_STAGE={first:'first',retry:'after_no_answer',voicemail:'after_voicemail',callback:'after_talk',talking:'after_talk',meeting:'confirm'};
-const EMAIL_STAGE={first:'cold',retry:'cold',voicemail:'followup',callback:'followup',talking:'followup',meeting:'followup'};
+const SMS_STAGE={first:'first',retry:'after_no_answer',voicemail:'after_voicemail',callback:'after_talk',talking:'after_talk',meeting:'confirm',won:'yes'};
+const EMAIL_STAGE={first:'cold',retry:'cold',voicemail:'followup',callback:'followup',talking:'followup',meeting:'followup',won:'followup'};
 
 function openScript(p){
   const s=CALL_SCRIPTS.script(p, CALL_SCRIPTS.stageFor(p));

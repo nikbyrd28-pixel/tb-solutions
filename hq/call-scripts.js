@@ -5,6 +5,7 @@
 (function () {
   const DEMO = '(610) 998-6138';   // the receptionist demo line
   const CELL = '(484) 841-8501';   // Nick's text line
+  const PAY  = 'https://buy.stripe.com/28E28talAfU0gUodya6Ri01';   // Stripe payment link — fixed amount, set in the Stripe dashboard
 
   // Straight off the offer sheet. first5 is the launch price you're allowed to quote.
   const OFFERS = {
@@ -104,6 +105,19 @@
           `${price}`,
           o2 ? `And since you're at ${p.reviews || 'under 30'} reviews — ${o2.what}, ${o2.monthly} a month, no setup. Most guys bolt it on after a month.` : `If you ever want the reviews side too it's ${OFFERS['Review Engine'].monthly} a month on top, no setup.`,
           `What's better for the 20 minutes — tomorrow morning or Thursday?`,
+          `— if he says yes on the call, don't wait. Send the payment link while you're still on the phone: ${PAY}`,
+        ],
+      };
+
+      case 'won': return {
+        title: 'He said yes — get paid and get him live',
+        note: 'Send the link before you hang up. A yes that waits until tomorrow is a maybe.',
+        lines: [
+          `Perfect. I'm sending you a link right now — that's the setup, and it's the only thing you pay today.`,
+          `Once that's through I'll text you to book the 20 minutes. I'll need your hours, your dispatch fee, your arrival windows and the towns you cover.`,
+          `Then you dial one forwarding code on your business phone and you're live. Usually same week.`,
+          `Your number stays yours, your Google stays yours. Cancel any time by texting me.`,
+          `— send the link now: ${PAY}`,
         ],
       };
 
@@ -137,6 +151,7 @@
 
   // Which script a prospect needs right now.
   function stageFor(p) {
+    if (p.status === 'won') return 'won';
     if (p.status === 'meeting') return 'meeting';
     if (p.status === 'talking') return 'talking';
     if (p.status === 'callback') return 'callback';
@@ -166,6 +181,10 @@
       case 'after_talk': return {
         label: 'Right after a good call — recap and lock the next step',
         body: `${hi} good talking. Recap: it answers in your name after your line rings out, books into your windows, texts you the job. ${o.first5} setup, ${o.monthly}/mo, no contract. ${o.proof} I'll call you ${'{{when}}'} — Nick, ${CELL}`,
+      };
+      case 'yes': return {
+        label: 'He said yes — send this before you hang up',
+        body: `${hi} here's the link to get started: ${PAY} — takes a minute, then I'll text you to book the 20-minute setup call. Nick, ${CELL}`,
       };
       case 'confirm': return {
         label: 'Day before the meeting',
@@ -224,5 +243,5 @@
     };
   }
 
-  window.CALL_SCRIPTS = { script, stageFor, sms, emailDraft, OBJECTIONS, OFFERS, BUNDLE, DEMO, CELL };
+  window.CALL_SCRIPTS = { script, stageFor, sms, emailDraft, OBJECTIONS, OFFERS, BUNDLE, DEMO, CELL, PAY };
 })();
