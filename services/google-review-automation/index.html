@@ -13,11 +13,14 @@
 <meta property="og:description" content="Every finished job gets a text asking for a Google review, timed and worded right, one tap. Unhappy customers route to you first. $97/mo, no setup fee.">
 <meta property="og:image" content="https://tbsol.net/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap">
+<link rel="stylesheet" media="print" onload="this.media='all';this.onload=null" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap"></noscript>
 <script defer src="/track.js"></script>
 <style>:root{--yellow:#FFD23F;--ink:#14110F;--paper:#FFF8E1;--copper:#B5542B;--green:#1F9D55;--line:#e6dfc8;--muted:#6b645a;--max:760px;--gutter:clamp(16px,4vw,32px)}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"Bricolage Grotesque",system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:17px;line-height:1.6;-webkit-text-size-adjust:100%}
+@font-face{font-family:"Bricolage fallback";src:local("Arial");size-adjust:97%;ascent-override:94%;descent-override:24%;line-gap-override:0%}
+body{font-family:"Bricolage Grotesque","Bricolage fallback",system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:17px;line-height:1.6;-webkit-text-size-adjust:100%}
 .wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gutter)}
 a{color:var(--copper)}
 header{background:var(--ink);color:var(--yellow);padding:14px 0}
