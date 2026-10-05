@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://tbsol.net/</loc></url>
-  <url><loc>https://tbsol.net/receptionist/</loc></url>
-  <url><loc>https://tbsol.net/websites/</loc></url>
-  <url><loc>https://tbsol.net/reviews/</loc></url>
-  <url><loc>https://tbsol.net/planner/</loc></url>
-  <url><loc>https://tbsol.net/leads/</loc></url>
-  <url><loc>https://tbsol.net/receptionist/sms-consent/</loc></url>
-  <url><loc>https://tbsol.net/privacy/</loc></url>
-  <url><loc>https://tbsol.net/terms/</loc></url>
-  <url><loc>https://tbsol.net/sms-terms/</loc></url>
+  <url><loc>https://tbsol.net/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://tbsol.net/for/electricians/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://tbsol.net/for/hvac-companies/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://tbsol.net/for/plumbers/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://tbsol.net/guides/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://tbsol.net/guides/what-a-missed-call-costs-a-contractor/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://tbsol.net/guides/why-contractors-lose-weekend-calls/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://tbsol.net/leads/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://tbsol.net/planner/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://tbsol.net/privacy/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://tbsol.net/receptionist/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://tbsol.net/receptionist/sms-consent/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://tbsol.net/reviews/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://tbsol.net/services/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://tbsol.net/services/ai-receptionist-for-contractors/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://tbsol.net/services/google-local-services-ads-management/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://tbsol.net/services/google-review-automation/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://tbsol.net/services/websites-for-contractors/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://tbsol.net/sms-terms/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://tbsol.net/terms/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://tbsol.net/websites/</loc><lastmod>2026-10-05</lastmod></url>
 </urlset>

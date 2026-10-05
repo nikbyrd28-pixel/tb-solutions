@@ -1,0 +1,25 @@
+# TB Solutions
+> The front office for the trades. Nick Byrd, Pottstown, PA. Serving Chester County, Montgomery County and the 422 corridor.
+
+TB Solutions runs the front office for plumbing, HVAC and electrical shops: an AI receptionist
+that answers when the owner cannot and books the job, Google Local Services Ads management,
+Google review automation, and job-booking websites. Prices are published; nothing is on a contract.
+
+## Services
+- [Never Miss a Call](https://tbsol.net/services/ai-receptionist-for-contractors/): An AI receptionist that answers in your company name when your line rings out, books the job into your arrival windows, and texts you. $297 setup, $197/mo. $297 setup, $197/month.
+- [Lead Engine](https://tbsol.net/services/google-local-services-ads-management/): Google Guaranteed setup or migration, campaign rebuilt, budget capped, and junk leads disputed weekly so you get the credits back. $297 setup, $147/mo. $297 setup, $147/month.
+- [Review Engine](https://tbsol.net/services/google-review-automation/): Every finished job gets a text asking for a Google review, timed and worded right, one tap. Unhappy customers route to you first. $97/mo, no setup fee. no setup fee setup, $97/month.
+- [Job-Ready Website](https://tbsol.net/services/websites-for-contractors/): One fast mobile page built to convert a homeowner holding a phone over a leak: click-to-call, service area, reviews, a form that texts you. $497 build, $47/mo. $497 setup, $47/month.
+
+## Trades served
+- [plumbers](https://tbsol.net/for/plumbers/): water heater leaks, burst pipes, sewer backups, no hot water and clogged mains.
+- [HVAC companies](https://tbsol.net/for/hvac-companies/): no heat, no cooling, frozen lines, thermostat failures and furnace lockouts.
+- [electricians](https://tbsol.net/for/electricians/): dead outlets, tripping breakers, panel work, burning smells and partial power loss.
+
+## Guides
+- [What a Missed Call Actually Costs a Contractor](https://tbsol.net/guides/what-a-missed-call-costs-a-contractor/): The arithmetic on missed calls for a small plumbing, HVAC or electrical shop: how many you miss, how many book elsewhere, what it is worth over a year.
+- [Why Contractors Lose Weekend Calls](https://tbsol.net/guides/why-contractors-lose-weekend-calls/): If your Google profile says closed Saturday you still get Saturday calls — they go to voicemail. What the hours field does, and how to cover weekends.
+
+## Contact
+Demo line (hear the receptionist): (610) 998-6138
+Nick: (484) 841-8501 · https://tbsol.net
