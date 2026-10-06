@@ -113,6 +113,12 @@ details.sec[open]{border-color:var(--ink)}
 .astats div{background:#faf7ec;border:2px solid var(--line);border-radius:12px;padding:8px 6px;text-align:center;min-width:0}
 .astats b{display:block;font-size:22px;font-weight:800;line-height:1.05;letter-spacing:-.02em}
 .astats span{display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-top:3px;overflow-wrap:anywhere}
+.post pre{white-space:pre-wrap;font:inherit;font-size:15px;line-height:1.4;background:#faf7ec;border:2px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0 0}
+.post textarea{width:100%;min-height:120px;font:inherit;font-size:15px;line-height:1.4;border:2px solid var(--ink);border-radius:12px;padding:10px 12px;margin:8px 0 0}
+.post .cap{font-size:13px;color:var(--muted);font-weight:600;margin-top:6px}
+.post .acts button.copy{background:var(--ink);color:var(--yellow);border-color:var(--ink)}
+.post .acts button.copy.did{background:var(--green);border-color:var(--green);color:#fff}
+.chan{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:3px 8px;border-radius:999px;color:#fff}
 /* --- call list --- */
 .filters button b{font-style:normal;opacity:.6;margin-left:3px}
 .tags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 2px}
@@ -192,8 +198,11 @@ details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf
       <div id="bizEdit" class="hidden"></div>
     </section>
     <section id="t-agents" class="hidden">
-      <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">The two agents that run without you. Status is read from what they actually produced, not from what they claim.</div>
+      <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">The fleet that runs without you. Status is read from what each one actually produced, not from what it claims. Posts land in the inbox at the bottom — copy, paste, tap Posted.</div>
       <div id="agents"></div>
+      <h2 style="margin-top:18px">Inbox — written, waiting on you</h2>
+      <div class="filters" id="postFilters"></div>
+      <div id="posts"></div>
     </section>
   </main>
 </div>
@@ -209,7 +218,7 @@ const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 const supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
 const $=id=>document.getElementById(id), esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const STATUSES=['new','contacted','audit_sent','quoted','won','lost'];
-let leads=[], rx=null, filter='open', pros=[], pfilter='today';
+let leads=[], rx=null, filter='open', pros=[], pfilter='today', posts=[], reviews={asks:[],no_url:[],pending:0}, postFilter='draft';
 
 function ago(ts){ if(!ts) return ''; const d=(Date.now()-new Date(ts))/6e4; if(d<60) return Math.round(d)+'m ago'; if(d<1440) return Math.round(d/60)+'h ago'; if(d<10080) return Math.round(d/1440)+'d ago'; return new Date(ts).toLocaleDateString(); }
 function tel(p){ return (p||'').replace(/[^\d+]/g,''); }
@@ -237,7 +246,8 @@ document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
 });
 
 async function load(){
-  const [p,r,pr]=await Promise.all([supa.rpc('hq_pipeline',{p_days:180}), supa.rpc('hq_rx',{p_days:30}), supa.rpc('hq_prospects')]);
+  const [p,r,pr,ap,ra]=await Promise.all([supa.rpc('hq_pipeline',{p_days:180}), supa.rpc('hq_rx',{p_days:30}), supa.rpc('hq_prospects'), supa.rpc('hq_agent_posts',{p_days:60}), supa.rpc('hq_review_asks',{p_days:60})]);
+  posts=ap.data||[]; reviews=ra.data||{asks:[],no_url:[],pending:0};
   pros=pr.data||[]; renderPros(); renderAgents();
   if(p.error){ $('leads').innerHTML='<div class="empty">'+esc(p.error.message)+'</div>'; } else { leads=p.data||[]; renderLeads(); }
   if(r.error){ $('jobs').innerHTML='<div class="empty">'+esc(r.error.message)+'</div>'; } else { rx=r.data; renderRx(); }
@@ -394,19 +404,21 @@ function openScript(p){
 // how they are doing, this reads what they left behind: the Prospector's rows in the call
 // list, and the JSON the SEO build writes on every run.
 const CAP=30;
-function nextRunTxt(hourET, minET){
+function nextRunTxt(hourET, minET, days){
   const now=new Date();
-  // the routines run on America/New_York; compare in that zone
+  // the routines run on America/New_York; compare in that zone. days = weekday(s) it runs on (0=Sun), omit for daily
   const et=new Date(now.toLocaleString('en-US',{timeZone:'America/New_York'}));
+  const ok=d=>!days||(Array.isArray(days)?days:[days]).includes(d);
   const next=new Date(et); next.setHours(hourET,minET,0,0);
   if(next<=et) next.setDate(next.getDate()+1);
+  while(!ok(next.getDay())) next.setDate(next.getDate()+1);
   const mins=Math.round((next-et)/6e4);
-  return `${next.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})} ET · in ${mins<60?mins+'m':Math.round(mins/60)+'h'}`;
+  return `${days?next.toLocaleDateString([], {weekday:'short'})+' ':''}${next.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})} ET · in ${mins<60?mins+'m':mins<2880?Math.round(mins/60)+'h':Math.round(mins/1440)+'d'}`;
 }
 function agentCard({name,what,sched,next,stats,note,tone}){
   return `<div class="card">
     <div class="top"><div><h3>${esc(name)}</h3><div class="biz">${esc(what)}</div></div>
-      <span class="src" style="background:${tone==='idle'?'#f0ece0':'var(--green)'};color:${tone==='idle'?'var(--muted)':'#fff'}">${tone==='idle'?'IDLE':'RUNNING'}</span></div>
+      <span class="src" style="background:${tone==='idle'?'#f0ece0':tone==='wait'?'var(--yellow)':'var(--green)'};color:${tone==='idle'?'var(--muted)':tone==='wait'?'var(--ink)':'#fff'}">${tone==='idle'?'IDLE':tone==='wait'?'NEEDS YOU':'RUNNING'}</span></div>
     <div class="tags"><span class="tag">${esc(sched)}</span><span class="tag">next ${esc(next)}</span></div>
     <div class="astats">
       ${stats.map(([n,l])=>`<div><b>${esc(String(n))}</b><span>${esc(l)}</span></div>`).join('')}</div>
@@ -440,7 +452,66 @@ async function renderAgents(){
         stats:[[seoAgent.pages,'pages'],[seoAgent.clusters.services,'services'],[seoAgent.clusters.trades,'trades'],[seoAgent.clusters.guides,'guides']],
         note:`Last build ${esc(ago(seoAgent.lastBuild))} · ${seoAgent.sitemapUrls} urls in the sitemap. It only ships pages that pass <code>seo-check</code>, and it is told to skip anything it can't say something real about.` });
 
-  $('agents').innerHTML = lead + seo;
+  // ---- the writers: GBP, Meta, Content. They cannot post for Nick (no API token for either
+  // platform), so "running" means they wrote something this week and "needs you" means drafts
+  // are sitting in the inbox. Nothing here is read from the agent's own report.
+  const wk=Date.now()-7*864e5;
+  const byAgent=a=>posts.filter(p=>p.agent===a);
+  const writer=(agent,name,what,sched,next,extra)=>{
+    const mine=byAgent(agent), drafts=mine.filter(p=>p.status==='draft').length, posted=mine.filter(p=>p.status==='posted').length;
+    const thisWk=mine.filter(p=>new Date(p.created_at)>wk).length; const last=mine.map(p=>p.created_at).sort().pop();
+    return agentCard({ name, what, sched, next, tone: drafts?'wait':thisWk?'run':'idle',
+      stats:[[drafts,'waiting'],[posted,'posted'],[thisWk,'this week'],[mine.length,'total']],
+      note: drafts ? `${drafts} draft${drafts>1?'s':''} in the inbox below. ${extra}` : last ? `Last wrote ${esc(ago(last))}. ${extra}` : `Hasn't run yet. ${extra}` });
+  };
+  const gbp=writer('gbp','GBP — Google post agent','Writes one Google Business Profile post a week for TB Solutions, built on something real from the week.','weekly Mon 7:10am ET',nextRunTxt(7,10,1),
+    'Paste it at business.google.com → Posts. A profile that posts weekly gets shown; one that went quiet in August does not.');
+  const meta=writer('meta','Meta — Facebook / Instagram agent','Writes a Facebook post and an Instagram caption three times a week. Same proof, two voices.','Mon · Wed · Fri 7:15am ET',nextRunTxt(7,15,[1,3,5]),
+    'Until a Page token is wired in, this is copy-and-paste. Say the word when you want it posting on its own.');
+  const content=writer('content','Content — daily script agent','One 30–60 second video script a day for the "AI for the trades" brand, with the on-screen hook and a caption.','daily 7:20am ET',nextRunTxt(7,20),
+    'Record it on your phone in one take. Skip the ones that don\'t sound like you — that teaches it nothing, but it keeps the feed honest.');
+  // ---- the sender: Review. Reads rx_review_asks, which rx-review writes one row per done job.
+  const asks=reviews.asks||[], sent=asks.filter(a=>a.status==='sent').length, skipped=asks.filter(a=>a.status==='skipped').length, failed=asks.filter(a=>a.status==='failed').length;
+  const noUrl=reviews.no_url||[]; const reasons={}; asks.filter(a=>a.status!=='sent').forEach(a=>{ reasons[a.reason]=(reasons[a.reason]||0)+1; });
+  const why={no_consent:'customer declined texts on the call',no_review_url:'shop has no review link set',no_phone:'job had no phone'};
+  const rv=agentCard({ name:'Review — review agent', what:'When a receptionist job is marked done, texts that customer the shop\'s Google review link once — only if they said yes to texts on the call.',
+    sched:'hourly at :15', next:'top of the hour', tone: noUrl.length?'wait':sent?'run':'idle',
+    stats:[[sent,'sent'],[skipped,'skipped'],[failed,'failed'],[reviews.pending||0,'done jobs unasked']],
+    note: (noUrl.length?`<b>${noUrl.map(esc).join(', ')}</b> ${noUrl.length>1?'have':'has'} no review link — nothing can go out until you paste one into RX Clients → Edit brain → Business. `:'')
+        + (Object.keys(reasons).length?`Skips: ${Object.entries(reasons).map(([r,n])=>`${n} ${why[r]||esc(r||'')}`).join(' · ')}. `:'')
+        + (!asks.length&&!noUrl.length?'Nothing to send yet — it wakes up the first time a job is marked done.':'') });
+
+  $('agents').innerHTML = lead + seo + gbp + meta + content + rv;
+  renderPosts();
+}
+const CHAN={gbp:['Google post','#4285f4'],facebook:['Facebook','#1877f2'],instagram:['Instagram','#c13584'],script:['Video script','var(--copper)']};
+function renderPosts(){
+  const n=posts.filter(p=>p.status==='draft').length;
+  $('postFilters').innerHTML=[['draft',`Waiting${n?' <b>'+n+'</b>':''}`],['posted','Posted'],['skipped','Skipped'],['all','All']].map(([k,l])=>`<button data-f="${k}" class="${postFilter===k?'on':''}">${l}</button>`).join('');
+  $('postFilters').querySelectorAll('button').forEach(b=>b.onclick=()=>{ postFilter=b.dataset.f; renderPosts(); });
+  const list=posts.filter(p=>postFilter==='all'||p.status===postFilter);
+  $('posts').innerHTML=list.length?list.map(p=>{ const [cl,col]=CHAN[p.channel]||[p.channel,'var(--muted)']; const full=p.body+(p.caption?'\n\n'+p.caption:'');
+    return `<div class="card post ${p.status==='posted'?'won':p.status==='skipped'?'lost':''}" data-id="${p.id}">
+      <div class="top"><div><h3>${esc(p.title||cl)}</h3><div class="biz">${esc(p.business||'TB Solutions')} · ${esc(ago(p.created_at))}${p.posted_at?' · posted '+esc(ago(p.posted_at)):''}</div></div><span class="chan" style="background:${col}">${cl}</span></div>
+      ${p.run_note?`<div class="hint">${esc(p.run_note)}</div>`:''}
+      <pre class="body">${esc(p.body)}</pre>${p.caption?`<pre class="cap">${esc(p.caption)}</pre>`:''}
+      ${p.media_note?`<div class="cap">📷 ${esc(p.media_note)}</div>`:''}${p.cta_url?`<div class="cap">🔗 ${esc(p.cta_url)}</div>`:''}
+      <div class="acts"><button class="copy">Copy</button>${p.status==='draft'?`<button class="edit">Edit</button><button class="posted" style="background:var(--green);color:#fff;border-color:var(--green)">Posted ✓</button><button class="skip">Skip</button>`:`<button class="undo">Back to waiting</button>`}</div>
+    </div>`; }).join(''):`<div class="empty">${postFilter==='draft'?'Inbox is clear. The next post lands at the next run.':'Nothing here.'}</div>`;
+  $('posts').querySelectorAll('.card').forEach(c=>{
+    const id=c.dataset.id, p=posts.find(x=>x.id===id);
+    const set=async st=>{ const {error}=await supa.rpc('hq_agent_post_status',{p_id:id,p_status:st}); if(error){ alert(error.message); return; } p.status=st; p.posted_at=st==='posted'?new Date().toISOString():null; renderAgents(); };
+    c.querySelector('.copy').onclick=async e=>{ try{ await navigator.clipboard.writeText(p.body+(p.caption?'\n\n'+p.caption:'')); e.target.textContent='Copied'; e.target.classList.add('did'); }catch{ alert('Long-press the text to copy.'); } };
+    const pb=c.querySelector('.posted'); if(pb) pb.onclick=()=>set('posted');
+    const sk=c.querySelector('.skip'); if(sk) sk.onclick=()=>set('skipped');
+    const un=c.querySelector('.undo'); if(un) un.onclick=()=>set('draft');
+    const ed=c.querySelector('.edit'); if(ed) ed.onclick=()=>{
+      const pre=c.querySelector('pre.body'); const cap=c.querySelector('pre.cap');
+      const ta=document.createElement('textarea'); ta.value=p.body; pre.replaceWith(ta);
+      let tc=null; if(cap){ tc=document.createElement('textarea'); tc.value=p.caption||''; tc.style.minHeight='70px'; cap.replaceWith(tc); }
+      ed.textContent='Save'; ed.onclick=async()=>{ const {error}=await supa.rpc('hq_agent_post_edit',{p_id:id,p_body:ta.value,p_caption:tc?tc.value:p.caption}); if(error){ alert(error.message); return; } p.body=ta.value; if(tc) p.caption=tc.value; renderPosts(); };
+    };
+  });
 }
 
 // ---- leads ----
@@ -541,7 +612,9 @@ async function openBiz(id){
     ${sec('biz','Business',`${esc(b.name||'')} · ${esc(b.trade||'')}`,`
       <div class="g2">${inp('name','Company name')}<label class="f">Trade<select data-k="trade">${TRADES.map(t=>`<option ${t===b.trade?'selected':''}>${t}</option>`).join('')}</select></label></div>
       <div class="g2">${inp('owner_name','Owner')}<label class="f">Owner cell · gets every job by text<input data-k="owner_phone" type="tel" class="ph" value="${esc(fmtPhone(b.owner_phone))}" placeholder="(610) 555-0100"></label></div>
-      <div class="g2"><label class="f">Receptionist's name<input data-k="agent_name" value="${esc(b.agent_name||'')}" placeholder="Dana"></label><label class="f">The line callers reach ${b.agent_number?'':'<span class="pill" style="background:var(--yellow)">not set up yet</span>'}<input data-k="agent_number" type="tel" class="ph" value="${esc(fmtPhone(b.agent_number))}" placeholder="assigned by Nick"></label></div>`,true)}
+      <div class="g2"><label class="f">Receptionist's name<input data-k="agent_name" value="${esc(b.agent_name||'')}" placeholder="Dana"></label><label class="f">The line callers reach ${b.agent_number?'':'<span class="pill" style="background:var(--yellow)">not set up yet</span>'}<input data-k="agent_number" type="tel" class="ph" value="${esc(fmtPhone(b.agent_number))}" placeholder="assigned by Nick"></label></div>
+      <label class="f">Google review link ${b.review_url?'':'<span class="pill" style="background:var(--yellow)">review texts are off until this is set</span>'}<input data-k="review_url" type="url" value="${esc(b.review_url||'')}" placeholder="https://g.page/r/…/review"></label>
+      <div class="hint">Google Business Profile → Ask for reviews → copy the link. After a job is marked done, customers who said yes to texts get it once.</div>`,true)}
     ${sec('money','Money',`${money(b.service_fee_cents)} dispatch · ${money(b.after_hours_fee_cents)} after hours · ${b.free_estimates?'free':'paid'} estimates`,`
       <div class="g3"><label class="f">Dispatch fee $<input data-k="service_fee_cents" type="number" inputmode="decimal" value="${b.service_fee_cents!=null?b.service_fee_cents/100:''}"></label>
         <label class="f">After-hours fee $<input data-k="after_hours_fee_cents" type="number" inputmode="decimal" value="${b.after_hours_fee_cents!=null?b.after_hours_fee_cents/100:''}"></label>
@@ -630,7 +703,7 @@ async function saveBiz(){
   const p={name:g('name'),trade:g('trade'),owner_name:g('owner_name'),owner_phone:e164(g('owner_phone')),agent_name:g('agent_name'),agent_number:e164(g('agent_number')),
     service_fee_cents:g('service_fee_cents')===''?null:Math.round(+g('service_fee_cents')*100),after_hours_fee_cents:g('after_hours_fee_cents')===''?null:Math.round(+g('after_hours_fee_cents')*100),
     free_estimates:g('free_estimates')==='true',service_zips:g('service_zips').split(',').map(x=>x.trim()).filter(Boolean),service_area_note:g('service_area_note'),
-    hours,windows,jobs_per_window:+g('jobs_per_window')||2,emergency_policy:g('emergency_policy'),transfer_number:e164(g('transfer_number')),knowledge:g('knowledge'),active:$('active').checked};
+    hours,windows,jobs_per_window:+g('jobs_per_window')||2,emergency_policy:g('emergency_policy'),transfer_number:e164(g('transfer_number')),knowledge:g('knowledge'),review_url:g('review_url').trim(),active:$('active').checked};
   const {error}=await supa.rpc('hq_rx_business_save',{p_id:cur.business.id,p});
   if(error){ alert(error.message); return; }
   const hk=$('hcp_key').value.trim(), ha=$('hcp_active').value==='true';

@@ -31,6 +31,7 @@
 | Automation | self-hosted n8n — import `n8n/rx-weekly-report.json` (Mon 7am scorecard) | `n8n/` |
 | **Owner app** | tbsol.net/receptionist/app/ — each client logs in to see jobs/calls/messages and edit what their receptionist says (`rx_owner_*` RPCs, invites via HQ) | `receptionist/app/` |
 | **HQ (Nick's CRM)** | tbsol.net/hq/ — all leads + receptionist backend in one screen; RPCs `hq_*`, admins in `hq_admins` | `hq/` |
+| **Agents (the fleet)** | Prospector, SEO, GBP, Meta, Content, Review — HQ → Agents; posts in `agent_posts`, review texts via edge fn `rx-review` + pg_cron | `hq/AGENTS.md` |
 | Analytics | `track.js` → `track-visitor` edge fn → `visitors`/`pageviews` | root |
 | Onboarding | `receptionist/supabase/new_client_template.sql` — 20-min new client | — |
 
