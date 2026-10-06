@@ -61,6 +61,14 @@ Coverage is partial on purpose — plenty of small shops publish neither, and a 
 on a cold call is worse than no name. **Never guess, never pattern-build an address
 (no `info@domain` unless the site actually prints it). Leave null.**
 
+## Dead = blocked for good
+
+When Nick marks a prospect Dead, a trigger copies its phone and Google place id into
+`rx_do_not_call`. The row vanishes from HQ. Before inserting any candidate the Prospector runs
+`select rx_is_blocked(phone, google_place_id)` and skips anything true — same shop, new listing,
+new number: still blocked if either matches. No answer, voicemail and call-backs are not dead;
+they cycle straight back onto Today.
+
 ## The status model
 `new` → `no_answer` | `voicemail` | `callback` | `talking` | `meeting` → `won` | `dead`
 

@@ -176,7 +176,7 @@ details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf
   </div>
   <main>
     <section id="t-prospects">
-      <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">Quality only: Today is owner-run shops with a real gap on the phone, best first. Tap what happened and it schedules itself. Big shops, 24-hour shops and the too-new sit in Parked — call them when the good ones are done.</div>
+      <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">Quality only: Today is owner-run shops with a real gap on the phone, best first. No answer, voicemail and call-backs cycle straight back onto Today so you can hit them again whenever. Dead is gone for good — the number's blocked so it never comes back.</div>
       <div class="filters" id="proFilters"></div>
       <div id="pros"></div>
     </section>
@@ -258,10 +258,14 @@ async function load(){
 // ---- prospects (the call list) ----
 // Buckets, not statuses. "Today" is the only one you work: new prospects plus every
 // callback that's come due. Anything scheduled ahead is out of sight until it's time.
-const PBUCKETS=[['today','Today'],['later','Scheduled'],['talking','Talking'],['meeting','Meetings'],['parked','Parked'],['all','All']];
+const PBUCKETS=[['today','Today'],['talking','Talking'],['meeting','Meetings'],['done','Won'],['parked','Parked'],['all','All']];
 const OUTCOMES=[['no_answer','No answer'],['voicemail','Voicemail'],['callback','Call back'],['talking','Talking'],['meeting','Meeting'],['won','Won'],['dead','Dead']];
 const due=p=>p.callback_at&&new Date(p.callback_at)<=new Date();
-const bucketOf=p=>p.status==='parked'?'parked':['won','dead'].includes(p.status)?'done':p.status==='talking'?'talking':p.status==='meeting'?'meeting':(p.status==='new'||due(p))?'today':'later';
+const RETRY=['no_answer','voicemail','callback'];
+const bucketOf=p=>p.status==='dead'?'gone':p.status==='parked'?'parked':p.status==='won'?'done':p.status==='talking'?'talking':p.status==='meeting'?'meeting':(p.status==='new'||RETRY.includes(p.status)||due(p))?'today':'later';
+// Today's order: callbacks that are due, then fresh quality by score, then the retries — oldest touch first so nobody gets stale
+const todayRank=p=>RETRY.includes(p.status)&&due(p)&&p.status==='callback'?0:p.status==='new'?1:2;
+const todaySort=(a,b)=>todayRank(a)-todayRank(b)||(todayRank(a)===1?(b.score-a.score):(new Date(a.last_touch||0)-new Date(b.last_touch||0)));
 function whenTxt(ts){ if(!ts) return ''; const d=new Date(ts), now=new Date();
   if(d<=now) return 'Due now';
   const days=Math.round((d-now)/864e5);
@@ -275,12 +279,13 @@ function slot(kind){ const d=new Date();
 
 function renderPros(){
   const counts={}; PBUCKETS.forEach(([k])=>counts[k]=0);
-  pros.forEach(p=>{ const b=bucketOf(p); if(counts[b]!==undefined)counts[b]++; if(b!=='parked') counts.all++; });
+  pros.forEach(p=>{ const b=bucketOf(p); if(counts[b]!==undefined)counts[b]++; if(b!=='parked'&&b!=='gone') counts.all++; });
   $('nPros').textContent=counts.today||''; $('nPros').style.display=counts.today?'':'none';
   $('proFilters').innerHTML=PBUCKETS.map(([k,l])=>`<button data-f="${k}" class="${pfilter===k?'on':''}">${l}${counts[k]?' <b>'+counts[k]+'</b>':''}</button>`).join('');
   $('proFilters').querySelectorAll('button').forEach(b=>b.onclick=()=>{ pfilter=b.dataset.f; renderPros(); });
 
-  const list=pros.filter(p=>pfilter==='all'?bucketOf(p)!=='parked':bucketOf(p)===pfilter);
+  let list=pros.filter(p=>pfilter==='all'?!['parked','gone'].includes(bucketOf(p)):bucketOf(p)===pfilter);
+  if(pfilter==='today') list=list.slice().sort(todaySort);
   $('pros').innerHTML=list.length?list.map(p=>{
     const log=(p.notes||'').trim().split('\n').filter(Boolean);
     return `<div class="card ${p.status==='won'?'won':p.status==='dead'?'lost':''}">
