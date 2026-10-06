@@ -33,10 +33,71 @@
   const first = (p) => (p.owner_name || '').trim().split(/\s+/)[0] || '';
   const who = (p) => first(p) ? first(p) : 'the owner';
   const greet = (p) => first(p) ? `Hey, is this ${first(p)}?` : 'Hey, is the owner around?';
-  // "listed closed weekends — every Saturday call hits voicemail; 82 reviews…" → the first clause only
-  const hook = (p) => (p.why || '').split(/[;—]/)[0].trim().replace(/^listed /, 'your Google says ');
-  // Same clause with no framing, for lines that already mention Google.
-  const hookBare = (p) => (p.why || '').split(/[;—]/)[0].trim().replace(/^listed /, '');
+  // THE OPENER. Built from the prospect's actual signals, written to be said out loud — never from
+  // the Prospector's shorthand `why` ("614 reviews, closed weekends" is a note, not a sentence).
+  // One observation about THEIR listing, then one question. The question is the whole call.
+  const sig = (p) => p.signals || {};
+  const rv = (p) => p.reviews != null ? Number(p.reviews) : null;
+  const stars = (p) => p.rating ? `${Number(p.rating).toFixed(1).replace(/\.0$/, '')} stars` : '';
+  function angle(p) {
+    const g = sig(p), n = rv(p), r = Number(p.rating || 0), hn = (p.hours_note || '').toLowerCase();
+    const closedWk = g.closed_weekends || /closed week/.test(hn);
+    const noHours = g.no_hours_listed || /no hours/.test(hn);
+    const open24 = g.open_24h || /24/.test(hn);
+    const big = n != null && n >= 500, tiny = n != null && n < 10, low = r > 0 && r < 4.5 && n != null && n >= 10;
+    if (tiny) return {
+      key: 'reviews',
+      see: `you've got ${n} review${n === 1 ? '' : 's'} on Google`,
+      so: `the shops ranking above you have sixty, eighty — and that's the whole reason they get the call instead of you`,
+      ask: `When a job goes well, does anybody ask the customer for a review, or does it just not happen?`,
+    };
+    if (low) return {
+      key: 'reviews',
+      see: `you're sitting at ${stars(p)} with ${n} reviews`,
+      so: `the next ten happy customers would move that number fast, and right now nobody's asking them`,
+      ask: `When a job goes well, who asks for the review — you, or nobody?`,
+    };
+    if (closedWk) return {
+      key: 'weekend',
+      see: `your listing says you're closed Saturday and Sunday`,
+      so: `so when a water heater lets go on a Saturday, that call rings out, and the homeowner calls the next guy`,
+      ask: `What actually happens to a Saturday call right now — voicemail?`,
+    };
+    if (noHours) return {
+      key: 'hours',
+      see: `your Google listing has no hours on it`,
+      so: `so a guy calling at six at night can't tell if you're open, and most of them don't leave a message, they call the next name`,
+      ask: `When you're on a job and the office line rings, who picks it up?`,
+    };
+    if (open24 && big) return {
+      key: 'busy',
+      see: `you've got ${n} reviews, so you're busy — every truck's out most days`,
+      so: `the question is the call that comes in while every truck is out`,
+      ask: `Who's answering that one — the office, a service, or does it go to voicemail?`,
+    };
+    if (open24) return {
+      key: '24h',
+      see: `your listing says you're open 24 hours`,
+      so: `so somebody's picking up at two in the morning`,
+      ask: `Is that you, or does it go to a service?`,
+    };
+    if (big) return {
+      key: 'busy',
+      see: `you've got ${n} reviews, so you're not short on work`,
+      so: `which usually means the phone's the thing that slips`,
+      ask: `When every truck is out, who's picking up?`,
+    };
+    return {
+      key: 'general',
+      see: `you're at ${stars(p) || 'a good rating'} with ${n ?? 'a lot of'} reviews — a real shop, owner-run`,
+      so: `and owner-run shops are the ones where the phone goes to voicemail the second you're under a sink`,
+      ask: `What happens to a call that comes in while you're on a job?`,
+    };
+  }
+  // one spoken sentence: "your listing says you're closed Saturday and Sunday, so when a water heater…"
+  const hook = (p) => { const a = angle(p); return `${a.see}, ${a.so}`; };
+  const hookBare = hook;
+  const ask = (p) => angle(p).ask;
   const offer = (p) => OFFERS[(p.pitch || '').split('+')[0].trim()] || OFFERS['Never Miss a Call'];
   const second = (p) => (p.pitch || '').includes('+') ? OFFERS[(p.pitch.split('+')[1] || '').trim()] : null;
 
@@ -67,7 +128,7 @@
         note: 'Leave the demo number, not a pitch. Say your number twice, slowly.',
         lines: [
           `Hey, it's Nick Byrd, I'm local — out of Pottstown.`,
-          `I called because ${hook(p)}. So the calls you get after hours are going to voicemail instead of getting booked.`,
+          `I called because ${hook(p)}.`,
           `I'm not going to pitch you on a machine. Call ${DEMO} and you'll hear exactly what I'd put on your line.`,
           `I'll try you again in a few days. ${CELL}. That's ${CELL}.`,
         ],
@@ -78,8 +139,8 @@
         note: `${p.attempts || 1} tries so far. If mornings failed, go late afternoon. Six strikes and it retires itself.`,
         lines: [
           `${greet(p)} Nick — I left you a message last week about your phones.`,
-          `Thirty seconds and I'm gone: ${hook(p)}. Every one of those calls is a job someone else booked.`,
-          `What do you do with the ones that come in while you're under a sink?`,
+          `Thirty seconds and I'm gone: ${hook(p)}.`,
+          `${ask(p)}`,
           `— then let him talk. Don't pitch over the answer.`,
         ],
       };
@@ -133,17 +194,18 @@
 
       default: return {
         title: 'First call',
-        note: 'Earn the next 30 seconds before you pitch anything. One question, then listen.',
+        note: 'One observation about his listing, one question, then shut up. He sells himself on the answer. Do not say "AI" until he asks what it is.',
         lines: [
           `${greet(p)}`,
-          `Nick Byrd — I'm local, out of Pottstown. Give me 30 seconds and if it's not for you I'll get off the phone.`,
-          `I was looking at ${n} on Google and ${hook(p)}. Is that about right?`,
-          `— let him answer. Whatever he says, go to the next line.`,
-          `That's why I called. I put ${o.what} on shops like yours. ${o.does}`,
-          `What happens right now when somebody calls you on a Saturday?`,
-          `— that answer is the sale. Shut up and let it sit.`,
-          `${price} ${o.proof}`,
-          `Easiest thing: call ${DEMO} and hear it yourself. Want me to set yours up this week?`,
+          `Nick Byrd — I'm local, out of Pottstown. I'm not selling you a website. Thirty seconds, and if it's nothing, I'm gone.`,
+          `I was looking at ${n} on Google — ${hook(p)}.`,
+          `${ask(p)}`,
+          `— STOP. Let the silence sit. Whatever he says next is the sale. If he says "voicemail" or "my wife" or "I just call back", say "yeah, that's everybody", and keep going.`,
+          `Here's what I do: ${o.what}. ${o.does}`,
+          `${o.proof}`,
+          `${price}`,
+          `Easiest way to see it is to call it yourself — ${DEMO}. Call it right now while I hold if you want, hang up on it halfway, I don't care. Then tell me if you'd put it on your line.`,
+          `— if he's warm: "I can have it answering your line by Thursday — morning or afternoon better for a 20-minute setup call?" Get the time. If he's cold: "Fair. Can I text you the demo number so you have it?" Then log it and move on.`,
         ],
       };
     }
@@ -156,7 +218,7 @@
     if (p.status === 'talking') return 'talking';
     if (p.status === 'callback') return 'callback';
     if (p.status === 'voicemail') return 'voicemail';
-    if (p.status === 'no_answer') return 'retry';
+    if (p.status === 'no_answer' || p.status === 'called') return 'retry';
     return 'first';
   }
 
