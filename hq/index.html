@@ -220,7 +220,7 @@ const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 const supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
 const $=id=>document.getElementById(id), esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const STATUSES=['new','contacted','audit_sent','quoted','won','lost'];
-let leads=[], rx=null, filter='open', pros=[], pfilter='today', posts=[], reviews={asks:[],no_url:[],pending:0}, postFilter='draft', brains=[], runs=[], results={};
+let leads=[], rx=null, filter='open', pros=[], pfilter='today', posts=[], reviews={asks:[],no_url:[],pending:0}, postFilter='draft', brains=[], runs=[], results={}, seo={keywords:[],links:[]};
 
 function ago(ts){ if(!ts) return ''; const d=(Date.now()-new Date(ts))/6e4; if(d<60) return Math.round(d)+'m ago'; if(d<1440) return Math.round(d/60)+'h ago'; if(d<10080) return Math.round(d/1440)+'d ago'; return new Date(ts).toLocaleDateString(); }
 function tel(p){ return (p||'').replace(/[^\d+]/g,''); }
@@ -248,8 +248,8 @@ document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
 });
 
 async function load(){
-  const [p,r,pr,ap,ra,ab,ar,rs]=await Promise.all([supa.rpc('hq_pipeline',{p_days:180}), supa.rpc('hq_rx',{p_days:30}), supa.rpc('hq_prospects'), supa.rpc('hq_agent_posts',{p_days:60}), supa.rpc('hq_review_asks',{p_days:60}), supa.rpc('hq_agent_brains'), supa.rpc('hq_agent_runs',{p_days:30}), supa.rpc('hq_post_results',{p_days:60})]);
-  posts=ap.data||[]; reviews=ra.data||{asks:[],no_url:[],pending:0}; brains=ab.data||[]; runs=ar.data||[]; results=rs.data||{};
+  const [p,r,pr,ap,ra,ab,ar,rs,sq]=await Promise.all([supa.rpc('hq_pipeline',{p_days:180}), supa.rpc('hq_rx',{p_days:30}), supa.rpc('hq_prospects'), supa.rpc('hq_agent_posts',{p_days:60}), supa.rpc('hq_review_asks',{p_days:60}), supa.rpc('hq_agent_brains'), supa.rpc('hq_agent_runs',{p_days:30}), supa.rpc('hq_post_results',{p_days:60}), supa.rpc('hq_seo')]);
+  posts=ap.data||[]; reviews=ra.data||{asks:[],no_url:[],pending:0}; brains=ab.data||[]; runs=ar.data||[]; results=rs.data||{}; seo=sq.data||{keywords:[],links:[]};
   pros=pr.data||[]; renderPros(); renderAgents();
   if(p.error){ $('leads').innerHTML='<div class="empty">'+esc(p.error.message)+'</div>'; } else { leads=p.data||[]; renderLeads(); }
   if(r.error){ $('jobs').innerHTML='<div class="empty">'+esc(r.error.message)+'</div>'; } else { rx=r.data; renderRx(); }
@@ -457,7 +457,7 @@ async function renderAgents(){
         note:`No status file yet. It appears at <code>/hq/agents/seo.json</code> the first time the build runs on the live site.` })
     : agentCard({ key:'seo', name:'SEO build — SEO agent', what:'Generates the search pages from tools/seo-data.mjs and checks them against the quality gate.',
         sched:'daily 7:00am ET', next:nextRunTxt(7,0), tone:'run',
-        stats:[[seoAgent.pages,'pages'],[seoAgent.clusters.services,'services'],[seoAgent.clusters.trades,'trades'],[seoAgent.clusters.guides,'guides']],
+        stats:[[seoAgent.pages,'pages'],[(seo.keywords||[]).filter(k=>k.status==='new').length,'keywords found'],[(seo.links||[]).filter(l=>l.status==='todo').length,'links to get'],[(seo.links||[]).filter(l=>l.status==='live').length,'links live']],
         note:`Last build ${esc(ago(seoAgent.lastBuild))} · ${seoAgent.sitemapUrls} urls in the sitemap. It only ships pages that pass <code>seo-check</code>, and it is told to skip anything it can't say something real about.` });
 
   // ---- the writers: GBP, Meta, Content. They cannot post for Nick (no API token for either
@@ -504,14 +504,31 @@ async function renderAgents(){
     sched:'weekly Sun 8:00pm ET', next:nextRunTxt(20,0,0), tone: signals?'run':'idle',
     stats:[[signals,'signals'],[learned,'brains taught'],[brains.length,'brains']],
     note: coachAt?`Last taught ${esc(ago(coachAt))}. Open any Brain to read what it learned.`:'Nothing learned yet — it needs a week of you tapping Posted and Skip first.' });
-  $('agents').innerHTML = lead + seo + gbp + meta + content + rv + vis + coach;
+  $('agents').innerHTML = lead + seo + seoResearch() + gbp + meta + content + rv + vis + coach;
   // brain editor per card
   $('agents').querySelectorAll('.card[data-agent] button.brain').forEach(btn=>btn.onclick=()=>openBrain(btn.closest('.card')));
+  $('agents').querySelectorAll('[data-link]').forEach(el=>{ const id=el.dataset.link, l=(seo.links||[]).find(x=>x.id===id); const set=async st=>{ const {error}=await supa.rpc('hq_seo_link_status',{p_id:id,p_status:st}); if(error){ alert(error.message); return; } l.status=st; renderAgents(); }; el.querySelector('.ldone').onclick=()=>set('submitted'); el.querySelector('.lskip').onclick=()=>set('skip'); });
   // activity
   $('runs').innerHTML = runs.length ? runs.slice(0,40).map(r=>`<div class="tr"><b>${esc(r.agent)}</b>${r.business?' · '+esc(r.business):''} · ${esc(ago(r.created_at))} — ${esc(r.note)}</div>`).join('') : '<div class="empty">Nothing logged yet. Each run leaves one line here.</div>';
   renderPosts();
 }
-const AGENT_WHAT={prospector:'Scoring, towns, what makes a good prospect. The cap stays at 30.',seo:'What to write pages about, what to skip, voice. Prices are fixed.',gbp:'Angles to push, things to never say, how often to mention the demo line.',meta:'Tone for Facebook vs Instagram, hashtags to use or avoid, what to film.',content:'Topics you want covered, topics you\'re sick of, how you actually talk.',review:'The wording of the review text. Keep it short; it goes to real customers.',visuals:'Look of the thumbnails (truck, hands, job site, no stock vibes). Video on/off is the switch below.',coach:'What "good" means to you — e.g. "a skipped script means the topic, not the voice".'};
+function seoResearch(){
+  const todo=(seo.links||[]).filter(l=>l.status==='todo'), done=(seo.links||[]).filter(l=>l.status!=='todo'&&l.status!=='skip');
+  const kws=(seo.keywords||[]).filter(k=>k.status!=='skip').slice(0,12);
+  if(!todo.length&&!done.length&&!kws.length) return '';
+  return `<div class="card" style="background:#fff8d6">
+    <div class="top"><div><h3>Links to get</h3><div class="biz">The agent finds them, you sign up. Tap Done when it's submitted. Each one moves the map pack more than any page.</div></div></div>
+    ${todo.length?todo.map(l=>`<div class="post" style="border-top:2px dashed var(--line);padding-top:10px;margin-top:10px" data-link="${l.id}">
+      <b>${esc(l.site)}</b> <span class="tag">${esc(l.kind||'')}</span> <span class="tag">${esc(l.cost||'')}</span>
+      <div class="hint">${esc(l.why||'')}</div>
+      <div class="sum" style="margin-top:4px">${esc(l.how||'')}</div>
+      <div class="acts"><a class="call" href="${esc(l.url)}" target="_blank" rel="noopener">Open</a><button class="ldone" style="background:var(--green);color:#fff;border-color:var(--green)">Done ✓</button><button class="lskip">Skip</button></div>
+    </div>`).join(''):'<div class="empty" style="margin-top:8px">Nothing queued. The next research run adds more.</div>'}
+    ${done.length?`<details class="log" style="margin-top:10px"><summary>${done.length} submitted or live</summary>${done.map(l=>`<div class="tr">${esc(l.site)} · ${esc(l.status)}</div>`).join('')}</details>`:''}
+    ${kws.length?`<h2 style="margin-top:14px">Keywords it's building for</h2>${kws.map(k=>`<div class="tr"><b>${esc(k.keyword)}</b> → ${esc(k.target_page||'new page')} <span class="tag">${esc(k.status)}</span>${k.evidence?` <span class="hint">${esc(k.evidence)}</span>`:''}</div>`).join('')}`:''}
+  </div>`;
+}
+const AGENT_WHAT={prospector:'Scoring, towns, what makes a good prospect. The cap stays at 30.',seo:'What to write pages about, what to skip, voice, which towns matter, which kinds of links to chase. Prices are fixed.',gbp:'Angles to push, things to never say, how often to mention the demo line.',meta:'Tone for Facebook vs Instagram, hashtags to use or avoid, what to film.',content:'Topics you want covered, topics you\'re sick of, how you actually talk.',review:'The wording of the review text. Keep it short; it goes to real customers.',visuals:'Look of the thumbnails (truck, hands, job site, no stock vibes). Video on/off is the switch below.',coach:'What "good" means to you — e.g. "a skipped script means the topic, not the voice".'};
 function openBrain(card){
   const key=card.dataset.agent, ed=card.querySelector('.bed'); if(!ed.classList.contains('hidden')){ ed.classList.add('hidden'); return; }
   const b=brains.find(x=>x.agent===key&&!x.business_id)||{agent:key,instructions:'',learned:'',settings:{}};

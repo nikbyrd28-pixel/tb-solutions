@@ -17,6 +17,21 @@ node tools/seo-build.mjs && node tools/seo-check.mjs
 Hand-built pages (`/`, `/receptionist/`, `/offers/`, `/leads/`, …) are left alone and stay in the
 sitemap — the checker reports their problems as notes rather than failing on them.
 
+## Research — keywords and links (the weekly research run)
+
+Two tables, both shown in HQ → Agents under the SEO card:
+
+- `seo_keywords` — phrases a trades owner around Chester County actually types, with the
+  evidence (Google autocomplete, People-also-ask, a competitor's title, the rank log) and the
+  page they belong on. The build run reads `status = 'new'` rows first when picking the next
+  backlog item and flips them to `building` / `live`. No keyword without evidence: a phrase you
+  made up is not a keyword.
+- `seo_links` — real places tbsol.net can earn a link or citation from: local directories,
+  Chamber of Commerce, trade associations (PHCC, local plumbing/HVAC groups), supplier
+  "find a pro" pages, local press, podcasts and guest-post targets. Each row says what Nick
+  must do (`how`) and what it costs. Most need a human to sign up, so the agent queues and
+  Nick taps Done. Only pages that exist and that you have actually opened — never a guessed URL.
+
 ## What's live now
 
 | Cluster | Pages | Targets |
