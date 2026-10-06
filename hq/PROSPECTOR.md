@@ -14,6 +14,20 @@ Zero means add nothing today. That is a normal result, not a failure: it means t
 full and the bottleneck is the phone, not the prospecting. Pick 1–2 towns and fill only the
 slots you are given.
 
+## Where the shops come from
+
+The places search tool only exists in Nick's chat, not in the scheduled run. For the daily run
+to work on its own it needs a **Google Places API key** stored in `rx_config` as
+`GOOGLE_PLACES_KEY` (Google Cloud → APIs → enable "Places API (New)" → Credentials → API key;
+the free monthly credit covers this volume). Until that key exists the daily run finds the
+tool missing, adds nothing, and says so — and Nick fills the list by asking in chat
+("fill the call list"), which uses the chat tool and the same scoring.
+
+With the key: `POST https://places.googleapis.com/v1/places:searchText` with header
+`X-Goog-Api-Key`, `X-Goog-FieldMask: places.id,places.displayName,places.formattedAddress,
+places.nationalPhoneNumber,places.rating,places.userRatingCount,places.regularOpeningHours,
+places.websiteUri,places.types` and body `{"textQuery":"plumber Phoenixville PA"}`.
+
 ## Quality only — the floor is 50
 
 A lead goes on the list only if it scores **50 or more**. In practice that means a small
