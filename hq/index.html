@@ -198,11 +198,13 @@ details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf
       <div id="bizEdit" class="hidden"></div>
     </section>
     <section id="t-agents" class="hidden">
-      <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">The fleet that runs without you. Status is read from what each one actually produced, not from what it claims. Posts land in the inbox at the bottom — copy, paste, tap Posted.</div>
+      <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">The fleet that runs without you. Status is read from what each one actually produced, not from what it claims. Tap <b>Brain</b> on any card to change what it does — live on its next run. Posts land in the inbox — copy, paste, tap Posted. Every Posted, Skip and Edit teaches the Coach.</div>
       <div id="agents"></div>
       <h2 style="margin-top:18px">Inbox — written, waiting on you</h2>
       <div class="filters" id="postFilters"></div>
       <div id="posts"></div>
+      <h2 style="margin-top:18px">What they did</h2>
+      <div id="runs"></div>
     </section>
   </main>
 </div>
@@ -218,7 +220,7 @@ const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 const supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
 const $=id=>document.getElementById(id), esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const STATUSES=['new','contacted','audit_sent','quoted','won','lost'];
-let leads=[], rx=null, filter='open', pros=[], pfilter='today', posts=[], reviews={asks:[],no_url:[],pending:0}, postFilter='draft';
+let leads=[], rx=null, filter='open', pros=[], pfilter='today', posts=[], reviews={asks:[],no_url:[],pending:0}, postFilter='draft', brains=[], runs=[];
 
 function ago(ts){ if(!ts) return ''; const d=(Date.now()-new Date(ts))/6e4; if(d<60) return Math.round(d)+'m ago'; if(d<1440) return Math.round(d/60)+'h ago'; if(d<10080) return Math.round(d/1440)+'d ago'; return new Date(ts).toLocaleDateString(); }
 function tel(p){ return (p||'').replace(/[^\d+]/g,''); }
@@ -246,8 +248,8 @@ document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
 });
 
 async function load(){
-  const [p,r,pr,ap,ra]=await Promise.all([supa.rpc('hq_pipeline',{p_days:180}), supa.rpc('hq_rx',{p_days:30}), supa.rpc('hq_prospects'), supa.rpc('hq_agent_posts',{p_days:60}), supa.rpc('hq_review_asks',{p_days:60})]);
-  posts=ap.data||[]; reviews=ra.data||{asks:[],no_url:[],pending:0};
+  const [p,r,pr,ap,ra,ab,ar]=await Promise.all([supa.rpc('hq_pipeline',{p_days:180}), supa.rpc('hq_rx',{p_days:30}), supa.rpc('hq_prospects'), supa.rpc('hq_agent_posts',{p_days:60}), supa.rpc('hq_review_asks',{p_days:60}), supa.rpc('hq_agent_brains'), supa.rpc('hq_agent_runs',{p_days:30})]);
+  posts=ap.data||[]; reviews=ra.data||{asks:[],no_url:[],pending:0}; brains=ab.data||[]; runs=ar.data||[];
   pros=pr.data||[]; renderPros(); renderAgents();
   if(p.error){ $('leads').innerHTML='<div class="empty">'+esc(p.error.message)+'</div>'; } else { leads=p.data||[]; renderLeads(); }
   if(r.error){ $('jobs').innerHTML='<div class="empty">'+esc(r.error.message)+'</div>'; } else { rx=r.data; renderRx(); }
@@ -415,14 +417,15 @@ function nextRunTxt(hourET, minET, days){
   const mins=Math.round((next-et)/6e4);
   return `${days?next.toLocaleDateString([], {weekday:'short'})+' ':''}${next.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})} ET · in ${mins<60?mins+'m':mins<2880?Math.round(mins/60)+'h':Math.round(mins/1440)+'d'}`;
 }
-function agentCard({name,what,sched,next,stats,note,tone}){
-  return `<div class="card">
+function agentCard({key,name,what,sched,next,stats,note,tone}){
+  return `<div class="card" data-agent="${key||''}">
     <div class="top"><div><h3>${esc(name)}</h3><div class="biz">${esc(what)}</div></div>
       <span class="src" style="background:${tone==='idle'?'#f0ece0':tone==='wait'?'var(--yellow)':'var(--green)'};color:${tone==='idle'?'var(--muted)':tone==='wait'?'var(--ink)':'#fff'}">${tone==='idle'?'IDLE':tone==='wait'?'NEEDS YOU':'RUNNING'}</span></div>
     <div class="tags"><span class="tag">${esc(sched)}</span><span class="tag">next ${esc(next)}</span></div>
     <div class="astats">
       ${stats.map(([n,l])=>`<div><b>${esc(String(n))}</b><span>${esc(l)}</span></div>`).join('')}</div>
     ${note?`<div class="sum" style="margin-top:10px">${note}</div>`:''}
+    ${key?`<div class="acts"><button class="brain" style="background:var(--yellow)">Brain</button></div><div class="bed hidden"></div>`:''}
   </div>`;
 }
 let seoAgent=null;
@@ -434,7 +437,7 @@ async function renderAgents(){
   const slots=Math.max(0,CAP-uncalled);
   const newest=pros.map(p=>p.created_at).filter(Boolean).sort().pop();
 
-  const lead=agentCard({
+  const lead=agentCard({ key:'prospector',
     name:'Prospector — lead agent', what:'Finds owner-operated plumbers, HVAC and electricians and scores them by how badly they need the phone answered.',
     sched:'daily 6:50am ET', next:nextRunTxt(6,50), tone:slots?'run':'idle',
     stats:[[uncalled+'/'+CAP,'uncalled'],[slots,'slots free'],[addedToday,'added today'],[pros.length,'total']],
@@ -444,10 +447,10 @@ async function renderAgents(){
   });
 
   const seo = seoAgent===false
-    ? agentCard({ name:'SEO build — SEO agent', what:'Generates the search pages from tools/seo-data.mjs and checks them against the quality gate.',
+    ? agentCard({ key:'seo', name:'SEO build — SEO agent', what:'Generates the search pages from tools/seo-data.mjs and checks them against the quality gate.',
         sched:'daily 7:00am ET', next:nextRunTxt(7,0), tone:'idle', stats:[['—','pages'],['—','last build']],
         note:`No status file yet. It appears at <code>/hq/agents/seo.json</code> the first time the build runs on the live site.` })
-    : agentCard({ name:'SEO build — SEO agent', what:'Generates the search pages from tools/seo-data.mjs and checks them against the quality gate.',
+    : agentCard({ key:'seo', name:'SEO build — SEO agent', what:'Generates the search pages from tools/seo-data.mjs and checks them against the quality gate.',
         sched:'daily 7:00am ET', next:nextRunTxt(7,0), tone:'run',
         stats:[[seoAgent.pages,'pages'],[seoAgent.clusters.services,'services'],[seoAgent.clusters.trades,'trades'],[seoAgent.clusters.guides,'guides']],
         note:`Last build ${esc(ago(seoAgent.lastBuild))} · ${seoAgent.sitemapUrls} urls in the sitemap. It only ships pages that pass <code>seo-check</code>, and it is told to skip anything it can't say something real about.` });
@@ -460,7 +463,7 @@ async function renderAgents(){
   const writer=(agent,name,what,sched,next,extra)=>{
     const mine=byAgent(agent), drafts=mine.filter(p=>p.status==='draft').length, posted=mine.filter(p=>p.status==='posted').length;
     const thisWk=mine.filter(p=>new Date(p.created_at)>wk).length; const last=mine.map(p=>p.created_at).sort().pop();
-    return agentCard({ name, what, sched, next, tone: drafts?'wait':thisWk?'run':'idle',
+    return agentCard({ key:agent, name, what, sched, next, tone: drafts?'wait':thisWk?'run':'idle',
       stats:[[drafts,'waiting'],[posted,'posted'],[thisWk,'this week'],[mine.length,'total']],
       note: drafts ? `${drafts} draft${drafts>1?'s':''} in the inbox below. ${extra}` : last ? `Last wrote ${esc(ago(last))}. ${extra}` : `Hasn't run yet. ${extra}` });
   };
@@ -474,15 +477,50 @@ async function renderAgents(){
   const asks=reviews.asks||[], sent=asks.filter(a=>a.status==='sent').length, skipped=asks.filter(a=>a.status==='skipped').length, failed=asks.filter(a=>a.status==='failed').length;
   const noUrl=reviews.no_url||[]; const reasons={}; asks.filter(a=>a.status!=='sent').forEach(a=>{ reasons[a.reason]=(reasons[a.reason]||0)+1; });
   const why={no_consent:'customer declined texts on the call',no_review_url:'shop has no review link set',no_phone:'job had no phone'};
-  const rv=agentCard({ name:'Review — review agent', what:'When a receptionist job is marked done, texts that customer the shop\'s Google review link once — only if they said yes to texts on the call.',
+  const rv=agentCard({ key:'review', name:'Review — review agent', what:'When a receptionist job is marked done, texts that customer the shop\'s Google review link once — only if they said yes to texts on the call.',
     sched:'hourly at :15', next:'top of the hour', tone: noUrl.length?'wait':sent?'run':'idle',
     stats:[[sent,'sent'],[skipped,'skipped'],[failed,'failed'],[reviews.pending||0,'done jobs unasked']],
     note: (noUrl.length?`<b>${noUrl.map(esc).join(', ')}</b> ${noUrl.length>1?'have':'has'} no review link — nothing can go out until you paste one into RX Clients → Edit brain → Business. `:'')
         + (Object.keys(reasons).length?`Skips: ${Object.entries(reasons).map(([r,n])=>`${n} ${why[r]||esc(r||'')}`).join(' · ')}. `:'')
         + (!asks.length&&!noUrl.length?'Nothing to send yet — it wakes up the first time a job is marked done.':'') });
 
-  $('agents').innerHTML = lead + seo + gbp + meta + content + rv;
+  // ---- Visuals: thumbnails for every draft, a clip for scripts when video is on. Spends High credits.
+  const vb=brains.find(b=>b.agent==='visuals'&&!b.business_id)||{settings:{}}; const videoOn=!!(vb.settings||{}).video;
+  const needPic=posts.filter(p=>p.status==='draft'&&!p.media_url).length, havePic=posts.filter(p=>p.media_url).length, haveVid=posts.filter(p=>p.video_url).length;
+  const vis=agentCard({ key:'visuals', name:'Visuals — thumbnail / video agent', what:'Makes a thumbnail for every draft post from its media note, and a short clip for each script when video is on. Uses your Higgsfield credits.',
+    sched:'daily 7:40am ET', next:nextRunTxt(7,40), tone: needPic?'wait':havePic?'run':'idle',
+    stats:[[needPic,'need a picture'],[havePic,'pictures'],[haveVid,'clips'],[videoOn?'ON':'OFF','video']],
+    note: needPic?`${needPic} draft${needPic>1?'s':''} waiting on a picture — it catches them on the next run.`:'Every draft has a picture.' + (videoOn?' Video is on: each script gets a clip, which costs real credits.':' Video is off — flip it in the brain when you want clips.') });
+  // ---- Coach: reads what got posted / skipped / edited and rewrites each agent's "learned" notes.
+  const learned=brains.filter(b=>(b.learned||'').trim()).length, coachAt=brains.filter(b=>b.updated_by==='coach').map(b=>b.updated_at).sort().pop();
+  const signals=posts.filter(p=>p.status!=='draft'||p.edited).length;
+  const coach=agentCard({ key:'coach', name:'Coach — learning agent', what:'Every Sunday it reads every Posted, Skip and Edit from you and your clients, plus which review texts got answered, and rewrites each agent\'s learned notes. It cannot touch prices, facts or your instructions.',
+    sched:'weekly Sun 8:00pm ET', next:nextRunTxt(20,0,0), tone: signals?'run':'idle',
+    stats:[[signals,'signals'],[learned,'brains taught'],[brains.length,'brains']],
+    note: coachAt?`Last taught ${esc(ago(coachAt))}. Open any Brain to read what it learned.`:'Nothing learned yet — it needs a week of you tapping Posted and Skip first.' });
+  $('agents').innerHTML = lead + seo + gbp + meta + content + rv + vis + coach;
+  // brain editor per card
+  $('agents').querySelectorAll('.card[data-agent] button.brain').forEach(btn=>btn.onclick=()=>openBrain(btn.closest('.card')));
+  // activity
+  $('runs').innerHTML = runs.length ? runs.slice(0,40).map(r=>`<div class="tr"><b>${esc(r.agent)}</b>${r.business?' · '+esc(r.business):''} · ${esc(ago(r.created_at))} — ${esc(r.note)}</div>`).join('') : '<div class="empty">Nothing logged yet. Each run leaves one line here.</div>';
   renderPosts();
+}
+const AGENT_WHAT={prospector:'Scoring, towns, what makes a good prospect. The cap stays at 30.',seo:'What to write pages about, what to skip, voice. Prices are fixed.',gbp:'Angles to push, things to never say, how often to mention the demo line.',meta:'Tone for Facebook vs Instagram, hashtags to use or avoid, what to film.',content:'Topics you want covered, topics you\'re sick of, how you actually talk.',review:'The wording of the review text. Keep it short; it goes to real customers.',visuals:'Look of the thumbnails (truck, hands, job site, no stock vibes). Video on/off is the switch below.',coach:'What "good" means to you — e.g. "a skipped script means the topic, not the voice".'};
+function openBrain(card){
+  const key=card.dataset.agent, ed=card.querySelector('.bed'); if(!ed.classList.contains('hidden')){ ed.classList.add('hidden'); return; }
+  const b=brains.find(x=>x.agent===key&&!x.business_id)||{agent:key,instructions:'',learned:'',settings:{}};
+  ed.innerHTML=`<div class="hint" style="margin:10px 0 6px">${esc(AGENT_WHAT[key]||'')}</div>
+    <label class="f">Your instructions<textarea class="bi" style="min-height:110px" placeholder="Plain English. It reads this at the top of every run.">${esc(b.instructions||'')}</textarea></label>
+    ${key==='visuals'?`<label class="tog" style="margin:8px 0"><input type="checkbox" class="bv" ${(b.settings||{}).video?'checked':''}> Make a video clip for each script (spends credits)</label>`:''}
+    ${(b.learned||'').trim()?`<details class="log" open><summary>What the Coach learned ${b.updated_by==='coach'?'· '+esc(ago(b.updated_at)):''}</summary><pre>${esc(b.learned)}</pre></details>`:'<div class="hint">Nothing learned yet.</div>'}
+    <div class="acts" style="margin-top:8px"><button class="bsave" style="background:var(--ink);color:var(--yellow)">Save brain</button><span class="hint bst"></span></div>`;
+  ed.classList.remove('hidden');
+  ed.querySelector('.bsave').onclick=async()=>{
+    const ins=ed.querySelector('.bi').value; const vv=ed.querySelector('.bv'); const settings=vv?{...(b.settings||{}),video:vv.checked}:null;
+    const {error}=await supa.rpc('hq_agent_brain_save',{p_agent:key,p_business:null,p_instructions:ins,p_settings:settings}); if(error){ alert(error.message); return; }
+    b.instructions=ins; if(settings) b.settings=settings; b.updated_by='nick'; if(!brains.includes(b)) brains.push(b);
+    ed.querySelector('.bst').textContent='Saved. Live on the next run.'; setTimeout(()=>renderAgents(),900);
+  };
 }
 const CHAN={gbp:['Google post','#4285f4'],facebook:['Facebook','#1877f2'],instagram:['Instagram','#c13584'],script:['Video script','var(--copper)']};
 function renderPosts(){
@@ -492,8 +530,10 @@ function renderPosts(){
   const list=posts.filter(p=>postFilter==='all'||p.status===postFilter);
   $('posts').innerHTML=list.length?list.map(p=>{ const [cl,col]=CHAN[p.channel]||[p.channel,'var(--muted)']; const full=p.body+(p.caption?'\n\n'+p.caption:'');
     return `<div class="card post ${p.status==='posted'?'won':p.status==='skipped'?'lost':''}" data-id="${p.id}">
-      <div class="top"><div><h3>${esc(p.title||cl)}</h3><div class="biz">${esc(p.business||'TB Solutions')} · ${esc(ago(p.created_at))}${p.posted_at?' · posted '+esc(ago(p.posted_at)):''}</div></div><span class="chan" style="background:${col}">${cl}</span></div>
+      <div class="top"><div><h3>${esc(p.title||cl)}</h3><div class="biz">${esc(p.business||'TB Solutions')} · ${esc(ago(p.created_at))}${p.posted_at?' · posted '+esc(ago(p.posted_at)):''}${p.edited?' · edited':''}</div></div><span class="chan" style="background:${col}">${cl}</span></div>
       ${p.run_note?`<div class="hint">${esc(p.run_note)}</div>`:''}
+      ${p.media_url?`<a href="${esc(p.media_url)}" target="_blank"><img src="${esc(p.media_url)}" alt="" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;border:2px solid var(--line);margin-top:8px"></a>`:''}
+      ${p.video_url?`<video src="${esc(p.video_url)}" controls playsinline style="width:100%;border-radius:12px;border:2px solid var(--line);margin-top:8px"></video>`:''}
       <pre class="body">${esc(p.body)}</pre>${p.caption?`<pre class="cap">${esc(p.caption)}</pre>`:''}
       ${p.media_note?`<div class="cap">📷 ${esc(p.media_note)}</div>`:''}${p.cta_url?`<div class="cap">🔗 ${esc(p.cta_url)}</div>`:''}
       <div class="acts"><button class="copy">Copy</button>${p.status==='draft'?`<button class="edit">Edit</button><button class="posted" style="background:var(--green);color:#fff;border-color:var(--green)">Posted ✓</button><button class="skip">Skip</button>`:`<button class="undo">Back to waiting</button>`}</div>
@@ -509,7 +549,7 @@ function renderPosts(){
       const pre=c.querySelector('pre.body'); const cap=c.querySelector('pre.cap');
       const ta=document.createElement('textarea'); ta.value=p.body; pre.replaceWith(ta);
       let tc=null; if(cap){ tc=document.createElement('textarea'); tc.value=p.caption||''; tc.style.minHeight='70px'; cap.replaceWith(tc); }
-      ed.textContent='Save'; ed.onclick=async()=>{ const {error}=await supa.rpc('hq_agent_post_edit',{p_id:id,p_body:ta.value,p_caption:tc?tc.value:p.caption}); if(error){ alert(error.message); return; } p.body=ta.value; if(tc) p.caption=tc.value; renderPosts(); };
+      ed.textContent='Save'; ed.onclick=async()=>{ const {error}=await supa.rpc('hq_agent_post_edit',{p_id:id,p_body:ta.value,p_caption:tc?tc.value:p.caption}); if(error){ alert(error.message); return; } p.body=ta.value; if(tc) p.caption=tc.value; p.edited=true; renderPosts(); };
     };
   });
 }
@@ -614,7 +654,9 @@ async function openBiz(id){
       <div class="g2">${inp('owner_name','Owner')}<label class="f">Owner cell · gets every job by text<input data-k="owner_phone" type="tel" class="ph" value="${esc(fmtPhone(b.owner_phone))}" placeholder="(610) 555-0100"></label></div>
       <div class="g2"><label class="f">Receptionist's name<input data-k="agent_name" value="${esc(b.agent_name||'')}" placeholder="Dana"></label><label class="f">The line callers reach ${b.agent_number?'':'<span class="pill" style="background:var(--yellow)">not set up yet</span>'}<input data-k="agent_number" type="tel" class="ph" value="${esc(fmtPhone(b.agent_number))}" placeholder="assigned by Nick"></label></div>
       <label class="f">Google review link ${b.review_url?'':'<span class="pill" style="background:var(--yellow)">review texts are off until this is set</span>'}<input data-k="review_url" type="url" value="${esc(b.review_url||'')}" placeholder="https://g.page/r/…/review"></label>
-      <div class="hint">Google Business Profile → Ask for reviews → copy the link. After a job is marked done, customers who said yes to texts get it once.</div>`,true)}
+      <div class="hint">Google Business Profile → Ask for reviews → copy the link. After a job is marked done, customers who said yes to texts get it once.</div>
+      <label class="tog" style="margin-top:10px"><input type="checkbox" id="mkt" ${b.marketing?'checked':''}> Marketing agents on for this shop — Google posts, Facebook/Instagram, thumbnails, written for <b>${esc(b.name||'them')}</b>, visible in their app</label>
+      <div class="hint">The paid add-on. They get drafts in their app with Copy / Posted / Skip, their review texts, and a line a day on what the agents did.</div>`,true)}
     ${sec('money','Money',`${money(b.service_fee_cents)} dispatch · ${money(b.after_hours_fee_cents)} after hours · ${b.free_estimates?'free':'paid'} estimates`,`
       <div class="g3"><label class="f">Dispatch fee $<input data-k="service_fee_cents" type="number" inputmode="decimal" value="${b.service_fee_cents!=null?b.service_fee_cents/100:''}"></label>
         <label class="f">After-hours fee $<input data-k="after_hours_fee_cents" type="number" inputmode="decimal" value="${b.after_hours_fee_cents!=null?b.after_hours_fee_cents/100:''}"></label>
@@ -706,6 +748,7 @@ async function saveBiz(){
     hours,windows,jobs_per_window:+g('jobs_per_window')||2,emergency_policy:g('emergency_policy'),transfer_number:e164(g('transfer_number')),knowledge:g('knowledge'),review_url:g('review_url').trim(),active:$('active').checked};
   const {error}=await supa.rpc('hq_rx_business_save',{p_id:cur.business.id,p});
   if(error){ alert(error.message); return; }
+  if($('mkt')&&$('mkt').checked!==!!cur.business.marketing){ const m=await supa.rpc('hq_rx_business_marketing',{p_id:cur.business.id,p_on:$('mkt').checked}); if(m.error){ alert('Marketing: '+m.error.message); return; } cur.business.marketing=$('mkt').checked; }
   const hk=$('hcp_key').value.trim(), ha=$('hcp_active').value==='true';
   if(hk||cur.integrations.some(x=>x.provider==='housecallpro')){ const r2=await supa.rpc('hq_rx_integration_save',{p_business:cur.business.id,p_provider:'housecallpro',p_api_key:hk,p_active:ha,p_settings:{}}); if(r2.error){ alert('Integration: '+r2.error.message); return; } $('hcp_key').value=''; }
   $('saveSt').textContent='Saved. Live on the next call.'; $('saveBiz').textContent='Save'; $('saveBiz').classList.remove('dirty'); setTimeout(()=>$('saveSt').textContent='',2500);

@@ -174,6 +174,7 @@ details.sec[open]{border-color:var(--ink)}
     <button data-tab="leads">Leads<i id="nLeads"></i></button>
     <button data-tab="desk">Desk</button>
     <button data-tab="money">Money</button>
+    <button data-tab="mkt">Marketing<i id="nMkt"></i></button>
     <button data-tab="settings">What it says</button>
   </div>
   <main>
@@ -193,6 +194,7 @@ details.sec[open]{border-color:var(--ink)}
       <div id="desk"></div>
     </section>
     <section id="t-money" class="hidden"><div id="money"></div></section>
+    <section id="t-mkt" class="hidden"><div id="mkt"></div></section>
     <section id="t-settings" class="hidden"><div id="bizEdit"></div></section>
   </main>
 </div>
@@ -238,11 +240,12 @@ async function enter(){
 }
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
-  ['today','calls','leads','desk','money','settings'].forEach(t=>$('t-'+t).classList.toggle('hidden',t!==b.dataset.tab));
+  ['today','calls','leads','desk','money','mkt','settings'].forEach(t=>$('t-'+t).classList.toggle('hidden',t!==b.dataset.tab));
   if(b.dataset.tab==='settings'&&!$('bizEdit').innerHTML) openEditor();
   if(b.dataset.tab==='leads') loadLeads();
   if(b.dataset.tab==='desk') renderDesk();
   if(b.dataset.tab==='money') loadMoney();
+  if(b.dataset.tab==='mkt') loadMkt();
 });
 
 function render(){
@@ -366,6 +369,47 @@ function renderDesk(){
 
 // ---- money ----
 const usd=c=>'$'+(c/100).toFixed(c%100?2:0);
+// ---- Marketing: the posts the agents wrote for this shop, the review texts, and what they did ----
+const CHAN={gbp:['Google post','#4285f4'],facebook:['Facebook','#1877f2'],instagram:['Instagram','#c13584'],script:['Video script','#b5651d']};
+let mk=null, mkf='draft';
+async function loadMkt(){
+  const {data,error}=await supa.rpc('rx_owner_marketing',{p_days:60});
+  if(error||!data){ $('mkt').innerHTML='<div class="empty">Couldn\'t load.</div>'; return; }
+  mk=data; renderMkt();
+}
+function renderMkt(){
+  const root=$('mkt');
+  if(!mk.on){ root.innerHTML=`<div class="card"><h3>Marketing agents</h3><div class="sum">Not switched on for your shop yet. When it is, you get a Google post every week and Facebook/Instagram posts three times a week, written for <b>${esc(me.business.name)}</b> with a picture ready to go, plus a review text to every customer after a finished job. Ask Nick.</div></div>`; return; }
+  const posts=mk.posts||[], drafts=posts.filter(p=>p.status==='draft'); $('nMkt').textContent=drafts.length||''; $('nMkt').style.display=drafts.length?'':'none';
+  const rv=mk.reviews||[], sent=rv.filter(r=>r.status==='sent').length;
+  const list=posts.filter(p=>mkf==='all'||p.status===mkf);
+  root.innerHTML=`
+    <div class="card" style="background:#fff8d6"><h3>How it works</h3><div class="sum">Each post below was written for your shop. Tap <b>Copy</b>, paste it into Google / Facebook / Instagram, tap <b>Posted</b>. Don't like one? <b>Skip</b> it — the agents learn from that. Want them to say something different? Tell them at the bottom.</div></div>
+    ${mk.review_url?`<div class="card"><h3>Review texts</h3><div class="sum"><b>${sent}</b> customer${sent===1?'':'s'} got your review link after a finished job in the last 60 days.${rv.filter(r=>r.status==='skipped').length?` ${rv.filter(r=>r.status==='skipped').length} skipped (no text permission on the call, or no number).`:''}</div></div>`
+      :`<div class="card" style="box-shadow:4px 4px 0 var(--yellow)"><h3>Review texts are off</h3><div class="sum">Paste your Google review link and every customer who said yes to texts gets it once after their job is done.</div><div class="acts"><input id="rvurl" type="url" placeholder="https://g.page/r/…/review" style="flex:1;min-width:200px"><button id="rvsave" style="background:var(--ink);color:var(--yellow)">Turn on</button></div></div>`}
+    <h2>Posts</h2>
+    <div class="filters" id="mkFilters">${[['draft','To post'+(drafts.length?' <b>'+drafts.length+'</b>':'')],['posted','Posted'],['skipped','Skipped'],['all','All']].map(([k,l])=>`<button data-f="${k}" class="${mkf===k?'on':''}">${l}</button>`).join('')}</div>
+    <div id="mkPosts">${list.length?list.map(p=>{ const [cl,col]=CHAN[p.channel]||[p.channel,'#888']; return `<div class="card ${p.status==='posted'?'won':p.status==='skipped'?'lost':''}" data-id="${p.id}">
+      <div class="top"><div><h3>${esc(p.title||cl)}</h3><div class="biz">${esc(ago(p.created_at))}${p.posted_at?' · posted '+esc(ago(p.posted_at)):''}</div></div><span style="font-size:11px;font-weight:800;text-transform:uppercase;padding:3px 8px;border-radius:999px;color:#fff;background:${col}">${cl}</span></div>
+      ${p.media_url?`<a href="${esc(p.media_url)}" target="_blank"><img src="${esc(p.media_url)}" alt="" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;border:2px solid var(--line);margin-top:8px"></a>`:''}
+      <pre class="pbody" style="white-space:pre-wrap;font:inherit;font-size:15px;line-height:1.4;background:#faf7ec;border:2px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0 0">${esc(p.body)}</pre>
+      ${p.media_note&&!p.media_url?`<div class="hint">📷 ${esc(p.media_note)}</div>`:''}
+      <div class="acts"><button class="copy" style="background:var(--ink);color:var(--yellow)">Copy</button>${p.status==='draft'?`<button class="posted" style="background:var(--green);color:#fff">Posted ✓</button><button class="skip">Skip</button>`:`<button class="undo">Back</button>`}</div>
+    </div>`; }).join(''):`<div class="empty">${mkf==='draft'?'Nothing waiting. New posts land in the morning.':'Nothing here.'}</div>`}</div>
+    <h2>Tell the agents</h2>
+    ${['gbp','meta','review'].map(a=>{ const b=(mk.brains||[]).find(x=>x.agent===a)||{instructions:''}; const label={gbp:'Google posts',meta:'Facebook / Instagram',review:'Review text'}[a];
+      return `<div class="card"><h3>${label}</h3><label class="f"><textarea data-brain="${a}" style="min-height:70px" placeholder="Plain English — e.g. we don't do commercial, always mention the 24/7 line, no emojis.">${esc(b.instructions||'')}</textarea></label>${(b.learned||'').trim()?`<div class="hint">What it's learned: ${esc(b.learned)}</div>`:''}<div class="acts"><button data-bsave="${a}">Save</button><span class="hint"></span></div></div>`; }).join('')}
+    <h2>What they did</h2>
+    ${(mk.runs||[]).length?(mk.runs||[]).map(r=>`<div class="tr"><b>${esc(r.agent)}</b> · ${esc(ago(r.created_at))} — ${esc(r.note)}</div>`).join(''):'<div class="empty">Nothing yet.</div>'}`;
+  root.querySelectorAll('#mkFilters button').forEach(b=>b.onclick=()=>{ mkf=b.dataset.f; renderMkt(); });
+  const rs=$('rvsave'); if(rs) rs.onclick=async()=>{ const {error}=await supa.rpc('rx_owner_review_url',{p_url:$('rvurl').value}); if(error){ alert(error.message); return; } loadMkt(); };
+  root.querySelectorAll('#mkPosts .card').forEach(c=>{ const id=c.dataset.id, p=posts.find(x=>x.id===id);
+    const set=async st=>{ const {error}=await supa.rpc('rx_owner_post_status',{p_id:id,p_status:st}); if(error){ alert(error.message); return; } p.status=st; p.posted_at=st==='posted'?new Date().toISOString():null; renderMkt(); };
+    c.querySelector('.copy').onclick=async e=>{ try{ await navigator.clipboard.writeText(p.body); e.target.textContent='Copied'; }catch{ alert('Long-press the text to copy.'); } };
+    const x=c.querySelector('.posted'); if(x) x.onclick=()=>set('posted'); const y=c.querySelector('.skip'); if(y) y.onclick=()=>set('skipped'); const z=c.querySelector('.undo'); if(z) z.onclick=()=>set('draft'); });
+  root.querySelectorAll('button[data-bsave]').forEach(b=>b.onclick=async()=>{ const a=b.dataset.bsave, v=root.querySelector(`textarea[data-brain="${a}"]`).value; const {error}=await supa.rpc('rx_owner_brain_save',{p_agent:a,p_instructions:v}); b.nextElementSibling.textContent=error?error.message:'Saved — they read it on the next run.'; });
+}
+
 async function loadMoney(){
   // Coming back from Stripe: the webhook may take a second, so say so rather than showing "due".
   const paid=new URLSearchParams(location.search).get('paid');
