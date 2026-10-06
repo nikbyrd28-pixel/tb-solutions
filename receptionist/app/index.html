@@ -373,9 +373,9 @@ const usd=c=>'$'+(c/100).toFixed(c%100?2:0);
 const CHAN={gbp:['Google post','#4285f4'],facebook:['Facebook','#1877f2'],instagram:['Instagram','#c13584'],script:['Video script','#b5651d']};
 let mk=null, mkf='draft';
 async function loadMkt(){
-  const {data,error}=await supa.rpc('rx_owner_marketing',{p_days:60});
+  const [{data,error},rr]=await Promise.all([supa.rpc('rx_owner_marketing',{p_days:60}),supa.rpc('rx_owner_post_results',{p_days:60})]);
   if(error||!data){ $('mkt').innerHTML='<div class="empty">Couldn\'t load.</div>'; return; }
-  mk=data; renderMkt();
+  mk=data; mk.results=rr.data||{}; renderMkt();
 }
 function renderMkt(){
   const root=$('mkt');
@@ -394,6 +394,7 @@ function renderMkt(){
       ${p.media_url?`<a href="${esc(p.media_url)}" target="_blank"><img src="${esc(p.media_url)}" alt="" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;border:2px solid var(--line);margin-top:8px"></a>`:''}
       <pre class="pbody" style="white-space:pre-wrap;font:inherit;font-size:15px;line-height:1.4;background:#faf7ec;border:2px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0 0">${esc(p.body)}</pre>
       ${p.media_note&&!p.media_url?`<div class="hint">📷 ${esc(p.media_note)}</div>`:''}
+      ${p.status==='posted'?(()=>{ const r=(mk.results||{})[p.id]||{visits:0,leads:0,calls:0}; return `<div class="hint">Since you posted it: <b>${r.visits}</b> site visits · <b>${r.leads}</b> leads · <b>${r.calls}</b> calls in the first 48h</div>`; })():''}
       <div class="acts"><button class="copy" style="background:var(--ink);color:var(--yellow)">Copy</button>${p.status==='draft'?`<button class="posted" style="background:var(--green);color:#fff">Posted ✓</button><button class="skip">Skip</button>`:`<button class="undo">Back</button>`}</div>
     </div>`; }).join(''):`<div class="empty">${mkf==='draft'?'Nothing waiting. New posts land in the morning.':'Nothing here.'}</div>`}</div>
     <h2>Tell the agents</h2>

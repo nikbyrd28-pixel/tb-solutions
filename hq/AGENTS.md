@@ -61,7 +61,10 @@ are short, do images only and say so. Never regenerate a row that already has a 
 
 ## Coach
 
-Runs weekly. For each agent brain (TB and every shop): read the last 30 days of that agent's
+Runs weekly. **Results first:** for every post with a tagged link, read `hq_post_results()` —
+visits (`visitors.utm_campaign`), audit requests (`lsa_leads.utm`), intakes (`intakes.ref`) and
+demo-line calls in the 48 hours after it was marked posted. A post that moved a number is the
+strongest signal there is; say exactly which angle did it. Then the human signals. For each agent brain (TB and every shop): read the last 30 days of that agent's
 `agent_posts` — which were `posted`, which `skipped`, which `edited` (compare `original_body` to
 `body`: what did Nick or the owner change? shorter? cut the price? different opener?) — and for
 Review, the `rx_review_asks` sent vs skipped reasons. Write a new `learned` (under 1,200 chars):
@@ -115,6 +118,34 @@ hook line first, then 2–4 lines, up to 5 hashtags that a tradesman would actua
 (#plumberlife #hvac #electrician #chestercounty #pottstown — not #digitalmarketing).
 Scripts: 30–60 seconds spoken, written the way Nick talks, with `caption` = the on-screen hook
 (under 8 words) and `media_note` = what to film (phone, one take, truck or job site, no slides).
+
+**The gate — nothing reaches the inbox without passing it.** Write THREE candidates on different
+angles, score each against the list, keep the single best, throw the rest away. The keeper must:
+
+1. Open with a situation the owner has actually been in — a time, a place, a thing that happened
+   ("Saturday, 4:40pm, you're under a sink and the phone rings"). Not a question, not a slogan.
+2. Contain exactly one specific: a number (minutes, dollars, calls), a scene, or a real aggregate
+   from this week. Zero specifics fails. Two specifics fails — it's a post, not a report.
+3. Say one thing the owner can do or understand. If you need "and also", cut it.
+4. End with one CTA that is a phone number or one URL, nothing else. For a shop, their own line.
+5. Length: GBP ≤ 600 characters. Facebook ≤ 80 words. Instagram ≤ 60 words + hashtags.
+   Script 80–150 words. Over the cap fails.
+6. Zero banned words: elevate, unlock, seamless, game-changer, revolutionize, empower, leverage,
+   "in today's world", "did you know", "contact us", any emoji, any exclamation mark in a GBP post.
+7. Reads aloud in Nick's voice in under 25 seconds without sounding like an ad. If a plumber would
+   roll his eyes, it fails.
+8. Nothing invented. Every fact traces to AGENTS.md, the brain, the shop's row, or an aggregate
+   you queried this run.
+
+If none of the three passes, do not insert. Log an `agent_runs` line saying the gate failed and
+why. An empty inbox beats a weak post. In `run_note`, name the angle you kept and the two you threw
+away in a few words — that is what the Coach reads.
+
+**Track every link.** The CTA URL carries the tag that lets HQ measure the post:
+`?utm_source=<channel>&utm_medium=post&utm_campaign=p-<first 8 chars of the post id>`. So insert
+the row first (`returning id`), then `update agent_posts set cta_url = '<url with tag>'` and put
+that tagged URL in the body where the link goes. For a shop with no website, the CTA is their phone
+number and there is no tag. Channel values: gbp, facebook, instagram, script.
 
 **Do not repeat yourself.** Read the last 30 days of `agent_posts` for your channel first. A new
 angle every time; if everything's been said, pick the oldest angle and say it better.

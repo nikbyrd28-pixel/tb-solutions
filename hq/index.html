@@ -220,7 +220,7 @@ const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 const supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
 const $=id=>document.getElementById(id), esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const STATUSES=['new','contacted','audit_sent','quoted','won','lost'];
-let leads=[], rx=null, filter='open', pros=[], pfilter='today', posts=[], reviews={asks:[],no_url:[],pending:0}, postFilter='draft', brains=[], runs=[];
+let leads=[], rx=null, filter='open', pros=[], pfilter='today', posts=[], reviews={asks:[],no_url:[],pending:0}, postFilter='draft', brains=[], runs=[], results={};
 
 function ago(ts){ if(!ts) return ''; const d=(Date.now()-new Date(ts))/6e4; if(d<60) return Math.round(d)+'m ago'; if(d<1440) return Math.round(d/60)+'h ago'; if(d<10080) return Math.round(d/1440)+'d ago'; return new Date(ts).toLocaleDateString(); }
 function tel(p){ return (p||'').replace(/[^\d+]/g,''); }
@@ -248,8 +248,8 @@ document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
 });
 
 async function load(){
-  const [p,r,pr,ap,ra,ab,ar]=await Promise.all([supa.rpc('hq_pipeline',{p_days:180}), supa.rpc('hq_rx',{p_days:30}), supa.rpc('hq_prospects'), supa.rpc('hq_agent_posts',{p_days:60}), supa.rpc('hq_review_asks',{p_days:60}), supa.rpc('hq_agent_brains'), supa.rpc('hq_agent_runs',{p_days:30})]);
-  posts=ap.data||[]; reviews=ra.data||{asks:[],no_url:[],pending:0}; brains=ab.data||[]; runs=ar.data||[];
+  const [p,r,pr,ap,ra,ab,ar,rs]=await Promise.all([supa.rpc('hq_pipeline',{p_days:180}), supa.rpc('hq_rx',{p_days:30}), supa.rpc('hq_prospects'), supa.rpc('hq_agent_posts',{p_days:60}), supa.rpc('hq_review_asks',{p_days:60}), supa.rpc('hq_agent_brains'), supa.rpc('hq_agent_runs',{p_days:30}), supa.rpc('hq_post_results',{p_days:60})]);
+  posts=ap.data||[]; reviews=ra.data||{asks:[],no_url:[],pending:0}; brains=ab.data||[]; runs=ar.data||[]; results=rs.data||{};
   pros=pr.data||[]; renderPros(); renderAgents();
   if(p.error){ $('leads').innerHTML='<div class="empty">'+esc(p.error.message)+'</div>'; } else { leads=p.data||[]; renderLeads(); }
   if(r.error){ $('jobs').innerHTML='<div class="empty">'+esc(r.error.message)+'</div>'; } else { rx=r.data; renderRx(); }
@@ -463,8 +463,9 @@ async function renderAgents(){
   const writer=(agent,name,what,sched,next,extra)=>{
     const mine=byAgent(agent), drafts=mine.filter(p=>p.status==='draft').length, posted=mine.filter(p=>p.status==='posted').length;
     const thisWk=mine.filter(p=>new Date(p.created_at)>wk).length; const last=mine.map(p=>p.created_at).sort().pop();
+    const res=mine.filter(p=>p.status==='posted').reduce((a,p)=>{ const r=results[p.id]||{}; a.v+=r.visits||0; a.l+=(r.leads||0)+(r.calls||0); return a; },{v:0,l:0});
     return agentCard({ key:agent, name, what, sched, next, tone: drafts?'wait':thisWk?'run':'idle',
-      stats:[[drafts,'waiting'],[posted,'posted'],[thisWk,'this week'],[mine.length,'total']],
+      stats:[[drafts,'waiting'],[posted,'posted'],[res.v,'visits'],[res.l,'leads + calls']],
       note: drafts ? `${drafts} draft${drafts>1?'s':''} in the inbox below. ${extra}` : last ? `Last wrote ${esc(ago(last))}. ${extra}` : `Hasn't run yet. ${extra}` });
   };
   const gbp=writer('gbp','GBP — Google post agent','Writes one Google Business Profile post a week for TB Solutions, built on something real from the week.','weekly Mon 7:10am ET',nextRunTxt(7,10,1),
@@ -536,6 +537,7 @@ function renderPosts(){
       ${p.video_url?`<video src="${esc(p.video_url)}" controls playsinline style="width:100%;border-radius:12px;border:2px solid var(--line);margin-top:8px"></video>`:''}
       <pre class="body">${esc(p.body)}</pre>${p.caption?`<pre class="cap">${esc(p.caption)}</pre>`:''}
       ${p.media_note?`<div class="cap">📷 ${esc(p.media_note)}</div>`:''}${p.cta_url?`<div class="cap">🔗 ${esc(p.cta_url)}</div>`:''}
+      ${p.status==='posted'?(()=>{ const r=results[p.id]||{visits:0,leads:0,calls:0}; return `<div class="tags"><span class="tag ${r.visits?'hot':''}">${r.visits} visits</span><span class="tag ${r.leads?'hot':''}">${r.leads} leads</span><span class="tag ${r.calls?'hot':''}">${r.calls} calls in 48h</span></div>`; })():''}
       <div class="acts"><button class="copy">Copy</button>${p.status==='draft'?`<button class="edit">Edit</button><button class="posted" style="background:var(--green);color:#fff;border-color:var(--green)">Posted ✓</button><button class="skip">Skip</button>`:`<button class="undo">Back to waiting</button>`}</div>
     </div>`; }).join(''):`<div class="empty">${postFilter==='draft'?'Inbox is clear. The next post lands at the next run.':'Nothing here.'}</div>`;
   $('posts').querySelectorAll('.card').forEach(c=>{
