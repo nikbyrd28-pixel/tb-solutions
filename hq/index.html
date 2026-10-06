@@ -176,7 +176,7 @@ details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf
   </div>
   <main>
     <section id="t-prospects">
-      <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">Call the top of Today, tap what happened, and it schedules itself. Anything you couldn't reach leaves the list and comes back when it's due. Fresh ones land every morning.</div>
+      <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">Quality only: Today is owner-run shops with a real gap on the phone, best first. Tap what happened and it schedules itself. Big shops, 24-hour shops and the too-new sit in Parked — call them when the good ones are done.</div>
       <div class="filters" id="proFilters"></div>
       <div id="pros"></div>
     </section>
@@ -258,10 +258,10 @@ async function load(){
 // ---- prospects (the call list) ----
 // Buckets, not statuses. "Today" is the only one you work: new prospects plus every
 // callback that's come due. Anything scheduled ahead is out of sight until it's time.
-const PBUCKETS=[['today','Today'],['later','Scheduled'],['talking','Talking'],['meeting','Meetings'],['all','All']];
+const PBUCKETS=[['today','Today'],['later','Scheduled'],['talking','Talking'],['meeting','Meetings'],['parked','Parked'],['all','All']];
 const OUTCOMES=[['no_answer','No answer'],['voicemail','Voicemail'],['callback','Call back'],['talking','Talking'],['meeting','Meeting'],['won','Won'],['dead','Dead']];
 const due=p=>p.callback_at&&new Date(p.callback_at)<=new Date();
-const bucketOf=p=>['won','dead'].includes(p.status)?'done':p.status==='talking'?'talking':p.status==='meeting'?'meeting':(p.status==='new'||due(p))?'today':'later';
+const bucketOf=p=>p.status==='parked'?'parked':['won','dead'].includes(p.status)?'done':p.status==='talking'?'talking':p.status==='meeting'?'meeting':(p.status==='new'||due(p))?'today':'later';
 function whenTxt(ts){ if(!ts) return ''; const d=new Date(ts), now=new Date();
   if(d<=now) return 'Due now';
   const days=Math.round((d-now)/864e5);
@@ -275,12 +275,12 @@ function slot(kind){ const d=new Date();
 
 function renderPros(){
   const counts={}; PBUCKETS.forEach(([k])=>counts[k]=0);
-  pros.forEach(p=>{ const b=bucketOf(p); if(counts[b]!==undefined)counts[b]++; counts.all++; });
+  pros.forEach(p=>{ const b=bucketOf(p); if(counts[b]!==undefined)counts[b]++; if(b!=='parked') counts.all++; });
   $('nPros').textContent=counts.today||''; $('nPros').style.display=counts.today?'':'none';
   $('proFilters').innerHTML=PBUCKETS.map(([k,l])=>`<button data-f="${k}" class="${pfilter===k?'on':''}">${l}${counts[k]?' <b>'+counts[k]+'</b>':''}</button>`).join('');
   $('proFilters').querySelectorAll('button').forEach(b=>b.onclick=()=>{ pfilter=b.dataset.f; renderPros(); });
 
-  const list=pros.filter(p=>pfilter==='all'||bucketOf(p)===pfilter);
+  const list=pros.filter(p=>pfilter==='all'?bucketOf(p)!=='parked':bucketOf(p)===pfilter);
   $('pros').innerHTML=list.length?list.map(p=>{
     const log=(p.notes||'').trim().split('\n').filter(Boolean);
     return `<div class="card ${p.status==='won'?'won':p.status==='dead'?'lost':''}">
@@ -433,14 +433,14 @@ async function renderAgents(){
   if(seoAgent===null){ try{ const r=await fetch('/hq/agents/seo.json',{cache:'no-store'}); seoAgent=r.ok?await r.json():false; }catch{ seoAgent=false; } }
   const today=new Date(); today.setHours(0,0,0,0);
   const addedToday=pros.filter(p=>p.created_at&&new Date(p.created_at)>=today).length;
-  const uncalled=pros.filter(p=>p.status==='new').length;
+  const uncalled=pros.filter(p=>p.status==='new').length; const parked=pros.filter(p=>p.status==='parked').length;
   const slots=Math.max(0,CAP-uncalled);
   const newest=pros.map(p=>p.created_at).filter(Boolean).sort().pop();
 
   const lead=agentCard({ key:'prospector',
-    name:'Prospector — lead agent', what:'Finds owner-operated plumbers, HVAC and electricians and scores them by how badly they need the phone answered.',
+    name:'Prospector — lead agent', what:'Finds owner-run plumbers, HVAC and electricians with a real gap on the phone, checks their website and Google listing, and only lists the ones worth a call (score 50+). The rest get parked.',
     sched:'daily 6:50am ET', next:nextRunTxt(6,50), tone:slots?'run':'idle',
-    stats:[[uncalled+'/'+CAP,'uncalled'],[slots,'slots free'],[addedToday,'added today'],[pros.length,'total']],
+    stats:[[uncalled+'/'+CAP,'quality uncalled'],[slots,'slots free'],[addedToday,'added today'],[parked,'parked']],
     note: slots===0
       ? `List is full, so tomorrow's run adds <b>nothing</b> — that's the cap doing its job. Work the list down and the slots open themselves.`
       : `Tomorrow it tops the list back up to ${CAP}, best-scoring first.${newest?` Last added ${esc(ago(newest))}.`:''}`,

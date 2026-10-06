@@ -14,6 +14,31 @@ Zero means add nothing today. That is a normal result, not a failure: it means t
 full and the bottleneck is the phone, not the prospecting. Pick 1–2 towns and fill only the
 slots you are given.
 
+## Quality only — the floor is 50
+
+A lead goes on the list only if it scores **50 or more**. In practice that means a small
+owner-run shop (10–150 reviews) with a real gap on the phone: closed weekends, or no hours
+listed, or a low star rating with few reviews (the Review Engine angle). Everything else —
+big companies, "open 24 hours", the too-new — is **parked** (`status = 'parked'`): kept in the
+table, never on Today, never counted toward the cap. `hq_prospect_slots()` counts only
+quality rows, and the Prospector never inserts below the floor. Twenty-four good names beat
+thirty names.
+
+## Recon before listing — every kept lead gets looked at
+
+Before a lead is inserted, the Prospector looks at it like Nick would before dialing:
+1. **Website** (if any): fetch the home page and the contact/about page. Does it show hours?
+   An after-hours number? "Family owned since…"? The owner's name? A booking form? Does it
+   work on a phone? Two pages max.
+2. **Google listing** from the places result: hours, "open 24 hours", review count and rating,
+   date of the last review if present, whether the owner replies to reviews.
+3. Write the findings into `audit` (jsonb: `{site: {...}, gmb: {...}, note: '…'}`), set
+   `audited_at = now()`, and rewrite `why` as the **opener in spoken English** — one sentence
+   Nick can say that proves he looked ("your site says 'call anytime' but the listing's closed
+   weekends — which one's true?"). No shorthand. If recon finds nothing beyond the listing,
+   `why` still has to be a sentence, not "614 reviews, closed weekends".
+Recon takes a minute per lead; that is why the slot budget is small. Never contact anyone.
+
 ## How it scores (0–100, higher = call first)
 Base 20
 +25 small shop (10–150 Google reviews): owner answers the phone himself, feels every missed call
