@@ -702,3 +702,4 @@ select cron.schedule('rx-review-hourly', '15 * * * *', $cron$
     url := 'https://qgbjiqdwzgkjkmqyjsmc.supabase.co/functions/v1/rx-review',
     headers := jsonb_build_object('Content-Type','application/json','x-rx-sync-secret', coalesce((select value from public.rx_config where key='RX_SYNC_SECRET'),'')),
     body := '{}'::jsonb)
+$cron$);
