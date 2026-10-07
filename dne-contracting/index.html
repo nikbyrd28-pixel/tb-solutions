@@ -167,6 +167,25 @@ input:focus,select:focus,textarea:focus{border-color:var(--ink);outline:none}
 .choices label:has(input:checked){border-color:var(--ink);background:var(--ink);color:#fff}
 .choices label:has(input:focus-visible){outline:2px solid var(--red)}
 
+
+/* receipt (owner tool + client view) */
+.rc-wrap{display:grid;grid-template-columns:5fr 7fr;gap:36px;align-items:start}@media(max-width:900px){.rc-wrap{grid-template-columns:1fr}}
+.rc-form{background:#fff;border:1px solid var(--line);padding:20px;border-radius:12px}.rc-form .field{margin-bottom:12px}.rc-form label{font-size:.9rem}.rc-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rc-items{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:6px 0 10px}.rc-item{display:grid;grid-template-columns:1fr 92px 32px;gap:6px;padding:6px;border-bottom:1px solid var(--line)}.rc-item:last-child{border-bottom:0}.rc-item input{width:100%;min-width:0;padding:8px 10px}.rc-item button{border:0;background:transparent;font-size:1.1rem;cursor:pointer;color:var(--mute)}
+.rc-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.receipt{background:#fff;border:1px solid var(--line);padding:34px 34px 28px;max-width:640px;margin:0 auto;font-size:.98rem;position:relative}
+.receipt .rhead{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:18px}
+.receipt .rbrand{font-family:var(--serif);font-size:1.4rem;display:flex;align-items:center;gap:8px}.receipt .rbrand small{display:block;font-family:var(--sans);font-size:.8rem;color:var(--mute);margin-top:4px}
+.receipt .rno{text-align:right;font-size:.88rem;color:var(--ink-2);white-space:nowrap}.receipt .rno b{display:block;font-family:var(--serif);font-size:1.5rem;color:var(--ink);font-weight:normal;letter-spacing:.02em}@media(max-width:480px){.receipt{padding:22px 18px}.receipt .rhead{flex-direction:column}.receipt .rno{text-align:left}.receipt .rno b{display:inline;margin-right:8px}}
+.receipt .rmeta{display:grid;grid-template-columns:1fr 1fr;gap:14px 24px;margin-bottom:18px;font-size:.92rem}.receipt .rmeta small{display:block;color:var(--mute);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+.receipt table{width:100%;border-collapse:collapse;margin:6px 0 12px}.receipt th{text-align:left;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);font-weight:normal;padding:0 0 8px;border-bottom:1px solid var(--line)}.receipt td{padding:10px 0;border-bottom:1px solid var(--line);vertical-align:top}.receipt td:last-child,.receipt th:last-child{text-align:right;white-space:nowrap}
+.receipt .rtot{display:grid;grid-template-columns:1fr auto;gap:6px 28px;justify-content:end;margin-left:auto;width:max-content;max-width:100%;padding-top:6px}.receipt .rtot span:nth-child(odd){color:var(--ink-2)}.receipt .rtot span:nth-child(even){text-align:right}.receipt .rtot .big{font-family:var(--serif);font-size:1.35rem;color:var(--ink)}
+.receipt .rpaid{display:inline-block;margin-top:14px;border:2px solid var(--ok);color:var(--ok);font-weight:bold;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;transform:rotate(-3deg);font-size:.9rem}
+.receipt .rnote{margin-top:18px;color:var(--ink-2);font-size:.92rem;border-top:1px solid var(--line);padding-top:14px}.receipt .rfoot{margin-top:18px;font-size:.82rem;color:var(--mute);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.receipt .rthanks{font-family:var(--serif);font-size:1.15rem;margin-top:16px}
+.rc-client-bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:18px 0 0}
+@media print{header,footer,.sticky-call,.rc-form,.rc-client-bar,.page-head,#toast,.rc-hide{display:none!important}body{background:#fff}.view{display:none}.view.on{display:block}.receipt{border:0;max-width:none;padding:0}main{padding:0}}
+
 /* hero — editorial, paper, asymmetric */
 .hero{padding:44px 0 40px;border-bottom:1px solid #EADFD0;background:#FBF7F1;background-image:radial-gradient(900px 420px at 85% 0%,#FFF3E4 0%,rgba(255,243,228,0) 70%),radial-gradient(600px 300px at 0% 100%,#F3EADF 0%,rgba(243,234,223,0) 70%);position:relative;overflow:hidden}
 .hero h1{color:#1B2430}.hero .lead{color:#3B4350;font-size:1.12rem}
@@ -361,6 +380,7 @@ footer a,footer p{overflow-wrap:anywhere}
 .toast.on{display:block}
 .sticky-call{display:none;position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-top:1px solid var(--line);padding:8px 12px 8px}
 @media (max-width:700px){body{padding-bottom:64px}.sticky-call{display:grid;grid-template-columns:1fr 1.6fr;gap:8px}}
+body.rc-client .sticky-call{display:none!important}
 </style>
 </head>
 <body>
@@ -667,9 +687,32 @@ footer a,footer p{overflow-wrap:anywhere}
   </div>
 </section>
 
+
+<!-- ============ RECEIPT (owner tool; client link = #receipt?d=...) ============ -->
+<section class="view" id="v-receipt">
+  <div class="wrap page-head rc-hide" id="rcHead"><h1>Receipt</h1><p>Fill it in, tap <b>Share link</b> to text it to the client, or <b>Print / Save PDF</b>. Nothing here is public until you share the link.</p></div>
+  <div class="sec" style="padding-top:0"><div class="wrap rc-wrap" id="rcWrap">
+    <form class="rc-form" id="rcForm" novalidate>
+      <div class="rc-row"><div class="field"><label for="rcNo">Receipt #</label><input id="rcNo"></div><div class="field"><label for="rcDate">Date</label><input id="rcDate" type="date"></div></div>
+      <div class="field"><label for="rcClient">Client name</label><input id="rcClient" placeholder="Karen D."></div>
+      <div class="rc-row"><div class="field"><label for="rcAddr">Job address (optional)</label><input id="rcAddr" placeholder="Limerick, PA"></div><div class="field"><label for="rcProj">Project</label><input id="rcProj" placeholder="Hall bathroom remodel"></div></div>
+      <div class="field"><label>Items</label><div class="rc-items" id="rcItems"></div><button type="button" class="btn sm g" id="rcAdd">+ Add line</button></div>
+      <div class="rc-row"><div class="field"><label for="rcMethod">Paid by</label><select id="rcMethod"><option>Card</option><option>Bank transfer</option><option>Check</option><option>Cash</option><option>Zelle</option><option>Venmo</option></select></div><div class="field"><label for="rcRef">Check / ref # (optional)</label><input id="rcRef"></div></div>
+      <div class="rc-row"><div class="field"><label for="rcPaid">Amount paid</label><input id="rcPaid" inputmode="decimal" placeholder="4,250.00"></div><div class="field"><label for="rcBal">Balance remaining</label><input id="rcBal" inputmode="decimal" placeholder="0.00"></div></div>
+      <div class="field"><label for="rcNote">Note (optional)</label><input id="rcNote" placeholder="Progress payment 2 of 3. Final balance due at walkthrough."></div>
+      <div class="rc-actions"><button type="button" class="btn p" id="rcShare">Share link</button><button type="button" class="btn" id="rcPrint">Print / Save PDF</button><button type="button" class="btn g sm" id="rcClear">Clear</button></div>
+      <p class="hint" style="margin:10px 0 0">The receipt number counts up on this phone automatically. Everything is in the link itself, so the client can open it any time.</p>
+    </form>
+    <div>
+      <div class="receipt" id="rcPaper"></div>
+      <div class="rc-client-bar" id="rcClientBar" hidden><button type="button" class="btn p" id="rcPrint2">Print / Save PDF</button><a class="btn" href="#portal">Client portal</a></div>
+    </div>
+  </div></div>
+</section>
+
 <!-- ============ PLAYBOOK (owner-only, not linked in nav: #playbook) ============ -->
 <section class="view" id="v-playbook">
-  <div class="wrap page-head"><h1>Owner playbook</h1><p>Copy-ready posts, DM scripts, and comment replies. This page isn't linked anywhere public. Tap any block to copy it.</p></div>
+  <div class="wrap page-head"><h1>Owner playbook</h1><p>Copy-ready posts, DM scripts, and comment replies. This page isn't linked anywhere public. Tap any block to copy it.</p><p><a class="btn sm" href="#receipt">Write a receipt →</a></p></div>
   <div class="sec" style="padding-top:0"><div class="wrap" style="max-width:820px" id="playbook"></div></div>
 </section>
 
@@ -895,7 +938,7 @@ function renderPortal(d){
   $('#pDone').textContent=d.done;$('#pPaid').textContent='$'+d.paid.toLocaleString()+' of $'+d.total.toLocaleString();$('#pDue').textContent='$'+d.due.amt.toLocaleString()+' · '+d.due.date;
   $('#pTimeline').innerHTML=d.timeline.map(([t,w,s])=>`<li class="${s}"><span class="dot"></span><div><b>${t}</b><br><small>${w}</small></div><span class="tag ${s==='done'?'ok':s==='now'?'brass':''}">${s==='done'?'Done':s==='now'?'In progress':'Upcoming'}</span></li>`).join('');
   $('#pPhotos').innerHTML=d.photos.map(p=>photo(p)).join('');
-  $('#pInvoices').innerHTML=d.invoices.map(([n,due,a,s])=>`<tr><td>${n}</td><td>${due}</td><td>${a}</td><td><span class="tag ${s==='Paid'?'ok':s==='Due'?'brass':''}">${s}</span></td><td>${s==='Due'?'<button class="btn s sm" data-pay>Pay now</button>':s==='Paid'?'<a href="#" class="hint">Receipt</a>':''}</td></tr>`).join('');
+  $('#pInvoices').innerHTML=d.invoices.map(([n,due,a,s])=>`<tr><td>${n}</td><td>${due}</td><td>${a}</td><td><span class="tag ${s==='Paid'?'ok':s==='Due'?'brass':''}">${s}</span></td><td>${s==='Due'?'<button class="btn s sm" data-pay>Pay now</button>':s==='Paid'?`<a href="#receipt?d=${btoa(unescape(encodeURIComponent(JSON.stringify({no:n.replace('INV','R'),date:'',client:d.client,proj:d.project,items:[{d:n+' — progress payment',a:parseFloat(String(a).replace(/[^0-9.]/g,''))||0}],method:'Card',paid:parseFloat(String(a).replace(/[^0-9.]/g,''))||0,bal:Math.max(0,(d.total||0)-(d.paid||0))})))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}" class="hint">Receipt</a>`:''}</td></tr>`).join('');
   $('#pDocs').innerHTML=d.docs.map(x=>`<li style="padding:10px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between"><span>${x}</span><a href="#" class="hint">Download</a></li>`).join('');
   $('#pMsgs').innerHTML=d.msgs.map(([w,t,ts])=>`<div class="msg ${w}">${t}<small>${ts}</small></div>`).join('');
 }
@@ -912,6 +955,59 @@ $('#loginForm').addEventListener('submit',async e=>{e.preventDefault();if(!sb){t
 $('#forgotLink').addEventListener('click',async e=>{e.preventDefault();if(!sb){toast('Login isn\'t connected yet.');return}const em=$('#lEmail').value;if(!validEmail(em)){toast('Type your email first.');return}await sb.auth.resetPasswordForEmail(em);toast('Reset link sent if that email has an account.')});
 $('#msgForm').addEventListener('submit',e=>{e.preventDefault();const v=$('#msgIn').value.trim();if(!v)return;$('#pMsgs').insertAdjacentHTML('beforeend',`<div class="msg me">${esc(v)}<small>Just now</small></div>`);$('#msgIn').value='';send('portal_message',{message:v}).catch(()=>{});toast('Sent. Replies come by text and appear here.')});
 document.addEventListener('click',e=>{if(e.target.closest('[data-pay]'))toast('Connect Stripe payment links in n8n to enable this button.')});
+
+
+/* ---------- receipt ---------- */
+(function(){
+const R={items:[]};const k=id=>$('#'+id);
+const money=v=>{const n=parseFloat(String(v).replace(/[^0-9.\-]/g,''))||0;return '$'+n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})};
+const num=v=>parseFloat(String(v).replace(/[^0-9.\-]/g,''))||0;
+const today=()=>new Date().toISOString().slice(0,10);
+const fmtDate=d=>{if(!d)return '';const [y,m,dd]=d.split('-');return new Date(y,m-1,dd).toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'})};
+function nextNo(){const n=store.get('rc_no',1000)+1;return 'R-'+n}
+function read(){return {no:k('rcNo').value.trim(),date:k('rcDate').value,client:k('rcClient').value.trim(),addr:k('rcAddr').value.trim(),proj:k('rcProj').value.trim(),
+  items:$$('#rcItems .rc-item').map(r=>({d:r.children[0].value.trim(),a:num(r.children[1].value)})).filter(i=>i.d||i.a),
+  method:k('rcMethod').value,ref:k('rcRef').value.trim(),paid:num(k('rcPaid').value),bal:num(k('rcBal').value),note:k('rcNote').value.trim()}}
+function encode(d){return btoa(unescape(encodeURIComponent(JSON.stringify(d)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+function decode(x){try{return JSON.parse(decodeURIComponent(escape(atob(x.replace(/-/g,'+').replace(/_/g,'/')))))}catch{return null}}
+function paper(d){
+  const own=(B.ownerName&&!/your name/i.test(B.ownerName))?B.ownerName:'the owner';
+  const lic=B.license&&!/X{3,}/i.test(B.license)?B.license:'PA registered Home Improvement Contractor';
+  const sub=d.items.reduce((a,i)=>a+i.a,0);const showItems=d.items.length>0;
+  return `<div class="rhead"><div class="rbrand"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="#B8322B"/></svg><div>D N E Contracting<small>${esc(B.phone||'')} · ${esc(B.email||'')} · ${esc(lic)}</small></div></div><div class="rno">Receipt<b>${esc(d.no||'')}</b>${esc(fmtDate(d.date))}</div></div>
+  <div class="rmeta"><div><small>Received from</small>${esc(d.client||'—')}${d.addr?`<br><span class="hint">${esc(d.addr)}</span>`:''}</div><div><small>For</small>${esc(d.proj||'—')}</div><div><small>Paid by</small>${esc(d.method||'')}${d.ref?` · ${esc(d.ref)}`:''}</div><div><small>Amount received</small><b>${money(d.paid)}</b></div></div>
+  ${showItems?`<table><thead><tr><th>Description</th><th>Amount</th></tr></thead><tbody>${d.items.map(i=>`<tr><td>${esc(i.d)}</td><td>${money(i.a)}</td></tr>`).join('')}</tbody></table>`:''}
+  <div class="rtot">${showItems&&Math.abs(sub-d.paid)>0.005?`<span>Items total</span><span>${money(sub)}</span>`:''}<span>Paid</span><span class="big">${money(d.paid)}</span>${d.bal>0?`<span>Balance remaining</span><span>${money(d.bal)}</span>`:'<span>Balance remaining</span><span>$0.00</span>'}</div>
+  <div class="rpaid">Paid · Thank you</div>
+  ${d.note?`<p class="rnote">${esc(d.note)}</p>`:''}
+  <p class="rthanks">Thank you for trusting us with your home. — ${esc(own)}</p>
+  <div class="rfoot"><span>D N E Contracting · Serving the 422 corridor and greater Philadelphia</span><span>www.dnecontracting.com</span></div>`}
+function render(){const d=read();k('rcPaper').innerHTML=paper(d);store.set('rc_draft',d)}
+function itemRow(i={d:'',a:''}){const r=document.createElement('div');r.className='rc-item';r.innerHTML=`<input placeholder="Description" value="${esc(i.d)}"><input placeholder="0.00" inputmode="decimal" value="${i.a?esc(i.a):''}"><button type="button" aria-label="Remove">×</button>`;r.querySelector('button').onclick=()=>{r.remove();render()};r.querySelectorAll('input').forEach(x=>x.addEventListener('input',render));k('rcItems').appendChild(r)}
+function fill(d){k('rcNo').value=d.no||'';k('rcDate').value=d.date||today();k('rcClient').value=d.client||'';k('rcAddr').value=d.addr||'';k('rcProj').value=d.proj||'';k('rcItems').innerHTML='';(d.items&&d.items.length?d.items:[{d:'',a:''}]).forEach(itemRow);k('rcMethod').value=d.method||'Card';k('rcRef').value=d.ref||'';k('rcPaid').value=d.paid?d.paid:'';k('rcBal').value=d.bal?d.bal:'';k('rcNote').value=d.note||'';render()}
+function autoPaid(){const d=read();if(d.items.length&&!k('rcPaid').dataset.touched){const sub=d.items.reduce((a,i)=>a+i.a,0);if(sub)k('rcPaid').value=sub.toFixed(2)}}
+function init(){
+  const q=new URLSearchParams((location.hash.split('?')[1]||''));const enc=q.get('d');
+  if(enc){const d=decode(enc);if(d){document.body.classList.add('rc-client');/* client view: paper only */k('rcHead').hidden=true;k('rcForm').hidden=true;k('rcWrap').style.gridTemplateColumns='1fr';k('rcPaper').innerHTML=paper(d);k('rcClientBar').hidden=false;document.title='Receipt '+(d.no||'')+' — D N E Contracting';return}}
+  document.body.classList.remove('rc-client');k('rcHead').hidden=false;k('rcForm').hidden=false;k('rcWrap').style.gridTemplateColumns='';k('rcClientBar').hidden=true;
+  const draft=store.get('rc_draft',null);
+  if(draft&&(draft.client||draft.paid)){fill(draft)}else{fill({no:nextNo(),date:today()});}
+  const pre=q.get('client')||q.get('amount');if(pre){k('rcClient').value=q.get('client')||'';k('rcProj').value=q.get('project')||'';k('rcPaid').value=q.get('amount')||'';render()}
+}
+$$('#rcForm input,#rcForm select').forEach(x=>x.addEventListener('input',e=>{if(e.target.id==='rcPaid')e.target.dataset.touched='1';render()}));
+k('rcItems').addEventListener('input',autoPaid);
+k('rcAdd').onclick=()=>{itemRow();render()};
+k('rcClear').onclick=()=>{store.del('rc_draft');k('rcPaid').dataset.touched='';fill({no:nextNo(),date:today()})};
+k('rcShare').onclick=async()=>{const d=read();if(!d.client||!d.paid){toast('Add the client name and the amount first.');return}
+  const n=parseInt((d.no||'').replace(/\D/g,''),10);if(n)store.set('rc_no',Math.max(n,store.get('rc_no',1000)));
+  const url=location.origin+location.pathname+'#receipt?d='+encode(d);
+  const msg=`Hi ${d.client.split(' ')[0]}, here's your receipt for ${money(d.paid)} from D N E Contracting: ${url}`;
+  try{if(navigator.share){await navigator.share({title:'Receipt '+d.no,text:msg});toast('Shared.')}else{await navigator.clipboard.writeText(msg);toast('Link copied. Paste it into a text or email.')}}catch{try{await navigator.clipboard.writeText(url);toast('Link copied.')}catch{prompt('Copy this link:',url)}}
+  store.del('rc_draft');store.set('rc_last',d)};
+const doPrint=()=>{render();window.print()};k('rcPrint').onclick=doPrint;k('rcPrint2').onclick=()=>window.print();
+window.addEventListener('hashchange',()=>{if(location.hash.startsWith('#receipt'))init();else document.body.classList.remove('rc-client')});if(location.hash.startsWith('#receipt'))init();
+window.DNE_RECEIPT={open:(d)=>{location.hash='#receipt?d='+encode(d)}};
+})();
 
 /* ---------- owner playbook ---------- */
 const PB=[
@@ -1091,7 +1187,7 @@ function coach(){const L=lead();let t;if(!S.items.length)t='Tap + Add and pick w
 function sheet(open){$k('skSheet').hidden=!open;$k('skScrim').hidden=!open;if(open){$k('skSheet').querySelector('.sk-group')?.scrollIntoView&&$k('skSheet').scrollTo(0,0)}}
 function tour(force){try{if(!force&&localStorage.getItem('dne:tour_done'))return;localStorage.setItem('dne:tour_done','1')}catch{}openModal(`<div class="sk-tour"><h2 style="margin-top:6px">How the room sketch works</h2><ol><li><b>Set up the room</b><p>Pick kitchen, bathroom or basement, type the size, and tell us which wall the plumbing is on. Tap "Change" in the room bar any time.</p></li><li><b>Make it match today</b><p>The starting layout is a guess. Drag each thing to where it really is and resize with the corner square. Everything starts as Existing, which costs nothing.</p></li><li><b>Change what you want</b><p>Tap an item and mark it Repair, Replace or New. Move it anywhere and the move gets priced. Tap + Add for anything else, including walls to knock out.</p></li><li><b>Check it and send</b><p>The estimate builds as you go. Flip to 3D to walk through it. Send puts the sketch on your request so we arrive already knowing the room.</p></li></ol><button class="btn p" style="margin-top:16px" onclick="document.getElementById('modal').classList.remove('on')">Start sketching</button></div>`)}
 function save(){try{localStorage.setItem('dne:sketch',JSON.stringify(S))}catch{}}
-function load(){const q=new URLSearchParams((location.hash.split('?')[1]||''));const d=q.get('d');if(d){try{const o=JSON.parse(decodeURIComponent(escape(atob(d.replace(/-/g,'+').replace(/_/g,'/')))));S=Object.assign({opts:{}},o);return}catch{}}try{const s=localStorage.getItem('dne:sketch');if(s)S=Object.assign({opts:{}},JSON.parse(s))}catch{}if(!S.opts)S.opts={};S.items.forEach(it=>{if((it.s||'keep')!=='new'&&!it.o)it.o={x:it.x,y:it.y,r:it.r||0}})}
+function load(){const q=new URLSearchParams((location.hash.split('?')[1]||''));const d=location.hash.startsWith('#sketch')?q.get('d'):null;if(d){try{const o=JSON.parse(decodeURIComponent(escape(atob(d.replace(/-/g,'+').replace(/_/g,'/')))));S=Object.assign({opts:{}},o);return}catch{}}try{const s=localStorage.getItem('dne:sketch');if(s)S=Object.assign({opts:{}},JSON.parse(s))}catch{}if(!S.opts)S.opts={};S.items.forEach(it=>{if((it.s||'keep')!=='new'&&!it.o)it.o={x:it.x,y:it.y,r:it.r||0}})}
 function setType(t){S.type=t;const p=PRESETS[t];S.w=p.w;S.l=p.l;S.plumb=p.plumb;S.opts={};S.items=p.items.map(o=>{const it=Object.assign({r:0,s:'keep'},o);it.o={x:it.x,y:it.y,r:it.r};return it});sel=-1;ui();fit();check();save()}
 function png(scaleUp=2){const off=document.createElement('canvas');off.width=cv.width*scaleUp;off.height=cv.height*scaleUp+40*scaleUp;const c2=off.getContext('2d');c2.fillStyle='#fff';c2.fillRect(0,0,off.width,off.height);c2.scale(scaleUp,scaleUp);c2.drawImage(cv,0,0);c2.fillStyle='#222';c2.font='13px Arial';c2.fillText(`D N E Contracting · ${S.type} sketch · ${ftin(S.w)} × ${ftin(S.l)}`+(S.plumb!=='none'?` · plumbing on the ${S.plumb} wall`:''),ox,cv.height+22);return off.toDataURL('image/png')}
 function link(){const j=JSON.stringify({type:S.type,w:S.w,l:S.l,plumb:S.plumb,items:S.items,opts:S.opts});return location.origin+location.pathname+'#sketch?d='+btoa(unescape(encodeURIComponent(j))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
@@ -1200,7 +1296,7 @@ return {show(){const q=new URLSearchParams((location.hash.split('?')[1]||''));co
 })();
 
 /* ---------- routing ---------- */
-const VIEWS=['home','services','projects','about','reviews','faq','contact','planner','refer','portal','thanks','playbook','sketch'];
+const VIEWS=['home','services','projects','about','reviews','faq','contact','planner','refer','portal','thanks','playbook','sketch','receipt'];
 function route(){let h=(location.hash||'#home').slice(1).split('?')[0];if(!VIEWS.includes(h))h='home';
   $$('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+h));$$('nav.main a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+h));
   $('#mainNav').classList.remove('open');$('#burger').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'instant'});
