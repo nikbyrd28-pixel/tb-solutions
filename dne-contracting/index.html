@@ -167,12 +167,18 @@ input:focus,select:focus,textarea:focus{border-color:var(--ink);outline:none}
 .choices label:has(input:focus-visible){outline:2px solid var(--red)}
 
 /* hero — editorial, paper, asymmetric */
-.hero{padding:40px 0 36px;border-bottom:1px solid var(--line)}
+.hero{padding:44px 0 40px;border-bottom:1px solid #EADFD0;background:#FBF7F1;background-image:radial-gradient(900px 420px at 85% 0%,#FFF3E4 0%,rgba(255,243,228,0) 70%),radial-gradient(600px 300px at 0% 100%,#F3EADF 0%,rgba(243,234,223,0) 70%);position:relative;overflow:hidden}
+.hero h1{color:#1B2430}.hero .lead{color:#3B4350;font-size:1.12rem}
+.comfort{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0 0;padding:0;list-style:none;max-width:560px}.comfort li{font-size:.92rem;line-height:1.35;color:#3B4350;padding-left:30px;position:relative}.comfort li::before{content:"";position:absolute;left:0;top:1px;width:20px;height:20px;border-radius:50%;background:#E7F0E8;border:1px solid #CFE0D2}.comfort li::after{content:"✓";position:absolute;left:5px;top:0;color:var(--ok);font-size:.8rem;font-weight:700}
+@media(max-width:700px){.comfort{grid-template-columns:1fr;gap:8px}}
+.hero-form{border-radius:16px;box-shadow:0 18px 50px -24px rgba(27,36,48,.35),0 1px 0 #fff inset;border-color:#EADFD0}.hero-form .hf-head{border-bottom-color:#EFE6DA}.hero-form .hf-face{width:64px;height:64px;box-shadow:0 0 0 3px #fff,0 0 0 4px #EADFD0}.hero-form .hf-head b{font-family:var(--serif);font-size:1.25rem;font-weight:normal;color:#1B2430}.hero-form .hf-head span{display:block;margin-top:2px}.hero-form .hf-head small{display:block;color:var(--mute);font-size:.82rem;margin-top:2px}
+.hero-form input,.hero-form select{border-radius:10px;border-color:#D9D0C3;background:#FFFDFA}.hero-form .hf-btn{border-radius:12px;padding:15px 16px;font-size:1.05rem;background:var(--red);box-shadow:0 8px 20px -10px rgba(184,50,43,.6)}
+.hero-form .hf-hint{color:#5D6572}
 .hero .wrap{display:grid;grid-template-columns:7fr 5fr;grid-template-areas:"h1 form" "text form";gap:0 40px;align-items:start}.hero h1{grid-area:h1}.hero-text{grid-area:text}.hero-form{grid-area:form;align-self:center}
 .hero h1{margin-bottom:22px}
 .hero .lead{max-width:52ch}.hero-form{background:#fff;border:1px solid var(--line);padding:20px 20px 16px;justify-self:end;width:100%;max-width:440px}.hero-form .field{margin-bottom:12px}.hf-row{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}.hf-head{display:flex;gap:12px;align-items:center;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--line)}.hf-head b{display:block;font-size:1.08rem}.hf-head span{color:var(--mute);font-size:.9rem}.hf-face{width:52px;height:52px;border-radius:50%;overflow:hidden;flex:none;background:var(--line)}.hf-face img{width:100%;height:100%;object-fit:cover;display:block}.hf-btn{width:100%;margin-top:2px}.hf-hint{margin:10px 0 0;text-align:center}@media(max-width:900px){.hero-form{justify-self:stretch;max-width:none}}@media(max-width:380px){.hf-row{grid-template-columns:1fr}}.proof-cta{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:26px;padding:18px 20px;background:#fff;border:1px solid var(--line);border-left:3px solid var(--red)}.proof-cta p{margin:0;font-size:1.05rem}.proof-cta b{display:block;font-size:1.15rem}
 .hero .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center}
-.hero .facts{margin:22px 0 0;color:var(--mute);font-size:.92rem}
+.hero .facts{margin:18px 0 0;color:#6B7280;font-size:.9rem}
 .hero-phone{font-size:1.35rem;margin:6px 0 4px}.hero-phone a{font-weight:bold;text-decoration:none}
 @media (max-width:700px){.hero .actions{display:none}}
 .portrait{position:relative;justify-self:end;width:100%;max-width:400px}
@@ -390,11 +396,12 @@ footer a,footer p{overflow-wrap:anywhere}
       <h1>A remodel consultation that actually feels comfortable.</h1>
       <div class="hero-text">
         <p class="lead">Kitchen, bathroom and basement remodels, start to finish, plus plumbing repairs and water heaters. The consultation is free, in your home, at your pace. You never have to decide on the spot.</p>
+        <ul class="comfort" aria-label="What to expect"><li>Shoes off at the door, no clipboard, no sales pitch</li><li>Nothing to decide on the spot, ever</li><li>Your estimate in writing, on your own time</li></ul>
         <p class="hero-phone">Call or text <a data-tel href="#" data-phone></a></p>
         <p class="facts">Licensed &amp; insured · Women-owned · Serving the 422 corridor and greater Philadelphia</p>
       </div>
       <form class="hero-form" id="heroForm" novalidate aria-label="Request a free consultation">
-        <div class="hf-head"><div class="hf-face"><img data-photo="owner" alt="" width="56" height="56"></div><div><b>Free in-home consultation</b><span data-owner-cap></span></div></div>
+        <div class="hf-head"><div class="hf-face"><img data-photo="owner" alt="" width="64" height="64"></div><div><b>Free in-home consultation</b><span data-owner-cap></span><small>You'll hear from the owner herself, not a call center.</small></div></div>
         <div class="field"><label for="hfType">What's the project?</label><select id="hfType" name="type"><option value="">Choose one</option><option value="kitchen">Kitchen</option><option value="bathroom">Bathroom</option><option value="basement">Basement</option><option value="repair">Plumbing repair</option></select><div class="err">Pick the closest one.</div></div>
         <div class="hf-row">
           <div class="field"><label for="hfZip">ZIP code</label><input id="hfZip" name="zip" inputmode="numeric" autocomplete="postal-code" maxlength="5" placeholder="19468"><div class="err">A 5-digit ZIP, please.</div></div>

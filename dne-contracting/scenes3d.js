@@ -60,70 +60,92 @@ function pendant(g, x, y, z) { cyl(g, .01, 1.6, M.black, x, y, z); cyl(g, .32, .
 /* ---------- scenes ---------- */
 const SCENES = {
   kitchen(g) {
+    // kitchen remodel, plumbing phase: sink wall opened to the studs, new PEX + drain relocated under the window, island drain trenched in the floor
     room(g, 12, 10, 8.5, M.floor, M.wall, { win: [0, 3.4, 2.6, 4.9] });
-    // back run: sink under window, dishwasher, cabinets
-    bx(g, 12, 2.9, 2.0, M.cab, 0, 0, -4); bx(g, 12.1, .12, 2.1, M.quartz, 0, 2.9, -4); doors(g, 12, 2.6, 2, 7, .2);
-    bx(g, 2.6, .75, 1.5, M.steel, 0, 2.2, -4.1); bx(g, 2.6, .05, 1.5, M.cab, 0, 2.2, -4.1); faucet(g, 0, 3.0, -4.75);
-    bx(g, 2.0, 2.9, 2.02, M.steel, 3.2, 0, -4); bx(g, 1.7, .1, .05, M.black, 3.2, 2.5, -2.98);
-    bx(g, 12, .07, 2.1, M.tile, 0, 3.0, -4.03); bx(g, 12, 2.2, .06, M.tile, 0, 3.02, -4.95); // backsplash
-    bx(g, 12, 2.6, 1.2, M.cab, 0, 5.3, -4.4); doors(g, 12, 2.5, 1.2, 8, 5.3); bx(g, 12, .08, 1.3, M.white, 0, 7.9, -4.4);
-    // left run: range + fridge
-    const L = new THREE.Group(); L.rotation.y = Math.PI / 2; L.position.set(-5, 0, 0); g.add(L);
-    bx(L, 7, 2.9, 2, M.cab, -1.5, 0, 0); bx(L, 7.1, .12, 2.1, M.quartz, -1.5, 2.9, 0); doors(L, 7, 2.6, 2, 4, .2);
-    bx(L, 2.5, 3, 2.1, M.steel, 1.2, 0, 0); bx(L, 2.4, .05, 2, M.dark, 1.2, 3, 0); [[-.5, -.5], [.5, -.5], [-.5, .5], [.5, .5]].forEach(([a, b]) => tor(L, .22, .03, M.dark, 1.2 + a, 3.07, b * .6));
-    bx(L, 2.5, .5, .1, M.steel, 1.2, 3, -1); bx(L, 1.8, .9, .03, M.dark, 1.2, 1.1, 1.05);
-    bx(L, 3, 5.9, 2.2, M.steel, 3.8, 0, 0); cyl(L, .04, 1.6, M.steel, 3.5, 2.6, 1.2); cyl(L, .04, 1.6, M.steel, 4.1, 2.6, 1.2);
-    bx(L, 4, 1.6, .9, M.black, 1.2, 6, -.5); // hood
-    // island with seating
-    bx(g, 6, 2.9, 2.6, M.island, 1.2, 0, 1.2); bx(g, 6.5, .14, 3.1, M.quartz, 1.2, 2.9, 1.2);
-    for (let i = 0; i < 3; i++) { const sx = -.6 + i * 1.8; cyl(g, .55, .12, M.wood, sx, 2.3, 3.1); cyl(g, .05, 2.3, M.black, sx, 0, 3.1); bx(g, .9, .6, .08, M.wood, sx, 2.6, 3.5); }
+    const stud = new THREE.MeshStandardMaterial({ color: '#E3C99B', roughness: .85 });
+    // open stud bay section on the back wall (drywall removed between x=-3.5..3.5)
+    bx(g, 7, 7.6, .2, new THREE.MeshStandardMaterial({ color: '#CFC7BA', roughness: 1 }), 0, 0, -4.85); // exposed sheathing
+    for (let i = 0; i <= 4; i++) bx(g, .3, 7.6, .35, stud, -3.5 + i * 1.75, 0, -4.75);
+    bx(g, 7, .3, .35, stud, 0, 7.6, -4.75);
+    // finished cabinets either side, sink base in but open (no doors yet), counters not on yet
+    bx(g, 3.8, 2.9, 2, M.cab, -5.1 + 1, 0, -4); doors(g, 3.8, 2.6, 2, 2, .2); bx(g, 3.8, 2.9, 2, M.cab, 4.1, 0, -4);
+    const sb = new THREE.Group(); sb.position.set(0, 0, -4); g.add(sb); bx(sb, 3.0, .3, 1.8, M.dark, 0, 0, 0); bx(sb, .1, 2.6, 1.8, M.cab, -1.45, .3, 0); bx(sb, .1, 2.6, 1.8, M.cab, 1.45, .3, 0); bx(sb, 3.0, .1, 1.8, M.cab, 0, 2.85, 0);
+    bx(g, 2.4, .7, 1.4, M.steel, 0, 2.95, -4.1); faucet(g, 0, 3.65, -4.75); // sink sitting in place, not yet plumbed to counter
+    // drain: new PVC up through floor, P-trap, into wall with vent up
+    cyl(g, .16, 1.6, M.pvc, -.3, .3, -3.6); tor(g, .3, .15, M.pvc, -.3, 1.9, -3.6, 0); cyl(g, .16, .9, M.pvc, .3, 1.75, -4.1, Math.PI / 2); cyl(g, .16, 5.8, M.pvc, .3, 1.8, -4.6);
+    cyl(g, .3, .5, M.pvc, .3, 2.0, -4.6); // sanitary tee
+    // hot/cold PEX from the manifold side, stub-outs with shut-off valves
+    cyl(g, .07, 7, M.pexb, -1.2, 1.3, -4.55, 0, Math.PI / 2); cyl(g, .07, 7, M.pexr, -1.2, 1.7, -4.55, 0, Math.PI / 2);
+    [-.7, .9].forEach((x, i) => { cyl(g, .07, 1.2, i ? M.pexr : M.pexb, x, i ? 1.7 : 1.3, -4.55); bx(g, .25, .25, .25, M.brass, x, i ? 2.9 : 2.5, -4.55); cyl(g, .05, .5, M.steel, x, i ? 2.9 : 2.5, -4.3, Math.PI / 2); });
+    // dishwasher drain + supply tee off the sink base
+    bx(g, 2.0, 2.9, 1.9, M.steel, 3.2, 0, -4); cyl(g, .07, 1.6, M.pexr, 1.9, 1.7, -4.55, 0, Math.PI / 2); cyl(g, .12, 1.6, M.pvc, 1.9, 2.4, -4.5, 0, Math.PI / 2);
+    // island going in: base set, floor trenched for its drain line (open channel with PVC)
+    bx(g, 6, 2.9, 2.6, M.island, 1.2, 0, 1.2); bx(g, 6.4, .1, 3.0, new THREE.MeshStandardMaterial({ color: '#D8B98A', roughness: .9 }), 1.2, 2.9, 1.2); // plywood sub-top
+    bx(g, .9, .12, 4.6, M.dirt, 1.6, -.11, -1.1); cyl(g, .18, 4.6, M.pvc, 1.6, -.1, -1.1, Math.PI / 2); cyl(g, .18, .8, M.pvc, 1.6, .25, 1.0); // trench + line to island sink
+    cyl(g, .07, 4.6, M.pexb, 1.2, -.08, -1.1, Math.PI / 2); cyl(g, .07, 4.6, M.pexr, 2.0, -.08, -1.1, Math.PI / 2);
+    // tools: level on island, PEX crimper, coil of PEX, drill, bucket, drop cloth
+    bx(g, 2.6, .12, .25, M.red, 0.4, 3.0, 1.3); bx(g, .9, .12, .25, M.black, 2.2, 3.0, 1.0);
+    cyl(g, .55, .9, M.pexr, 4.8, 0, 3.4, 0, 0, .55); cyl(g, .3, .9, M.white, 4.8, .9, 3.4, 0, 0, .3);
+    bx(g, 1.0, .5, .3, M.black, -2.4, 3.0, 1.2); cyl(g, .32, .32, M.grey, -3.8, 0, 3.0, 0, 0, .3);
+    bx(g, 5, .02, 4, new THREE.MeshStandardMaterial({ color: '#E8E3D6', roughness: 1 }), -2.5, 0, 2.5);
     pendant(g, -.4, 8.4, 1.2); pendant(g, 1.2, 8.4, 1.2); pendant(g, 2.8, 8.4, 1.2);
-    sph(g, .25, M.red, 0.2, 3.3, 1.1); sph(g, .25, M.red, .55, 3.3, 1.3); sph(g, .25, M.red, .3, 3.3, 1.6); // bowl of apples
-    cyl(g, .5, .08, M.wood, .4, 3.0, 1.3);
-    plant(g, 4.6, 3.6, 1.1);
-    return { cam: [13, 9.5, 14], look: [0, 2.6, -.5] };
+    return { cam: [11, 8.5, 13], look: [.2, 2.6, -1.2] };
   },
   bathroom(g) {
+    // bathroom remodel, plumbing phase: shower at rough-in (valve set, drain in, one wall backer-boarded, one wall open), vanity stub-outs, toilet flange
     room(g, 10, 9, 8.5, M.tilef, M.wall, { win: [-2.6, 1.8, 1.4, 6.2] });
-    // tiled shower, curbless, glass panel
-    const sx = 2.9; bx(g, 4.2, 7.4, .08, M.tile, sx, 0, -4.4); bx(g, .08, 7.4, 4.2, M.tile, sx + 2.1 - .04, 0, -2.4);
-    bx(g, 4.2, .02, 4.2, M.tile, sx, .0, -2.4); cyl(g, .2, .02, M.black, sx, .02, -2.4);
-    bx(g, .04, 7, 4.2, M.glass, sx - 2.1, 0, -2.4); bx(g, .06, .06, 4.2, M.black, sx - 2.1, 7, -2.4);
-    cyl(g, .05, 2.4, M.black, sx, 4.2, -4.2); cyl(g, .04, .8, M.black, sx, 6.75, -3.85, Math.PI / 2); cyl(g, .45, .05, M.black, sx, 6.65, -3.45);
-    cyl(g, .08, .35, M.black, sx, 3.6, -4.25, Math.PI / 2); bx(g, 1.2, .25, .3, M.tile, sx + .9, 4.6, -4.3);
-    // floating double vanity
-    bx(g, 5.4, 1.9, 2, M.wood, -2.2, 1.6, -3.5); doors(g, 5.4, 1.8, 2, 2, 1.6); bx(g, 5.5, .1, 2.1, M.quartz, -2.2, 3.5, -3.5);
-    bx(g, 1.4, .5, 1.1, M.porc, -3.5, 3.6, -3.5); bx(g, 1.4, .5, 1.1, M.porc, -.9, 3.6, -3.5); faucet(g, -3.5, 4.1, -4.1); faucet(g, -.9, 4.1, -4.1);
-    cyl(g, 1.0, .04, M.mirror, -3.5, 6, -4.42, Math.PI / 2); cyl(g, 1.0, .04, M.mirror, -.9, 6, -4.42, Math.PI / 2);
-    bx(g, 5.4, .1, .18, M.lamp, -2.2, 8, -4.3); bx(g, 5.4, .06, 2, M.lamp, -2.2, 1.55, -3.5);
-    // toilet
-    bx(g, 1.4, .6, .6, M.porc, -4.0, 1.4, -.3); bx(g, 1.4, 1.4, .55, M.porc, -4.0, 0, -.35); const bw = cyl(g, .5, 1.25, M.porc, -4.0, 0, .45); bw.scale.z = 1.4; const st = tor(g, .5, .07, M.porc, -4.0, 1.28, .45); st.scale.set(1, 1.4, 1);
-    // towels, plant, bath mat
-    bx(g, .06, .06, 2, M.black, -4.9, 5.2, 2.5, 0); bx(g, .1, 1.6, 1, M.towel, -4.8, 3.7, 2.5); bx(g, .1, 1.6, .8, M.towel, -4.8, 3.7, 3.4);
-    bx(g, 2.2, .06, 1.4, M.rug, .6, 0, -1.1); plant(g, 4.0, 3.4, .9);
-    return { cam: [12, 8.5, 13], look: [-.4, 2.8, -.6] };
+    const stud = new THREE.MeshStandardMaterial({ color: '#E3C99B', roughness: .85 }); const cbu = new THREE.MeshStandardMaterial({ color: '#B9BDB5', roughness: .95 });
+    const sx = 2.9;
+    // back wall of shower: open studs with valve and riser
+    for (let i = 0; i <= 3; i++) bx(g, .3, 7.4, .35, stud, sx - 2.1 + i * 1.4, 0, -4.4); bx(g, 4.2, .3, .35, stud, sx, 7.4, -4.4);
+    bx(g, 1.2, 1.1, .6, M.brass, sx, 3.9, -4.3); cyl(g, .12, .6, M.brass, sx, 4.4, -4.0, Math.PI / 2); // mixing valve w/ plaster guard
+    cyl(g, .08, 2.5, M.copper, sx, 5.0, -4.3); cyl(g, .08, .6, M.copper, sx, 7.4, -4.05, Math.PI / 2); cyl(g, .07, 3.9, M.pexb, sx - .5, 0, -4.3); cyl(g, .07, 3.9, M.pexr, sx + .5, 0, -4.3);
+    // side wall: cement board up, ready for tile
+    bx(g, .1, 7.4, 4.2, cbu, sx + 2.1, 0, -2.4);
+    // shower pan: mortar bed with drain + trap below (floor cut away to show)
+    bx(g, 4.2, .25, 4.2, new THREE.MeshStandardMaterial({ color: '#9A9A92', roughness: 1 }), sx, -.1, -2.4); cyl(g, .25, .05, M.pvc, sx, .15, -2.4); tor(g, .3, .05, M.pvc, sx, .18, -2.4);
+    // open floor section: subfloor cut, trap and drain line running to stack
+    bx(g, 2.2, .12, 5, M.dirt, -.2, -.12, -1.9); cyl(g, .16, 3.4, M.pvc, -.2, -.08, -2.4, Math.PI / 2); tor(g, .32, .16, M.pvc, 1.4, .0, -2.4, 0); cyl(g, .3, 3.2, M.pvc, -.2, -.05, -2.6);
+    cyl(g, .32, .35, M.pvc, -4.0, 0, .45); tor(g, .5, .07, M.pvc, -4.0, .36, .45); cyl(g, .2, 2.6, M.pvc, -2.2, -.08, .45, 0, Math.PI / 2); // toilet flange + line
+    // vanity wall: drywall on, hot/cold stub-outs + drain stub, vanity waiting in its box
+    bx(g, .25, .25, .25, M.brass, -3.5, 2.3, -4.35); bx(g, .25, .25, .25, M.brass, -2.9, 2.3, -4.35); cyl(g, .05, .5, M.steel, -3.5, 2.3, -4.1, Math.PI / 2); cyl(g, .05, .5, M.steel, -2.9, 2.3, -4.1, Math.PI / 2);
+    cyl(g, .14, .5, M.pvc, -3.2, 1.6, -4.1, Math.PI / 2); cyl(g, .25, .04, M.pvc, -3.2, 1.6, -3.85, Math.PI / 2);
+    bx(g, 1.2, .25, .25, M.brass, -.8, 2.3, -4.35); // second sink stubs
+    bx(g, 3.2, 2.9, 1.6, new THREE.MeshStandardMaterial({ color: '#C9B58F', roughness: 1 }), -2.4, 0, -1.2); // vanity in cardboard
+    // tools & materials: tile stacks, grout bucket, level, torch kit
+    for (let i = 0; i < 5; i++) bx(g, 1.4, .06, 2.4, M.tile, 1.0, i * .07, 2.8); cyl(g, .4, .9, M.white, -1.0, 0, 3.0); bx(g, 2.4, .12, .25, M.red, -3.5, 0, 3.2);
+    bx(g, .9, .5, .5, M.red, 3.8, 0, 1.8); cyl(g, .12, .9, M.steel, 3.8, .5, 1.8);
+    return { cam: [12, 8, 13], look: [-.2, 2.6, -1.0] };
   },
   basement(g) {
-    room(g, 14, 11, 7.6, M.lvp, M.wall2, { win: [4, 2.6, 1.1, 6.2] });
-    // half bath enclosure, open door
-    bx(g, 4.6, 7.6, .3, M.wall, -4.7, 0, -1.2); bx(g, .3, 7.6, 4.3, M.wall, -2.55, 0, -3.35);
-    bx(g, 1.4, 6.8, .1, M.wood, -3.1, 0, -1.1, -.9); // door swung open
-    bx(g, 4.4, .02, 4.3, M.tilef, -4.8, 0, -3.3);
-    bx(g, 1.1, .5, .5, M.porc, -5.9, 1.3, -5.0); bx(g, 1.1, 1.3, .5, M.porc, -5.9, 0, -5.0); const b = cyl(g, .42, 1.2, M.porc, -5.9, 0, -4.3); b.scale.z = 1.4;
-    bx(g, 1.6, 2.7, 1.5, M.wood, -3.6, 0, -4.7); bx(g, 1.7, .1, 1.6, M.quartz, -3.6, 2.7, -4.7); bx(g, 1.0, .4, .9, M.porc, -3.6, 2.8, -4.7); faucet(g, -3.6, 3.2, -5.2); bx(g, 1.3, 1.6, .04, M.mirror, -3.6, 4.2, -5.45);
-    // laundry closet: stacked washer/dryer
-    bx(g, 3.2, 7.6, .3, M.wall, 5.4, 0, -2.9); bx(g, .3, 7.6, 2.6, M.wall, 3.95, 0, -4.2);
-    bx(g, 2.6, 3, 2.4, M.white, 5.5, 0, -4.2); tor(g, .65, .08, M.steel, 5.5, 1.5, -2.98, 0); cyl(g, .6, .05, M.dark, 5.5, 1.5, -2.96, Math.PI / 2);
-    bx(g, 2.6, 3, 2.4, M.white, 5.5, 3.05, -4.2); tor(g, .65, .08, M.steel, 5.5, 4.55, -2.98, 0); cyl(g, .6, .05, M.dark, 5.5, 4.55, -2.96, Math.PI / 2); bx(g, 2.4, .3, .1, M.steel, 5.5, 5.7, -3.0);
-    bx(g, 3.2, .35, .9, M.pvc, 5.5, 6.4, -4.6);
-    // family room
-    bx(g, 6, 1.1, 2.8, M.fabric, 1.2, 0, 2.2); bx(g, 6, 1.6, .7, M.fabric, 1.2, 1.1, .85); bx(g, .7, .9, 2.8, M.fabric, -1.65, 1.1, 2.2); bx(g, .7, .9, 2.8, M.fabric, 4.05, 1.1, 2.2);
-    for (let i = 0; i < 3; i++) bx(g, 1.65, .45, 2.1, M.fabric, -.5 + i * 1.7, 1.1, 2.5);
-    bx(g, 2.6, 1.3, 1.4, M.wood, 1.2, 0, 4.6); bx(g, 7, .04, 5, M.rug, 1.2, 0, 3.4);
-    bx(g, 5.5, 3.1, .12, M.dark, 1.2, 2.2, -5.3); bx(g, 5.2, 2.8, .02, M.ink, 1.2, 2.35, -5.22); bx(g, 6.5, 1.5, 1.4, M.wood, 1.2, 0, -4.7);
+    // basement remodel, plumbing phase: slab cut for a sealed ejector pit because a bathroom is going in; drain lines trenched, bathroom walls framed with PEX, laundry hookup box, sump
+    room(g, 14, 11, 7.6, M.conc, M.wall2, { win: [4, 2.6, 1.1, 6.2] });
+    const stud = new THREE.MeshStandardMaterial({ color: '#E3C99B', roughness: .85 });
+    // framed bathroom walls (no drywall yet)
+    const frame = (x, z, len, ry) => { const F = new THREE.Group(); F.position.set(x, 0, z); F.rotation.y = ry; g.add(F); bx(F, len, .3, .35, stud, 0, 0, 0); bx(F, len, .3, .35, stud, 0, 7.3, 0); for (let i = 0; i <= Math.round(len / 1.5); i++) bx(F, .3, 7.0, .35, stud, -len / 2 + i * 1.5, .3, 0); };
+    frame(-4.7, -1.2, 4.6, 0); frame(-2.55, -3.35, 4.3, Math.PI / 2);
+    // ejector pit: cut slab, pit basin, sealed lid, discharge + vent
+    bx(g, 3.2, .14, 3.2, M.dirt, -4.6, -.13, -3.4); cyl(g, .95, 1.6, M.dark, -4.6, -1.7, -3.4); cyl(g, 1.0, .1, M.grey, -4.6, -.1, -3.4);
+    cyl(g, .12, 7.5, M.pvc, -4.2, 0, -3.4); cyl(g, .18, 7.5, M.pvc, -5.0, 0, -3.4); bx(g, .4, .4, .4, M.brass, -4.2, 2.6, -3.4); // discharge w/ check valve, vent
+    // drain trench from bathroom (toilet + shower) into the pit
+    bx(g, .8, .14, 4.0, M.dirt, -3.6, -.13, -1.2); cyl(g, .18, 4.2, M.pvc, -3.6, -.1, -1.4, Math.PI / 2); cyl(g, .32, .35, M.pvc, -3.6, 0, .6); tor(g, .5, .07, M.pvc, -3.6, .36, .6);
+    bx(g, 3.0, .14, .8, M.dirt, -5.8, -.13, -5.0); cyl(g, .18, 2.6, M.pvc, -5.8, -.1, -5.0, 0, Math.PI / 2); cyl(g, .25, .05, M.pvc, -6.6, .1, -5.0);
+    // PEX runs along the joists overhead and down the framed wall to vanity + shower
+    cyl(g, .07, 9, M.pexb, -2.0, 7.2, -2.6, 0, Math.PI / 2); cyl(g, .07, 9, M.pexr, -2.0, 7.0, -2.6, 0, Math.PI / 2);
+    cyl(g, .07, 4.8, M.pexb, -3.9, 2.4, -1.35); cyl(g, .07, 4.8, M.pexr, -3.3, 2.4, -1.35); bx(g, .25, .25, .25, M.brass, -3.9, 2.3, -1.3); bx(g, .25, .25, .25, M.brass, -3.3, 2.3, -1.3);
+    // laundry side: recessed washer box with valves, standpipe, dryer vent
+    bx(g, 1.4, 1.2, .3, M.white, 5.5, 3.4, -5.3); cyl(g, .12, .4, M.pexb, 5.2, 3.9, -5.1, Math.PI / 2); cyl(g, .12, .4, M.pexr, 5.8, 3.9, -5.1, Math.PI / 2); cyl(g, .14, 3.2, M.pvc, 5.5, 0, -5.15);
+    cyl(g, .22, 4.0, M.steel, 7.0, 0, -5.2); bx(g, .5, .5, .3, M.grey, 7.0, 4.0, -5.2);
+    bx(g, 2.6, 3, 2.4, M.white, 4.4, 0, -2.4); tor(g, .65, .08, M.steel, 4.4, 1.5, -1.18, 0); cyl(g, .6, .05, M.dark, 4.4, 1.5, -1.16, Math.PI / 2); // washer waiting on the floor
+    // sump in the corner, water heater, main stack
+    cyl(g, .7, .12, M.dark, 5.8, 0, 3.6); cyl(g, .72, .05, M.grey, 5.8, .12, 3.6); cyl(g, .1, 7.5, M.pvc, 6.1, 0, 3.6);
+    cyl(g, 1.0, 5, M.grey, -5.8, 0, 3.4); cyl(g, .08, 2.5, M.copper, -6.2, 5, 3.4); cyl(g, .08, 2.5, M.copper, -5.4, 5, 3.4);
+    cyl(g, .3, 7.6, M.pvc, 1.5, 0, -5.2);
+    // tools: concrete saw, wheelbarrow of slab pieces, shop vac, toolbox
+    bx(g, 1.8, .9, .8, M.red, 0, 0, 1.6); cyl(g, .55, .08, M.black, .9, .4, 1.6, 0, Math.PI / 2); bx(g, 2.2, .9, 1.4, M.dark, 2.6, .5, 3.2); for (let i = 0; i < 5; i++) bx(g, .6, .3, .5, M.grey, 2.2 + (i % 3) * .5, 1.4, 2.9 + (i % 2) * .5);
+    cyl(g, .5, 1.3, M.grey, -1.6, 0, 3.4); bx(g, 1.4, .7, .7, M.black, 0.4, 0, -1.2);
     for (let i = 0; i < 4; i++) { const r = cyl(g, .3, .06, M.lamp, -3 + i * 3, 7.56, -1 + (i % 2) * 3); r.receiveShadow = false; }
-    plant(g, 6.0, 4.6, 1.2); bx(g, .35, 2.6, .35, M.lamp, -1.9, 1.1, -4.4); cyl(g, .05, 2.6, M.black, -1.9, 0, -4.4);
-    return { cam: [15, 9, 15], look: [.5, 2.4, -.4] };
+    return { cam: [13, 9, 15], look: [-.5, 2.4, -1.0] };
   },
   roughin(g) {
     // bathroom remodel at rough-in: open studs, new PEX + drain runs, shower valve set, flange in, and the plan being drawn up
