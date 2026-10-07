@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Harmony Body Oil by Hubs & Babydoll. Hand-poured jojoba, sweet almond, flaxseed and castor oil blend. Absorbs in under a minute, lasts all day.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0B0B0C">
+<title>Harmony Body Oil — Hubs &amp; Babydoll</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: single-column long-form sales page, dark amber world of the bottle itself; every section ends in the same CTA. Committed single dark look to match the product photography. */
+:root{
+  --bg:#0B0B0C; --bg2:#141214; --bg3:#1C1917;
+  --fg:#F4EBDD; --fg2:#B8AD9C; --fg3:#7E7568;
+  --gold:#D9A441; --gold2:#F0C76A; --amber:#8A5A1E;
+  --line:rgba(217,164,65,.22);
+  --display:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+  --body:"Figtree","Helvetica Neue",Arial,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.08;margin:0;text-wrap:balance}
+h1{font-size:clamp(2.4rem,6vw,4.2rem)}
+h2{font-size:clamp(2rem,4.5vw,3.1rem)}
+h3{font-size:1.5rem}
+p{margin:0}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:20px}
+.narrow{max-width:720px;margin:0 auto}
+.eyebrow{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.lead{color:var(--fg2);font-size:1.1rem;max-width:62ch}
+section{padding-block:72px}
+@media(max-width:640px){section{padding-block:52px}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;background:var(--gold);color:#1A1205;font-weight:700;padding:16px 28px;border-radius:4px;text-decoration:none;font-size:1rem;border:0;cursor:pointer;transition:background .15s,transform .15s}
+.btn:hover{background:var(--gold2)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--gold2);outline-offset:3px}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.btn.ghost:hover{background:var(--bg3)}
+.btn.wide{width:100%}
+.cta-row{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:40px;text-align:center}
+.cta-row small{color:var(--fg3);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase}
+
+/* announcement */
+.bar{background:var(--gold);color:#1A1205;text-align:center;font-size:.8rem;font-weight:600;letter-spacing:.06em;padding:9px 16px}
+header.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(11,11,12,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-family:var(--display);font-size:1.5rem;font-weight:600;text-decoration:none;letter-spacing:.01em}
+.logo em{color:var(--gold);font-style:normal}
+.nav a.btn{padding:10px 18px;font-size:.85rem}
+
+/* hero */
+.hero{padding-block:36px 72px}
+.hero .wrap{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+.hero-left{position:sticky;top:calc(76px + env(safe-area-inset-top,0px));min-width:0}
+@media(max-width:860px){.hero-left{position:static}}
+@media(max-width:860px){.hero .wrap{grid-template-columns:1fr;gap:28px}}
+.hero-img{position:relative;border-radius:8px;overflow:hidden;background:radial-gradient(ellipse at 50% 70%,#2A1C0A 0%,var(--bg) 70%);aspect-ratio:4/5;max-width:100%;display:grid;place-items:center}
+.hero-img img{height:100%;width:auto;max-height:100%;object-fit:contain;transition:opacity .25s}
+.hero-img .tag{position:absolute;top:14px;left:14px;background:var(--gold);color:#1A1205;font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:6px 10px;border-radius:3px}
+.hero-copy{display:flex;flex-direction:column;gap:18px;min-width:0}
+.rating{display:flex;align-items:center;gap:10px;color:var(--fg2);font-size:.9rem}
+.stars{color:var(--gold);letter-spacing:2px}
+.benefit-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 20px;list-style:none;padding:0;margin:4px 0 0;font-size:.95rem}
+.benefit-grid li{display:flex;gap:8px;align-items:flex-start}
+.benefit-grid li::before{content:"";flex:none;width:16px;height:16px;margin-top:3px;border-radius:50%;background:var(--gold);-webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" fill="none" stroke="black" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>') center/contain no-repeat;mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" fill="none" stroke="black" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>') center/contain no-repeat}
+
+.pick{display:flex;flex-direction:column;gap:10px}
+.pick-label{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--fg3);font-weight:600;display:flex;justify-content:space-between}
+.pick-label span{color:var(--fg);letter-spacing:0;text-transform:none;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--bg3);border:1px solid var(--line);color:var(--fg);padding:10px 14px;border-radius:4px;font:inherit;font-size:.9rem;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
+.chip small{color:var(--fg3);font-size:.75rem}
+.chip[aria-pressed="true"]{border-color:var(--gold);background:#231A0C;box-shadow:inset 0 0 0 1px var(--gold)}
+.chip .save{color:var(--gold);font-size:.72rem;font-weight:700;letter-spacing:.06em}
+.price-line{display:flex;align-items:baseline;gap:12px;margin-top:6px}
+.price{font-family:var(--display);font-size:2.4rem;font-weight:600;font-variant-numeric:tabular-nums}
+.per{color:var(--fg3);font-size:.9rem}
+.ship{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--fg3);font-size:.82rem;margin-top:6px}
+.ship b{color:var(--fg2);font-weight:500}
+
+/* trust strip */
+.strip{border-block:1px solid var(--line);background:var(--bg2);padding-block:16px}
+.strip .wrap{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 34px;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--fg2);font-weight:600}
+
+/* spec list */
+.spec{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+@media(max-width:860px){.spec{grid-template-columns:1fr}}
+.spec dl{display:grid;grid-template-columns:auto 1fr;gap:16px 22px;margin:0}
+.spec dt{color:var(--gold);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700;padding-top:4px;white-space:nowrap}
+.spec dd{margin:0;color:var(--fg2);min-width:0}
+.spec dd b{color:var(--fg);font-weight:600}
+@media(max-width:480px){.spec dl{grid-template-columns:1fr;gap:4px 0}.spec dd{margin-bottom:12px}}
+.photo{border-radius:8px;overflow:hidden;aspect-ratio:4/5;max-width:100%;background:var(--bg3)}
+.photo img{width:100%;height:100%;object-fit:cover}
+
+/* ingredients */
+.ing{background:var(--bg2);border-block:1px solid var(--line)}
+.ing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-top:40px}
+.ing-grid article{background:var(--bg2);padding:26px 22px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.ing-grid h3{font-size:1.45rem;color:var(--gold2)}
+.ing-grid .role{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--fg3);font-weight:600}
+.ing-grid p{color:var(--fg2);font-size:.95rem}
+
+/* compare */
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:40px;border-radius:8px;overflow:hidden}
+@media(max-width:640px){.cmp{grid-template-columns:1fr}}
+.cmp>div{background:var(--bg);padding:30px 26px;min-width:0}
+.cmp>div.us{background:linear-gradient(180deg,#231A0C,var(--bg) 80%)}
+.cmp h3{margin-bottom:6px}
+.cmp .sub{color:var(--fg3);font-size:.85rem;margin-bottom:18px}
+.cmp ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;color:var(--fg2)}
+.cmp li{display:flex;gap:12px;align-items:flex-start}
+.cmp li::before{content:"×";flex:none;color:var(--fg3);font-weight:700;width:18px;text-align:center}
+.cmp .us li::before{content:"✓";color:var(--gold)}
+.cmp .us ul{color:var(--fg)}
+
+/* timeline */
+.tl{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px;margin-top:44px;position:relative}
+.tl article{display:flex;flex-direction:column;gap:10px;padding-top:22px;border-top:1px solid var(--line);position:relative;min-width:0}
+.tl article::before{content:"";position:absolute;top:-5px;left:0;width:9px;height:9px;border-radius:50%;background:var(--gold)}
+.tl .when{font-family:var(--display);font-size:1.6rem;color:var(--gold2)}
+.tl p{color:var(--fg2);font-size:.95rem}
+
+/* bundles */
+.bundles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:40px}
+.bundle{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--bg2);display:flex;flex-direction:column;min-width:0}
+.bundle .photo{aspect-ratio:3/2;border-radius:0}
+.bundle .body{padding:22px;display:flex;flex-direction:column;gap:10px;flex:1}
+.bundle .body p{color:var(--fg2);font-size:.95rem;flex:1}
+.bundle .meta{display:flex;justify-content:space-between;align-items:baseline}
+.bundle .meta .price{font-size:1.7rem}
+.bundle .meta small{color:var(--fg3)}
+.bundle.featured{border-color:var(--gold)}
+.bundle .for{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700}
+
+/* story */
+.story{background:var(--bg2);border-block:1px solid var(--line)}
+.story .wrap{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+@media(max-width:860px){.story .wrap{grid-template-columns:1fr}}
+.quote{font-family:var(--display);font-size:clamp(1.5rem,3vw,2.1rem);font-style:italic;font-weight:500;line-height:1.3;color:var(--fg)}
+.sig{margin-top:18px;color:var(--fg3);font-size:.85rem;letter-spacing:.1em;text-transform:uppercase}
+
+/* faq */
+.faq{max-width:760px;margin:40px auto 0;border-top:1px solid var(--line)}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{cursor:pointer;list-style:none;padding:20px 0;font-weight:600;font-size:1.05rem;display:flex;justify-content:space-between;gap:20px;align-items:center}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--gold);font-size:1.4rem;font-weight:400;flex:none;transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{padding-bottom:20px;color:var(--fg2);max-width:65ch}
+
+/* final */
+.final{text-align:center;background:radial-gradient(ellipse at 50% 100%,#2A1C0A 0%,var(--bg) 65%)}
+.final h2{font-size:clamp(2.2rem,5vw,3.6rem)}
+
+footer{border-top:1px solid var(--line);padding-block:30px;color:var(--fg3);font-size:.82rem}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 24px}
+footer a{color:var(--fg2);text-decoration:none;margin-right:16px}
+
+/* sticky buy bar (mobile) */
+.buybar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(11,11,12,.94);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));display:none;align-items:center;justify-content:space-between;gap:12px}
+.buybar .t{font-size:.85rem;line-height:1.2;min-width:0}
+.buybar .t b{display:block;font-size:1rem}
+.buybar .btn{padding:12px 18px;font-size:.9rem;flex:none}
+
+
+/* hero gallery */
+.hero-img{aspect-ratio:3/4}
+.hero-img img{position:absolute;inset:4%;width:92%;height:92%;object-fit:contain}
+.thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.thumbs button{background:var(--bg3);border:1px solid var(--line);border-radius:6px;padding:6px;cursor:pointer;aspect-ratio:1;display:grid;place-items:center;overflow:hidden}
+.thumbs button{position:relative}.thumbs button img{position:absolute;inset:6%;width:88%;height:88%;object-fit:contain}
+.thumbs button[aria-pressed="true"]{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.qty{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.qty .chip{align-items:stretch;text-align:left}
+.qty .chip b{font-size:1rem}
+.stock{font-size:.82rem;color:var(--gold2);display:flex;align-items:center;gap:8px}
+.stock::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 3px rgba(217,164,65,.25)}
+.inbox{border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:grid;gap:6px;font-size:.9rem;color:var(--fg2);background:var(--bg2)}
+.inbox b{color:var(--fg);font-weight:600}
+.inbox .row{display:flex;justify-content:space-between;gap:12px}
+.inbox .total{border-top:1px solid var(--line);padding-top:8px;color:var(--fg);font-weight:600}
+.pay{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.pay span{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);border-radius:3px;padding:3px 7px;color:var(--fg3)}
+/* collection gallery */
+.coll{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px;margin-top:40px}
+.coll figure{margin:0;background:var(--bg2);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;min-width:0;cursor:zoom-in;transition:border-color .15s}
+.coll figure:hover{border-color:var(--gold)}
+.coll .ph{aspect-ratio:3/4;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 85%,#241808,var(--bg2) 72%);padding:10px}
+.coll .ph img{position:absolute;inset:6%;width:88%;height:88%;object-fit:contain}
+.coll .ph.wide img{inset:0;width:100%;height:100%;object-fit:cover}
+.coll figcaption{padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px;font-size:.88rem}
+.coll figcaption b{font-weight:600;color:var(--fg)}
+.coll figcaption span{color:var(--gold2);font-variant-numeric:tabular-nums}
+.coll figcaption small{color:var(--fg3)}
+.hero-wide{border-radius:8px;overflow:hidden;margin-top:40px;max-width:100%}
+.hero-wide img{width:100%;height:auto}
+/* lightbox */
+.lb{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.92);display:grid;place-items:center;padding:24px;cursor:zoom-out}
+.lb img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
+.lb .cap{position:absolute;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;color:var(--fg2);font-size:.9rem}
+.buybar.show{display:flex}
+@media(min-width:861px){.buybar .t{font-size:.95rem}}
+body.scrolled{padding-bottom:76px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="bar">Buy 2, save 10% · Buy 3, save 15% + free shipping · Handmade in small batches</div>
+
+<header class="nav"><div class="wrap">
+  <a class="logo" href="https://hubsandbabydoll.com">Hubs <em>&amp;</em> Babydoll</a>
+  <a class="btn" href="#buy">Shop the oil</a>
+</div></header>
+
+<section class="hero" id="top"><div class="wrap">
+  <div class="hero-left"><div class="hero-img">
+    <span class="tag">Most popular</span>
+    <img id="heroImg" src="img/harmony-jasmine-gardenia-body-oil.jpg" alt="Harmony Jasmine &amp; Gardenia Body Oil in an amber glass dropper bottle">
+  </div>
+  <div class="thumbs" id="thumbs" aria-label="Scent photos">
+    <button type="button" aria-pressed="true" data-scent="jas" title="Jasmine &amp; Gardenia"><img src="img/harmony-jasmine-gardenia-body-oil.jpg" alt="Jasmine &amp; Gardenia bottle"></button>
+    <button type="button" aria-pressed="false" data-scent="bay" title="Bay Rum"><img src="img/harmony-bay-rum-body-oil.jpg" alt="Bay Rum bottle"></button>
+    <button type="button" aria-pressed="false" data-scent="choc" title="Chocolate"><img src="img/harmony-chocolate-body-oil.jpg" alt="Chocolate bottle"></button>
+    <button type="button" aria-pressed="false" data-scent="pep" title="Peppermint"><img src="img/harmony-peppermint-oil.jpg" alt="Peppermint bottle"></button>
+  </div></div>
+  <div class="hero-copy" id="buy">
+    <span class="eyebrow">Harmony Body Oil · Hand-poured</span>
+    <h1>Skin that feels cared for by lunchtime.</h1>
+    <p class="lead">A lightweight blend of jojoba, sweet almond, flaxseed, and castor oils with Vitamin E. It sinks in within a minute, leaves no greasy film, and carries a scent that lasts through the day. Made for the people who pour into everyone else.</p>
+    <ul class="benefit-grid">
+      <li>Absorbs in under a minute</li>
+      <li>All-day hydration</li>
+      <li>No greasy residue</li>
+      <li>Softens dry elbows, knees, hands</li>
+      <li>Doubles as a beard oil</li>
+      <li>No parabens, no fillers</li>
+    </ul>
+
+    <div class="pick">
+      <div class="pick-label">Scent <span id="scentName">Jasmine &amp; Gardenia</span></div>
+      <div class="chips" id="scents" role="group" aria-label="Choose a scent">
+        <button class="chip" type="button" aria-pressed="true" data-scent="jas" data-name="Jasmine &amp; Gardenia">Jasmine &amp; Gardenia<small>Floral, soft, timeless</small></button>
+        <button class="chip" type="button" aria-pressed="false" data-scent="bay" data-name="Bay Rum">Bay Rum<small>Warm, spiced, for him</small></button>
+        <button class="chip" type="button" aria-pressed="false" data-scent="choc" data-name="Chocolate">Chocolate<small>Cozy cocoa</small></button>
+        <button class="chip" type="button" aria-pressed="false" data-scent="pep" data-name="Peppermint">Peppermint<small>Cooling, with lavender</small></button>
+      </div>
+    </div>
+
+    <div class="pick">
+      <div class="pick-label">Size <span id="sizeName">4 oz</span></div>
+      <div class="chips" id="sizes" role="group" aria-label="Choose a size">
+        <button class="chip" type="button" aria-pressed="false" data-size="2 oz" data-price="15">2 oz<small>$15 · try it</small></button>
+        <button class="chip" type="button" aria-pressed="true" data-size="4 oz" data-price="25">4 oz<small>$25 · about 2 months</small><span class="save">Best value</span></button>
+        <button class="chip" type="button" aria-pressed="false" data-size="8 oz" data-price="35">8 oz<small>$35 · share it</small><span class="save">Save $25 vs 2 oz</span></button>
+      </div>
+    </div>
+
+    <div class="pick">
+      <div class="pick-label">Quantity <span id="qtyName">1 bottle</span></div>
+      <div class="chips qty" id="qtys" role="group" aria-label="Choose quantity">
+        <button class="chip" type="button" aria-pressed="true" data-qty="1" data-off="0"><b>1 bottle</b><small>Full price</small></button>
+        <button class="chip" type="button" aria-pressed="false" data-qty="2" data-off="10"><b>2 bottles</b><small>Keep one, gift one</small><span class="save">Save 10%</span></button>
+        <button class="chip" type="button" aria-pressed="false" data-qty="3" data-off="15"><b>3 bottles</b><small>Free shipping</small><span class="save">Save 15%</span></button>
+      </div>
+    </div>
+
+    <div class="stock" id="stock" hidden></div>
+    <div class="price-line"><span class="price" id="price">$25</span><span class="per" id="per">$6.25 per oz</span></div>
+    <a class="btn wide" id="buyBtn" href="https://hubsandbabydoll.com/shop">Add to cart · $25</a>
+    <div class="inbox" id="inbox">
+      <b>In your order</b>
+      <div class="row"><span id="ibLine">1 × Jasmine &amp; Gardenia Harmony Oil, 4 oz</span><span id="ibSub">$25</span></div>
+      <div class="row" id="ibDiscRow" hidden><span>Multi-bottle savings</span><span id="ibDisc">−$0</span></div>
+      <div class="row"><span>Shipping</span><span id="ibShip">Calculated at checkout</span></div>
+      <div class="row total"><span>Total</span><span id="ibTotal">$25</span></div>
+    </div>
+    <div class="ship"><span><b>Ships in 1–2 business days</b></span><span>Local pickup available</span><span>Gift note at checkout</span></div>
+    <div class="pay"><span>Visa</span><span>Mastercard</span><span>Amex</span><span>Apple Pay</span><span>Google Pay</span><span>Cash App Pay</span><span>Afterpay</span></div>
+  </div>
+  </div>
+</div></section>
+
+<div class="strip"><div class="wrap">
+  <span>100% pure botanicals</span><span>Handcrafted in small batches</span><span>Cruelty free</span><span>Vitamin E enriched</span><span>Black-owned</span>
+</div></div>
+
+<section><div class="wrap spec">
+  <div>
+    <span class="eyebrow">What to expect</span>
+    <h2 style="margin:14px 0 30px">The oil, plainly.</h2>
+    <dl>
+      <dt>Best for</dt><dd><b>Dry, tight, or dull skin</b> anywhere on the body. Safe on sensitive skin, beards, and after shaving.</dd>
+      <dt>Feels like</dt><dd>Silky and light. It spreads easily and disappears into skin instead of sitting on top.</dd>
+      <dt>Absorption</dt><dd>Under a minute. You can get dressed right after.</dd>
+      <dt>Scent</dt><dd>Noticeable but not loud. Strongest the first hour, then a soft trace for the rest of the day.</dd>
+      <dt>Result</dt><dd><b>Soft, hydrated, glowing skin</b> that stays that way through the day with daily use.</dd>
+      <dt>Free from</dt><dd>Mineral oil, parabens, sulfates, and synthetic fillers. Four carrier oils, Vitamin E, and scent.</dd>
+      <dt>Multi-use</dt><dd>Body moisturizer, post-shower seal, beard conditioner, cuticle oil, or a few drops in the bath.</dd>
+    </dl>
+  </div>
+  <div class="photo" style="aspect-ratio:auto;background:transparent"><img src="img/lifestyle.jpg" alt="Harmony Jasmine &amp; Gardenia Body Oil styled with fresh flowers" style="width:100%;height:auto;object-fit:contain;border-radius:8px"></div>
+</div></section>
+
+<section class="ing"><div class="wrap">
+  <div class="narrow" style="text-align:center">
+    <span class="eyebrow">Ingredients</span>
+    <h2 style="margin:14px 0 16px">Four oils. One vitamin. Nothing to hide.</h2>
+    <p class="lead" style="margin:0 auto">Every bottle is blended by hand from the same short list. Here is what each one is doing on your skin.</p>
+  </div>
+  <div class="ing-grid">
+    <article><span class="role">The base</span><h3>Jojoba oil</h3><p>Closest to the oil your skin already makes, so it absorbs without clogging and balances dry and oily patches.</p></article>
+    <article><span class="role">The softener</span><h3>Sweet almond oil</h3><p>Rich in fatty acids and Vitamin A. Smooths rough texture and gives the blend its slip.</p></article>
+    <article><span class="role">The barrier</span><h3>Flaxseed oil</h3><p>High in omega-3. Helps skin hold moisture so the hydration lasts past the afternoon.</p></article>
+    <article><span class="role">The shine</span><h3>Castor oil</h3><p>Thicker and glossy. A small amount adds that healthy sheen and conditions beards and cuticles.</p></article>
+    <article><span class="role">The protector</span><h3>Vitamin E</h3><p>An antioxidant that keeps the oils fresh in the bottle and helps calm skin on you.</p></article>
+    <article><span class="role">The signature</span><h3>Scent blend</h3><p>Jasmine &amp; Gardenia, Bay Rum, Chocolate, or Peppermint with lavender and eucalyptus. Chosen to be worn, not just smelled.</p></article>
+  </div>
+  <div class="cta-row"><a class="btn" href="#buy">Choose your scent</a><small>Ships in 1–2 business days</small></div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="narrow" style="text-align:center">
+    <span class="eyebrow">Why oil, not lotion</span>
+    <h2 style="margin:14px 0 0">Most lotion is mostly water.</h2>
+  </div>
+  <div class="cmp">
+    <div>
+      <h3>Drugstore lotion</h3>
+      <p class="sub">What is actually in the bottle</p>
+      <ul>
+        <li>Water is usually the first ingredient</li>
+        <li>Needs preservatives and emulsifiers to stay mixed</li>
+        <li>Feels hydrated for an hour, then dry again</li>
+        <li>Fragrance added on top of a chemical base</li>
+        <li>Made by the pallet</li>
+      </ul>
+    </div>
+    <div class="us">
+      <h3>Harmony Body Oil</h3>
+      <p class="sub">What is in ours</p>
+      <ul>
+        <li>No water. Every drop is an oil doing a job</li>
+        <li>Vitamin E keeps it fresh, nothing else needed</li>
+        <li>Seals moisture in so skin stays soft all day</li>
+        <li>Scent blended into the oil itself</li>
+        <li>Poured by hand in small batches</li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<section class="ing"><div class="wrap">
+  <div class="narrow" style="text-align:center">
+    <span class="eyebrow">How to use it</span>
+    <h2 style="margin:14px 0 0">What changes, and when.</h2>
+  </div>
+  <div class="tl">
+    <article><span class="when">First use</span><h3>Soft right away</h3><p>Apply to damp skin after a shower, 3 to 5 drops per area. Skin feels smooth and looks lit from within before you leave the bathroom.</p></article>
+    <article><span class="when">Week 1</span><h3>Dry spots calm down</h3><p>Elbows, knees, and hands stop feeling tight by mid-day. The scent becomes part of your routine.</p></article>
+    <article><span class="when">Week 3</span><h3>Texture evens out</h3><p>With daily use, rough patches smooth and skin holds moisture on its own between applications.</p></article>
+    <article><span class="when">Ongoing</span><h3>It becomes the ritual</h3><p>Two minutes a day that are only yours. That is the whole point of the brand.</p></article>
+  </div>
+  <div class="cta-row"><a class="btn" href="#buy">Start with 4 oz · $25</a><small>About two months of daily use</small></div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="narrow" style="text-align:center">
+    <span class="eyebrow">Gift it</span>
+    <h2 style="margin:14px 0 16px">Pair it with the butter and the wash.</h2>
+    <p class="lead" style="margin:0 auto">The oil seals. The butter deeply nourishes. The wash cleanses without stripping. Together in a keepsake box, they say the thing out loud.</p>
+  </div>
+  <div class="bundles">
+    <article class="bundle featured">
+      <div class="photo"><img src="img/seen.jpg" alt="SEEN Jasmine Gardenia Collection gift box"></div>
+      <div class="body">
+        <span class="for">For her · "I see you"</span>
+        <h3>SEEN Jasmine Gardenia Collection</h3>
+        <p>8 oz body wash, 4 oz Moment body butter, Harmony body oil, and soft-touch cloths. For the woman who gives so much of herself.</p>
+        <div class="meta"><span class="price">$50</span><small>Save $18 vs separately</small></div>
+        <a class="btn ghost" href="https://hubsandbabydoll.com/shop">View the SEEN box</a>
+      </div>
+    </article>
+    <article class="bundle">
+      <div class="photo"><img src="img/heard.jpg" alt="HEARD Bay Rum Collection gift box"></div>
+      <div class="body">
+        <span class="for">For him · "I hear you"</span>
+        <h3>HEARD Bay Rum Collection</h3>
+        <p>Bay Rum Harmony body oil, Moment body butter, wash, and soft-touch cloths. For the man who carries a lot and rarely asks for anything.</p>
+        <div class="meta"><span class="price">$50</span><small>Keepsake box included</small></div>
+        <a class="btn ghost" href="https://hubsandbabydoll.com/shop">View the HEARD box</a>
+      </div>
+    </article>
+    <article class="bundle">
+      <div class="photo" style="background:radial-gradient(ellipse at 50% 80%,#2A1C0A,var(--bg3) 70%);position:relative"><img src="img/harmony-chocolate-body-oil.jpg" alt="Harmony Chocolate Body Oil" style="position:absolute;inset:5%;width:90%;height:90%;object-fit:contain"></div>
+      <div class="body">
+        <span class="for">Oil + butter duo</span>
+        <h3>Chocolate Escape</h3>
+        <p>2 oz Harmony body oil and 2 oz body butter in the warm cocoa scent. Layer the butter under the oil for a softness that lasts into the evening.</p>
+        <div class="meta"><span class="price">$35</span><small>Gift-ready</small></div>
+        <a class="btn ghost" href="https://hubsandbabydoll.com/shop">View the duo</a>
+      </div>
+    </article>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="narrow" style="text-align:center">
+    <span class="eyebrow">The full collection</span>
+    <h2 style="margin:14px 0 16px">Every scent. Every detail. All handmade.</h2>
+    <p class="lead" style="margin:0 auto">Tap any product to see it full size. Oils, whipped butters, sulfate-free washes, beard care, and gift boxes, all blended in the same small kitchen.</p>
+  </div>
+  <div class="hero-wide"><img src="img/collection.jpg" alt="The full Hubs &amp; Babydoll collection: oils, butters, washes, beard care and gift boxes" data-full="img/collection.jpg" data-cap="The full Hubs &amp; Babydoll collection" style="cursor:zoom-in"></div>
+  <div class="coll" id="coll">
+    <figure data-cap="Harmony Jasmine &amp; Gardenia Body Oil"><div class="ph"><img src="img/harmony-jasmine-gardenia-body-oil.jpg" alt="Harmony Jasmine &amp; Gardenia Body Oil"></div><figcaption><b>Jasmine &amp; Gardenia Harmony Oil</b><span>$15 – $35</span><small>2 oz · 4 oz · 8 oz · Most popular</small></figcaption></figure>
+    <figure data-cap="Harmony Bay Rum Body Oil"><div class="ph"><img src="img/harmony-bay-rum-body-oil.jpg" alt="Harmony Bay Rum Body Oil"></div><figcaption><b>Bay Rum Harmony Oil</b><span>$15 – $35</span><small>2 oz · 4 oz · 8 oz · Beard safe</small></figcaption></figure>
+    <figure data-cap="Harmony Chocolate Body Oil"><div class="ph"><img src="img/harmony-chocolate-body-oil.jpg" alt="Harmony Chocolate Body Oil"></div><figcaption><b>Chocolate Harmony Oil</b><span>$15 – $35</span><small>2 oz · 4 oz · 8 oz</small></figcaption></figure>
+    <figure data-cap="Harmony Peppermint Oil"><div class="ph"><img src="img/harmony-peppermint-oil.jpg" alt="Harmony Peppermint Oil"></div><figcaption><b>Peppermint Harmony Oil</b><span>$15 – $35</span><small>With lavender &amp; eucalyptus</small></figcaption></figure>
+    <figure data-cap="Jasmine &amp; Gardenia Body Butter"><div class="ph"><img src="img/jasmine-gardenia-body-butter.jpg" alt="Jasmine &amp; Gardenia Body Butter"></div><figcaption><b>Jasmine &amp; Gardenia Body Butter</b><span>$20 – $35</span><small>2 oz · 4 oz</small></figcaption></figure>
+    <figure data-cap="Lavender Rose Body Butter"><div class="ph"><img src="img/lavender-rose-body-butter.jpg" alt="Lavender Rose Body Butter"></div><figcaption><b>Lavender Rose Body Butter</b><span>$10</span><small>2 oz · 4 oz sold out</small></figcaption></figure>
+    <figure data-cap="Chocolate Body Butter"><div class="ph"><img src="img/chocolate-body-butter.jpg" alt="Chocolate Body Butter"></div><figcaption><b>Chocolate Body Butter</b><span>$10</span><small>2 oz · 4 oz sold out</small></figcaption></figure>
+    <figure data-cap="Peppermint Body Butter"><div class="ph"><img src="img/peppermint-body-butter.jpg" alt="Peppermint Body Butter"></div><figcaption><b>Peppermint Body Butter</b><span>$10</span><small>2 oz · 4 oz sold out</small></figcaption></figure>
+    <figure data-cap="Jasmine &amp; Gardenia Body Wash"><div class="ph"><img src="img/jasmine-gardenia-body-wash.jpg" alt="Jasmine &amp; Gardenia Body Wash"></div><figcaption><b>Jasmine &amp; Gardenia Body Wash</b><span>$18</span><small>3.6 oz · Sulfate-free</small></figcaption></figure>
+    <figure data-cap="Lavender Rose Body Wash"><div class="ph"><img src="img/lavender-rose-body-wash.jpg" alt="Lavender Rose Body Wash"></div><figcaption><b>Lavender Rose Body Wash</b><span>$18</span><small>3.6 oz · Sulfate-free</small></figcaption></figure>
+    <figure data-cap="Bay Rum Beard Conditioner"><div class="ph"><img src="img/bay-rum-beard-conditioner.jpg" alt="Bay Rum Beard Conditioner"></div><figcaption><b>Bay Rum Beard Conditioner</b><span>$18</span><small>3.6 oz</small></figcaption></figure>
+    <figure data-cap="Bay Rum Beard Balm"><div class="ph wide"><img src="img/beard-balm.jpg" alt="Bay Rum Beard Balm"></div><figcaption><b>Bay Rum Beard Balm</b><span>$18</span><small>2 oz</small></figcaption></figure>
+    <figure data-cap="Bay Rum Beard Gift Set"><div class="ph wide"><img src="img/beard-gift.jpg" alt="Bay Rum Beard Gift Set"></div><figcaption><b>Bay Rum Beard Gift Set</b><span>$35</span><small>1 oz oil + 1 oz balm · 10 left</small></figcaption></figure>
+    <figure data-cap="HEARD Bay Rum Beard Box"><div class="ph wide"><img src="img/beard-set.jpg" alt="HEARD Bay Rum Beard Box"></div><figcaption><b>HEARD Bay Rum Beard Box</b><span>$45</span><small>Wash, conditioner, oil, balm</small></figcaption></figure>
+    <figure data-cap="SEEN Jasmine Gardenia Box"><div class="ph wide"><img src="img/seen-box.jpg" alt="SEEN Jasmine Gardenia Box"></div><figcaption><b>SEEN Jasmine Gardenia Box</b><span>$35</span><small>Wash, butter, oil · 6 left</small></figcaption></figure>
+    <figure data-cap="SEEN Lavender Box"><div class="ph wide"><img src="img/seen-lav.jpg" alt="SEEN Lavender Box"></div><figcaption><b>SEEN Lavender Box</b><span>$45</span><small>Oil, butter, wash · 7 left</small></figcaption></figure>
+    <figure data-cap="Chocolate Escape duo"><div class="ph wide"><img src="img/choc-escape.jpg" alt="Chocolate Escape body butter and oil duo"></div><figcaption><b>Chocolate Escape</b><span>$35</span><small>2 oz oil + 2 oz butter</small></figcaption></figure>
+    <figure data-cap="Peppermint Treat duo"><div class="ph wide"><img src="img/pep-treat.jpg" alt="Peppermint Treat body butter and oil duo"></div><figcaption><b>Peppermint Treat</b><span>$35</span><small>Butter + oil duo</small></figcaption></figure>
+  </div>
+  <div class="cta-row"><a class="btn" href="https://hubsandbabydoll.com/shop">Shop the full collection</a><small>Not sure which scent? <a href="https://hubsandbabydoll.com/quiz" style="color:var(--gold)">Take the 30-second quiz</a></small></div>
+</div></section>
+
+<section class="story"><div class="wrap">
+  <div>
+    <span class="eyebrow">Our story</span>
+    <h2 style="margin:14px 0 22px">The people who love the hardest often care for themselves the least.</h2>
+    <p class="lead">Hubs &amp; Babydoll is a small, home-based brand. Every oil is blended and poured by hand in small batches, and every box is packed to feel like a gift even when you bought it for yourself.</p>
+  </div>
+  <div>
+    <p class="quote">"Because the people who spend their lives pouring into others deserve to be poured into, too."</p>
+    <p class="sig">Hubs &amp; Babydoll · Handmade, with love</p>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="narrow" style="text-align:center">
+    <span class="eyebrow">Questions</span>
+    <h2 style="margin:14px 0 0">Before you order</h2>
+  </div>
+  <div class="faq">
+    <details open><summary>Will it leave my skin or clothes greasy?</summary><p>No. The blend is built on jojoba and sweet almond, which are light oils that absorb within about a minute. Apply to damp skin, give it a moment, then dress as normal.</p></details>
+    <details><summary>How much do I use?</summary><p>3 to 5 drops per area, right after a shower while skin is still damp. A 4 oz bottle lasts about two months of daily full-body use.</p></details>
+    <details><summary>Which scent should I pick?</summary><p>Jasmine &amp; Gardenia is the most popular and the safest gift. Bay Rum is warm and spiced and doubles as a beard oil. Chocolate is cozy and sweet. Peppermint is cooling, with lavender and eucalyptus, and is great after a long day on your feet. Still unsure? <a href="https://hubsandbabydoll.com/quiz">Take the 30-second scent quiz.</a></p></details>
+    <details><summary>Can I use it on my face or beard?</summary><p>Yes on beards; Bay Rum is blended for exactly that. For the face, patch test first on the jawline, since everyone's skin is different.</p></details>
+    <details><summary>Is it safe for sensitive skin?</summary><p>The base is four plant oils and Vitamin E with no sulfates, parabens, or mineral oil. If you have known allergies to nuts, note that sweet almond oil is in every scent.</p></details>
+    <details><summary>How is it shipped?</summary><p>Orders are packed in 1–2 business days and ship by USPS. Local pickup is available at checkout. See the <a href="https://hubsandbabydoll.com/shipping-policy">shipping</a> and <a href="https://hubsandbabydoll.com/refund-policy">refund</a> policies for details.</p></details>
+  </div>
+</div></section>
+
+<section class="final"><div class="wrap narrow">
+  <span class="eyebrow">Your collection awaits</span>
+  <h2 style="margin:14px 0 18px">Give your skin the attention it deserves.</h2>
+  <p class="lead" style="margin:0 auto">Handcrafted, indulgent, and made to be felt all day long.</p>
+  <div class="cta-row"><a class="btn" href="#buy">Choose your scent &amp; size</a><small>From $15 · Ships in 1–2 business days</small></div>
+</div></section>
+
+<footer><div class="wrap">
+  <div>© 2026 Hubs &amp; Babydoll · Handcrafted Excellence · hubsbabydoll@gmail.com</div>
+  <div><a href="https://hubsandbabydoll.com/shop">Shop</a><a href="https://hubsandbabydoll.com/about">Our Story</a><a href="https://hubsandbabydoll.com/faq">FAQ</a><a href="https://hubsandbabydoll.com/shipping-policy">Shipping</a><a href="https://hubsandbabydoll.com/refund-policy">Refunds</a><a href="https://www.instagram.com/hubs_babydoll">Instagram</a><a href="https://www.tiktok.com/@hubs_babydoll">TikTok</a></div>
+</div></footer>
+
+<div class="buybar" id="buybar">
+  <div class="t"><span id="bbName">Jasmine &amp; Gardenia · 4 oz</span><b id="bbPrice">$25</b></div>
+  <a class="btn" href="#buy">Add to cart</a>
+</div>
+
+<script>
+(function(){
+  // Bundle tiers (percent off). Change here to match whatever the client approves.
+  var TIERS={1:0,2:10,3:15};
+  var FREE_SHIP_QTY=3;
+  // Real stock from the store database (only Bay Rum oil tracks stock today).
+  var STOCK={bay:{"2 oz":7,"4 oz":7,"8 oz":10}};
+  var imgs={jas:"img/harmony-jasmine-gardenia-body-oil.jpg",bay:"img/harmony-bay-rum-body-oil.jpg",choc:"img/harmony-chocolate-body-oil.jpg",pep:"img/harmony-peppermint-oil.jpg"};
+  var state={key:"jas",scent:"Jasmine & Gardenia",size:"4 oz",unit:25,oz:4,qty:1};
+  var $=function(s){return document.querySelector(s)};
+  function money(n){return "$"+(Math.round(n*100)/100).toFixed(n%1?2:0)}
+  function render(){
+    var sub=state.unit*state.qty, off=TIERS[state.qty]||0, disc=sub*off/100, total=sub-disc;
+    $("#price").textContent=money(total);
+    $("#per").textContent=money(total/(state.oz*state.qty))+" per oz"+(off?" · "+off+"% off":"");
+    $("#buyBtn").textContent="Add to cart · "+money(total);
+    $("#scentName").textContent=state.scent;
+    $("#sizeName").textContent=state.size;
+    $("#qtyName").textContent=state.qty+(state.qty>1?" bottles":" bottle");
+    $("#ibLine").textContent=state.qty+" × "+state.scent+" Harmony Oil, "+state.size;
+    $("#ibSub").textContent=money(sub);
+    $("#ibDiscRow").hidden=!off; $("#ibDisc").textContent="−"+money(disc);
+    $("#ibShip").textContent=state.qty>=FREE_SHIP_QTY?"Free":"Calculated at checkout";
+    $("#ibTotal").textContent=money(total);
+    $("#bbName").textContent=state.qty+" × "+state.scent+" · "+state.size;
+    $("#bbPrice").textContent=money(total);
+    var s=STOCK[state.key]&&STOCK[state.key][state.size], st=$("#stock");
+    if(s){st.hidden=false;st.textContent="Only "+s+" left in "+state.size+" · hand-poured, next batch takes a week"}else{st.hidden=true}
+  }
+  function press(box,b){box.querySelectorAll("[aria-pressed]").forEach(function(c){c.setAttribute("aria-pressed",c===b?"true":"false")})}
+  function group(id,sel,fn){
+    var box=document.getElementById(id);
+    box.addEventListener("click",function(e){var b=e.target.closest(sel); if(!b) return; press(box,b); fn(b); render();});
+  }
+  function setScent(key,name){
+    state.key=key; state.scent=name;
+    var img=$("#heroImg"); img.style.opacity=0;
+    setTimeout(function(){img.src=imgs[key]; img.alt="Harmony "+name+" Body Oil"; img.style.opacity=1},150);
+  }
+  group("scents",".chip",function(b){
+    setScent(b.getAttribute("data-scent"),b.getAttribute("data-name").replace("&amp;","&"));
+    press(document.getElementById("thumbs"),document.querySelector('#thumbs [data-scent="'+state.key+'"]'));
+  });
+  group("thumbs","button",function(b){
+    var chip=document.querySelector('#scents [data-scent="'+b.getAttribute("data-scent")+'"]');
+    press(document.getElementById("scents"),chip);
+    setScent(b.getAttribute("data-scent"),chip.getAttribute("data-name").replace("&amp;","&"));
+  });
+  group("sizes",".chip",function(b){state.size=b.getAttribute("data-size"); state.unit=+b.getAttribute("data-price"); state.oz=parseInt(state.size,10);});
+  group("qtys",".chip",function(b){state.qty=+b.getAttribute("data-qty");});
+
+  // sticky buy bar once the buy box scrolls out of view (all widths)
+  var bar=document.getElementById("buybar"), buy=document.getElementById("buy");
+  if("IntersectionObserver" in window){
+    new IntersectionObserver(function(en){var on=!en[0].isIntersecting&&en[0].boundingClientRect.top<0; bar.classList.toggle("show",on); document.body.classList.toggle("scrolled",on)},{threshold:0}).observe(buy);
+  }
+
+  // lightbox for full-size product photos
+  function openLb(src,cap){
+    var lb=document.createElement("div"); lb.className="lb"; lb.setAttribute("role","dialog"); lb.setAttribute("aria-label",cap||"Product photo");
+    var im=document.createElement("img"); im.src=src; im.alt=cap||""; lb.appendChild(im);
+    var c=document.createElement("div"); c.className="cap"; c.textContent=(cap||"")+" · tap to close"; lb.appendChild(c);
+    lb.addEventListener("click",function(){lb.remove()});
+    document.addEventListener("keydown",function k(e){if(e.key==="Escape"){lb.remove();document.removeEventListener("keydown",k)}});
+    document.body.appendChild(lb);
+  }
+  document.getElementById("coll").addEventListener("click",function(e){var f=e.target.closest("figure"); if(!f) return; openLb(f.querySelector("img").src,f.getAttribute("data-cap"))});
+  document.querySelectorAll("[data-full]").forEach(function(i){i.addEventListener("click",function(){openLb(i.getAttribute("data-full"),i.getAttribute("data-cap"))})});
+  $("#heroImg").addEventListener("click",function(){openLb($("#heroImg").src,"Harmony "+state.scent+" Body Oil")});
+  $("#heroImg").style.cursor="zoom-in";
+  render();
+})();
+</script>
+
+</body>
+</html>
