@@ -1,7 +1,8 @@
 -- The marketing fleet. Three writers (GBP, Meta, Content) and one sender (Review).
 --
--- The writers are scheduled Claude tasks. They cannot post to Google or Meta for Nick —
--- there is no API token for either — so they write finished posts into `agent_posts`,
+-- The writers are scheduled Claude tasks. GBP cannot post to Google for Nick (no API token),
+-- so it writes finished posts into `agent_posts`. (Meta auto-publishes since 011_hq_meta_publish.sql.)
+-- Posts land in `agent_posts`,
 -- and HQ shows them with a Copy button. Nick pastes, taps "Posted", done. The agent's
 -- status in HQ is read from these rows, never from what the agent says about itself.
 --

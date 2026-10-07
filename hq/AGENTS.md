@@ -9,19 +9,28 @@ exist; if it says NEEDS YOU, there is a draft waiting or a setting missing.
 | **Prospector** | rows in `rx_prospects` (the Call list) | daily 6:50am ET | scheduled task · rules in `PROSPECTOR.md` |
 | **SEO build** | pages under `/services/ /for/ /guides/` + `hq/agents/seo.json` | daily 7:00am ET | scheduled task · rules in `SEO.md` |
 | **GBP** | 1 Google Business Profile post/week → `agent_posts` (channel `gbp`) | Mon 7:10am ET | scheduled task · rules below |
-| **Meta** | 1 Facebook post + 1 Instagram caption → `agent_posts` (`facebook`, `instagram`) | Mon/Wed/Fri 7:15am ET | scheduled task · rules below |
+| **Meta** | 1 Facebook post + 1 Instagram caption → `agent_posts` (`facebook`, `instagram`); auto-published by edge fn `meta-publish` | writes Mon/Wed/Fri 7:15am ET · publishes every 15 min | scheduled task · rules below |
 | **Content** | 1 short video script + caption/day → `agent_posts` (`script`) | daily 7:20am ET | scheduled task · rules below |
 | **Review** | review-link texts to done jobs → `rx_review_asks` | hourly :15 (pg_cron) | edge fn `rx-review` · `supabase/006_hq_agents.sql` |
 | **Visuals** | a thumbnail on every draft (`agent_posts.media_url`), a clip per script when video is on (`video_url`) | daily 7:40am ET | scheduled task · Higgsfield (High) tools |
 | **Coach** | rewrites each brain's `learned` from Posted / Skip / Edit signals | Sun 8:00pm ET | scheduled task · rules below |
 
-The three writers **cannot post for you**: there is no Google Business Profile or Meta API token
-on file. They write a finished post into the inbox at the bottom of the Agents tab. You tap Copy,
-paste it in the app, tap **Posted ✓**. If one is off, **Edit** it or **Skip** it. That is the whole
-workflow, and the paste takes less time than reading this sentence.
+GBP and Content **cannot post for you** — there is no Google Business Profile API token, and
+scripts are for you to record. They write a finished post into the inbox at the bottom of the
+Agents tab. You tap Copy, paste it in the app, tap **Posted ✓**. If one is off, **Edit** it or
+**Skip** it.
 
-To let Meta post on its own later: a Facebook Page access token + the Page id. Then `agent_posts`
-rows with status `draft` can be pushed by a small edge function instead of by hand. Not built yet.
+**Meta posts on its own.** Once a Page id + Page token are saved (Agents → Meta card → Connect,
+stored in `rx_config` as `META_PAGE_ID` / `META_PAGE_TOKEN` / `META_IG_USER_ID`), every Facebook
+and Instagram draft for TB Solutions sits in the inbox for `META_AUTOPOST_DELAY_MIN` minutes
+(default 120 — long enough to Skip or Edit it), then the `meta-publish` edge function (pg_cron
+every 15 min) posts it and marks it `posted` with the real permalink. **Post now** skips the wait.
+Instagram waits until Visuals has put a picture on the draft; Facebook posts with or without one.
+The picture is copied into the public `uploads` bucket first (`posts/<id>.jpg`) so Meta is never
+handed an expiring CDN link. Failures land in `agent_posts.publish_error` and show on the card;
+three failures and it stops trying until you tap Post now again.
+Source: `receptionist/supabase/functions/meta-publish/index.ts`, `hq/supabase/011_hq_meta_publish.sql`.
+Shop pages (`business_id` not null) are still copy-and-paste — no per-shop tokens yet.
 
 ## Brains — every agent is editable, and every shop can have its own
 
