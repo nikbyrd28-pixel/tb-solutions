@@ -794,7 +794,7 @@ function bindBusiness(){
 }
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),3500)}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
-const SCENE_OF={plans:'plans',tubvalve:'bathroom',solder:'bathroom',sump:'basement',subfloor:'kitchen',undersink:'kitchen',pex:'heater',tankless:'heater'};
+const SCENE_OF={plans:'plans',tubvalve:'bathroom',solder:'bathroom',sump:'basement',subfloor:'kitchen',undersink:'kitchen',pex:'roughin',tankless:'roughin'};
 const SCENE_N={};function photo(label,cls='',key=''){const src=key&&window.DNE_PHOTOS&&window.DNE_PHOTOS[key];const sc=SCENE_OF[key];const v=sc?(SCENE_N[sc]=(SCENE_N[sc]||0)+1)-1:0;return `<div class="photo ${cls}${src?' has':''}${sc?' s3d':''}"${sc?` data-scene="${sc}" data-var="${v%3}"`:''}>${src?`<img src="${src}" alt="${esc(label)}" loading="lazy">`:''}<span>${src?'':esc(label)}</span></div>`}
 function validPhone(v){const d=v.replace(/\D/g,'');return d.length===10||(d.length===11&&d[0]==='1')}
 function cleanPhone(v){let d=v.replace(/\D/g,'');if(d.length===11&&d[0]==='1')d=d.slice(1);return d.length===10?'('+d.slice(0,3)+') '+d.slice(3,6)+'-'+d.slice(6):v.trim()}

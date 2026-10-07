@@ -125,6 +125,41 @@ const SCENES = {
     plant(g, 6.0, 4.6, 1.2); bx(g, .35, 2.6, .35, M.lamp, -1.9, 1.1, -4.4); cyl(g, .05, 2.6, M.black, -1.9, 0, -4.4);
     return { cam: [15, 9, 15], look: [.5, 2.4, -.4] };
   },
+  roughin(g) {
+    // bathroom remodel at rough-in: open studs, new PEX + drain runs, shower valve set, flange in, and the plan being drawn up
+    bx(g, 12, .1, 10, M.white, 0, -.1, 0).material = M.grey;             // subfloor (plywood tone)
+    const ply = new THREE.MeshStandardMaterial({ color: '#D8B98A', roughness: .9 }); g.children[g.children.length - 1].material = ply;
+    const stud = new THREE.MeshStandardMaterial({ color: '#E3C99B', roughness: .85 });
+    // back wall studs + plates
+    bx(g, 12, .3, .35, stud, 0, 0, -4.8); bx(g, 12, .3, .35, stud, 0, 8, -4.8);
+    for (let i = 0; i <= 8; i++) bx(g, .3, 7.7, .35, stud, -6 + i * 1.5, .3, -4.8);
+    // left wall studs
+    bx(g, .35, .3, 10, stud, -5.8, 0, 0); bx(g, .35, .3, 10, stud, -5.8, 8, 0);
+    for (let i = 1; i <= 6; i++) bx(g, .35, 7.7, .3, stud, -5.8, .3, -5 + i * 1.5);
+    // drain & vent stack (white PVC) through back wall, with sanitary tee and shower trap arm
+    cyl(g, .3, 8.3, M.pvc, -4.5, 0, -4.8); cyl(g, .32, .5, M.pvc, -4.5, 2.6, -4.8); cyl(g, .18, 3.2, M.pvc, -2.9, 2.75, -4.8, 0, Math.PI / 2);
+    cyl(g, .18, 2.2, M.pvc, -1.3, .25, -3.7, Math.PI / 2); cyl(g, .3, .12, M.pvc, -1.3, 0, -2.6); tor(g, .32, .05, M.pvc, -1.3, .13, -2.6); // shower drain
+    cyl(g, .32, .35, M.pvc, 2.4, 0, -1.4); tor(g, .5, .07, M.pvc, 2.4, .36, -1.4); // toilet flange
+    cyl(g, .2, 3.2, M.pvc, 2.4, -.05, -3.0, Math.PI / 2);
+    // PEX hot/cold runs drilled through the studs to the shower valve and vanity
+    cyl(g, .07, 10.5, M.pexb, -.5, 3.6, -4.6, 0, Math.PI / 2); cyl(g, .07, 10.5, M.pexr, -.5, 4.0, -4.6, 0, Math.PI / 2);
+    cyl(g, .07, 2.6, M.pexb, -1.6, 3.6, -4.6); cyl(g, .07, 2.2, M.pexr, -1.0, 4.0, -4.6);
+    bx(g, 1.2, 1.1, .6, M.brass, -1.3, 5.4, -4.6); cyl(g, .12, .6, M.brass, -1.3, 5.9, -4.3, Math.PI / 2); // shower mixing valve
+    cyl(g, .08, 2.2, M.copper, -1.3, 6.5, -4.6); cyl(g, .08, .5, M.copper, -1.3, 8.6, -4.35, Math.PI / 2); // riser to shower head
+    [1.9, 2.5].forEach((x, i) => { cyl(g, .07, 2.4, i ? M.pexr : M.pexb, x, 1.4, -4.6); bx(g, .25, .25, .25, M.brass, x, 1.3, -4.6); }); // vanity stub-outs
+    // sawhorse table with the blueprint being drawn up
+    const saw = (x) => { bx(g, .25, 2.6, 2.6, stud, x, 0, 2.6); bx(g, .25, .25, 3, stud, x, 2.6, 2.6); };
+    saw(-3.2); saw(1.0); bx(g, 7, .12, 3.2, ply, -1.1, 2.85, 2.6); bx(g, 5.2, .03, 2.4, M.paper, -1.1, 2.97, 2.6);
+    const line = (x, z, w, d) => bx(g, w, .01, d, M.ink, x, 3.0, z);
+    line(-1.1, 1.6, 4.6, .06); line(-1.1, 3.6, 4.6, .06); line(-3.4, 2.6, .06, 2.0); line(1.2, 2.6, .06, 2.0); line(-2.4, 2.1, 1.3, .9); line(0.3, 3.1, .7, .06); line(.9, 2.2, .06, .9);
+    bx(g, 1.0, .02, .7, M.pexb, .3, 3.0, 2.0); bx(g, .5, .02, .5, M.pexr, -2.4, 3.0, 3.2); // plumbing marked in color on the plan
+    cyl(g, .06, 1.6, M.brass, -2.0, 3.02, 1.9, 0, Math.PI / 2 - .4); bx(g, 1.6, .03, .25, M.steel, .2, 3.02, 3.35); // pencil + scale ruler
+    cyl(g, .5, .5, M.red, 2.0, 2.97, 1.8); cyl(g, .5, .6, M.ink, -3.8, 2.97, 3.3); // tape measure, mug
+    bx(g, 1.6, .9, 1.0, M.red, 3.6, 0, 3.4); bx(g, .3, .4, 1.0, M.black, 3.6, .9, 3.4); // toolbox
+    cyl(g, .55, .9, M.pexb, 3.9, 0, -1.6, 0, 0, .55); cyl(g, .3, .9, M.white, 3.9, .9, -1.6, 0, 0, .3); // coil of PEX
+    for (let i = 0; i < 4; i++) bx(g, 1.4, .06, 3, M.tile, 4.6, i * .07, 1.0); // stacked tile
+    return { cam: [12, 8.5, 13], look: [-.6, 3.0, -.4] };
+  },
   heater(g) {
     room(g, 9, 8, 8, M.conc, M.wall2);
     // tankless unit on wall
@@ -175,7 +210,7 @@ function makeCard(el, kind) {
   const sun = new THREE.DirectionalLight(0xfff1dc, 2.3); sun.position.set(8, 14, 6); sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); sun.shadow.bias = -.0005; sun.shadow.normalBias = .03;
   sun.shadow.camera.left = sun.shadow.camera.bottom = -14; sun.shadow.camera.right = sun.shadow.camera.top = 14; scene.add(sun);
   const fill = new THREE.PointLight(0xffffff, .45, 60, 1.4); fill.position.set(-6, 6, 8); scene.add(fill);
-  const camera = new THREE.PerspectiveCamera(40, 4 / 3, .1, 200); const v = (+el.dataset.var || 0); const cp = new THREE.Vector3(...spec.cam).multiplyScalar(1.14); const lk = new THREE.Vector3(...spec.look); cp.sub(lk).applyAxisAngle(new THREE.Vector3(0, 1, 0), [0, -.32, .32][v % 3] || 0).add(lk); camera.position.copy(cp);
+  const camera = new THREE.PerspectiveCamera(40, 4 / 3, .1, 200); const v = (+el.dataset.var || 0); const cp = new THREE.Vector3(...spec.cam).multiplyScalar(1.04); const lk = new THREE.Vector3(...spec.look); cp.sub(lk).applyAxisAngle(new THREE.Vector3(0, 1, 0), [0, -.32, .32][v % 3] || 0).add(lk); camera.position.copy(cp);
   const canvas = document.createElement('canvas'); canvas.className = 's3d-c'; canvas.setAttribute('aria-hidden', 'true');
   el.appendChild(canvas);
   const ctx = canvas.getContext('2d');

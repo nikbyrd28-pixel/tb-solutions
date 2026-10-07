@@ -37,7 +37,7 @@ SERVICES = {
    faq=[("Can I add a bathroom to a basement with no plumbing?", "Yes. Depending on the slab and the sewer line, we either cut a single pit for a sealed ejector or tie into existing drainage. Two quotes telling you to break up half the slab is often a sign to get a third."),
         ("Do you finish basements that have had water problems?", "That is exactly where we start: we diagnose the water first and put the fix in writing before any framing or drywall."),
         ("Do you need a permit to finish a basement in {county}?", "In nearly every township, yes, and egress rules apply to bedrooms. We handle the paperwork and the inspections.")]),
- "plumbing-water-heaters": dict(name="Plumbing & Water Heaters", short="plumbing", type="repair", scene="heater", photo="img/tankless.jpg",
+ "plumbing-water-heaters": dict(name="Plumbing & Water Heaters", short="plumbing", type="repair", scene="roughin", photo="img/pex.jpg",
    kw=["plumber", "water heater replacement", "tankless water heater installation", "PEX repipe", "plumbing repair"],
    h1="Plumbing repairs and water heater replacement in {area}",
    intro="Remodeling is most of what we do, but plumbing is where we started and it still gets answered. Water heaters, leaks, repipes and fixture swaps, done by the same calm, licensed crew, just faster.",
