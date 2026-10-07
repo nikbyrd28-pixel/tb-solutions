@@ -250,7 +250,9 @@ document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
 async function load(){
   const [p,r,pr,ap,ra,ab,ar,rs,sq]=await Promise.all([supa.rpc('hq_pipeline',{p_days:180}), supa.rpc('hq_rx',{p_days:30}), supa.rpc('hq_prospects'), supa.rpc('hq_agent_posts',{p_days:60}), supa.rpc('hq_review_asks',{p_days:60}), supa.rpc('hq_agent_brains'), supa.rpc('hq_agent_runs',{p_days:30}), supa.rpc('hq_post_results',{p_days:60}), supa.rpc('hq_seo')]);
   posts=ap.data||[]; reviews=ra.data||{asks:[],no_url:[],pending:0}; brains=ab.data||[]; runs=ar.data||[]; results=rs.data||{}; seo=sq.data||{keywords:[],links:[]};
-  pros=pr.data||[]; renderPros(); renderAgents();
+  pros=pr.data||[]; renderPros();
+  // never let one bad card blank the whole tab again — show the error where the cards go
+  renderAgents().catch(e=>{ $('agents').innerHTML='<div class="empty">Agents tab broke: '+esc(e.message)+'</div>'; console.error(e); });
   if(p.error){ $('leads').innerHTML='<div class="empty">'+esc(p.error.message)+'</div>'; } else { leads=p.data||[]; renderLeads(); }
   if(r.error){ $('jobs').innerHTML='<div class="empty">'+esc(r.error.message)+'</div>'; } else { rx=r.data; renderRx(); }
 }
@@ -451,7 +453,8 @@ async function renderAgents(){
       : `Tomorrow it tops the list back up to ${CAP}, best-scoring first.${newest?` Last added ${esc(ago(newest))}.`:''}`,
   });
 
-  const seo = seoAgent===false
+  // NB: local name must not be `seo` — that shadows the global seo{keywords,links} it reads below
+  const seoCard = seoAgent===false
     ? agentCard({ key:'seo', name:'SEO build — SEO agent', what:'Generates the search pages from tools/seo-data.mjs and checks them against the quality gate.',
         sched:'daily 7:00am ET', next:nextRunTxt(7,0), tone:'idle', stats:[['—','pages'],['—','last build']],
         note:`No status file yet. It appears at <code>/hq/agents/seo.json</code> the first time the build runs on the live site.` })
@@ -504,7 +507,7 @@ async function renderAgents(){
     sched:'weekly Sun 8:00pm ET', next:nextRunTxt(20,0,0), tone: signals?'run':'idle',
     stats:[[signals,'signals'],[learned,'brains taught'],[brains.length,'brains']],
     note: coachAt?`Last taught ${esc(ago(coachAt))}. Open any Brain to read what it learned.`:'Nothing learned yet — it needs a week of you tapping Posted and Skip first.' });
-  $('agents').innerHTML = lead + seo + seoResearch() + gbp + meta + content + rv + vis + coach;
+  $('agents').innerHTML = lead + seoCard + seoResearch() + gbp + meta + content + rv + vis + coach;
   // brain editor per card
   $('agents').querySelectorAll('.card[data-agent] button.brain').forEach(btn=>btn.onclick=()=>openBrain(btn.closest('.card')));
   $('agents').querySelectorAll('[data-link]').forEach(el=>{ const id=el.dataset.link, l=(seo.links||[]).find(x=>x.id===id); const set=async st=>{ const {error}=await supa.rpc('hq_seo_link_status',{p_id:id,p_status:st}); if(error){ alert(error.message); return; } l.status=st; renderAgents(); }; el.querySelector('.ldone').onclick=()=>set('submitted'); el.querySelector('.lskip').onclick=()=>set('skip'); });
