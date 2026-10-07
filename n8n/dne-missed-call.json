@@ -1,0 +1,234 @@
+{
+  "name": "DNE — Never miss a call (ring Nicole, text back, alert both, voicemail)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## D N E Contracting — never miss a call\n\nOne Twilio number is the **business line**. Every call:\n1. Rings Nicole's cell for 20s (caller ID = the caller, so she knows it's a customer).\n2. No answer / busy / declined → the caller gets a text back within seconds, **Nicole and Nick both get an alert text**, the call is logged to Supabase, and the caller can leave a voicemail.\n3. Voicemail transcript is texted to both.\n\nIf Nicole forwards her own cell on no-answer to this number (*71 + number, or `*004*` on some carriers), calls that came in on her cell are caught too — the workflow sees `ForwardedFrom` and skips straight to step 2.\n\n### Setup (10 min)\n- Twilio → Phone Numbers → the business number → **Voice: A call comes in** → Webhook POST → this workflow's **Call comes in** URL.\n- Edit the `CFG` blocks in **Decide**, **Answered?** and **Read transcript** (numbers, Twilio Account SID, Supabase service key).\n- Twilio credential: create an **HTTP Basic Auth** credential named `Twilio` (user = Account SID, password = Auth Token) and pick it on the three *Twilio* nodes.\n- Run `dne-contracting/system/02-database/missed-calls.sql` once in Supabase.\n- Flip **Active**.",
+        "height": 520,
+        "width": 480
+      },
+      "name": "README",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-900, -200]
+    },
+    {
+      "parameters": { "httpMethod": "POST", "path": "dne-voice-3f8a1c7e2b94", "responseMode": "responseNode", "options": {} },
+      "name": "Call comes in",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-380, 0],
+      "webhookId": "dne-voice-3f8a1c7e2b94"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ===== CFG — edit these =====\nconst CFG = {\n  NICOLE: '+14849398535',            // rings first, gets alerts\n  NICK:   '+14848418501',            // gets alerts too\n  RING_SECONDS: 20,\n  BUSINESS: 'D N E Contracting',\n  SUPA_URL: 'https://qgbjiqdwzgkjkmqyjsmc.supabase.co',\n  SUPA_KEY: 'PASTE_SERVICE_KEY',      // Supabase service_role key (n8n only)\n  TWILIO_SID: 'PASTE_TWILIO_ACCOUNT_SID',\n};\n// ============================\nconst b = $json.body || $json;\nconst s = (v, n) => (typeof v === 'string' ? v.trim().slice(0, n || 200) : '');\nconst from = s(b.From), to = s(b.To), sid = s(b.CallSid), fwd = s(b.ForwardedFrom);\nconst city = [s(b.FromCity), s(b.FromState)].filter(Boolean).join(', ');\nconst here = $('Call comes in').first().json.webhookUrl || '';\nconst root = here.replace(/\\/dne-voice-3f8a1c7e2b94.*$/, '');\nconst statusUrl = root + '/dne-dial-5c2d9e4f7a16';\nconst vmUrl = root + '/dne-vm-8e1b6d3c4f52';\n\n// A call forwarded from Nicole's cell already rang her — go straight to missed-call handling.\nif (fwd) {\n  return [{ json: { mode: 'missed', from, to, sid, city, fwd, cfg: CFG, vmUrl, twiml: null } }];\n}\n// Otherwise ring Nicole, caller ID = the caller, and report back to the dial-status webhook.\nconst twiml = `<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Dial timeout=\"${CFG.RING_SECONDS}\" callerId=\"${from}\" action=\"${statusUrl}\" method=\"POST\"><Number>${CFG.NICOLE}</Number></Dial></Response>`;\nreturn [{ json: { mode: 'ring', from, to, sid, city, cfg: CFG, vmUrl, twiml } }];"
+      },
+      "name": "Decide",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-160, 0]
+    },
+    {
+      "parameters": {
+        "conditions": { "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "loose" }, "conditions": [ { "id": "ring", "leftValue": "={{ $json.mode }}", "rightValue": "ring", "operator": { "type": "string", "operation": "equals" } } ], "combinator": "and" },
+        "options": {}
+      },
+      "name": "Ring her first?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [60, 0]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.twiml }}",
+        "options": { "responseHeaders": { "entries": [ { "name": "Content-Type", "value": "text/xml" } ] } }
+      },
+      "name": "Ring Nicole (TwiML)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [300, -140]
+    },
+    {
+      "parameters": { "httpMethod": "POST", "path": "dne-dial-5c2d9e4f7a16", "responseMode": "responseNode", "options": {} },
+      "name": "Dial result",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-380, 320],
+      "webhookId": "dne-dial-5c2d9e4f7a16"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Twilio tells us how the <Dial> to Nicole went.\nconst CFG = { NICOLE: '+14849398535', NICK: '+14848418501', BUSINESS: 'D N E Contracting', SUPA_URL: 'https://qgbjiqdwzgkjkmqyjsmc.supabase.co', SUPA_KEY: 'PASTE_SERVICE_KEY', TWILIO_SID: 'PASTE_TWILIO_ACCOUNT_SID' };\nconst b = $json.body || $json;\nconst s = (v, n) => (typeof v === 'string' ? v.trim().slice(0, n || 200) : '');\nconst status = s(b.DialCallStatus);\nconst here = $('Dial result').first().json.webhookUrl || '';\nconst vmUrl = here.replace(/\\/dne-dial-5c2d9e4f7a16.*$/, '') + '/dne-vm-8e1b6d3c4f52';\nconst answered = status === 'completed' || status === 'answered';\nreturn [{ json: { mode: answered ? 'answered' : 'missed', status, from: s(b.From), to: s(b.To), sid: s(b.CallSid), city: [s(b.FromCity), s(b.FromState)].filter(Boolean).join(', '), cfg: CFG, vmUrl } }];"
+      },
+      "name": "Answered?",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-160, 320]
+    },
+    {
+      "parameters": {
+        "conditions": { "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "loose" }, "conditions": [ { "id": "ans", "leftValue": "={{ $json.mode }}", "rightValue": "answered", "operator": { "type": "string", "operation": "equals" } } ], "combinator": "and" },
+        "options": {}
+      },
+      "name": "She picked up?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [60, 320]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Hangup/></Response>",
+        "options": { "responseHeaders": { "entries": [ { "name": "Content-Type", "value": "text/xml" } ] } }
+      },
+      "name": "Done (she answered)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [300, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build the three texts + the log row for a missed call. Works for both entry points.\nconst d = $json; const C = d.cfg;\nconst who = d.from + (d.city ? ' (' + d.city + ')' : '');\nconst when = new Date().toLocaleString('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit', month: 'short', day: 'numeric' });\nconst callerText = `Hi, this is Nicole at ${C.BUSINESS} — sorry I missed your call! Text me what you're thinking about (kitchen, bath, basement, or a repair) and I'll get right back to you. No pressure, nothing to decide today. Or call back any time.`;\nconst alertText = `MISSED CALL ${who} · ${when}${d.fwd ? ' (forwarded from your cell)' : ''}. They were texted back. Call: ${d.from}`;\nreturn [\n  { json: { to: d.from, body: callerText, kind: 'caller', ctx: d } },\n  { json: { to: C.NICOLE, body: alertText, kind: 'nicole', ctx: d } },\n  { json: { to: C.NICK, body: alertText, kind: 'nick', ctx: d } },\n];"
+      },
+      "name": "Write texts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [300, 460]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.twilio.com/2010-04-01/Accounts/{{ $json.ctx.cfg.TWILIO_SID }}/Messages.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": { "parameters": [ { "name": "To", "value": "={{ $json.to }}" }, { "name": "From", "value": "={{ $json.ctx.to }}" }, { "name": "Body", "value": "={{ $json.body }}" } ] },
+        "options": { "timeout": 15000 }
+      },
+      "name": "Twilio: send text",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 460],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log once (first item carries the context) and hand back the voicemail TwiML.\nconst d = $('Write texts').first().json.ctx; const C = d.cfg;\nreturn [{ json: {\n  url: C.SUPA_URL + '/rest/v1/dne_missed_calls', apikey: C.SUPA_KEY,\n  payload: { call_sid: d.sid, caller: d.from, caller_city: d.city || null, forwarded_from: d.fwd || null, dial_status: d.status || null, texted_caller: true, alerted: ['nicole','nick'] },\n  twiml: `<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Say voice=\"Polly.Joanna\">Hi, you've reached D N E Contracting. Sorry we missed you — we just sent you a text so you can reply whenever is easy. Or leave a message after the tone and Nicole will call you back.</Say><Record maxLength=\"120\" playBeep=\"true\" transcribe=\"true\" transcribeCallback=\"${d.vmUrl}\"/><Say voice=\"Polly.Joanna\">Thanks, talk soon.</Say></Response>`\n} }];"
+      },
+      "name": "Log + voicemail TwiML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [740, 460]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.url }}",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [ { "name": "apikey", "value": "={{ $json.apikey }}" }, { "name": "Authorization", "value": "=Bearer {{ $json.apikey }}" }, { "name": "Prefer", "value": "return=minimal" } ] },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": { "timeout": 15000 }
+      },
+      "name": "Supabase: log missed call",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [960, 460],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $('Log + voicemail TwiML').first().json.twiml }}",
+        "options": { "responseHeaders": { "entries": [ { "name": "Content-Type", "value": "text/xml" } ] } }
+      },
+      "name": "Voicemail (TwiML)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1180, 460]
+    },
+    {
+      "parameters": { "httpMethod": "POST", "path": "dne-vm-8e1b6d3c4f52", "responseMode": "responseNode", "options": {} },
+      "name": "Voicemail transcribed",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-380, 760],
+      "webhookId": "dne-vm-8e1b6d3c4f52"
+    },
+    {
+      "parameters": {
+        "jsCode": "const CFG = { NICOLE: '+14849398535', NICK: '+14848418501', SUPA_URL: 'https://qgbjiqdwzgkjkmqyjsmc.supabase.co', SUPA_KEY: 'PASTE_SERVICE_KEY', TWILIO_SID: 'PASTE_TWILIO_ACCOUNT_SID' };\nconst b = $json.body || $json;\nconst s = (v, n) => (typeof v === 'string' ? v.trim().slice(0, n || 200) : '');\nconst text = s(b.TranscriptionText, 900) || '(no words detected)';\nconst from = s(b.From), sid = s(b.CallSid), rec = s(b.RecordingUrl, 400);\nconst body = `VOICEMAIL from ${from}: \"${text}\"` + (rec ? ` · listen: ${rec}.mp3` : '');\nreturn [\n  { json: { to: CFG.NICOLE, body, from: s(b.To), sid_account: CFG.TWILIO_SID, log: { url: CFG.SUPA_URL + '/rest/v1/dne_missed_calls?call_sid=eq.' + encodeURIComponent(sid), apikey: CFG.SUPA_KEY, payload: { voicemail_text: text, recording_url: rec || null } } } },\n  { json: { to: CFG.NICK, body, from: s(b.To), sid_account: CFG.TWILIO_SID } },\n];"
+      },
+      "name": "Read transcript",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-160, 760]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.twilio.com/2010-04-01/Accounts/{{ $json.sid_account }}/Messages.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": { "parameters": [ { "name": "To", "value": "={{ $json.to }}" }, { "name": "From", "value": "={{ $json.from }}" }, { "name": "Body", "value": "={{ $json.body }}" } ] },
+        "options": { "timeout": 15000 }
+      },
+      "name": "Twilio: text transcript",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [60, 760],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $('Read transcript').first().json.log.url }}",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [ { "name": "apikey", "value": "={{ $('Read transcript').first().json.log.apikey }}" }, { "name": "Authorization", "value": "=Bearer {{ $('Read transcript').first().json.log.apikey }}" }, { "name": "Prefer", "value": "return=minimal" } ] },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('Read transcript').first().json.log.payload) }}",
+        "options": { "timeout": 15000 }
+      },
+      "name": "Supabase: attach voicemail",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [280, 760],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response></Response>",
+        "options": { "responseHeaders": { "entries": [ { "name": "Content-Type", "value": "text/xml" } ] } }
+      },
+      "name": "OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [500, 760]
+    }
+  ],
+  "connections": {
+    "Call comes in": { "main": [[{ "node": "Decide", "type": "main", "index": 0 }]] },
+    "Decide": { "main": [[{ "node": "Ring her first?", "type": "main", "index": 0 }]] },
+    "Ring her first?": { "main": [[{ "node": "Ring Nicole (TwiML)", "type": "main", "index": 0 }], [{ "node": "Write texts", "type": "main", "index": 0 }]] },
+    "Dial result": { "main": [[{ "node": "Answered?", "type": "main", "index": 0 }]] },
+    "Answered?": { "main": [[{ "node": "She picked up?", "type": "main", "index": 0 }]] },
+    "She picked up?": { "main": [[{ "node": "Done (she answered)", "type": "main", "index": 0 }], [{ "node": "Write texts", "type": "main", "index": 0 }]] },
+    "Write texts": { "main": [[{ "node": "Twilio: send text", "type": "main", "index": 0 }]] },
+    "Twilio: send text": { "main": [[{ "node": "Log + voicemail TwiML", "type": "main", "index": 0 }]] },
+    "Log + voicemail TwiML": { "main": [[{ "node": "Supabase: log missed call", "type": "main", "index": 0 }]] },
+    "Supabase: log missed call": { "main": [[{ "node": "Voicemail (TwiML)", "type": "main", "index": 0 }]] },
+    "Voicemail transcribed": { "main": [[{ "node": "Read transcript", "type": "main", "index": 0 }]] },
+    "Read transcript": { "main": [[{ "node": "Twilio: text transcript", "type": "main", "index": 0 }]] },
+    "Twilio: text transcript": { "main": [[{ "node": "Supabase: attach voicemail", "type": "main", "index": 0 }]] },
+    "Supabase: attach voicemail": { "main": [[{ "node": "OK", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

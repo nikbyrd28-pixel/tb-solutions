@@ -10,6 +10,8 @@ Your full automation suite — import each file, do the small setup, flip Active
 | **`daily-followups.json`** | Emails you the call list — every lead due (or overdue) for follow-up | Daily 8am |
 | **`weekly-report.json`** | "Your week at TB Solutions": new leads, open requests, website visits + a tip | Mondays 8am |
 
+| **`dne-missed-call.json`** | D N E Contracting business line: rings Nicole's cell, and on no-answer texts the caller back, alerts Nicole **and** Nick, logs the call, takes a voicemail and texts the transcript to both. Setup notes are in the workflow's sticky note; run `dne-contracting/system/02-database/missed-calls.sql` first. | On every call |
+
 > `lead-router.json` is the older version of the autopilot — if you imported
 > it before, **deactivate/delete it** (same webhook address, they'd clash).
 
