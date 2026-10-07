@@ -170,10 +170,10 @@ footer a{color:var(--fg2);text-decoration:none;margin-right:16px}
 
 /* hero gallery */
 .hero-img{aspect-ratio:3/4}
-.hero-img img{position:absolute;inset:4%;width:92%;height:92%;object-fit:contain}
+.hero-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
 .thumbs button{background:var(--bg3);border:1px solid var(--line);border-radius:6px;padding:6px;cursor:pointer;aspect-ratio:1;display:grid;place-items:center;overflow:hidden}
-.thumbs button{position:relative}.thumbs button img{position:absolute;inset:6%;width:88%;height:88%;object-fit:contain}
+.thumbs button{position:relative;padding:0;aspect-ratio:3/4}.thumbs button img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .thumbs button[aria-pressed="true"]{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
 .qty{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .qty .chip{align-items:stretch;text-align:left}
@@ -187,12 +187,13 @@ footer a{color:var(--fg2);text-decoration:none;margin-right:16px}
 .pay{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
 .pay span{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);border-radius:3px;padding:3px 7px;color:var(--fg3)}
 /* collection gallery */
-.coll{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px;margin-top:40px}
+.coll{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;margin-top:40px}
+@media(max-width:640px){.coll{grid-template-columns:repeat(2,1fr);gap:10px}.coll figcaption{padding:10px 10px 12px;font-size:.8rem}}
 .coll figure{margin:0;background:var(--bg2);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;min-width:0;cursor:zoom-in;transition:border-color .15s}
 .coll figure:hover{border-color:var(--gold)}
 .coll .ph{aspect-ratio:3/4;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 85%,#241808,var(--bg2) 72%);padding:10px}
-.coll .ph img{position:absolute;inset:6%;width:88%;height:88%;object-fit:contain}
-.coll .ph.wide img{inset:0;width:100%;height:100%;object-fit:cover}
+.coll .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+
 .coll figcaption{padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px;font-size:.88rem}
 .coll figcaption b{font-weight:600;color:var(--fg)}
 .coll figcaption span{color:var(--gold2);font-variant-numeric:tabular-nums}
@@ -206,6 +207,7 @@ footer a{color:var(--fg2);text-decoration:none;margin-right:16px}
 .buybar.show{display:flex}
 @media(min-width:861px){.buybar .t{font-size:.95rem}}
 body.scrolled{padding-bottom:76px}
+@media(max-width:860px){header.nav{position:static}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -230,15 +232,13 @@ body.scrolled{padding-bottom:76px}
   </div></div>
   <div class="hero-copy" id="buy">
     <span class="eyebrow">Harmony Body Oil · Hand-poured</span>
-    <h1>Skin that feels cared for by lunchtime.</h1>
-    <p class="lead">A lightweight blend of jojoba, sweet almond, flaxseed, and castor oils with Vitamin E. It sinks in within a minute, leaves no greasy film, and carries a scent that lasts through the day. Made for the people who pour into everyone else.</p>
+    <h1>Soft skin. All day. One bottle.</h1>
+    <p class="lead">Jojoba, sweet almond, flaxseed, and castor oil with Vitamin E. Sinks in under a minute. No greasy film. Hand-poured in small batches.</p>
     <ul class="benefit-grid">
-      <li>Absorbs in under a minute</li>
       <li>All-day hydration</li>
       <li>No greasy residue</li>
-      <li>Softens dry elbows, knees, hands</li>
-      <li>Doubles as a beard oil</li>
-      <li>No parabens, no fillers</li>
+      <li>Doubles as beard oil</li>
+      <li>No parabens or fillers</li>
     </ul>
 
     <div class="pick">
@@ -292,33 +292,31 @@ body.scrolled{padding-bottom:76px}
 <section><div class="wrap spec">
   <div>
     <span class="eyebrow">What to expect</span>
-    <h2 style="margin:14px 0 30px">The oil, plainly.</h2>
+    <h2 style="margin:14px 0 30px">The short version.</h2>
     <dl>
-      <dt>Best for</dt><dd><b>Dry, tight, or dull skin</b> anywhere on the body. Safe on sensitive skin, beards, and after shaving.</dd>
-      <dt>Feels like</dt><dd>Silky and light. It spreads easily and disappears into skin instead of sitting on top.</dd>
-      <dt>Absorption</dt><dd>Under a minute. You can get dressed right after.</dd>
-      <dt>Scent</dt><dd>Noticeable but not loud. Strongest the first hour, then a soft trace for the rest of the day.</dd>
-      <dt>Result</dt><dd><b>Soft, hydrated, glowing skin</b> that stays that way through the day with daily use.</dd>
-      <dt>Free from</dt><dd>Mineral oil, parabens, sulfates, and synthetic fillers. Four carrier oils, Vitamin E, and scent.</dd>
-      <dt>Multi-use</dt><dd>Body moisturizer, post-shower seal, beard conditioner, cuticle oil, or a few drops in the bath.</dd>
+      <dt>Best for</dt><dd><b>Dry, tight, or dull skin.</b> Safe on sensitive skin and beards.</dd>
+      <dt>Feels like</dt><dd>Silky and light. Disappears into skin.</dd>
+      <dt>Absorbs in</dt><dd>Under a minute. Get dressed right after.</dd>
+      <dt>Scent</dt><dd>Noticeable, not loud. A soft trace all day.</dd>
+      <dt>Free from</dt><dd>Mineral oil, parabens, sulfates, fillers.</dd>
+      <dt>Use it as</dt><dd>Body oil, beard oil, cuticle oil, or a few drops in the bath.</dd>
     </dl>
   </div>
-  <div class="photo" style="aspect-ratio:auto;background:transparent"><img src="img/lifestyle.jpg" alt="Harmony Jasmine &amp; Gardenia Body Oil styled with fresh flowers" style="width:100%;height:auto;object-fit:contain;border-radius:8px"></div>
+  <div class="photo"><img src="img/lifestyle.jpg" alt="Harmony Jasmine &amp; Gardenia Body Oil styled with fresh flowers"></div>
 </div></section>
 
 <section class="ing"><div class="wrap">
   <div class="narrow" style="text-align:center">
     <span class="eyebrow">Ingredients</span>
-    <h2 style="margin:14px 0 16px">Four oils. One vitamin. Nothing to hide.</h2>
-    <p class="lead" style="margin:0 auto">Every bottle is blended by hand from the same short list. Here is what each one is doing on your skin.</p>
+    <h2 style="margin:14px 0 16px">Four oils. One vitamin. That's it.</h2>
   </div>
   <div class="ing-grid">
-    <article><span class="role">The base</span><h3>Jojoba oil</h3><p>Closest to the oil your skin already makes, so it absorbs without clogging and balances dry and oily patches.</p></article>
-    <article><span class="role">The softener</span><h3>Sweet almond oil</h3><p>Rich in fatty acids and Vitamin A. Smooths rough texture and gives the blend its slip.</p></article>
-    <article><span class="role">The barrier</span><h3>Flaxseed oil</h3><p>High in omega-3. Helps skin hold moisture so the hydration lasts past the afternoon.</p></article>
-    <article><span class="role">The shine</span><h3>Castor oil</h3><p>Thicker and glossy. A small amount adds that healthy sheen and conditions beards and cuticles.</p></article>
-    <article><span class="role">The protector</span><h3>Vitamin E</h3><p>An antioxidant that keeps the oils fresh in the bottle and helps calm skin on you.</p></article>
-    <article><span class="role">The signature</span><h3>Scent blend</h3><p>Jasmine &amp; Gardenia, Bay Rum, Chocolate, or Peppermint with lavender and eucalyptus. Chosen to be worn, not just smelled.</p></article>
+    <article><span class="role">The base</span><h3>Jojoba oil</h3><p>Closest to your skin's own oil. Absorbs without clogging.</p></article>
+    <article><span class="role">The softener</span><h3>Sweet almond oil</h3><p>Smooths rough texture. Gives the blend its slip.</p></article>
+    <article><span class="role">The barrier</span><h3>Flaxseed oil</h3><p>Omega-3 rich. Locks moisture in past the afternoon.</p></article>
+    <article><span class="role">The shine</span><h3>Castor oil</h3><p>Adds the healthy sheen. Conditions beards and cuticles.</p></article>
+    <article><span class="role">The protector</span><h3>Vitamin E</h3><p>Keeps the oil fresh in the bottle. Calms skin on you.</p></article>
+    <article><span class="role">The signature</span><h3>Scent blend</h3><p>Jasmine &amp; Gardenia, Bay Rum, Chocolate, or Peppermint. Made to be worn.</p></article>
   </div>
   <div class="cta-row"><a class="btn" href="#buy">Choose your scent</a><small>Ships in 1–2 business days</small></div>
 </div></section>
@@ -326,17 +324,16 @@ body.scrolled{padding-bottom:76px}
 <section><div class="wrap">
   <div class="narrow" style="text-align:center">
     <span class="eyebrow">Why oil, not lotion</span>
-    <h2 style="margin:14px 0 0">Most lotion is mostly water.</h2>
+    <h2 style="margin:14px 0 0">Lotion is mostly water.</h2>
   </div>
   <div class="cmp">
     <div>
       <h3>Drugstore lotion</h3>
       <p class="sub">What is actually in the bottle</p>
       <ul>
-        <li>Water is usually the first ingredient</li>
-        <li>Needs preservatives and emulsifiers to stay mixed</li>
-        <li>Feels hydrated for an hour, then dry again</li>
-        <li>Fragrance added on top of a chemical base</li>
+        <li>Water is the first ingredient</li>
+        <li>Preservatives to keep it mixed</li>
+        <li>Dry again in an hour</li>
         <li>Made by the pallet</li>
       </ul>
     </div>
@@ -344,11 +341,10 @@ body.scrolled{padding-bottom:76px}
       <h3>Harmony Body Oil</h3>
       <p class="sub">What is in ours</p>
       <ul>
-        <li>No water. Every drop is an oil doing a job</li>
-        <li>Vitamin E keeps it fresh, nothing else needed</li>
-        <li>Seals moisture in so skin stays soft all day</li>
-        <li>Scent blended into the oil itself</li>
-        <li>Poured by hand in small batches</li>
+        <li>No water. Every drop works</li>
+        <li>Vitamin E, nothing else, keeps it fresh</li>
+        <li>Soft all day</li>
+        <li>Poured by hand</li>
       </ul>
     </div>
   </div>
@@ -357,13 +353,13 @@ body.scrolled{padding-bottom:76px}
 <section class="ing"><div class="wrap">
   <div class="narrow" style="text-align:center">
     <span class="eyebrow">How to use it</span>
-    <h2 style="margin:14px 0 0">What changes, and when.</h2>
+    <h2 style="margin:14px 0 0">What to expect.</h2>
   </div>
   <div class="tl">
-    <article><span class="when">First use</span><h3>Soft right away</h3><p>Apply to damp skin after a shower, 3 to 5 drops per area. Skin feels smooth and looks lit from within before you leave the bathroom.</p></article>
-    <article><span class="when">Week 1</span><h3>Dry spots calm down</h3><p>Elbows, knees, and hands stop feeling tight by mid-day. The scent becomes part of your routine.</p></article>
-    <article><span class="when">Week 3</span><h3>Texture evens out</h3><p>With daily use, rough patches smooth and skin holds moisture on its own between applications.</p></article>
-    <article><span class="when">Ongoing</span><h3>It becomes the ritual</h3><p>Two minutes a day that are only yours. That is the whole point of the brand.</p></article>
+    <article><span class="when">First use</span><h3>Soft right away</h3><p>3 to 5 drops on damp skin after a shower. Smooth before you leave the bathroom.</p></article>
+    <article><span class="when">Week 1</span><h3>Dry spots calm down</h3><p>Elbows, knees, and hands stop feeling tight by mid-day.</p></article>
+    <article><span class="when">Week 3</span><h3>Texture evens out</h3><p>Rough patches smooth out. Skin holds moisture on its own.</p></article>
+    <article><span class="when">Ongoing</span><h3>It becomes the ritual</h3><p>Two minutes a day that are only yours.</p></article>
   </div>
   <div class="cta-row"><a class="btn" href="#buy">Start with 4 oz · $25</a><small>About two months of daily use</small></div>
 </div></section>
@@ -371,8 +367,7 @@ body.scrolled{padding-bottom:76px}
 <section><div class="wrap">
   <div class="narrow" style="text-align:center">
     <span class="eyebrow">Gift it</span>
-    <h2 style="margin:14px 0 16px">Pair it with the butter and the wash.</h2>
-    <p class="lead" style="margin:0 auto">The oil seals. The butter deeply nourishes. The wash cleanses without stripping. Together in a keepsake box, they say the thing out loud.</p>
+    <h2 style="margin:14px 0 16px">Or gift the whole box.</h2>
   </div>
   <div class="bundles">
     <article class="bundle featured">
@@ -380,7 +375,7 @@ body.scrolled{padding-bottom:76px}
       <div class="body">
         <span class="for">For her · "I see you"</span>
         <h3>SEEN Jasmine Gardenia Collection</h3>
-        <p>8 oz body wash, 4 oz Moment body butter, Harmony body oil, and soft-touch cloths. For the woman who gives so much of herself.</p>
+        <p>8 oz wash, 4 oz body butter, Harmony oil, soft-touch cloths.</p>
         <div class="meta"><span class="price">$50</span><small>Save $18 vs separately</small></div>
         <a class="btn ghost" href="https://hubsandbabydoll.com/shop">View the SEEN box</a>
       </div>
@@ -390,17 +385,17 @@ body.scrolled{padding-bottom:76px}
       <div class="body">
         <span class="for">For him · "I hear you"</span>
         <h3>HEARD Bay Rum Collection</h3>
-        <p>Bay Rum Harmony body oil, Moment body butter, wash, and soft-touch cloths. For the man who carries a lot and rarely asks for anything.</p>
+        <p>Bay Rum oil, body butter, wash, soft-touch cloths.</p>
         <div class="meta"><span class="price">$50</span><small>Keepsake box included</small></div>
         <a class="btn ghost" href="https://hubsandbabydoll.com/shop">View the HEARD box</a>
       </div>
     </article>
     <article class="bundle">
-      <div class="photo" style="background:radial-gradient(ellipse at 50% 80%,#2A1C0A,var(--bg3) 70%);position:relative"><img src="img/harmony-chocolate-body-oil.jpg" alt="Harmony Chocolate Body Oil" style="position:absolute;inset:5%;width:90%;height:90%;object-fit:contain"></div>
+      <div class="photo"><img src="img/choc-escape.jpg" alt="Chocolate Escape body butter and oil duo"></div>
       <div class="body">
         <span class="for">Oil + butter duo</span>
         <h3>Chocolate Escape</h3>
-        <p>2 oz Harmony body oil and 2 oz body butter in the warm cocoa scent. Layer the butter under the oil for a softness that lasts into the evening.</p>
+        <p>2 oz oil + 2 oz butter in warm cocoa. Layer them.</p>
         <div class="meta"><span class="price">$35</span><small>Gift-ready</small></div>
         <a class="btn ghost" href="https://hubsandbabydoll.com/shop">View the duo</a>
       </div>
@@ -411,8 +406,8 @@ body.scrolled{padding-bottom:76px}
 <section><div class="wrap">
   <div class="narrow" style="text-align:center">
     <span class="eyebrow">The full collection</span>
-    <h2 style="margin:14px 0 16px">Every scent. Every detail. All handmade.</h2>
-    <p class="lead" style="margin:0 auto">Tap any product to see it full size. Oils, whipped butters, sulfate-free washes, beard care, and gift boxes, all blended in the same small kitchen.</p>
+    <h2 style="margin:14px 0 16px">Every scent. All handmade.</h2>
+    <p class="lead" style="margin:0 auto">Tap any product to see it full size.</p>
   </div>
   <div class="hero-wide"><img src="img/collection.jpg" alt="The full Hubs &amp; Babydoll collection: oils, butters, washes, beard care and gift boxes" data-full="img/collection.jpg" data-cap="The full Hubs &amp; Babydoll collection" style="cursor:zoom-in"></div>
   <div class="coll" id="coll">
@@ -442,7 +437,7 @@ body.scrolled{padding-bottom:76px}
   <div>
     <span class="eyebrow">Our story</span>
     <h2 style="margin:14px 0 22px">The people who love the hardest often care for themselves the least.</h2>
-    <p class="lead">Hubs &amp; Babydoll is a small, home-based brand. Every oil is blended and poured by hand in small batches, and every box is packed to feel like a gift even when you bought it for yourself.</p>
+    <p class="lead">A small, home-based brand. Every oil poured by hand. Every box packed like a gift.</p>
   </div>
   <div>
     <p class="quote">"Because the people who spend their lives pouring into others deserve to be poured into, too."</p>
@@ -456,20 +451,18 @@ body.scrolled{padding-bottom:76px}
     <h2 style="margin:14px 0 0">Before you order</h2>
   </div>
   <div class="faq">
-    <details open><summary>Will it leave my skin or clothes greasy?</summary><p>No. The blend is built on jojoba and sweet almond, which are light oils that absorb within about a minute. Apply to damp skin, give it a moment, then dress as normal.</p></details>
-    <details><summary>How much do I use?</summary><p>3 to 5 drops per area, right after a shower while skin is still damp. A 4 oz bottle lasts about two months of daily full-body use.</p></details>
-    <details><summary>Which scent should I pick?</summary><p>Jasmine &amp; Gardenia is the most popular and the safest gift. Bay Rum is warm and spiced and doubles as a beard oil. Chocolate is cozy and sweet. Peppermint is cooling, with lavender and eucalyptus, and is great after a long day on your feet. Still unsure? <a href="https://hubsandbabydoll.com/quiz">Take the 30-second scent quiz.</a></p></details>
-    <details><summary>Can I use it on my face or beard?</summary><p>Yes on beards; Bay Rum is blended for exactly that. For the face, patch test first on the jawline, since everyone's skin is different.</p></details>
-    <details><summary>Is it safe for sensitive skin?</summary><p>The base is four plant oils and Vitamin E with no sulfates, parabens, or mineral oil. If you have known allergies to nuts, note that sweet almond oil is in every scent.</p></details>
-    <details><summary>How is it shipped?</summary><p>Orders are packed in 1–2 business days and ship by USPS. Local pickup is available at checkout. See the <a href="https://hubsandbabydoll.com/shipping-policy">shipping</a> and <a href="https://hubsandbabydoll.com/refund-policy">refund</a> policies for details.</p></details>
+    <details open><summary>Will it leave my skin or clothes greasy?</summary><p>No. Jojoba and sweet almond absorb in about a minute. Apply to damp skin, wait a moment, get dressed.</p></details>
+    <details><summary>How much do I use?</summary><p>3 to 5 drops per area on damp skin. A 4 oz bottle lasts about two months.</p></details>
+    <details><summary>Which scent should I pick?</summary><p>Jasmine &amp; Gardenia for gifts. Bay Rum for him. Chocolate for cozy. Peppermint for tired feet. Still unsure? <a href="https://hubsandbabydoll.com/quiz">Take the 30-second quiz.</a></p></details>
+        <details><summary>Is it safe for sensitive skin?</summary><p>Yes. Four plant oils and Vitamin E, nothing harsh. Note: contains sweet almond oil (tree nut).</p></details>
+    <details><summary>How is it shipped?</summary><p>Packed in 1–2 business days. Local pickup at checkout. See the <a href="https://hubsandbabydoll.com/shipping-policy">shipping</a> and <a href="https://hubsandbabydoll.com/refund-policy">refund</a> policies for details.</p></details>
   </div>
 </div></section>
 
 <section class="final"><div class="wrap narrow">
   <span class="eyebrow">Your collection awaits</span>
   <h2 style="margin:14px 0 18px">Give your skin the attention it deserves.</h2>
-  <p class="lead" style="margin:0 auto">Handcrafted, indulgent, and made to be felt all day long.</p>
-  <div class="cta-row"><a class="btn" href="#buy">Choose your scent &amp; size</a><small>From $15 · Ships in 1–2 business days</small></div>
+    <div class="cta-row"><a class="btn" href="#buy">Choose your scent &amp; size</a><small>From $15 · Ships in 1–2 business days</small></div>
 </div></section>
 
 <footer><div class="wrap">
