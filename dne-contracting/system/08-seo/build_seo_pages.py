@@ -5,7 +5,7 @@ Writes:  <slug>.html for each service and town page, sitemap.xml, seo.css.
 Rules honoured: never mention Pottstown or the street address; never quote prices; mom's homepage copy is not touched."""
 import json, os, datetime, html
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-SITE = "https://dnecontracting.com"
+SITE = "https://www.dnecontracting.com"
 PHONE = "(484) 939-8535"; TEL = "+14849398535"; EMAIL = "hello@dnecontracting.com"
 TODAY = datetime.date.today().isoformat()
 
