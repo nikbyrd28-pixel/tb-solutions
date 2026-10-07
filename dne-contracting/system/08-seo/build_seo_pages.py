@@ -115,7 +115,7 @@ def shell(title, desc, canonical, body, ld, scene_needed=True):
 </main>
 <footer><div class="wrap">
  <div class="grid">
-  <div><a class="brand" href="./" style="margin-bottom:10px"><span>D N E Contracting</span></a><p style="max-width:40ch;color:var(--ink-2)">Women-owned kitchen, bathroom and basement remodeling, plus plumbing and water heaters, serving Chester County, the 422 corridor and greater Philadelphia.</p><p>PA registered Home Improvement Contractor · Fully insured</p></div>
+  <div><a class="brand" href="./" style="margin-bottom:10px"><span>D N E Contracting</span></a><p style="max-width:40ch;color:var(--ink-2)">Women-owned kitchen, bathroom and basement remodeling, plus plumbing and water heaters, serving Chester County, the 422 corridor and greater Philadelphia.</p><p>PA HIC #PA096110 · Fully insured</p></div>
   <div><h4>Services</h4>{''.join(f'<a href="./{s}">{v["name"]}</a>' for s,v in SERVICES.items())}<a href="./#planner">Online remodel planner</a></div>
   <div><h4>Areas we serve</h4>{''.join(f'<a href="./remodeling-{t["slug"]}">{t["name"]}, PA</a>' for t in TOWNS)}</div>
   <div><h4>Company</h4><a href="./#about">About the owner</a><a href="./#projects">Our work</a><a href="./#reviews">Reviews</a><a href="./#faq">FAQ</a><a href="./#refer">Refer a friend</a><a href="./#portal">Client portal</a><a href="tel:{TEL}">{PHONE}</a><a href="mailto:{EMAIL}">{EMAIL}</a></div>
