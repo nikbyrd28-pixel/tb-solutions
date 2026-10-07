@@ -219,13 +219,14 @@ input:focus,select:focus,textarea:focus{border-color:var(--ink);outline:none}
 .g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
 @media (max-width:900px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr}}
-.svc{border-top:1px solid var(--rule);padding:18px 0 0}
+.svc{border-top:1px solid var(--rule);padding:18px 0 0}.svc .photo{aspect-ratio:3/2;margin-bottom:14px}
 .svc ul{padding-left:18px;margin:8px 0 12px;color:var(--ink-2)}
 .svc .from{color:var(--mute);font-size:.9rem}
 .photo{aspect-ratio:4/3;background:var(--paper-2);position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:10px;color:var(--mute);font-size:.8rem;border:1px solid var(--line)}
 .photo img{loading:lazy;position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 
 .photo span{position:relative}.photo.has{border:0}.photo.has::before{display:none}
+.photo.s3d canvas.s3d-c{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab}.photo.s3d canvas.s3d-c:active{cursor:grabbing}.photo.s3d.s3d-live img{opacity:0}.photo.s3d.s3d-live::after{content:"3D · drag to look around";position:absolute;left:10px;bottom:10px;font:600 .7rem/1 var(--sans);letter-spacing:.04em;text-transform:uppercase;color:#fff;background:rgba(15,42,68,.78);padding:6px 8px;pointer-events:none}
 .proj{border:0;background:transparent;cursor:pointer;text-align:left;padding:0;font:inherit;color:inherit;width:100%}
 .proj .photo{aspect-ratio:3/2}
 .proj .body{padding:12px 0}
@@ -341,7 +342,7 @@ th{font-weight:bold;font-size:.9rem;color:var(--mute)}
 
 /* footer */
 footer{background:var(--paper-2);color:var(--ink-2);padding:40px 0 24px;border-top:1px solid var(--line)}
-footer .wrap{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:30px}
+footer .wrap{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1fr;gap:30px}@media(max-width:900px){footer .wrap{grid-template-columns:1fr 1fr}}footer .areas{columns:2;column-gap:14px}footer .areas a{break-inside:avoid}
 footer h4{color:var(--ink);font-family:var(--sans);font-size:.95rem;margin-bottom:10px}
 footer a{color:var(--ink-2);text-decoration:none;display:block;padding:3px 0}
 footer a:hover{text-decoration:underline}
@@ -718,10 +719,11 @@ footer a,footer p{overflow-wrap:anywhere}
 <footer>
   <div class="wrap">
     <div><a class="brand" href="#home" style="margin-bottom:10px"><span>D N E Contracting</span></a><p style="max-width:40ch">Kitchen, bathroom and basement remodeling serving the 422 corridor and greater Philadelphia: Royersford, Limerick, Collegeville, Phoenixville, Boyertown, King of Prussia, Norristown and Philadelphia.</p><p><span data-license></span> · Fully insured</p></div>
-    <div><h4>Services</h4><a href="#services">Kitchen remodels</a><a href="#services">Bathroom remodels</a><a href="#services">Basement remodels</a><a href="#services">Plumbing & water heaters</a></div>
+    <div><h4>Services</h4><a href="kitchen-remodeling">Kitchen remodeling</a><a href="bathroom-remodeling">Bathroom remodeling</a><a href="basement-remodeling">Basement remodeling</a><a href="plumbing-water-heaters">Plumbing &amp; water heaters</a><a href="#planner">Online remodel planner</a></div>
+    <div><h4>Areas we serve</h4><div class="areas"><a href="remodeling-west-chester">West Chester, PA</a><a href="remodeling-exton">Exton, PA</a><a href="remodeling-downingtown">Downingtown, PA</a><a href="remodeling-malvern">Malvern, PA</a><a href="remodeling-kennett-square">Kennett Square, PA</a><a href="remodeling-coatesville">Coatesville, PA</a><a href="remodeling-phoenixville">Phoenixville, PA</a><a href="remodeling-royersford">Royersford, PA</a><a href="remodeling-collegeville">Collegeville, PA</a><a href="remodeling-limerick">Limerick, PA</a><a href="remodeling-king-of-prussia">King of Prussia, PA</a><a href="remodeling-boyertown">Boyertown, PA</a></div></div>
     <div><h4>Company</h4><a href="#about">About</a><a href="#projects">Our work</a><a href="#reviews">Reviews</a><a href="#faq">FAQ</a><a href="#refer">Refer a friend</a></div>
     <div><h4>Contact</h4><a data-tel href="#" data-phone></a><a data-mail href="#" data-email></a><a href="#portal">Client portal</a><a href="#contact">Send a note</a></div>
-    <div class="fine"><span>© <span id="yr"></span> D N E Contracting</span><span>Website by <a href="https://tbsol.net" style="display:inline;padding:0">TB Solutions</a></span></div>
+    <div class="fine" style="grid-column:1/-1"><span>© <span id="yr"></span> D N E Contracting</span><span>Website by <a href="https://tbsol.net" style="display:inline;padding:0">TB Solutions</a></span></div>
   </div>
 </footer>
 <script>
@@ -792,7 +794,8 @@ function bindBusiness(){
 }
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),3500)}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
-function photo(label,cls='',key=''){const src=key&&window.DNE_PHOTOS&&window.DNE_PHOTOS[key];return `<div class="photo ${cls}${src?' has':''}">${src?`<img src="${src}" alt="${esc(label)}" loading="lazy">`:''}<span>${src?'':esc(label)}</span></div>`}
+const SCENE_OF={plans:'plans',tubvalve:'bathroom',solder:'bathroom',sump:'basement',subfloor:'kitchen',undersink:'kitchen',pex:'heater',tankless:'heater'};
+const SCENE_N={};function photo(label,cls='',key=''){const src=key&&window.DNE_PHOTOS&&window.DNE_PHOTOS[key];const sc=SCENE_OF[key];const v=sc?(SCENE_N[sc]=(SCENE_N[sc]||0)+1)-1:0;return `<div class="photo ${cls}${src?' has':''}${sc?' s3d':''}"${sc?` data-scene="${sc}" data-var="${v%3}"`:''}>${src?`<img src="${src}" alt="${esc(label)}" loading="lazy">`:''}<span>${src?'':esc(label)}</span></div>`}
 function validPhone(v){const d=v.replace(/\D/g,'');return d.length===10||(d.length===11&&d[0]==='1')}
 function cleanPhone(v){let d=v.replace(/\D/g,'');if(d.length===11&&d[0]==='1')d=d.slice(1);return d.length===10?'('+d.slice(0,3)+') '+d.slice(3,6)+'-'+d.slice(6):v.trim()}
 function validZip(v){return /^\d{5}$/.test(v.trim())}
@@ -811,7 +814,7 @@ async function send(kind,data){
 function track(ev,params){try{if(window.gtag)gtag('event',ev,params||{});if(window.fbq)fbq('trackCustom',ev,params||{})}catch{}}
 
 /* ---------- render: services, projects, reviews, faq ---------- */
-function svcCard(s,full){return `<div class="svc"><h3>${s.title}</h3><p>${s.blurb}</p>${full?`<ul>${s.pts.map(p=>`<li>${p}</li>`).join('')}</ul>`:''}<span class="from">${s.time}</span><div style="margin-top:12px"><a class="btn sm" href="#planner?type=${s.id}">Talk about a ${s.id}</a></div></div>`}
+function svcCard(s,full){return `<div class="svc">${full?photo(s.title,'',s.img):''}<h3>${s.title}</h3><p>${s.blurb}</p>${full?`<ul>${s.pts.map(p=>`<li>${p}</li>`).join('')}</ul>`:''}<span class="from">${s.time}</span><div style="margin-top:12px"><a class="btn sm" href="#planner?type=${s.id}">Talk about a ${s.id}</a></div></div>`}
 function svcRow(s,i){return `<div class="row"><div><div class="num">0${i+1}</div><h3>${s.title}</h3><div class="time">${s.time}</div></div><div><p>${s.blurb}</p><ul>${s.pts.slice(0,3).map(p=>`<li>${p}</li>`).join('')}</ul><a href="#planner?type=${s.id}" style="font-weight:600">Talk about a ${s.id} →</a></div>${photo(s.title,'',s.img)}</div>`}
 $('#svcGrid').innerHTML=SERVICES.map(svcRow).join('');
 $('#svcGridFull').innerHTML=SERVICES.map(s=>svcCard(s,true)).join('');
@@ -1251,6 +1254,11 @@ if(I.metaPixelId){!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.
 $$('img[data-photo]').forEach(i=>{const s=window.DNE_PHOTOS[i.dataset.photo];if(s)i.src=s;});bindBusiness();route();
 {const v=['BEGIN:VCARD','VERSION:3.0','FN:'+B.name,'ORG:'+B.name,'TEL;TYPE=CELL:'+B.phoneE164,'EMAIL:'+B.email,'ADR:;;'+B.address,'URL:'+location.origin,'END:VCARD'].join('\r\n');const b=$('#vcardBtn');if(b)b.href='data:text/vcard;charset=utf-8,'+encodeURIComponent(v);}
 })();
+</script>
+<script type="module">
+/* Live 3D scenes in service & project cards (falls back to photos without WebGL) */
+let m3d=null,t;const kick=()=>{clearTimeout(t);t=setTimeout(async()=>{try{m3d=m3d||await import('./scenes3d.js');m3d.mount(document)}catch(e){}},120)};
+new MutationObserver(kick).observe(document.getElementById('main'),{childList:true,subtree:true});kick();
 </script>
 </body>
 </html>
