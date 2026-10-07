@@ -153,6 +153,35 @@ details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf
 #sc p.dir{font-size:14px;color:var(--muted);font-weight:700;font-style:italic;margin:-6px 0 12px 16px}
 #sc h4{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:18px 0 8px}
 #sc p.obj{font-size:14px;line-height:1.4;margin-bottom:10px;background:#fff;border:2px solid var(--line);border-radius:12px;padding:9px 11px}
+/* ---- Finder ---- */
+.fform{background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:14px;box-shadow:4px 4px 0 var(--ink);margin-bottom:14px}
+.fform .row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.fform input,.fform select{width:100%;border:2px solid var(--ink);border-radius:12px;padding:10px 12px;font-weight:700;background:#fff}
+.fform .chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.fform .chips button{border:2px solid var(--line);border-radius:999px;padding:4px 10px;font-weight:700;font-size:12px;background:#fff;cursor:pointer;color:var(--muted)}
+.fform .chips button.on{border-color:var(--ink);color:var(--ink);background:var(--yellow)}
+.fform .go{width:100%;background:var(--ink);color:var(--yellow);border:2px solid var(--ink);border-radius:12px;padding:12px;font-weight:800;font-size:16px;cursor:pointer}
+.fform .go:disabled{opacity:.55;cursor:wait}
+.fkey{background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;margin-bottom:12px;font-size:14px;font-weight:600}
+.fkey input{width:100%;border:2px solid var(--ink);border-radius:10px;padding:8px 10px;font-family:ui-monospace,monospace;font-size:13px;margin:8px 0}
+.fkey .acts{margin-top:4px}
+.fkey a{font-weight:800}
+.fprog{height:8px;border:2px solid var(--ink);border-radius:999px;background:#fff;overflow:hidden;margin:8px 0 4px}
+.fprog i{display:block;height:100%;width:0;background:var(--green);transition:width .6s}
+.fsum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.fsum div{background:var(--ink);color:var(--yellow);border-radius:14px;padding:10px;text-align:center}
+.fsum .n{font-size:24px;font-weight:800;line-height:1;letter-spacing:-.02em}
+.fsum .l{font-size:11px;font-weight:700;opacity:.75;text-transform:uppercase;letter-spacing:.04em;margin-top:4px}
+.fcard .ini{width:40px;height:40px;border-radius:12px;background:var(--ink);color:var(--yellow);font-weight:800;display:flex;align-items:center;justify-content:center;flex:0 0 auto;font-size:14px}
+.fcard .top{display:flex;gap:10px;align-items:flex-start}
+.fcard .top > div:nth-child(2){flex:1;min-width:0}
+.fcard .money{font-weight:800;color:var(--green);font-size:15px;margin-top:6px}
+.fcard .money small{font-weight:600;color:var(--muted);font-size:12px}
+.fcard .why{font-size:14px;line-height:1.45;background:#faf7ec;border-left:4px solid var(--ink);padding:6px 10px;margin:8px 0 2px;border-radius:0 10px 10px 0}
+.fcard.in{opacity:.6}
+.tag.site{background:var(--copper);color:#fff}
+.tag.ok{background:var(--green);color:#fff}
+.fnote{font-size:12px;color:var(--muted);font-weight:600;margin:0 0 12px}
 </style>
 </head>
 <body>
@@ -169,6 +198,7 @@ details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf
 <div id="app" class="hidden">
   <div class="tabs">
     <button data-tab="prospects" class="on">Call list<i id="nPros"></i></button>
+    <button data-tab="finder">Finder</button>
     <button data-tab="leads">Leads<i id="nLeads"></i></button>
     <button data-tab="rx">Receptionist<i id="nRx"></i></button>
     <button data-tab="clients">RX Clients</button>
@@ -179,6 +209,23 @@ details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf
       <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">Quality only: Today is owner-run shops with a real gap on the phone, best first. No answer, voicemail and call-backs cycle straight back onto Today so you can hit them again whenever. Dead is gone for good — the number's blocked so it never comes back.</div>
       <div class="filters" id="proFilters"></div>
       <div id="pros"></div>
+    </section>
+    <section id="t-finder" class="hidden">
+      <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">Find businesses to call. Pick a trade and a town, tap Scan: it pulls every shop off Google, opens each one's website, flags the gaps (no site, can't book, breaks on a phone, closed weekends) and writes you the opener. Best call first. Everything 50+ lands on Today; the rest is parked.</div>
+      <div id="fkey" class="fkey hidden"></div>
+      <div class="fform">
+        <div class="chips" id="fTrades"></div>
+        <div class="row">
+          <input id="fTrade" placeholder="Trade (plumber, HVAC, electrician…)" autocomplete="off">
+          <input id="fCity" placeholder="Town (Phoenixville, PA)" autocomplete="off">
+        </div>
+        <div class="chips" id="fTowns"></div>
+        <button class="go" id="fGo">Scan</button>
+        <div class="fprog hidden" id="fProg"><i></i></div>
+        <div class="when" id="fMsg"></div>
+      </div>
+      <div class="fsum hidden" id="fSum"></div>
+      <div id="fRes"></div>
     </section>
     <section id="t-leads" class="hidden">
       <div class="stats" id="leadStats"></div>
@@ -244,7 +291,8 @@ $('scrim').onclick=e=>{ if(e.target.id==='scrim') $('scrim').classList.remove('s
 // ---- tabs ----
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
-  ['prospects','leads','rx','clients','agents'].forEach(t=>$('t-'+t).classList.toggle('hidden',t!==b.dataset.tab));
+  ['prospects','finder','leads','rx','clients','agents'].forEach(t=>$('t-'+t).classList.toggle('hidden',t!==b.dataset.tab));
+  if(b.dataset.tab==='finder') finderInit();
 });
 
 async function load(){
@@ -406,6 +454,104 @@ function openScript(p){
   cp($('scCopyT'), t.body); cp($('scCopyE'), e.subject+'\n\n'+e.body);
   $('scCopy').onclick=()=>{ navigator.clipboard.writeText(s.lines.join('\n\n')); $('scCopy').textContent='Copied'; setTimeout(()=>$('scCopy').textContent='Copy',1200); };
   $('scrim').classList.add('show');
+}
+
+// ---- finder ----
+// On-demand version of the Prospector. The hq-finder edge function does the work (Google
+// Places → open every site → grade → score → opener); this just asks, shows, and files
+// the results into the call list through hq_finder_import. Same rules, same table.
+const F_TRADES=[['plumber','Plumbers'],['HVAC','HVAC'],['electrician','Electricians'],['roofing contractor','Roofers']];
+const F_TOWNS=['Phoenixville, PA','Pottstown, PA','West Chester, PA','Exton, PA','Downingtown, PA','Royersford, PA','Collegeville, PA','Spring City, PA','Kennett Square, PA','Coatesville, PA','Malvern, PA','Paoli, PA','Limerick, PA','Boyertown, PA','Norristown, PA','Conshohocken, PA'];
+let finderReady=false, fRows=[], fImported=null;
+async function finderInit(){
+  if(finderReady) return; finderReady=true;
+  $('fTrades').innerHTML=F_TRADES.map(([v,l])=>`<button data-v="${v}">${l}</button>`).join('');
+  $('fTowns').innerHTML=F_TOWNS.map(t=>`<button data-v="${t}">${t.replace(', PA','')}</button>`).join('');
+  const pick=(box,input)=>box.querySelectorAll('button').forEach(b=>b.onclick=()=>{ input.value=b.dataset.v; box.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); });
+  pick($('fTrades'),$('fTrade')); pick($('fTowns'),$('fCity'));
+  $('fTrade').value='plumber'; $('fTrades').querySelector('button').classList.add('on');
+  $('fGo').onclick=finderScan;
+  [$('fTrade'),$('fCity')].forEach(i=>i.addEventListener('keydown',e=>{ if(e.key==='Enter') finderScan(); }));
+  finderKeyCard();
+}
+// The Google key is the one thing the scan can't run without. Saved straight into rx_config
+// from here; never read back — the card only knows whether it exists.
+async function finderKeyCard(){
+  const {data}=await supa.rpc('hq_config_keys');
+  const has=(data||[]).includes('GOOGLE_PLACES_KEY');
+  const k=$('fkey'); k.classList.remove('hidden');
+  if(has){ k.innerHTML=`Google Places key: <b>saved</b> <button id="fKeyChange" style="border:2px solid var(--ink);border-radius:999px;padding:2px 10px;font-weight:700;background:#fff;cursor:pointer;font-size:12px;margin-left:6px">Change</button>`; $('fKeyChange').onclick=()=>finderKeyForm(); return; }
+  finderKeyForm();
+}
+function finderKeyForm(){
+  const k=$('fkey');
+  k.innerHTML=`<b>One-time setup: paste a Google Places API key.</b><br>Google Cloud → APIs &amp; Services → enable <b>Places API (New)</b> → Credentials → Create API key. The free monthly credit covers this volume. <a href="https://console.cloud.google.com/apis/library/places-backend.googleapis.com" target="_blank">Open Google Cloud</a>
+    <input id="fKeyIn" placeholder="AIza…" autocomplete="off" spellcheck="false">
+    <div class="acts"><button id="fKeySave" class="save">Save key</button><span class="when">Stored server-side in rx_config. Never shown again.</span></div>`;
+  $('fKeySave').onclick=async()=>{
+    const v=$('fKeyIn').value.trim(); if(!v){ return; }
+    const {error}=await supa.rpc('hq_set_config',{p_key:'GOOGLE_PLACES_KEY',p_value:v});
+    if(error){ alert(error.message); return; }
+    finderKeyCard();
+  };
+}
+const money=n=>'$'+Math.round(n).toLocaleString();
+async function finderScan(){
+  const trade=$('fTrade').value.trim(), city=$('fCity').value.trim();
+  if(!trade||!city){ $('fMsg').textContent='Pick a trade and a town.'; return; }
+  const go=$('fGo'); go.disabled=true; go.textContent='Scanning…';
+  $('fMsg').textContent='Pulling the listings off Google, then opening every website. 20–40 seconds.';
+  const prog=$('fProg'); prog.classList.remove('hidden'); const bar=prog.querySelector('i'); bar.style.width='8%';
+  const tick=setInterval(()=>{ const w=parseFloat(bar.style.width); if(w<88) bar.style.width=(w+(90-w)*0.08)+'%'; },600);
+  $('fSum').classList.add('hidden'); $('fRes').innerHTML=''; fRows=[]; fImported=null;
+  try{
+    const {data:{session}}=await supa.auth.getSession();
+    const r=await fetch(SUPA_URL+'/functions/v1/hq-finder',{method:'POST',headers:{'Content-Type':'application/json',apikey:SUPA_KEY,Authorization:'Bearer '+session.access_token},body:JSON.stringify({trade,city,limit:20})});
+    const j=await r.json();
+    if(!j.ok){
+      if(j.error==='no_key'){ $('fMsg').textContent='No Google key yet — paste one above and scan again.'; finderKeyForm(); }
+      else $('fMsg').textContent='Scan failed: '+(j.error||r.status);
+      return;
+    }
+    fRows=j.rows||[];
+    bar.style.width='100%';
+    $('fMsg').textContent=`${j.found} shops in ${(j.ms/1000).toFixed(0)}s. ${j.quality} worth a call.`;
+    renderFinder(j);
+    // File them straight into the call list — that's the point. Worked rows are never touched.
+    const {data:imp,error}=await supa.rpc('hq_finder_import',{p_rows:fRows});
+    if(error){ $('fMsg').textContent+=' Could not add to call list: '+error.message; }
+    else { fImported=imp; $('fMsg').textContent+=` Added ${imp.inserted} to the call list${imp.updated?', refreshed '+imp.updated:''}${imp.already_working?', '+imp.already_working+' already in play':''}${imp.blocked?', '+imp.blocked+' blocked (Dead)':''}.`; renderFinder(j); const pr=await supa.rpc('hq_prospects'); pros=pr.data||pros; renderPros(); }
+  }catch(e){ $('fMsg').textContent='Scan failed: '+e.message; }
+  finally{ clearInterval(tick); go.disabled=false; go.textContent='Scan'; setTimeout(()=>prog.classList.add('hidden'),800); }
+}
+function renderFinder(j){
+  $('fSum').classList.remove('hidden');
+  $('fSum').innerHTML=`<div><div class="n">${j.found}</div><div class="l">found</div></div>
+    <div><div class="n">${j.quality}</div><div class="l">worth a call</div></div>
+    <div><div class="n">${money(j.avg_value_mo)}</div><div class="l">avg est. $/mo</div></div>`;
+  const ini=n=>n.split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  $('fRes').innerHTML=`<p class="fnote">$/mo is an estimate: calls they likely miss × jobs those would book × a typical ${esc(j.trade)} ticket. Use it to pick who to call first, not as a quote.</p>`+
+    fRows.map((p,i)=>{
+      const hot=['no website','site down','closed weekends','no hours on Google','breaks on mobile'];
+      const tags=(p.gaps||[]).map(g=>`<span class="tag ${hot.includes(g)?'hot':/site|SSL|SEO|booking/i.test(g)?'site':''}">${esc(g)}</span>`).join('')
+        +(!p.gaps||!p.gaps.length?'<span class="tag ok">no obvious gap</span>':'');
+      return `<div class="card fcard ${p.score<50?'in':''}">
+        <div class="top"><div class="ini">${esc(ini(p.name))}</div>
+          <div><h3>${esc(p.name)}</h3>
+            <div class="biz">${p.rating?p.rating+'★ ('+p.reviews+')':'no reviews'}${p.city?' · '+esc(p.city):''}${p.hours_note?' · '+esc(p.hours_note):''}</div>
+            ${p.owner_name?`<div class="biz" style="color:var(--ink);font-weight:800">Ask for ${esc(p.owner_name)}</div>`:''}
+            <div class="money">${money(p.value.dollars_mo)}<small>/mo on the table · ~${p.value.jobs_mo} job${p.value.jobs_mo===1?'':'s'}</small></div></div>
+          <span class="src" style="background:${p.score>=70?'var(--red)':p.score>=50?'var(--copper)':'var(--yellow)'};color:${p.score>=50?'#fff':'var(--ink)'}">${p.score}</span></div>
+        <div class="tags">${tags}</div>
+        <div class="why">${esc(p.why)}</div>
+        <div class="val">Lead with: ${esc(p.pitch)}</div>
+        <div class="acts">
+          ${p.phone?`<a class="call" href="tel:${tel(p.phone)}">Call ${esc(fmtPhone(p.phone))}</a>`:'<span class="when">No phone on the listing</span>'}
+          ${p.website?`<a href="${esc(p.website)}" target="_blank" rel="noopener">Site</a>`:''}
+          <a href="https://www.google.com/search?q=${encodeURIComponent(p.name+' '+(p.city||''))}" target="_blank">Google</a>
+          ${fImported?`<span class="when">${p.score>=50?'On Today':'Parked'}</span>`:''}
+        </div>
+      </div>`; }).join('');
 }
 
 // ---- agents ----

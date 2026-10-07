@@ -114,4 +114,8 @@ for "[trade] near [town]" and marks `signals.lsa_badge=true` when a result shows
 Guaranteed block for a shop already on the list. Treat it as a bonus, not ground truth.
 
 ## Manual run
+HQ → **Finder** runs the same search + scoring on demand (any trade, any town) and files the
+results straight into the call list — the Google key is pasted there once and lands in `rx_config`,
+which also unblocks this daily run.
+
 Ask Claude: "run the prospector for Malvern and Paoli, HVAC only."
