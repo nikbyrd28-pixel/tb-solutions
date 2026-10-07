@@ -118,11 +118,40 @@ export const SERVICES = [
 ];
 
 // Trades. Each needs its own real detail — the safety steps and the emergency calls differ.
+//
+// Optional per-trade fields, used when present (otherwise the build falls back to the template):
+//   title, h1, desc  — the search phrase the page is written for
+//   body             — extra [heading, paragraph] blocks, only things true for THAT trade
+//   faq              — extra questions, appended to the template's
+// A trade only gets these once there is a real keyword behind it (seo_keywords) and 400 honest
+// words to put under it. Until then the template is enough.
 export const TRADES = [
   { slug: 'plumbers', name: 'plumbers', trade: 'plumbing', nameSingular: 'plumber',
     calls: 'water heater leaks, burst pipes, sewer backups, no hot water and clogged mains',
     emergency: 'A tank letting go at 8pm is not a call that waits until morning — they are calling down the list until someone picks up.',
-    safety: 'the cold-water shut-off on top of the tank, or the main where the line comes into the basement' },
+    safety: 'the cold-water shut-off on top of the tank, or the main where the line comes into the basement',
+    // Written for "plumbing answering service" and "ai answering service for plumbers" (seo_keywords, 2026-10-07).
+    title: 'Plumbing Answering Service That Books the Job | Pottstown PA',
+    h1: 'A plumbing answering service that books the job',
+    desc: 'An AI answering service for plumbers near Pottstown: picks up when you cannot, gives the shut-off step, books your arrival windows, texts you. $297 setup, $197/mo.',
+    body: [
+      ['It knows the difference between a drip and a flood',
+       'Most answering services take the same message for a leaking tank as for a slow bathroom drain. This one sorts them the way you would. Water on the floor from the heater: it tells them to shut the cold-water valve on top of the tank and, on a gas unit, turn the knob to off, then it treats the call as urgent. Burst pipe: find the main where the line comes into the basement and shut it — clockwise on a round handle, a quarter turn on a lever — then urgent. Sewer backing up: stop running water, nobody flushes, no laundry, and it books the first window you have. No hot water but the basement is dry: that is a morning job, not a 9pm one, and it books it that way instead of ringing your cell at dinner.'],
+      ['What not to book is as important as what to book',
+       'Around here a lot of houses are on a well and a septic tank. If you do not touch well pumps, or you will not do a septic line, it goes on the do-not-book list during setup and the receptionist says so politely and gets off the phone. Same for towns outside your area, jobs for the trade you do not run, and the customer who wants a quote over the phone. You decide the list on the setup call, and you change it by texting me.'],
+      ['A message is not a booking',
+       'A human answering service takes a message and emails it to you in the morning, and most of them bill by the minute on top of a base fee. By the time you read the message, the homeowner has booked the next plumber in the results. This books the job while they are on the line: it offers the arrival windows you run, holds the slot, texts the customer a confirmation, and texts you the name, address, callback number and the problem in their words. If you run Housecall Pro, the job is already on your schedule with the dispatch fee filled in. Jobber is next.'],
+      ['After hours is your rule, not mine',
+       'Pick one per line. A plumbing emergency rings your cell while they are still on the phone. Or it books same-night at your after-hours fee and you decide in the morning whether that fee was worth getting out of bed for. Or it takes the details and promises a callback inside fifteen minutes. A sensible split is the first rule for anything spraying and the third for everything else, and that is the point — it should sound like your dispatcher, not a call center in another state.'],
+      ['The ones who hang up before it picks up',
+       'Some callers will not wait for the fourth ring. If a number rings out and hangs up, it gets a text inside thirty seconds in your company name asking what is going on and offering to book. For a homeowner with one hand on the phone and the other on a towel, a text is easier to answer than a second call.'],
+    ],
+    faq: [
+      ['Is this a plumbing answering service or an AI?', 'It is an AI answering service for plumbers. It is not a room of operators and it does not pretend to be one. If a caller asks, it says it is the shop\'s automated line and keeps booking. Call the demo line and decide for yourself whether a customer would hang up on it.'],
+      ['What does a plumbing answering service cost?', 'This one is $197 a month flat, with a $297 setup for the first five shops and $497 after. No per-minute meter and no per-call fee. The services that take messages usually land somewhere in the same range once the minutes are added up, and they book nothing.'],
+      ['Does it dispatch my techs?', 'No. It books the job into the windows you run and texts you. Who goes is still your call. For an emergency it can ring your cell live so you can make that call while the customer is on the line.'],
+    ],
+  },
   { slug: 'hvac-companies', name: 'HVAC companies', trade: 'HVAC', nameSingular: 'HVAC company',
     calls: 'no heat, no cooling, frozen lines, thermostat failures and furnace lockouts',
     emergency: 'No heat in February is an emergency with a clock on it, and every hour on voicemail is a job gone.',

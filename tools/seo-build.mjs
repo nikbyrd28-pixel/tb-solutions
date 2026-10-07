@@ -144,21 +144,25 @@ page({
 for (const t of TRADES) {
   const path = `/for/${t.slug}/`;
   const Name = t.name[0].toUpperCase() + t.name.slice(1);
+  // A trade with its own title/h1/desc/body/faq in seo-data.mjs is written for a specific
+  // search phrase; the rest fall back to the shared template.
   page({
-    path, title: `Call Answering for ${Name} | Chester County PA`,
-    desc: `For ${t.trade} shops near Pottstown: an AI receptionist that answers when you cannot, books the job into your arrival windows, and texts you. $297 setup, $197/mo.`,
-    h1: `Built for ${t.name}`, eyebrow: `For ${t.trade} shops`,
+    path, title: t.title || `Call Answering for ${Name} | Chester County PA`,
+    desc: t.desc || `For ${t.trade} shops near Pottstown: an AI receptionist that answers when you cannot, books the job into your arrival windows, and texts you. $297 setup, $197/mo.`,
+    h1: t.h1 || `Built for ${t.name}`, eyebrow: `For ${t.trade} shops`,
     lead: `You are on a job. The phone rings. ${t.emergency}`,
     crumbs: [['Home', '/'], ['Services', '/services/'], [Name, path]],
     blocks: `<h2>The calls you are missing</h2><p>For a ${t.nameSingular}, the ones that get away are ${t.calls}. They come in while you are already working, and the homeowner does not leave a voicemail — they call the next shop in the results.</p>
       <h2>What picks up instead</h2><p>It answers in your company name, only after your own line rings out. It gets the problem, gives the safety step — ${t.safety} — checks the zip is in your area, states your dispatch fee, and books into the arrival windows you actually run. You get a text with the name, address and the problem in their words.</p>
       <h2>It will not quote your work</h2><p>It states your dispatch fee and nothing else. Pricing a ${t.trade} repair over the phone is how you end up arguing in somebody's basement, so it says the tech prices it on site. Every time.</p>
+      ${t.body ? blocks(t.body) : ''}
       <div class="price"><b>$297 setup, then $197/mo</b><small>First five shops — $497 after. No contract. If it does not book you a job in 30 days, the month is refunded.</small></div>
       <h2>Where I work</h2><p class="towns">${TOWNS.join(' · ')} — and anywhere inside about 30 minutes of Pottstown.</p>
       <h2>The rest of the front office</h2><div class="grid">${SERVICES.map(s => `<a href="/services/${s.slug}/">${esc(s.name)}<small>${esc(s.monthly)}/mo</small></a>`).join('')}</div>`,
     faq: [[`Do you only work with ${t.name}?`, `No — ${TRADES.map(x => x.name).join(', ')} are just where most of my shops are. The setup is the same for any trade that runs service calls.`],
           ['Do I keep my number?', 'Yes. You forward to it only when you do not pick up, so nothing changes for anyone who reaches you directly.'],
-          ['How long is setup?', 'One 20-minute call and one forwarding code on your phone. Usually live the same week.']],
+          ['How long is setup?', 'One 20-minute call and one forwarding code on your phone. Usually live the same week.'],
+          ...(t.faq || [])],
     schema: [{ '@context': 'https://schema.org', '@type': 'Service', name: `Call answering for ${t.name}`, serviceType: `${t.trade} answering service`, provider: { '@type': 'LocalBusiness', name: SITE.name, telephone: SITE.cell }, areaServed: TOWNS.map(x => ({ '@type': 'City', name: `${x}, PA` })) }],
   });
 }
