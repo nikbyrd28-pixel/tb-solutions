@@ -38,7 +38,7 @@
 ## Clients (keep working, bill monthly)
 | Client | What they have | Where |
 |---|---|---|
-| D N E Contracting (Mom) | dnecontracting.com — site, funnel, estimator, portal; `plumbing_leads`, `dne`/`planner` data; first rx client when ready (`rx` row commented in seed) | `dne-contracting/` |
+| D N E Contracting (Mom) | www.dnecontracting.com — site, funnel, estimator, portal; `plumbing_leads`, `dne`/`planner` data; first rx client when ready (`rx` row commented in seed) | `dne-contracting/` |
 | Hubs & Babydoll | Square checkout + admin + SMS stack (`hb-*` edge functions, `hb_*` tables); lead form `/capture/?c=hubsandbabydoll` | `clients/hubsandbabydoll/`, `capture/` |
 | Voomlux | hosted page `/voomlux/` + members via legacy `/rewards/?c=voomlux` | `voomlux/` |
 

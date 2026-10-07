@@ -25,3 +25,13 @@ Backlinks — do these in order (each is a real link to dnecontracting.com)
 Measure
 - Google Search Console: submit `https://dnecontracting.com/sitemap.xml`, then watch Pages → Indexed and Performance → Queries. Expect the town pages to start appearing for "[town] remodeling" within 3–6 weeks of indexing.
 - Each landing page CTA goes to the planner, so leads from SEO show up in Supabase with the same funnel as everything else.
+
+## Link scheme — use this exact form everywhere (directories, GBP, Facebook, partner sites, tbsol.net)
+- Host: always `https://www.dnecontracting.com` (the apex `dnecontracting.com` 308-redirects to www; linking the apex wastes a hop and splits signals).
+- Paths: clean, lowercase, hyphenated, no `.html`, no trailing slash. Homepage is the one exception: `https://www.dnecontracting.com/`.
+- Service pages: `/kitchen-remodeling` · `/bathroom-remodeling` · `/basement-remodeling` · `/plumbing-water-heaters`
+- Town pages: `/remodeling-<town-slug>` (e.g. `/remodeling-west-chester`)
+- Never link to `#hash` views (`/#services`, `/#reviews`) from outside the site — Google treats them all as the homepage. Use the real pages above.
+- Deep-link when you can: a West Chester moms group → `/remodeling-west-chester`; a kitchen showroom partner → `/kitchen-remodeling`; GBP services → the matching service page.
+- Anchor text: vary it naturally ("D N E Contracting", "kitchen remodeling in West Chester", "Nicole Byrd, D N E Contracting"). Never the same exact phrase on every directory.
+- Tracking: if a partner link needs attribution, append `?utm_source=<partner>&utm_medium=referral` — canonicals already strip it for Google.
