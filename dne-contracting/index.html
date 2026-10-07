@@ -22,6 +22,7 @@
  "openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"18:00"}],
  "areaServed":[{"@type":"AdministrativeArea","name":"Montgomery County, PA"},{"@type":"AdministrativeArea","name":"Chester County, PA"},{"@type":"AdministrativeArea","name":"Bucks County, PA"},{"@type":"AdministrativeArea","name":"Delaware County, PA"},{"@type":"City","name":"Philadelphia"},{"@type":"Place","name":"422 corridor, PA"}],
  "knowsAbout":["kitchen remodeling","bathroom remodeling","basement remodeling","tub to shower conversion","basement bathroom addition","water heater installation","plumbing repair","PEX repipe"],
+ "founder":{"@type":"Person","name":"Nicole Byrd","jobTitle":"Owner"},
  "slogan":"A remodel consultation that actually feels comfortable.",
  "description":"Women-owned remodeling contractor serving the 422 corridor and greater Philadelphia. Kitchen, bathroom and basement remodels start to finish, plus plumbing repairs and water heaters. Free, no-pressure in-home consultations.",
  "hasOfferCatalog":{"@type":"OfferCatalog","name":"Services","itemListElement":[
@@ -67,7 +68,7 @@ window.DNE = {
     license: "PA HIC #PAXXXXXX",      // Pennsylvania Home Improvement Contractor number
     insured: true,
     yearsInBusiness: 20,
-    ownerName: "Your Name",           // ← mom's first name (shows on About + thank-you page)
+    ownerName: "Nicole",              // Nicole Byrd, owner (shows on About, form header, thank-you page)
     serviceAreaLabel: "The 422 corridor and the greater Philadelphia area — Montgomery, Bucks, Delaware and Philadelphia counties, plus South Jersey",
     serviceAreas: ["Royersford","Limerick","Collegeville","Phoenixville","King of Prussia","Norristown","Conshohocken","Montgomery County","Bucks County","Delaware County","Philadelphia","South Jersey"],
     googleReviewUrl: "https://www.google.com/maps/search/D+N+E+Contracting+PA",   // replace with the GBP "Get more reviews" short link
@@ -203,6 +204,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--ink);outline:none}
 
 /* editorial rows */
 .rows{border-top:1px solid var(--line)}
+.svc-mini{gap:22px}.svc-card{display:block;text-decoration:none;color:inherit;background:#fff;border:1px solid var(--line);padding:0 0 16px;border-radius:12px;overflow:hidden;transition:transform .15s,box-shadow .15s}.svc-card:hover{transform:translateY(-2px);box-shadow:0 14px 30px -18px rgba(27,36,48,.4)}.svc-card .photo{aspect-ratio:3/2;border:0;border-radius:0}.svc-card h3{margin:14px 16px 4px;font-size:1.25rem}.svc-card p{margin:0 16px 8px;color:var(--ink-2);font-size:.98rem}.svc-card .time{display:block;margin:0 16px;color:var(--mute);font-size:.88rem}@media(max-width:900px){.svc-mini.g3{grid-template-columns:1fr 1fr}}@media(max-width:560px){.svc-mini.g3{grid-template-columns:1fr}}
 .row{display:grid;grid-template-columns:1fr 2fr 1.2fr;gap:28px;padding:34px 0;border-bottom:1px solid var(--line);align-items:start}
 .row h3{margin:0}
 .row .num{display:none}
@@ -414,26 +416,10 @@ footer a,footer p{overflow-wrap:anywhere}
     </div>
   </div>
 
-  <div class="sec">
-    <div class="wrap">
-      <div class="split" style="align-items:start">
-        <div>
-          <span class="eyebrow">Why this exists</span>
-          <h2>Why the consultation is different</h2>
-        </div>
-        <div>
-          <p class="lead">Inviting someone into your home should never feel awkward, rushed, or uncomfortable.</p>
-          <p>If you've ever walked away from a contractor conversation feeling unheard, pressured, or talked down to, you're not alone. We hear it from women homeowners all the time. It's the reason a lot of kitchens and bathrooms stay the way they are for years.</p>
-          <p>So the consultation is built the other way round. You talk, we listen. Then we explain what's possible in your space, what it might cost, how long it takes, and whether we're the right fit. If we are, great. If we're not, you still walk away with clarity.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <div class="sec alt">
     <div class="wrap">
-      <h2>Services</h2>
-      <div class="rows" id="svcGrid"></div>
+      <h2>What we do</h2>
+      <div class="grid g3 svc-mini" id="svcGrid"></div>
     </div>
   </div>
 
@@ -456,57 +442,27 @@ footer a,footer p{overflow-wrap:anywhere}
 
   <div class="sec alt">
     <div class="wrap">
-      <div style="display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:12px;margin-bottom:26px">
-        <div><h2 style="margin:0">Recent work</h2></div>
-        <a href="#projects" style="font-weight:600">All projects →</a>
+      <div style="display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:12px;margin-bottom:22px">
+        <h2 style="margin:0">What homeowners say</h2>
+        <a href="#reviews" style="font-weight:600">More reviews →</a>
       </div>
-      <div class="feature" id="homeProjects"></div>
-      <div class="proof-cta"><p><b>Want results like these?</b>Let's discuss your project. Free, in your home, no pressure.</p><a class="btn p" href="#planner">Talk about your project</a></div>
-    </div>
-  </div>
-
-  <div class="sec">
-    <div class="wrap split" style="align-items:start">
-      <div>
-        <span class="eyebrow">The question everyone asks</span>
-        <h2>What does it cost?</h2>
-        <p>We don't put prices on the site, because a number picked before anyone has stood in your kitchen is a guess, and guesses either scare people off or disappoint them later.</p>
-        <p>What you get after the walk-through: a written estimate that lists what's included, what it costs, and how long it takes. If it's more than you'd hoped, we'll show you which parts are must-do and which can wait, or split it into phases.</p>
-        <a class="btn" href="#planner">Book a No-Stress Visit</a>
-      </div>
-      <div><p class="pull">"I was braced for a sales pitch. She gave me three options, told me which one she'd pick for her own house, and it was the cheapest one."</p><div class="who">Homeowner, Royersford</div></div>
-    </div>
-  </div>
-
-  <div class="sec alt">
-    <div class="wrap">
-      <h2>Reviews</h2>
       <div class="quotes" id="homeReviews"></div>
-      <a href="#reviews" style="font-weight:600">More reviews →</a>
-      <div class="proof-cta"><p><b>Want results like these?</b>Let's discuss your project. The consultation is free and nothing is decided on the spot.</p><a class="btn p" href="#planner">Talk about your project</a></div>
+      <div class="proof-cta"><p><b>Want to talk about your home?</b>Free, in your home, no pressure. Nothing is decided on the spot.</p><a class="btn p" href="#planner">Book a free consultation</a></div>
     </div>
   </div>
 
   <div class="sec">
     <div class="wrap split" style="align-items:start">
       <div>
-        <span class="eyebrow">Where we work</span>
         <h2>Where we work</h2>
-        <p>Kitchen, bathroom and basement plumbing projects in Montgomery, Chester, Bucks, Delaware and Philadelphia counties, and across the bridge in South Jersey.</p>
+        <p>Kitchen, bathroom and basement remodels in Montgomery, Chester, Bucks, Delaware and Philadelphia counties, and across the bridge in South Jersey.</p>
       </div>
       <div><div class="areas" id="areaChips"></div><p class="hint" style="margin-top:14px">On the edge of that? Ask. We'll tell you honestly.</p></div>
     </div>
   </div>
 
-  <div class="planner-band" id="plannerBand">
-    <div class="wrap">
-      <div>
-        
-        <h2>Request a free consultation</h2>
-        <p>Four quick questions so we come prepared. Nothing here commits you to anything, and if you'd rather just talk first, call <a data-tel href="#" data-phone></a>.</p>
-      </div>
-      <div class="planner" id="plannerHero"></div>
-    </div>
+  <div class="planner-band" id="plannerBand" hidden>
+    <div class="wrap"><div class="planner" id="plannerHero"></div></div>
   </div>
 
 </section>
@@ -788,7 +744,7 @@ function bindBusiness(){
   $$('[data-hours]').forEach(e=>e.textContent=B.hours);
   $$('[data-license]').forEach(e=>{const ok=B.license&&!/X{3,}/i.test(B.license);e.textContent=ok?B.license:'PA registered contractor';});
   $$('[data-years]').forEach(e=>e.textContent=B.yearsInBusiness+'+');
-  const own=(B.ownerName&&!/your name/i.test(B.ownerName))?B.ownerName:'the owner';$$('[data-owner]').forEach(e=>e.textContent=own);$$('[data-owner-cap]').forEach(e=>e.textContent=/your name/i.test(B.ownerName||'')?'Owner':B.ownerName+', owner');
+  const own=(B.ownerName&&!/your name/i.test(B.ownerName))?B.ownerName:'the owner';$$('[data-owner]').forEach(e=>e.textContent=own);$$('[data-owner-cap]').forEach(e=>e.textContent=/your name/i.test(B.ownerName||'')?'Owner of D N E Contracting':B.ownerName+', owner');
   $$('[data-area-label]').forEach(e=>e.textContent=B.serviceAreaLabel);
   $$('[data-ref-reward]').forEach(e=>e.textContent=C.referral.reward);
   $$('[data-ref-bonus]').forEach(e=>e.textContent=C.referral.bonus);
@@ -823,10 +779,10 @@ function track(ev,params){try{if(window.gtag)gtag('event',ev,params||{});if(wind
 /* ---------- render: services, projects, reviews, faq ---------- */
 function svcCard(s,full){return `<div class="svc">${full?photo(s.title,'',s.img):''}<h3>${s.title}</h3><p>${s.blurb}</p>${full?`<ul>${s.pts.map(p=>`<li>${p}</li>`).join('')}</ul>`:''}<span class="from">${s.time}</span><div style="margin-top:12px"><a class="btn sm" href="#planner?type=${s.id}">Talk about a ${s.id}</a></div></div>`}
 function svcRow(s,i){return `<div class="row"><div><div class="num">0${i+1}</div><h3>${s.title}</h3><div class="time">${s.time}</div></div><div><p>${s.blurb}</p><ul>${s.pts.slice(0,3).map(p=>`<li>${p}</li>`).join('')}</ul><a href="#planner?type=${s.id}" style="font-weight:600">Talk about a ${s.id} →</a></div>${photo(s.title,'',s.img)}</div>`}
-$('#svcGrid').innerHTML=SERVICES.map(svcRow).join('');
+$('#svcGrid').innerHTML=SERVICES.map(s=>`<a class="svc-card" href="#planner?type=${s.id}">${photo(s.title,'',s.img)}<h3>${s.title}</h3><p>${s.blurb.split('. ')[0].replace(/\.$/,'')}.</p><span class="time">${s.time}</span></a>`).join('');
 $('#svcGridFull').innerHTML=SERVICES.map(s=>svcCard(s,true)).join('');
 function projCard(p){return `<button class="proj" data-proj="${p.id}">${photo(p.title,'',p.img)}<div class="body"><span class="tag">${p.type}</span><h3 style="margin:8px 0 0">${p.title}</h3><div class="meta"><span>${p.town}</span><span>${p.weeks}</span></div></div></button>`}
-$('#homeProjects').innerHTML=projCard(PROJECTS[0])+'<div class="side">'+projCard(PROJECTS[1])+projCard(PROJECTS[2])+'</div>';
+{const hp=$('#homeProjects');if(hp)hp.innerHTML=projCard(PROJECTS[0])+'<div class="side">'+projCard(PROJECTS[1])+projCard(PROJECTS[2])+'</div>';}
 let filter='all';
 function renderProjects(){$('#projGrid').innerHTML=PROJECTS.filter(p=>filter==='all'||p.type===filter).map(projCard).join('');
  $('#projFilters').innerHTML=[['all','All'],['kitchen','Kitchens'],['bathroom','Bathrooms'],['basement','Basements'],['repair','Plumbing']].map(([k,l])=>`<button class="btn sm ${filter===k?'s':'g'}" data-f="${k}">${l}</button>`).join('')}
@@ -835,7 +791,7 @@ $('#projFilters').addEventListener('click',e=>{const b=e.target.closest('[data-f
 document.addEventListener('click',e=>{const b=e.target.closest('[data-proj]');if(!b)return;const p=PROJECTS.find(x=>x.id==b.dataset.proj);
  openModal(`<span class="tag">${p.type}</span><h2 style="margin-top:8px">${p.title}</h2><p class="hint">${p.town} · ${p.weeks}</p>${p.before?`<div class="ba">${photo('Before','',p.before)}${photo('After','',p.img)}</div>`:photo('After','',p.img)}<p style="margin-top:16px">${p.summary}</p><h3>What we did</h3><ul>${p.scope.map(s=>`<li>${s}</li>`).join('')}</ul><p class="pull" style="margin-top:18px">${p.quote}</p><div class="who">${p.who}</div><a class="btn p" href="#planner?type=${p.type}" style="margin-top:16px" onclick="document.getElementById('modal').classList.remove('on')">Talk about something like this</a>`)});
 function revCard(r){return `<div class="review"><p>${r.text}</p><div class="who">${r.name}<small>${r.town}</small></div></div>`}
-$('#homeReviews').innerHTML=REVIEWS.slice(0,4).map(revCard).join('');
+$('#homeReviews').innerHTML=REVIEWS.slice(0,2).map(revCard).join('');
 $('#reviewGrid').innerHTML=REVIEWS.map(revCard).join('');$('#reviewGrid').className='quotes';
 $('#faqList').innerHTML=FAQ.map(([q,a])=>`<details><summary>${q}</summary><p>${a}</p></details>`).join('');
 
