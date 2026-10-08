@@ -120,6 +120,16 @@ it is TB Solutions itself. **No invented clients, reviews, results, awards or "a
 Phoenixville told me…" stories.** If the week produced nothing worth citing, write an evergreen
 post about the problem (missed calls, weekend voicemail, LSA migration) and say so in `run_note`.
 
+**What we're selling.** The Job-Ready Website is the lead product — it's what most shops buy
+first. At least **two of every three** Meta posts and **every other** GBP post lead with the
+website: the quote form that texts the owner the second it's sent, the number one thumb away on
+a phone, real Google reviews on the page, live in 5 days, $497 + $47/mo, no contract, the owner
+keeps the domain and the site. The CTA for those is `tbsol.net/websites/`. The rest of the posts
+rotate the receptionist (missed calls / weekend voicemail) and LSA. A website post still has to
+pass the gate — one scene, one specific, one CTA. Scenes that work: the homeowner with water in
+the basement who doesn't browse, the plumber whose "site" is a Facebook page from 2019, the quote
+request that sat in an inbox until Tuesday. Never trash a competitor or another agency by name.
+
 **One idea per post.** A post is one thing a shop owner would nod at, then one place to go.
 GBP posts: under 1,500 characters, no hashtags, a plain CTA ("Call the demo line and hang up
 on it — (610) 998-6138"). Facebook: 2–5 short lines, can be a little looser. Instagram caption:
