@@ -196,14 +196,15 @@ details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf
 .step h4{font-size:15px;font-weight:800;line-height:1.2}
 .step.done h4{text-decoration:line-through;text-decoration-color:var(--green);text-decoration-thickness:2px}
 .step .how{font-size:13px;color:var(--muted);font-weight:600;margin-top:2px;line-height:1.35}
-.step input.find{width:100%;margin-top:6px;border:0;border-bottom:2px dashed var(--line);padding:4px 0;font-size:14px;font-weight:600;background:transparent;color:var(--ink)}
-.step input.find:focus{outline:0;border-bottom-color:var(--ink)}
+.step textarea.find{display:block;width:100%;margin-top:6px;border:0;border-bottom:2px dashed var(--line);padding:4px 0;font-size:14px;font-weight:600;background:transparent;color:var(--ink);resize:none;overflow:hidden;line-height:1.35;min-height:28px;font-family:inherit}
+.step textarea.find:focus{outline:0;border-bottom-color:var(--ink)}
 .step .x{font-size:11px;color:var(--muted);font-weight:700;cursor:pointer;background:none;border:0;padding:0;margin-top:4px}
 .step .x:hover{color:var(--red)}
 .wtop{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start}
 .wtop select{border:2px solid var(--ink);border-radius:10px;padding:6px 8px;font-weight:700;background:#fff}
 .share{background:var(--ink);color:var(--paper);border-radius:14px;padding:12px 14px;margin:12px 0;font-size:14px;font-weight:600;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.share code{font-family:ui-monospace,monospace;font-size:12px;color:var(--yellow);word-break:break-all;flex:1;min-width:0}
+.share>span{flex:1 1 100%;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;opacity:.7}
+.share code{font-family:ui-monospace,monospace;font-size:12px;color:var(--yellow);word-break:break-all;flex:1 1 100%;min-width:0}
 .share button{border:2px solid var(--yellow);background:var(--yellow);color:var(--ink);border-radius:999px;padding:5px 12px;font-weight:800;cursor:pointer}
 .share a{color:var(--yellow);font-weight:800}
 </style>
@@ -936,7 +937,7 @@ async function openProj(id){
   const inp=(k,label,type='text',ph='')=>`<label class="f">${label}<input data-k="${k}" type="${type}" value="${esc(p[k]??'')}" placeholder="${esc(ph)}"></label>`;
   const live=items.filter(i=>i.status!=='na'), done=items.filter(i=>i.status==='done');
   $('wEdit').innerHTML=`<div class="ed edit">
-    <div class="acts" style="margin:0 0 12px"><button id="wBack">← All clients</button><button id="wDel" style="margin-left:auto;border-color:var(--line);color:var(--muted)">Delete</button></div>
+    <div class="acts" style="margin:0 0 12px"><button id="wBack">← All clients</button></div>
     <div class="wtop"><div><h3 style="font-size:24px;font-weight:800;line-height:1.05;text-transform:none;letter-spacing:-.02em;color:var(--ink);margin:0">${esc(p.name)}</h3><div class="biz">${esc([p.trade,p.town].filter(Boolean).join(' · ')||'')}</div></div>
       <select id="wStatus">${PSTAT.map(([k,l])=>`<option value="${k}" ${k===p.status?'selected':''}>${l}</option>`).join('')}</select></div>
     <div class="prog"><i style="width:${live.length?Math.round(done.length/live.length*100):0}%"></i></div>
@@ -950,7 +951,7 @@ async function openProj(id){
       <label class="f">Notes (private)<textarea data-k="notes">${esc(p.notes||'')}</textarea></label>
       <div class="acts"><button id="wSave" class="save">Save details</button><span class="st" id="wSaved" style="color:var(--green);font-weight:700"></span></div>
     </div></details>
-    <div id="wSteps">${groups.map(g=>{ const gi=items.filter(i=>i.grp===g); return `<div class="wgrp"><span>${esc(g)}</span><b>${gi.filter(i=>i.status==='done').length}/${gi.filter(i=>i.status!=='na').length}</b></div>`+gi.map(stepHtml).join(''); }).join('')}</div>
+    <div id="wSteps">${groups.map(g=>{ const gi=items.filter(i=>i.grp===g&&!(i.status==='na'&&!i.key)); if(!gi.length) return ''; return `<div class="wgrp"><span>${esc(g)}</span><b>${gi.filter(i=>i.status==='done').length}/${gi.filter(i=>i.status!=='na').length}</b></div>`+gi.map(stepHtml).join(''); }).join('')}</div>
     <div class="acts" style="margin-top:14px"><button id="wAdd">+ Add a step</button></div>
     <div class="hint">Tap the box to cycle: blank → in progress → done → n/a. The finding line is what the client reads on their audit page — write it like you'd say it: "3 different phone numbers online", "Apple Maps unclaimed".</div>
   </div>`;
@@ -959,21 +960,20 @@ async function openProj(id){
   $('wStatus').onchange=async()=>{ const {error}=await supa.rpc('hq_project_save',{p_id:p.id,p:{status:$('wStatus').value}}); if(error) alert(error.message); else p.status=$('wStatus').value; };
   $('wSave').onclick=async()=>{ const q={}; $('wEdit').querySelectorAll('[data-k]').forEach(el=>{ let v=el.value.trim(); if(el.dataset.k==='phone'&&v) v='+1'+v.replace(/\D/g,'').replace(/^1/,''); q[el.dataset.k]=v; });
     const {error}=await supa.rpc('hq_project_save',{p_id:p.id,p:q}); if(error){ alert(error.message); return; } $('wSaved').textContent='Saved.'; setTimeout(()=>$('wSaved').textContent='',1500); Object.assign(p,q); };
-  $('wDel').onclick=async()=>{ if(!confirm('Delete '+p.name+' and every step? This can\'t be undone.')) return; const {error}=await supa.rpc('hq_project_delete',{p_id:p.id}); if(error){ alert(error.message); return; } $('wBack').onclick(); };
   $('wAdd').onclick=async()=>{ const label=prompt('What\'s the step?'); if(!label) return; const grp=prompt('Group: '+groups.join(' / '),groups[groups.length-1]||'Extra')||'Extra'; const {error}=await supa.rpc('hq_project_item_add',{p_project:p.id,p_grp:grp,p_label:label}); if(error){ alert(error.message); return; } openProj(p.id); };
   wireSteps();
 }
 function stepHtml(i){ return `<div class="step ${esc(i.status)}" data-id="${i.id}">
     <div class="box" title="tap to change">${IGLYPH[i.status]||''}</div>
-    <div><h4>${esc(i.label)}</h4>${i.how?`<div class="how">${esc(i.how)}</div>`:''}<input class="find" placeholder="What you found — the client sees this" value="${esc(i.finding||'')}">${i.key?'':'<button class="x">remove</button>'}</div>
+    <div><h4>${esc(i.label)}</h4>${i.how?`<div class="how">${esc(i.how)}</div>`:''}<textarea class="find" rows="1" placeholder="What you found — the client sees this">${esc(i.finding||'')}</textarea>${i.key?'':'<button class="x">remove</button>'}</div>
   </div>`; }
 function wireSteps(){
   $('wSteps').querySelectorAll('.step').forEach(el=>{
     const id=el.dataset.id, item=wcur.items.find(x=>x.id===id);
     el.querySelector('.box').onclick=async()=>{ const next=ISTAT[(ISTAT.indexOf(item.status)+1)%ISTAT.length]; const {error}=await supa.rpc('hq_project_item_set',{p_id:id,p_status:next}); if(error){ alert(error.message); return; } item.status=next; openProj(wcur.project.id); };
-    const f=el.querySelector('.find'); f.onblur=async()=>{ if(f.value.trim()===(item.finding||'')) return; const {error}=await supa.rpc('hq_project_item_set',{p_id:id,p_finding:f.value}); if(error) alert(error.message); else item.finding=f.value.trim(); };
+    const f=el.querySelector('.find'); const grow=()=>{ f.style.height='auto'; f.style.height=f.scrollHeight+'px'; }; grow(); f.oninput=grow; f.onblur=async()=>{ if(f.value.trim()===(item.finding||'')) return; const {error}=await supa.rpc('hq_project_item_set',{p_id:id,p_finding:f.value}); if(error) alert(error.message); else item.finding=f.value.trim(); };
     f.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); f.blur(); } };
-    const x=el.querySelector('.x'); if(x) x.onclick=async()=>{ if(!confirm('Remove this step?')) return; const {error}=await supa.rpc('hq_project_item_delete',{p_id:id}); if(error){ alert(error.message); return; } openProj(wcur.project.id); };
+    const x=el.querySelector('.x'); if(x) x.onclick=async()=>{ if(!confirm('Remove this step? (it\'s hidden from the client page)')) return; const {error}=await supa.rpc('hq_project_item_set',{p_id:id,p_status:'na'}); if(error){ alert(error.message); return; } openProj(wcur.project.id); };
   });
 }
 
