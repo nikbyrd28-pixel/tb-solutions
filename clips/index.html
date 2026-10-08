@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Clip Engine — TB HQ</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#14110F">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2314110F'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial Black,Arial' font-weight='900' font-size='26' fill='%23FFD23F'%3E%E2%96%B6%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--yellow:#FFD23F;--ink:#14110F;--paper:#FFF8E1;--copper:#B5542B;--blue:#1B4FD8;--green:#1F9D55;--red:#D7263D;--card:#fff;--line:#e6dfc8;--muted:#6b645a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Bricolage Grotesque",system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:16px;line-height:1.4;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit}
+a{color:inherit}
+header{position:sticky;top:0;z-index:5;background:var(--ink);color:var(--yellow);padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));display:flex;align-items:center;gap:12px}
+header b{background:var(--yellow);color:var(--ink);padding:2px 8px;border-radius:6px;font-weight:800}
+header .sp{flex:1}
+header a,header button{background:transparent;border:2px solid var(--yellow);color:var(--yellow);border-radius:999px;padding:4px 12px;font-weight:700;cursor:pointer;text-decoration:none;font-size:14px}
+main{padding:14px 16px 90px;max-width:900px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+h2{font-size:20px;margin-bottom:6px}
+.muted{color:var(--muted);font-size:14px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+input[type=text],input[type=url],textarea{width:100%;border:2px solid var(--line);border-radius:10px;padding:10px;background:#fff}
+textarea{min-height:70px;resize:vertical}
+.btn{border:0;border-radius:999px;padding:10px 16px;font-weight:800;cursor:pointer;background:var(--ink);color:var(--yellow)}
+.btn.g{background:var(--green);color:#fff}.btn.r{background:transparent;color:var(--red);border:2px solid var(--red)}.btn.s{padding:6px 12px;font-size:14px}.btn.o{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:800;background:#eee}
+.pill.new,.pill.downloading,.pill.transcribing,.pill.selecting,.pill.cutting,.pill.rendering,.pill.posting{background:#e8efff;color:var(--blue)}
+.pill.ready,.pill.rendered{background:#fff2c4}.pill.approved{background:#d9f3e4;color:var(--green)}.pill.posted{background:var(--green);color:#fff}.pill.error{background:#ffe0e4;color:var(--red)}.pill.skipped{background:#eee;color:var(--muted)}
+.src{cursor:pointer}.src:active{opacity:.7}
+.grid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
+.clip video{width:100%;border-radius:10px;background:#000;max-height:420px}
+.clip .kind{font-weight:800;text-transform:uppercase;font-size:12px;letter-spacing:.04em;color:var(--copper)}
+.plat{font-size:12px;color:var(--muted)}
+.stage{height:6px;background:#eee;border-radius:99px;overflow:hidden;margin:8px 0}
+.stage i{display:block;height:100%;background:var(--blue);transition:width .4s}
+#login{max-width:360px;margin:60px auto}
+.hide{display:none}
+.why{font-size:13px;color:var(--muted);font-style:italic}
+label.small{font-size:12px;font-weight:800;color:var(--muted);display:block;margin-top:8px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--yellow);padding:10px 16px;border-radius:999px;font-weight:800;z-index:9}
+</style>
+</head>
+<body>
+<header><b>▶</b> Clip Engine <span class="sp"></span><a href="/hq/">HQ</a><button id="out" class="hide" onclick="logout()">Out</button></header>
+
+<main>
+ <div id="login" class="card">
+  <h2>Sign in</h2><p class="muted">Same login as HQ.</p>
+  <input id="em" type="text" placeholder="email" autocomplete="username" style="margin:10px 0"><input id="pw" type="password" placeholder="password" autocomplete="current-password" style="width:100%;border:2px solid var(--line);border-radius:10px;padding:10px">
+  <p id="lmsg" class="muted" style="color:var(--red);margin:6px 0"></p>
+  <button class="btn" onclick="login()">Enter</button>
+ </div>
+
+ <div id="app" class="hide">
+  <div class="card">
+   <h2>Clip a stream</h2>
+   <p class="muted">Paste the YouTube link of a finished livestream (or any long video). ~15–40 min later you get 2 longform cuts, a LinkedIn cut, an X cut and 5 captioned shorts to approve.</p>
+   <div class="row" style="margin-top:10px"><input id="url" type="url" placeholder="https://www.youtube.com/watch?v=…" style="flex:1;min-width:200px"><button class="btn" onclick="addSource()">Go</button></div>
+  </div>
+
+  <div id="inbox"></div>
+  <div id="sources"></div>
+  <div id="detail"></div>
+ </div>
+</main>
+
+<script>
+const SUPA_URL='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+const supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const STAGES=['new','downloading','transcribing','selecting','cutting','ready'];
+const PLAT={youtube:'YouTube',instagram:'Instagram',facebook:'Facebook',tiktok:'TikTok',linkedin:'LinkedIn',twitter:'X'};
+const KIND={longform:'Longform · YouTube',linkedin:'LinkedIn cut',x:'X cut',short:'Short'};
+let open=null, timer=null;
+
+supa.auth.getSession().then(r=>{ if(r.data.session) enter(); });
+async function login(){ const {error}=await supa.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value}); if(error){ $('lmsg').textContent=error.message; return; } enter(); }
+async function logout(){ await supa.auth.signOut(); location.reload(); }
+function enter(){ $('login').classList.add('hide'); $('app').classList.remove('hide'); $('out').classList.remove('hide'); refresh(); timer=setInterval(refresh,20000); }
+function toast(m){ const t=document.createElement('div'); t.className='toast'; t.textContent=m; document.body.appendChild(t); setTimeout(()=>t.remove(),1800); }
+async function rpc(fn,args){ const {data,error}=await supa.rpc(fn,args||{}); if(error){ toast(error.message); throw error; } return data; }
+
+async function addSource(){ const u=$('url').value.trim(); if(!u) return; await rpc('clip_add_source',{p_url:u}); $('url').value=''; toast('Queued — the worker picks it up within a minute'); refresh(); }
+
+async function refresh(){
+  const [srcs,inbox]=await Promise.all([rpc('clip_admin_sources',{p_limit:30}),rpc('clip_inbox')]);
+  renderInbox(inbox); renderSources(srcs); if(open) openSource(open,true);
+}
+
+function fmtWhen(d){ if(!d) return ''; const x=new Date(d); return x.toLocaleString([], {weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}); }
+function sec(s){ s=Math.round(+s); return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; }
+
+function renderInbox(items){
+  const pend=items.filter(i=>i.status==='rendered'); const sched=items.filter(i=>i.status==='approved'||i.status==='posting'); const err=items.filter(i=>i.status==='error');
+  $('inbox').innerHTML=`<div class="card"><h2>Inbox</h2>
+   <div class="row"><span class="pill rendered">${pend.length} to approve</span><span class="pill approved">${sched.length} scheduled</span>${err.length?`<span class="pill error">${err.length} failed</span>`:''}</div>
+   ${sched.length?`<p class="muted" style="margin-top:8px">Next post: ${esc(fmtWhen(sched[0].publish_at))} — ${esc(sched[0].title||'')}</p>`:''}</div>`;
+}
+
+function renderSources(srcs){
+  if(!srcs.length){ $('sources').innerHTML='<p class="muted">No streams yet. Paste one above.</p>'; return; }
+  $('sources').innerHTML=`<h2 style="margin:6px 0 10px">Streams</h2>`+srcs.map(s=>{
+    const i=STAGES.indexOf(s.status); const pct=s.status==='ready'?100:s.status==='error'?100:Math.max(5,(i/(STAGES.length-1))*100);
+    return `<div class="card src" onclick="openSource('${s.id}')">
+      <div class="row"><span class="pill ${esc(s.status)}">${esc(s.status)}</span><span class="muted">${s.duration_s?sec(s.duration_s)+' · ':''}${esc(fmtWhen(s.created_at))}</span></div>
+      <div style="font-weight:800;margin-top:6px">${esc(s.title||s.url)}</div>
+      ${s.status!=='ready'&&s.status!=='error'&&s.status!=='skipped'?`<div class="stage"><i style="width:${pct}%"></i></div><div class="muted">${esc(s.stage_note||'waiting for the worker…')}</div>`:''}
+      ${s.status==='error'?`<div class="muted" style="color:var(--red);margin-top:6px">${esc(s.last_error||'')}</div><div class="row" style="margin-top:8px"><button class="btn s o" onclick="event.stopPropagation();srcStatus('${s.id}','new')">Retry</button><button class="btn s r" onclick="event.stopPropagation();srcStatus('${s.id}','skipped')">Drop</button></div>`:''}
+    </div>`}).join('');
+}
+async function srcStatus(id,st){ await rpc('clip_source_status',{p_id:id,p_status:st}); refresh(); }
+
+async function openSource(id,silent){
+  open=id; const items=await rpc('clip_admin_items',{p_source:id});
+  if(!items.length){ $('detail').innerHTML=silent?$('detail').innerHTML:'<div class="card muted">No clips yet — still processing.</div>'; return; }
+  const toApprove=items.filter(i=>i.status==='rendered').length;
+  $('detail').innerHTML=`<div class="card"><div class="row"><h2 style="flex:1">${items.length} clips</h2>${toApprove?`<button class="btn g" onclick="approveAll('${id}')">Approve all ${toApprove}</button>`:''}<button class="btn s o" onclick="open=null;$('detail').innerHTML=''">Close</button></div></div>
+   <div class="grid">${items.map(clipCard).join('')}</div>`;
+  if(!silent) $('detail').scrollIntoView({behavior:'smooth'});
+}
+function clipCard(c){
+  const locked=['posted','posting'].includes(c.status);
+  return `<div class="card clip" id="c-${c.id}">
+   <div class="row"><span class="kind">${esc(KIND[c.kind]||c.kind)} #${c.seq}</span><span class="pill ${esc(c.status)}">${esc(c.status)}</span><span class="plat">${sec(c.end_s-c.start_s)} · ${(c.platforms||[]).map(p=>PLAT[p]||p).join(' · ')}</span></div>
+   ${c.file_url?`<video src="${esc(c.file_url)}" poster="${esc(c.thumb_url||'')}" controls preload="none" playsinline style="margin:8px 0"></video>`:`<p class="muted" style="margin:8px 0">rendering…</p>`}
+   ${c.hook?`<div class="muted">Hook: <b>${esc(c.hook)}</b></div>`:''}
+   <label class="small">Title</label><input type="text" id="t-${c.id}" value="${esc(c.title||'')}" ${locked?'disabled':''}>
+   <label class="small">${c.kind==='short'?'Caption':c.kind==='longform'?'Description':'Post text'}</label><textarea id="d-${c.id}" ${locked?'disabled':''}>${esc(c.caption||'')}</textarea>
+   <label class="small">Posts at</label><input type="datetime-local" id="w-${c.id}" value="${c.publish_at?toLocal(c.publish_at):''}" ${locked?'disabled':''} style="border:2px solid var(--line);border-radius:10px;padding:8px;width:100%">
+   ${c.why?`<p class="why" style="margin-top:6px">${esc(c.why)}</p>`:''}
+   ${c.publish_error?`<p class="muted" style="color:var(--red);margin-top:6px">${esc(c.publish_error)}</p>`:''}
+   ${c.post_ids?`<p class="muted" style="margin-top:6px">${Object.entries(c.post_ids).map(([p,u])=>/^http/.test(u)?`<a href="${esc(u)}" target="_blank">${PLAT[p]||p}</a>`:`${PLAT[p]||p}`).join(' · ')}</p>`:''}
+   ${locked?'':`<div class="row" style="margin-top:10px">
+     ${c.status!=='approved'?`<button class="btn g" onclick="setStatus('${c.id}','approved')">Approve</button>`:`<button class="btn o" onclick="setStatus('${c.id}','rendered')">Unschedule</button>`}
+     <button class="btn s o" onclick="save('${c.id}')">Save edits</button>
+     ${c.status!=='skipped'?`<button class="btn s r" onclick="setStatus('${c.id}','skipped')">Skip</button>`:`<button class="btn s o" onclick="setStatus('${c.id}','rendered')">Restore</button>`}
+   </div>`}
+  </div>`;
+}
+function toLocal(iso){ const d=new Date(iso); const p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`; }
+async function save(id){ const w=$('w-'+id).value; await rpc('clip_update',{p_id:id,p_title:$('t-'+id).value,p_caption:$('d-'+id).value,p_publish_at:w?new Date(w).toISOString():null}); toast('Saved'); }
+async function setStatus(id,st){ if(st==='approved') await save(id); await rpc('clip_set_status',{p_id:id,p_status:st}); toast(st==='approved'?'Scheduled':st); openSource(open,true); refresh(); }
+async function approveAll(id){ const n=await rpc('clip_approve_source',{p_source:id}); toast(`${n} clips scheduled`); openSource(id,true); refresh(); }
+</script>
+</body>
+</html>

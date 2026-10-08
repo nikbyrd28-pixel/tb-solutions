@@ -1,0 +1,431 @@
+{
+ "name": "Clip Engine \u2014 publisher",
+ "nodes": [
+  {
+   "parameters": {
+    "content": "## Clip Engine \u2014 publisher\nEvery 15 min: take ONE approved clip whose `publish_at` has passed and post it to its platforms through **Ayrshare** (one key covers YouTube, Instagram, Facebook, TikTok, LinkedIn, X). Writes the post ids back; errors land on the card at tbsol.net/clips/.\n\n**Setup:** 1) ayrshare.com \u2192 link YouTube, Instagram, Facebook Page, TikTok, LinkedIn, X. 2) paste your Ayrshare key in *Post everywhere*. 3) paste the service key in the 4 Supabase nodes. 4) Activate.\n\nCheaper swap: upload-post.com has the same shape (change URL + body in *Post everywhere*).",
+    "height": 360,
+    "width": 440
+   },
+   "name": "Readme",
+   "type": "n8n-nodes-base.stickyNote",
+   "typeVersion": 1,
+   "position": [
+    0,
+    0
+   ]
+  },
+  {
+   "parameters": {
+    "rule": {
+     "interval": [
+      {
+       "field": "minutes",
+       "minutesInterval": 15
+      }
+     ]
+    }
+   },
+   "name": "Every 15 min",
+   "type": "n8n-nodes-base.scheduleTrigger",
+   "typeVersion": 1.2,
+   "position": [
+    480,
+    140
+   ]
+  },
+  {
+   "parameters": {
+    "url": "https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/clip_items",
+    "sendQuery": true,
+    "queryParameters": {
+     "parameters": [
+      {
+       "name": "status",
+       "value": "eq.approved"
+      },
+      {
+       "name": "publish_at",
+       "value": "=lte.{{ $now.toISO() }}"
+      },
+      {
+       "name": "order",
+       "value": "publish_at.asc"
+      },
+      {
+       "name": "limit",
+       "value": "1"
+      },
+      {
+       "name": "select",
+       "value": "id,kind,platforms,title,caption,hashtags,file_url,thumb_url"
+      }
+     ]
+    },
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "apikey",
+       "value": "PASTE_SERVICE_KEY"
+      },
+      {
+       "name": "Authorization",
+       "value": "Bearer PASTE_SERVICE_KEY"
+      }
+     ]
+    },
+    "options": {}
+   },
+   "name": "Next due clip",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    700,
+    140
+   ]
+  },
+  {
+   "parameters": {
+    "conditions": {
+     "options": {
+      "caseSensitive": true,
+      "leftValue": "",
+      "typeValidation": "loose"
+     },
+     "conditions": [
+      {
+       "id": "has",
+       "leftValue": "={{ $json.id }}",
+       "rightValue": "",
+       "operator": {
+        "type": "string",
+        "operation": "exists",
+        "singleValue": true
+       }
+      }
+     ],
+     "combinator": "and"
+    },
+    "options": {}
+   },
+   "name": "Anything due?",
+   "type": "n8n-nodes-base.if",
+   "typeVersion": 2,
+   "position": [
+    920,
+    140
+   ]
+  },
+  {
+   "parameters": {
+    "method": "PATCH",
+    "url": "https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/clip_items",
+    "sendQuery": true,
+    "queryParameters": {
+     "parameters": [
+      {
+       "name": "id",
+       "value": "=eq.{{ $json.id }}"
+      }
+     ]
+    },
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "apikey",
+       "value": "PASTE_SERVICE_KEY"
+      },
+      {
+       "name": "Authorization",
+       "value": "Bearer PASTE_SERVICE_KEY"
+      },
+      {
+       "name": "Content-Type",
+       "value": "application/json"
+      },
+      {
+       "name": "Prefer",
+       "value": "return=minimal"
+      }
+     ]
+    },
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "{\"status\":\"posting\"}",
+    "options": {}
+   },
+   "name": "Mark posting",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    1140,
+    60
+   ]
+  },
+  {
+   "parameters": {
+    "jsCode": "const c = $('Next due clip').first().json;\nconst isShort = c.kind === 'short';\nconst text = isShort ? [c.title, c.caption].filter(Boolean).join('\\n\\n') : (c.caption || c.title || '');\n// Ayrshare body \u2014 see https://www.ayrshare.com/docs/apis/post/post\nconst body = {\n  post: text,\n  platforms: c.platforms,            // youtube | instagram | facebook | tiktok | linkedin | twitter\n  mediaUrls: [c.file_url],\n  isVideo: true,\n  shortenLinks: false,\n  youTubeOptions: { title: (c.title || 'New video').slice(0,100), visibility: 'public', shorts: isShort, thumbNail: c.thumb_url || undefined },\n  instagramOptions: isShort ? { reels: true, shareReelsFeed: true } : undefined,\n  faceBookOptions: isShort ? { reels: true } : undefined,\n  tikTokOptions: isShort ? { visibility: 'public' } : undefined,\n};\nreturn [{ json: { id: c.id, body } }];"
+   },
+   "name": "Build post",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    1360,
+    60
+   ]
+  },
+  {
+   "parameters": {
+    "method": "POST",
+    "url": "https://api.ayrshare.com/api/post",
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "Authorization",
+       "value": "Bearer PASTE_AYRSHARE_KEY"
+      },
+      {
+       "name": "Content-Type",
+       "value": "application/json"
+      }
+     ]
+    },
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify($json.body) }}",
+    "options": {
+     "response": {
+      "response": {
+       "neverError": true
+      }
+     }
+    }
+   },
+   "name": "Post everywhere",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    1580,
+    60
+   ]
+  },
+  {
+   "parameters": {
+    "conditions": {
+     "options": {
+      "caseSensitive": true,
+      "leftValue": "",
+      "typeValidation": "loose"
+     },
+     "conditions": [
+      {
+       "id": "ok",
+       "leftValue": "={{ $json.status }}",
+       "rightValue": "success",
+       "operator": {
+        "type": "string",
+        "operation": "equals"
+       }
+      }
+     ],
+     "combinator": "and"
+    },
+    "options": {}
+   },
+   "name": "Posted?",
+   "type": "n8n-nodes-base.if",
+   "typeVersion": 2,
+   "position": [
+    1800,
+    60
+   ]
+  },
+  {
+   "parameters": {
+    "method": "PATCH",
+    "url": "https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/clip_items",
+    "sendQuery": true,
+    "queryParameters": {
+     "parameters": [
+      {
+       "name": "id",
+       "value": "=eq.{{ $('Build post').first().json.id }}"
+      }
+     ]
+    },
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "apikey",
+       "value": "PASTE_SERVICE_KEY"
+      },
+      {
+       "name": "Authorization",
+       "value": "Bearer PASTE_SERVICE_KEY"
+      },
+      {
+       "name": "Content-Type",
+       "value": "application/json"
+      },
+      {
+       "name": "Prefer",
+       "value": "return=minimal"
+      }
+     ]
+    },
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify({ status: 'posted', post_ids: Object.fromEntries(($json.postIds||[]).map(p => [p.platform, p.postUrl || p.id])) }) }}",
+    "options": {}
+   },
+   "name": "Mark posted",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    2020,
+    -40
+   ]
+  },
+  {
+   "parameters": {
+    "method": "PATCH",
+    "url": "https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/clip_items",
+    "sendQuery": true,
+    "queryParameters": {
+     "parameters": [
+      {
+       "name": "id",
+       "value": "=eq.{{ $('Build post').first().json.id }}"
+      }
+     ]
+    },
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "apikey",
+       "value": "PASTE_SERVICE_KEY"
+      },
+      {
+       "name": "Authorization",
+       "value": "Bearer PASTE_SERVICE_KEY"
+      },
+      {
+       "name": "Content-Type",
+       "value": "application/json"
+      },
+      {
+       "name": "Prefer",
+       "value": "return=minimal"
+      }
+     ]
+    },
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify({ status: 'error', publish_error: ($json.errors||$json.message||JSON.stringify($json)).toString().slice(0,500) }) }}",
+    "options": {}
+   },
+   "name": "Mark error",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    2020,
+    160
+   ]
+  }
+ ],
+ "connections": {
+  "Every 15 min": {
+   "main": [
+    [
+     {
+      "node": "Next due clip",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Next due clip": {
+   "main": [
+    [
+     {
+      "node": "Anything due?",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Anything due?": {
+   "main": [
+    [
+     {
+      "node": "Mark posting",
+      "type": "main",
+      "index": 0
+     }
+    ],
+    []
+   ]
+  },
+  "Mark posting": {
+   "main": [
+    [
+     {
+      "node": "Build post",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Build post": {
+   "main": [
+    [
+     {
+      "node": "Post everywhere",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Post everywhere": {
+   "main": [
+    [
+     {
+      "node": "Posted?",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Posted?": {
+   "main": [
+    [
+     {
+      "node": "Mark posted",
+      "type": "main",
+      "index": 0
+     }
+    ],
+    [
+     {
+      "node": "Mark error",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "settings": {
+  "executionOrder": "v1"
+ }
+}

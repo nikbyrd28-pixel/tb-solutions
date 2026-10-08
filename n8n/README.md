@@ -140,3 +140,11 @@ All email nodes now send as **TB Solutions <nick@tbsol.net>** with replies going
 4. Select this credential on **every Email node** in every workflow. Done — no Gmail App Password needed, no daily-limit worries, branded sender.
 
 (Until the domain shows Verified in Resend, sends will be rejected — verify first, then activate the email workflows.)
+
+## Clip Engine (new)
+| File | What it does | Runs |
+|---|---|---|
+| **`clip-intake.json`** | Watches your YouTube channel feed, queues every new video for the clip worker | Hourly |
+| **`clip-publisher.json`** | Posts approved clips (from tbsol.net/clips/) to YouTube, IG, FB, TikTok, LinkedIn, X via Ayrshare | Every 15 min |
+
+Setup is in `clips/README.md`.

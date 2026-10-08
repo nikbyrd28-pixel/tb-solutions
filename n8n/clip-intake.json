@@ -1,0 +1,139 @@
+{
+ "name": "Clip Engine \u2014 intake (new YouTube VOD)",
+ "nodes": [
+  {
+   "parameters": {
+    "content": "## Clip Engine \u2014 intake\nEvery hour: read your channel's RSS feed, insert any new video into `clip_sources`. The worker (clips/worker) picks it up within a minute.\n\n**Setup:** 1) put your channel id in *Channel feed* (YouTube Studio \u2192 Settings \u2192 Channel \u2192 Advanced \u2192 Channel ID, starts with UC). 2) paste the service key in *Insert source*. 3) Activate.\n\nTo clip a stream manually, paste the URL at tbsol.net/clips/ instead.",
+    "height": 320,
+    "width": 420
+   },
+   "name": "Readme",
+   "type": "n8n-nodes-base.stickyNote",
+   "typeVersion": 1,
+   "position": [
+    0,
+    0
+   ]
+  },
+  {
+   "parameters": {
+    "rule": {
+     "interval": [
+      {
+       "field": "hours",
+       "hoursInterval": 1
+      }
+     ]
+    }
+   },
+   "name": "Every hour",
+   "type": "n8n-nodes-base.scheduleTrigger",
+   "typeVersion": 1.2,
+   "position": [
+    460,
+    120
+   ]
+  },
+  {
+   "parameters": {
+    "url": "https://www.youtube.com/feeds/videos.xml?channel_id=PASTE_CHANNEL_ID",
+    "options": {}
+   },
+   "name": "Channel feed",
+   "type": "n8n-nodes-base.rssFeedRead",
+   "typeVersion": 1.1,
+   "position": [
+    680,
+    120
+   ]
+  },
+  {
+   "parameters": {
+    "jsCode": "// keep videos from the last 3 days only\nconst cutoff = Date.now() - 3*864e5;\nreturn items.filter(i => new Date(i.json.isoDate || i.json.pubDate).getTime() > cutoff)\n  .map(i => ({ json: { url: i.json.link, title: i.json.title, video_id: (i.json.id||'').replace('yt:video:',''), platform: 'youtube' } }));"
+   },
+   "name": "Recent only",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    900,
+    120
+   ]
+  },
+  {
+   "parameters": {
+    "method": "POST",
+    "url": "https://qgbjiqdwzgkjkmqyjsmc.supabase.co/rest/v1/clip_sources?on_conflict=url",
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "apikey",
+       "value": "PASTE_SERVICE_KEY"
+      },
+      {
+       "name": "Authorization",
+       "value": "Bearer PASTE_SERVICE_KEY"
+      },
+      {
+       "name": "Prefer",
+       "value": "resolution=ignore-duplicates,return=minimal"
+      },
+      {
+       "name": "Content-Type",
+       "value": "application/json"
+      }
+     ]
+    },
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify({ url: $json.url, title: $json.title, video_id: $json.video_id, platform: 'youtube' }) }}",
+    "options": {}
+   },
+   "name": "Insert source",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    1120,
+    120
+   ]
+  }
+ ],
+ "connections": {
+  "Every hour": {
+   "main": [
+    [
+     {
+      "node": "Channel feed",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Channel feed": {
+   "main": [
+    [
+     {
+      "node": "Recent only",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Recent only": {
+   "main": [
+    [
+     {
+      "node": "Insert source",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "settings": {
+  "executionOrder": "v1"
+ }
+}

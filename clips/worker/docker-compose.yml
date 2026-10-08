@@ -1,0 +1,12 @@
+# Runs next to your n8n. `docker compose up -d` and forget it.
+services:
+  clip-worker:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - clipwork:/work
+      - whisper:/root/.cache/huggingface
+volumes:
+  clipwork:
+  whisper:
