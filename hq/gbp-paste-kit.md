@@ -1,5 +1,7 @@
 # Google Business Profile — paste kit
 
+> **OUTDATED (Oct 2026).** This was written for the old web-design-studio positioning (West Chester, "websites from $300", "AI growth agents"). Use **`gbp-fix.md`** instead. The description, prices and area below no longer match tbsol.net.
+
 Profile is claimed and **verified**. This is everything that goes *into* it,
 written to paste straight in. Character limits are Google's, and every price
 matches what is published on the site.
