@@ -37,7 +37,7 @@ Two tables, both shown in HQ → Agents under the SEO card:
 | Cluster | Pages | Targets |
 |---|---|---|
 | `/services/` | 4 + hub | "ai receptionist for contractors", "local services ads management", "google review automation", "websites for plumbers" |
-| `/for/` | 3 | "answering service for plumbers / HVAC / electricians" + Chester County. `/for/plumbers/` has its own title, body and FAQ written for "plumbing answering service" / "ai answering service for plumbers" (2026-10-07); HVAC and electricians still run the shared template until their keyword gets a run. A trade gets `title / h1 / desc / body / faq` in `TRADES` only when there is a keyword behind it and 400 honest words to put under it. |
+| `/for/` | 3 | "answering service for plumbers / HVAC / electricians" + Chester County. `/for/plumbers/` has its own title, body and FAQ written for "plumbing answering service" / "ai answering service for plumbers" (2026-10-07); `/for/electricians/` for "electrician answering service" (2026-10-08 — estimate visits vs service calls, the GFCI and breaker steps, the 911-first rule); HVAC still runs the shared template until "hvac after hours answering service" gets its run. A trade gets `title / h1 / desc / body / faq` in `TRADES` only when there is a keyword behind it and 400 honest words to put under it. |
 | `/guides/` | 2 + hub | "what a missed call costs a contractor", "contractors weekend calls" |
 
 All 11 pass the gate: unique titles under 62 characters, unique descriptions, one `<h1>`,

@@ -159,7 +159,29 @@ export const TRADES = [
   { slug: 'electricians', name: 'electricians', trade: 'electrical', nameSingular: 'electrician',
     calls: 'dead outlets, tripping breakers, panel work, burning smells and partial power loss',
     emergency: 'A burning smell or a sparking panel is a 911-first call, and it still has to be logged and dispatched.',
-    safety: 'kill the breaker, and leave the house for anything burning or sparking' },
+    safety: 'kill the breaker, and leave the house for anything burning or sparking',
+    // Written for "electrician answering service" (seo_keywords, 2026-10-08).
+    title: 'Electrician Answering Service That Books Jobs | Pottstown PA',
+    h1: 'An electrician answering service that books the job',
+    desc: 'AI answering service for electricians near Pottstown: picks up when you cannot, sorts a dead outlet from a burning panel, books the job. $297 setup, $197/mo.',
+    body: [
+      ['Half your calls are not emergencies, and it knows which half',
+       'An electrician\'s phone is different from a plumber\'s. A lot of what rings in is somebody who wants a price: a panel upgrade, an EV charger in the garage, a generator hookup, a service upgrade for the addition. None of that is a 9pm call and none of it should be quoted over the phone. The receptionist takes those as estimate visits — it gets the address, what they want done, whether the panel is inside or out, and books a window for you to go look. The other half is a dead circuit or a breaker that will not hold, and those it treats as service calls: fee stated, first window you have, your rules on after hours. Which jobs are an estimate and which are a service call is something you tell it on the setup call, not something it guesses.'],
+      ['The safety step for the call that matters',
+       'Burning smell, buzzing or sparking at the panel, a warm outlet cover, lights flickering through the whole house at once: it tells them to leave the house and call 911 before it does anything else, and then it rings your cell while they are still on the line, if that is the rule you set. A tripping breaker: leave it off, unplug what is on that circuit, and do not keep resetting it. A dead outlet in the kitchen, bath or garage: press the reset button on the nearest GFCI before anyone drives out. That last one closes a good share of "no power to my outlet" calls on the phone, which means you are not sending a truck for a thirty-second fix — and when it does not close it, you have a real job booked instead of a voicemail.'],
+      ['What it will not book',
+       'If you do not do lost-power calls where the problem is on the utility side of the meter, you can tell it to send those to the power company first. If you do not do commercial, low-voltage, or pool and hot tub wiring, it goes on the do-not-book list and the receptionist says so politely and gets off the phone. Same for towns outside your area and the caller who wants a number for a panel swap before anyone has seen the panel. You set the list once on the setup call and change it by texting me.'],
+      ['A message is not a booking',
+       'A human answering service takes a message, emails it to you in the morning, and bills by the minute to do it. By then the homeowner with no power in the kitchen has called the next electrician in the results. This books while they are on the line: it offers the arrival windows you run, holds the slot, texts them a confirmation, and texts you the name, address, callback number and the problem in their words. If you run Housecall Pro, the job is already on your schedule with the fee filled in. Jobber is next.'],
+      ['After hours is your rule, not mine',
+       'Pick one per line. A real emergency — anything burning, sparking or hot — rings your cell while they are still on the phone. Or it books same-night at your after-hours fee. Or it takes the details and promises a callback inside fifteen minutes. A sensible split for an electrical shop is the first rule for anything that smells like smoke and the third for everything else, because a dead outlet at 10pm is a morning job and it should get booked like one, not ring you at dinner. If someone hangs up before the fourth ring, they get a text in your company name inside thirty seconds asking what is going on and offering to book.'],
+    ],
+    faq: [
+      ['Is this an electrician answering service or an AI?', 'It is an AI answering service for electricians. It is not a room of operators and it does not pretend to be one. If a caller asks, it says it is the shop\'s automated line and keeps booking. Call the demo line and decide for yourself whether a customer would hang up on it.'],
+      ['What does an electrician answering service cost?', 'This one is $197 a month flat, with a $297 setup for the first five shops and $497 after. No per-minute meter and no per-call fee. A message-taking service usually lands in the same range once the minutes are added up, and it books nothing.'],
+      ['Will it quote a panel upgrade?', 'No. It books an estimate visit for anything that needs a look — a panel, a service upgrade, an EV charger, a generator — and says what you told it to say about whether that visit costs anything. For a service call it states your fee and says the tech prices the work on site.'],
+    ],
+  },
 ];
 
 // Towns. Keep this list to places the work is genuinely done.
