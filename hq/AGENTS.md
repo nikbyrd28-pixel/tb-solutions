@@ -58,15 +58,25 @@ list is full". That is what the owner reads in their app under *What they did*. 
 
 ## Visuals
 
-For every `agent_posts` row with `status = 'draft'` and `media_url is null`: build an image prompt
+**Scripts become explainers.** For every `agent_posts` row with `channel = 'script'`, `status =
+'draft'` and `media_url is null`: turn the script into 5–7 frames in the house explainer style
+(`tools/explainer/` — cream card, black-outline boxes, TB yellow, our own guy in the yellow work
+shirt; never a borrowed cartoon character). Each frame is one beat of the script: a scene the
+owner has lived (the quote sent Monday, the calendar going quiet, the phone under the sink), then
+the one fix, then `tbsol.net`. Write the spec JSON like `tools/explainer/examples/quote-went-quiet.json`
+(`stage` = the drawing in the template's classes, `caption` = the spoken line with one `<mark>`),
+run `node tools/explainer/render.mjs <spec> <out>`, upload the PNGs to the `uploads` bucket under
+`explainers/<post id>/01.png…` and `reel.mp4`, then
+`update agent_posts set media_url = <01.png url>, video_url = <reel.mp4 url>, media_note = media_note || ' · frames: <02.png url>,<03.png url>,…'`.
+Commit the spec to `tools/explainer/specs/<post id>.json` so the Coach can see what was drawn.
+
+**Posts get one picture.** For every other draft with `media_url is null`: build an image prompt
 from `media_note` + `title` + the shop's trade, generate ONE image with the High image tool (a
 phone-photo look: a real truck, hands on a fixture, a job site at dusk; square for Instagram,
 landscape otherwise; **no text on the image, no logos, no faces that could be mistaken for a real
 person**), and `update agent_posts set media_url = … where id = …`. Skip rows whose brain
-instructions say not to. If `settings.video` is true on the Visuals brain for that business, also
-make ONE clip of 5–8 seconds for each `script` row with `video_url is null` (b-roll that matches
-`media_note`, no speech, no on-screen text) and set `video_url`. Check `balance` first; if credits
-are short, do images only and say so. Never regenerate a row that already has a url.
+instructions say not to. Check `balance` first; if credits are short, do explainers only (they
+cost nothing) and say so. Never regenerate a row that already has a url.
 
 ## Coach
 

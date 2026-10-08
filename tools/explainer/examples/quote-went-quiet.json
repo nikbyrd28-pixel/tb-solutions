@@ -1,0 +1,36 @@
+{
+  "post_id": "9d77bcb8-f9be-47d5-980a-08b6bda88152",
+  "tag": "the quote that went quiet",
+  "frames": [
+    {
+      "secs": 4, "side": "l", "mood": "ok",
+      "stage": "<div class='row'><div class='lbl'>MONDAY</div><div class='box y'>🧾 Water heater quote</div><div class='arrow'>→</div><div class='box b'>sent</div></div>",
+      "caption": "Monday you sent <mark>the quote.</mark>"
+    },
+    {
+      "secs": 5, "side": "l", "mood": "sad",
+      "stage": "<div class='cal'><span class='on'>Mon</span><span class='dead'>Tue</span><span class='dead'>Wed</span><span class='dead'>Thu</span><span class='dead'>Fri</span></div><div class='box dim'>not a yes · not a no · nothing</div>",
+      "caption": "It's Thursday. <mark>Nothing.</mark>"
+    },
+    {
+      "secs": 5, "side": "r", "mood": "sad",
+      "stage": "<div class='row'><div class='box x'>cheaper shop</div><div class='box x'>bad quote</div></div><div class='arrow'>↓</div><div class='box big'>SILENCE</div><div class='lbl'>that's who you lose it to</div>",
+      "caption": "You don't lose it to a cheaper shop. <mark>You lose it to silence.</mark>"
+    },
+    {
+      "secs": 5, "side": "l", "mood": "ok",
+      "stage": "<div class='row'><div class='col'><div class='lbl'>DAY 3</div><div class='box y'>one text</div></div><div class='arrow'>→</div><div class='phone'><div class='bubble me'>Hey, just checking that quote made sense. Happy to answer anything before you decide.</div></div></div>",
+      "caption": "Day three. <mark>One text.</mark> Every quote."
+    },
+    {
+      "secs": 5, "side": "r", "mood": "ok",
+      "stage": "<div class='row'><div class='lbl'>EVERY QUOTE</div><div class='arrow'>→</div><div class='lbl'>DAY 3</div><div class='arrow'>→</div><div class='box y'>same text</div><div class='arrow'>→</div><div class='box g'>✓ answered</div></div><div class='box'>Not sales. Just not disappearing.</div>",
+      "caption": "That's not sales. <mark>That's not disappearing.</mark>"
+    },
+    {
+      "secs": 4, "side": "l", "mood": "ok",
+      "stage": "<div class='box big' style='font-size:96px'>tbsol.net</div><div class='lbl'>the front office for the trades</div>",
+      "caption": "More of this at <mark>tbsol.net</mark>"
+    }
+  ]
+}

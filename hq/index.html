@@ -734,14 +734,15 @@ function openBrain(card){
     ed.querySelector('.bst').textContent='Saved. Live on the next run.'; setTimeout(()=>renderAgents(),900);
   };
 }
-const isMetaAuto=p=>p.status==='draft'&&!p.business_id&&(p.channel==='facebook'||p.channel==='instagram')&&metaCfg&&metaCfg.has_token&&metaCfg.page_id&&(p.channel==='facebook'||metaCfg.ig_user_id);
+const isMetaAuto=p=>p.status==='draft'&&!p.business_id&&(p.channel==='facebook'||p.channel==='instagram'||(p.channel==='script'&&p.media_url))&&metaCfg&&metaCfg.has_token&&metaCfg.page_id&&(p.channel==='facebook'||metaCfg.ig_user_id);
+const frameUrls=p=>{ const m=/frames:\s*(\S+)/.exec(p.media_note||''); return m?m[1].split(',').filter(Boolean):[]; };
 function publishLine(p){
-  if(p.channel!=='facebook'&&p.channel!=='instagram') return '';
+  if(p.channel!=='facebook'&&p.channel!=='instagram'&&p.channel!=='script') return '';
   if(p.status==='posted'&&p.external_url) return `<div class="cap">✅ Live: <a href="${esc(p.external_url)}" target="_blank">${esc(p.external_url.replace(/^https?:\/\/(www\.)?/,''))}</a></div>`;
   if(p.status!=='draft') return '';
   if(p.publish_error) return `<div class="cap" style="color:var(--red,#b42318)">⚠️ Meta said: ${esc(p.publish_error)}${p.publish_attempts>=3?' — gave up after 3 tries. Fix and tap Post now.':' — will retry.'}</div>`;
   if(!isMetaAuto(p)) return (metaCfg&&metaCfg.has_token&&p.channel==='instagram'&&!metaCfg.ig_user_id)?`<div class="cap">Instagram id not set — copy-and-paste this one, or add it in Connect.</div>`:'';
-  if(p.channel==='instagram'&&!p.media_url) return `<div class="cap">⏳ Waiting on a picture from Visuals before it can post.</div>`;
+  if((p.channel==='instagram'||p.channel==='script')&&!p.media_url) return `<div class="cap">⏳ Waiting on ${p.channel==='script'?'the explainer frames':'a picture'} from Visuals before it can post.</div>`;
   if(p.publish_after&&new Date(p.publish_after)<=new Date()) return `<div class="cap">⏳ Posting any minute…</div>`;
   if(!metaCfg.autopost) return `<div class="cap">Auto-post is off — tap <b>Post now</b> when it's ready.</div>`;
   const due=new Date(new Date(p.created_at).getTime()+(metaCfg.delay_min||0)*60000); const mins=Math.round((due-Date.now())/60000);
@@ -757,10 +758,11 @@ function renderPosts(){
     return `<div class="card post ${p.status==='posted'?'won':p.status==='skipped'?'lost':''}" data-id="${p.id}">
       <div class="top"><div><h3>${esc(p.title||cl)}</h3><div class="biz">${esc(p.business||'TB Solutions')} · ${esc(ago(p.created_at))}${p.posted_at?' · posted '+esc(ago(p.posted_at)):''}${p.edited?' · edited':''}</div></div><span class="chan" style="background:${col}">${cl}</span></div>
       ${p.run_note?`<div class="hint">${esc(p.run_note)}</div>`:''}
-      ${p.media_url?`<a href="${esc(p.media_url)}" target="_blank"><img src="${esc(p.media_url)}" alt="" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;border:2px solid var(--line);margin-top:8px"></a>`:''}
+      ${frameUrls(p).length?`<div style="display:flex;gap:6px;overflow-x:auto;margin-top:8px">${[p.media_url,...frameUrls(p)].map(u=>`<a href="${esc(u)}" target="_blank"><img src="${esc(u)}" alt="" style="height:150px;border-radius:8px;border:2px solid var(--line)"></a>`).join('')}</div>`:''}
+      ${p.media_url&&!frameUrls(p).length?`<a href="${esc(p.media_url)}" target="_blank"><img src="${esc(p.media_url)}" alt="" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;border:2px solid var(--line);margin-top:8px"></a>`:''}
       ${p.video_url?`<video src="${esc(p.video_url)}" controls playsinline style="width:100%;border-radius:12px;border:2px solid var(--line);margin-top:8px"></video>`:''}
       <pre class="body">${esc(p.body)}</pre>${p.caption?`<pre class="cap">${esc(p.caption)}</pre>`:''}
-      ${p.media_note?`<div class="cap">📷 ${esc(p.media_note)}</div>`:''}${p.cta_url?`<div class="cap">🔗 ${esc(p.cta_url)}</div>`:''}
+      ${p.media_note?`<div class="cap">📷 ${esc(p.media_note.replace(/\s*·\s*frames:\s*\S+/,''))}</div>`:''}${p.cta_url?`<div class="cap">🔗 ${esc(p.cta_url)}</div>`:''}
       ${publishLine(p)}
       ${p.status==='posted'?(()=>{ const r=results[p.id]||{visits:0,leads:0,calls:0}; return `<div class="tags"><span class="tag ${r.visits?'hot':''}">${r.visits} visits</span><span class="tag ${r.leads?'hot':''}">${r.leads} leads</span><span class="tag ${r.calls?'hot':''}">${r.calls} calls in 48h</span></div>`; })():''}
       <div class="acts"><button class="copy">Copy</button>${p.status==='draft'?`<button class="edit">Edit</button>${isMetaAuto(p)?`<button class="pubnow" style="background:var(--green);color:#fff;border-color:var(--green)">Post now</button><button class="posted">Posted ✓</button>`:`<button class="posted" style="background:var(--green);color:#fff;border-color:var(--green)">Posted ✓</button>`}<button class="skip">Skip</button>`:`<button class="undo">Back to waiting</button>`}</div>

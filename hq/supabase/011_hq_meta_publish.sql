@@ -29,12 +29,12 @@ language sql stable security definer set search_path = public as $$
            coalesce(nullif((select value from rx_config where key='META_AUTOPOST_DELAY_MIN'),'')::int, 120) as delay_min
   )
   select p.* from agent_posts p, c
-  where p.status = 'draft' and p.channel in ('facebook','instagram') and p.business_id is null
+  where p.status = 'draft' and p.channel in ('facebook','instagram','script') and p.business_id is null
     and p.publish_attempts < 3
     and ( p.publish_after <= now()
           or (p.publish_after is null and c.auto and p.created_at <= now() - make_interval(mins => c.delay_min)) )
     -- Instagram cannot post without an image; give Visuals until the next pass
-    and (p.channel = 'facebook' or p.media_url is not null)
+    and (p.channel = 'facebook' or p.media_url is not null)   -- scripts need their frames drawn first
   order by p.created_at asc limit 5
 $$;
 revoke all on function public.meta_due_posts() from public, anon, authenticated;
@@ -47,7 +47,7 @@ declare v_secret text;
 begin
   if not is_hq_admin() then raise exception 'not admin'; end if;
   update agent_posts set publish_after = now(), publish_error = null, publish_attempts = 0
-  where id = p_id and status = 'draft' and channel in ('facebook','instagram');
+  where id = p_id and status = 'draft' and channel in ('facebook','instagram','script');
   select value into v_secret from rx_config where key = 'RX_SYNC_SECRET';
   perform net.http_post(
     url := 'https://qgbjiqdwzgkjkmqyjsmc.supabase.co/functions/v1/meta-publish',

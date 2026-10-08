@@ -1,0 +1,74 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  /* TB explainer card — 1080x1920 (reels / stories), 4:5 crop safe in the middle band. */
+  @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@500;700&display=swap');
+  :root{ --cream:#f6f1e3; --ink:#161513; --yellow:#f2c230; --blue:#bfe3f5; --pink:#f6c6dc; --green:#2e8b57; --red:#c0392b; --line:3px solid var(--ink); }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{width:1080px;height:1920px;background:var(--cream);font-family:'Archivo',system-ui,sans-serif;color:var(--ink);position:relative;overflow:hidden;
+       background-image:radial-gradient(#e2dccb 1.4px,transparent 1.4px);background-size:22px 22px}
+  .top{position:absolute;top:120px;left:80px;right:80px;display:flex;justify-content:space-between;align-items:center}
+  .brand{display:flex;align-items:center;gap:14px;font-weight:700;font-size:30px;letter-spacing:.02em}
+  .brand b{background:var(--yellow);border:var(--line);padding:6px 14px;font-family:'Archivo Black';font-size:30px;box-shadow:5px 5px 0 var(--ink)}
+  .steps{display:flex;gap:8px}
+  .steps span{border:var(--line);background:#fff;padding:6px 14px;font-weight:700;font-size:24px}
+  .steps span.on{background:var(--yellow)} .steps span.done{background:#ddd7c5;color:#6b665a}
+  .stage{position:absolute;top:260px;left:80px;right:80px;height:1000px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:36px}
+  .box{border:var(--line);background:#fff;padding:22px 30px;font-weight:700;font-size:40px;box-shadow:8px 8px 0 var(--ink);display:flex;align-items:center;gap:18px;max-width:900px}
+  .box.y{background:var(--yellow)} .box.b{background:var(--blue)} .box.p{background:var(--pink)} .box.g{background:var(--green);color:#fff} .box.dim{background:#ddd7c5;color:#6b665a;box-shadow:none}
+  .box.x{text-decoration:line-through;color:#8a8475;background:#fff}
+  .lbl{font-size:22px;letter-spacing:.08em;text-transform:uppercase;border:var(--line);background:#fff;padding:4px 10px;font-weight:700}
+  .arrow{font-size:56px;line-height:1}
+  .row{display:flex;gap:28px;align-items:center;flex-wrap:wrap;justify-content:center}
+  .col{display:flex;flex-direction:column;gap:20px;align-items:center}
+  .big{font-family:'Archivo Black';font-size:150px;line-height:1;padding:30px 50px}
+  .cal{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+  .cal span{border:var(--line);background:#fff;width:120px;height:120px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:34px}
+  .cal span.on{background:var(--yellow)} .cal span.dead{background:#ddd7c5;color:#8a8475} .cal span.hit{background:var(--green);color:#fff}
+  .phone{border:var(--line);border-radius:36px;background:#fff;width:420px;padding:28px 24px;box-shadow:8px 8px 0 var(--ink);display:flex;flex-direction:column;gap:14px}
+  .bubble{border:var(--line);background:var(--blue);padding:16px 20px;font-size:28px;line-height:1.3;border-radius:22px 22px 22px 4px;font-weight:500}
+  .bubble.me{background:var(--yellow);border-radius:22px 22px 4px 22px;align-self:flex-end}
+  .caption{position:absolute;left:80px;right:80px;bottom:300px;text-align:center}
+  .caption span{display:inline;background:var(--ink);color:#fff;font-family:'Archivo Black';font-size:52px;line-height:1.5;padding:6px 20px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+  .caption span mark{background:var(--yellow);color:var(--ink);padding:0 10px}
+  /* the mascot — our own guy: yellow work shirt, cap, big friendly face. never a borrowed character. */
+  .guy{position:absolute;bottom:420px;width:260px}
+  .guy.l{left:40px} .guy.r{right:40px;transform:scaleX(-1)}
+  .foot{position:absolute;bottom:120px;left:80px;right:80px;display:flex;justify-content:space-between;font-weight:700;font-size:28px;color:#6b665a}
+</style></head>
+<body>
+  <div class="top"><div class="brand"><b>TB</b> the front office for the trades</div><div class="steps" id="steps"></div></div>
+  <div class="stage" id="stage"></div>
+  <svg class="guy" id="guy" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+    <g stroke="#161513" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+      <!-- legs -->
+      <rect x="62" y="178" width="30" height="62" fill="#3b4a66"/><rect x="108" y="178" width="30" height="62" fill="#3b4a66"/>
+      <rect x="54" y="236" width="44" height="18" rx="6" fill="#161513"/><rect x="102" y="236" width="44" height="18" rx="6" fill="#161513"/>
+      <!-- body -->
+      <path d="M50 110 Q50 96 66 96 H134 Q150 96 150 110 V182 H50 Z" fill="#f2c230"/>
+      <rect x="72" y="118" width="56" height="10" fill="#161513"/>
+      <!-- arms -->
+      <path d="M50 118 Q22 140 30 176" fill="none"/><circle cx="30" cy="180" r="10" fill="#f1c9a5"/>
+      <path d="M150 118 Q178 140 170 176" fill="none"/><circle cx="170" cy="180" r="10" fill="#f1c9a5"/>
+      <!-- head -->
+      <rect x="62" y="30" width="76" height="74" rx="22" fill="#f1c9a5"/>
+      <!-- cap -->
+      <path d="M58 48 Q100 10 142 48 Z" fill="#161513"/><rect x="52" y="44" width="96" height="12" rx="6" fill="#161513"/>
+      <!-- face -->
+      <circle cx="84" cy="70" r="5" fill="#161513" stroke="none"/><circle cx="116" cy="70" r="5" fill="#161513" stroke="none"/>
+      <path id="mouth" d="M84 88 Q100 100 116 88" fill="none"/>
+    </g>
+  </svg>
+  <div class="caption"><span id="cap"></span></div>
+  <div class="foot"><span>tbsol.net</span><span id="tag"></span></div>
+<script>
+  // frame spec is injected by render.mjs as window.FRAME = { n, total, stage, caption, side, tag }
+  const f = window.FRAME || {};
+  document.getElementById('steps').innerHTML = Array.from({length:f.total||1},(_,i)=>`<span class="${i+1<f.n?'done':i+1===f.n?'on':''}">${i+1}</span>`).join('');
+  document.getElementById('stage').innerHTML = f.stage || '';
+  document.getElementById('cap').innerHTML = f.caption || '';
+  document.getElementById('tag').textContent = f.tag || '';
+  const g=document.getElementById('guy'); g.classList.add(f.side==='r'?'r':'l');
+  if(f.mood==='sad') document.getElementById('mouth').setAttribute('d','M84 96 Q100 84 116 96');
+</script>
+</body></html>

@@ -42,12 +42,15 @@ async function pinImage(post: any): Promise<string | null> {
   const ct = src.headers.get("content-type") || "image/jpeg";
   const ext = ct.includes("png") ? "png" : ct.includes("webp") ? "webp" : "jpg";
   const key = `posts/${post.id}.${ext}`;
-  const up = await fetch(`${SB_URL}/storage/v1/object/uploads/${key}`, { method: "POST", headers: { apikey: SERVICE, Authorization: `Bearer ${SERVICE}`, "Content-Type": ct, "x-upsert": "true" }, body: await src.arrayBuffer() });
+  const up = await fetch(`${SB_URL}/storage/v1/object/uploads/${key}`, { method: "POST", headers: { apikey: SERVICE, Authorization: `Bearer ${SERVICE}`, "Content-Type": ct }, body: await src.arrayBuffer() });
   if (!up.ok) throw new Error(`image upload ${up.status} ${(await up.text()).slice(0, 200)}`);
   const pub = `${SB_URL}/storage/v1/object/public/uploads/${key}`;
   await db(`agent_posts?id=eq.${post.id}`, { method: "PATCH", body: JSON.stringify({ media_url: pub }) });
   return pub;
 }
+
+// explainer frames: media_url is frame 1, the rest are listed in media_note after "frames:"
+const frames = (p: any): string[] => { const m = /frames:\s*([^\s]+)/.exec(p.media_note || ""); const rest = m ? m[1].split(",").filter(Boolean) : []; return p.media_url ? [p.media_url, ...rest] : rest; };
 
 const text = (p: any) => [p.body, p.caption].filter((s) => s && String(s).trim()).join("\n\n").trim();
 
@@ -55,6 +58,15 @@ async function publishFacebook(p: any, img: string | null, token: string) {
   const page = cfg("META_PAGE_ID"); if (!page) throw new Error("META_PAGE_ID not set");
   let msg = text(p);
   if (p.cta_url && !msg.includes(p.cta_url)) msg += `\n\n${p.cta_url}`;
+  const fr = frames(p);
+  if (fr.length > 1) {
+    const ids: string[] = [];
+    for (const u of fr) { const ph = await graph(`${page}/photos`, { url: u, published: "false" }, token); ids.push(ph.id); }
+    const params: Record<string, string> = { message: msg };
+    ids.forEach((id, i) => { params[`attached_media[${i}]`] = JSON.stringify({ media_fbid: id }); });
+    const j = await graph(`${page}/feed`, params, token);
+    return { id: j.id, url: `https://www.facebook.com/${j.id}` };
+  }
   if (img) {
     const j = await graph(`${page}/photos`, { url: img, message: msg, published: "true" }, token);
     const id = j.post_id || j.id;
@@ -70,7 +82,18 @@ async function publishInstagram(p: any, img: string | null, token: string) {
   const ig = cfg("META_IG_USER_ID"); if (!ig) throw new Error("META_IG_USER_ID not set — Instagram skipped");
   if (!img) throw new Error("no image yet");
   const caption = text(p).slice(0, 2200);
-  const c = await graph(`${ig}/media`, { image_url: img, caption }, token);
+  const fr = frames(p);
+  let c: any;
+  if (fr.length > 1) {
+    const children: string[] = [];
+    for (const u of fr.slice(0, 10)) {
+      const ch = await graph(`${ig}/media`, { image_url: u, is_carousel_item: "true" }, token);
+      children.push(ch.id);
+    }
+    c = await graph(`${ig}/media`, { media_type: "CAROUSEL", children: children.join(","), caption }, token);
+  } else {
+    c = await graph(`${ig}/media`, { image_url: img, caption }, token);
+  }
   // the container needs a moment to be ready; poll briefly
   for (let i = 0; i < 10; i++) {
     const s = await graphGet(`${c.id}?fields=status_code`, token);
@@ -105,7 +128,13 @@ Deno.serve(async (req) => {
     if (!claimed?.length) { out.skipped++; continue; }
     try {
       const img = await pinImage(p);
-      const r = p.channel === "instagram" ? await publishInstagram(p, img, token) : await publishFacebook(p, img, token);
+      let r;
+      if (p.channel === "script") {
+        // an explainer goes to both: the carousel on Instagram, the photo set on Facebook. IG link is what we keep.
+        const fb = await publishFacebook(p, img, token).catch((e) => { console.error("script fb", e); return null; });
+        const igr = cfg("META_IG_USER_ID") ? await publishInstagram(p, img, token) : null;
+        r = igr || fb; if (!r) throw new Error("neither channel posted");
+      } else r = p.channel === "instagram" ? await publishInstagram(p, img, token) : await publishFacebook(p, img, token);
       await db(`agent_posts?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ status: "posted", posted_at: new Date().toISOString(), external_id: r.id, external_url: r.url, publish_error: null }) });
       await db("agent_runs", { method: "POST", body: JSON.stringify({ agent: "meta", business_id: null, note: `published ${p.channel}: ${p.title || ""} → ${r.url}` }) }).catch(() => {});
       out.posted++; out.detail.push(`${p.channel} ok ${r.id}`);
