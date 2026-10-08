@@ -22,8 +22,8 @@
 /spaz*.png
 
 # Higgsfield CLI companion skills (installed with `npx skills add higgsfield-ai/skills`).
-# Regenerable local tooling, not product code.
+# Regenerable local tooling, not product code. (.claude/skills/ is tracked on purpose — see .claude/skills/README.md)
 /.agents/
-/.claude/skills/
+/.claude/skills/higgsfield*/
 /skills-lock.json
 node_modules/
