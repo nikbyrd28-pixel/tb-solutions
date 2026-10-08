@@ -220,6 +220,11 @@ details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf
           <input id="fCity" placeholder="Town (Phoenixville, PA)" autocomplete="off">
         </div>
         <div class="chips" id="fTowns"></div>
+        <div class="chips" id="fFocus" style="border-top:2px dashed var(--line);padding-top:10px">
+          <span class="when" style="align-self:center">Looking for:</span>
+          <button data-v="all" class="on">Any gap</button>
+          <button data-v="site">No website / old website</button>
+        </div>
         <button class="go" id="fGo">Scan</button>
         <div class="fprog hidden" id="fProg"><i></i></div>
         <div class="when" id="fMsg"></div>
@@ -462,13 +467,14 @@ function openScript(p){
 // the results into the call list through hq_finder_import. Same rules, same table.
 const F_TRADES=[['plumber','Plumbers'],['HVAC','HVAC'],['electrician','Electricians'],['roofing contractor','Roofers']];
 const F_TOWNS=['Phoenixville, PA','Pottstown, PA','West Chester, PA','Exton, PA','Downingtown, PA','Royersford, PA','Collegeville, PA','Spring City, PA','Kennett Square, PA','Coatesville, PA','Malvern, PA','Paoli, PA','Limerick, PA','Boyertown, PA','Norristown, PA','Conshohocken, PA'];
-let finderReady=false, fRows=[], fImported=null;
+let finderReady=false, fRows=[], fImported=null, fFocus='all', fView='all', fLast=null;
 async function finderInit(){
   if(finderReady) return; finderReady=true;
   $('fTrades').innerHTML=F_TRADES.map(([v,l])=>`<button data-v="${v}">${l}</button>`).join('');
   $('fTowns').innerHTML=F_TOWNS.map(t=>`<button data-v="${t}">${t.replace(', PA','')}</button>`).join('');
   const pick=(box,input)=>box.querySelectorAll('button').forEach(b=>b.onclick=()=>{ input.value=b.dataset.v; box.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); });
   pick($('fTrades'),$('fTrade')); pick($('fTowns'),$('fCity'));
+  $('fFocus').querySelectorAll('button').forEach(b=>b.onclick=()=>{ fFocus=b.dataset.v; $('fFocus').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); $('fGo').textContent=fFocus==='site'?'Scan for bad websites':'Scan'; });
   $('fTrade').value='plumber'; $('fTrades').querySelector('button').classList.add('on');
   $('fGo').onclick=finderScan;
   [$('fTrade'),$('fCity')].forEach(i=>i.addEventListener('keydown',e=>{ if(e.key==='Enter') finderScan(); }));
@@ -506,16 +512,16 @@ async function finderScan(){
   $('fSum').classList.add('hidden'); $('fRes').innerHTML=''; fRows=[]; fImported=null;
   try{
     const {data:{session}}=await supa.auth.getSession();
-    const r=await fetch(SUPA_URL+'/functions/v1/hq-finder',{method:'POST',headers:{'Content-Type':'application/json',apikey:SUPA_KEY,Authorization:'Bearer '+session.access_token},body:JSON.stringify({trade,city,limit:20})});
+    const r=await fetch(SUPA_URL+'/functions/v1/hq-finder',{method:'POST',headers:{'Content-Type':'application/json',apikey:SUPA_KEY,Authorization:'Bearer '+session.access_token},body:JSON.stringify({trade,city,limit:20,focus:fFocus})});
     const j=await r.json();
     if(!j.ok){
       if(j.error==='no_key'){ $('fMsg').textContent='No Google key yet — paste one above and scan again.'; finderKeyForm(); }
       else $('fMsg').textContent='Scan failed: '+(j.error||r.status);
       return;
     }
-    fRows=j.rows||[];
+    fRows=j.rows||[]; fLast=j; fView='all';
     bar.style.width='100%';
-    $('fMsg').textContent=`${j.found} shops in ${(j.ms/1000).toFixed(0)}s. ${j.quality} worth a call.`;
+    $('fMsg').textContent=fFocus==='site'?`Checked ${j.scanned} shops in ${(j.ms/1000).toFixed(0)}s — ${j.found} with no site or a bad one.`:`${j.found} shops in ${(j.ms/1000).toFixed(0)}s. ${j.quality} worth a call.`;
     renderFinder(j);
     // File them straight into the call list — that's the point. Worked rows are never touched.
     const {data:imp,error}=await supa.rpc('hq_finder_import',{p_rows:fRows});
@@ -530,8 +536,13 @@ function renderFinder(j){
     <div><div class="n">${j.quality}</div><div class="l">worth a call</div></div>
     <div><div class="n">${money(j.avg_value_mo)}</div><div class="l">avg est. $/mo</div></div>`;
   const ini=n=>n.split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
-  $('fRes').innerHTML=`<p class="fnote">$/mo is an estimate: calls they likely miss × jobs those would book × a typical ${esc(j.trade)} ticket. Use it to pick who to call first, not as a quote.</p>`+
-    fRows.map((p,i)=>{
+  const st=j.sites||{}, byStatus=k=>fRows.filter(p=>p.site_status===k).length;
+  const views=[['all','All',fRows.length],['none','No website',byStatus('none')],['down','Site down',byStatus('down')],['old','Old site',byStatus('old')],['weak',"Can't book",byStatus('weak')],['phone','Phone gap',fRows.filter(p=>p.signals&&(p.signals.closed_weekends||p.signals.no_hours_listed)).length]];
+  const list=fRows.filter(p=>fView==='all'?true:fView==='phone'?(p.signals&&(p.signals.closed_weekends||p.signals.no_hours_listed)):p.site_status===fView);
+  $('fRes').innerHTML=`<div class="filters">${views.map(([k,l,n])=>`<button data-v="${k}" class="${fView===k?'on':''}">${l}${n?' <b>'+n+'</b>':''}</button>`).join('')}</div>
+    <p class="fnote">$/mo is an estimate: calls they likely miss × jobs those would book × a typical ${esc(j.trade)} ticket. Use it to pick who to call first, not as a quote.</p>`+
+    (list.length?'':'<div class="empty">Nothing in this bucket.</div>')+
+    list.map((p,i)=>{
       const hot=['no website','site down','closed weekends','no hours on Google','breaks on mobile'];
       const tags=(p.gaps||[]).map(g=>`<span class="tag ${hot.includes(g)?'hot':/site|SSL|SEO|booking/i.test(g)?'site':''}">${esc(g)}</span>`).join('')
         +(!p.gaps||!p.gaps.length?'<span class="tag ok">no obvious gap</span>':'');
@@ -552,6 +563,7 @@ function renderFinder(j){
           ${fImported?`<span class="when">${p.score>=50?'On Today':'Parked'}</span>`:''}
         </div>
       </div>`; }).join('');
+  $('fRes').querySelectorAll('.filters button').forEach(b=>b.onclick=()=>{ fView=b.dataset.v; renderFinder(fLast||j); });
 }
 
 // ---- agents ----

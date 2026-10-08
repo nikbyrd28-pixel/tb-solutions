@@ -27,6 +27,12 @@
       does: 'Every finished job gets a text asking for a review, timed right, one tap. Anyone unhappy gets routed to you first instead of to Google.',
       proof: 'No setup fee, month to month.',
     },
+    'Job-Ready Website': {
+      what: 'a one-page site that books the job from a phone',
+      setup: '$497', first5: '$497', monthly: '$47',
+      does: 'Your number at the top, your towns, your three main jobs, a book-now button and the reviews you already have. Loads in a second on a phone, which is where every emergency call starts. Up in a week.',
+      proof: 'If you hate it when it\'s done, you don\'t pay the build.',
+    },
   };
   const BUNDLE = { setup: '$797', monthly: '$297', vs: '$1,091 setup and $441 a month separately' };
 

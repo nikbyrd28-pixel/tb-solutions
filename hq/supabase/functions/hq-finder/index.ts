@@ -1,7 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 // HQ Finder — the lead scanner behind HQ → Finder.
 //
-// POST { trade: "plumber", city: "Phoenixville, PA", limit?: 20 }
+// POST { trade: "plumber", city: "Phoenixville, PA", limit?: 20, focus?: "all"|"site" }
 //   → pulls the shops from Google Places (New), opens each website, grades it,
 //     scores every shop with the Prospector's rules, writes a spoken opener, and returns
 //     the list ranked best-call-first with an estimated $/mo on the table.
@@ -136,8 +136,8 @@ function score(p: Place, h: ReturnType<typeof hoursOf>, s: SiteGrade) {
   if (h.open_24h) sc -= 20;
   if (n >= 500) sc -= 20;
   if (n < 10) sc -= 10;
-  if (!s.exists) sc += 15;
-  else { if (!s.booking) sc += 5; if (s.mobile_ok === false) sc += 10; if (s.https === false) sc += 5; if (s.stale) sc += 5; if (s.reachable === false) sc += 10; }
+  if (!s.exists) sc += 20;
+  else { if (!s.booking) sc += 5; if (s.mobile_ok === false) sc += 10; if (s.https === false) sc += 5; if (s.stale) sc += 10; if (s.reachable === false) sc += 15; }
   return Math.max(0, Math.min(100, sc));
 }
 
@@ -167,10 +167,22 @@ function opener(p: Place, h: ReturnType<typeof hoursOf>, s: SiteGrade) {
   if (s.stale && s.copyright_year) return `Your website still says ${s.copyright_year} at the bottom — a customer reads that as "are they still in business?". Is it still booking you work?`;
   return `You're at ${stars(p) || "a good rating"} with ${n} reviews — a real shop, owner-run. What happens to a call that comes in while you're on a job?`;
 }
+// none | down | old | weak | ok — one word HQ can filter on.
+function siteStatus(s: SiteGrade): "none" | "down" | "old" | "weak" | "ok" {
+  if (!s.exists) return "none";
+  if (s.reachable === false) return "down";
+  if (s.stale || s.mobile_ok === false || s.https === false) return "old";
+  if (!s.booking || !s.seo_ok) return "weak";
+  return "ok";
+}
 function pitch(h: ReturnType<typeof hoursOf>, s: SiteGrade, p: Place) {
   const n = p.userRatingCount ?? 0, r = p.rating ?? 0;
-  const phoneGap = h.closed_weekends || !h.listed || !s.exists || !s.booking;
+  const siteGap = ["none", "down", "old"].includes(siteStatus(s));
+  const phoneGap = h.closed_weekends || !h.listed;
   const reviewGap = n < 10 || (r > 0 && r < 4.5 && n >= 10);
+  // The site is the easiest yes: it's visible, it's theirs, and they already know it's bad.
+  if (siteGap && phoneGap) return "Job-Ready Website + Never Miss a Call";
+  if (siteGap) return "Job-Ready Website";
   if (phoneGap && reviewGap) return "Never Miss a Call + Review Engine";
   if (reviewGap) return "Review Engine";
   return "Never Miss a Call";
@@ -194,7 +206,9 @@ Deno.serve(async (req) => {
   let b: any; try { b = await req.json(); } catch { return Response.json({ ok: false, error: "bad json" }, { status: 400, headers: CORS }); }
   const tradeQ = String(b.trade || "").trim().slice(0, 60), city = String(b.city || "").trim().slice(0, 80);
   if (!tradeQ || !city) return Response.json({ ok: false, error: "trade and city are required" }, { status: 400, headers: CORS });
-  const limit = Math.max(5, Math.min(40, Number(b.limit) || 20));
+  // focus = "site": go wider (40 listings) and keep only shops with no site, a dead one, or an old one.
+  const focus = b.focus === "site" ? "site" : "all";
+  const limit = focus === "site" ? 40 : Math.max(5, Math.min(40, Number(b.limit) || 20));
 
   await loadConfig();
   const key = cfg("GOOGLE_PLACES_KEY");
@@ -207,7 +221,7 @@ Deno.serve(async (req) => {
   const trade = tradeOf(tradeQ);
 
   // grade every site in parallel; the slowest one bounds the request, not the sum
-  const rows = await Promise.all(places.map(async p => {
+  let rows = await Promise.all(places.map(async p => {
     const h = hoursOf(p), s = await gradeSite(p.websiteUri);
     const sc = score(p, h, s), v = value(trade, p, h, s);
     const signals = { closed_weekends: h.closed_weekends, no_hours_listed: !h.listed, open_24h: h.open_24h, no_website: !s.exists, no_booking: s.exists && !s.booking, mobile_broken: s.mobile_ok === false, stale_site: !!s.stale, no_ssl: s.https === false };
@@ -215,15 +229,18 @@ Deno.serve(async (req) => {
       name: p.displayName?.text || "(unnamed)", trade, phone: p.nationalPhoneNumber || null, website: p.websiteUri || null,
       address: p.formattedAddress || null, city: cityOf(p.formattedAddress, city), zip: zipOf(p.formattedAddress),
       rating: p.rating ?? null, reviews: p.userRatingCount ?? 0, hours_note: h.note, google_place_id: p.id,
-      signals, score: sc, why: opener(p, h, s), pitch: pitch(h, s, p),
+      signals, score: sc, why: opener(p, h, s), pitch: pitch(h, s, p), site_status: siteStatus(s),
       owner_name: s.owner_name || null, email: s.email || null,
       value: v,
       gaps: [...(h.closed_weekends ? ["closed weekends"] : []), ...(!h.listed ? ["no hours on Google"] : []), ...(h.open_24h ? ["says open 24h"] : []), ...s.gaps],
       audit: { site: s, gmb: { hours_listed: h.listed, hours: h.note, reviews: p.userRatingCount ?? 0, rating: p.rating ?? null }, gaps: s.gaps, note: `Finder scan ${new Date().toISOString().slice(0, 10)} — ${tradeQ} in ${city}` },
     };
   }));
+  const scanned = rows.length;
+  if (focus === "site") rows = rows.filter(r => ["none", "down", "old"].includes(r.site_status));
   rows.sort((a, b) => b.score - a.score || b.value.dollars_mo - a.value.dollars_mo);
   const total = rows.reduce((s, r) => s + r.value.dollars_mo, 0);
-  return Response.json({ ok: true, trade, city, query: `${tradeQ} ${city}`, found: rows.length, quality: rows.filter(r => r.score >= 50).length,
+  return Response.json({ ok: true, trade, city, query: `${tradeQ} ${city}`, focus, scanned, found: rows.length, quality: rows.filter(r => r.score >= 50).length,
+    sites: { none: rows.filter(r => r.site_status === "none").length, down: rows.filter(r => r.site_status === "down").length, old: rows.filter(r => r.site_status === "old").length, weak: rows.filter(r => r.site_status === "weak").length },
     avg_value_mo: rows.length ? Math.round(total / rows.length) : 0, total_value_mo: total, ms: Date.now() - t0, rows }, { headers: CORS });
 });
