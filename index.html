@@ -6,7 +6,7 @@
 <title>TB Solutions — Marketing Agency for Plumbers, HVAC &amp; Electricians</title>
 <link rel="canonical" href="https://tbsol.net/">
 <meta name="google-site-verification" content="9d0Ax-thMVr80HuaXDWa9A3dXnZn24PaNgtPCNxbKIs">
-<meta name="description" content="AI receptionist, job-booking websites, and review automation for plumbers, HVAC and electricians. Your phone answered, your jobs booked, your reviews rolling in.">
+<meta name="description" content="Job-booking websites, an AI receptionist, and review automation for plumbers, HVAC and electricians. Your site books the job, your phone gets answered, your reviews roll in.">
 <meta name="theme-color" content="#FFD23F">
 <meta property="og:title" content="TB Solutions — The Front Office for the Trades">
 <meta property="og:description" content="Your phone answered 24/7. A website that books jobs. Reviews on autopilot. Built for plumbers, HVAC and electricians.">
@@ -178,8 +178,9 @@ nav .links a:hover{border-bottom-color:var(--ink)}
 .card.rev{border-top:10px solid var(--green)}
 .card.pln{border-top:10px solid var(--copper)}
 .card.rank{border-top:10px solid var(--red)}
-.card.lead-en{border-top:10px solid var(--red);grid-column:1/-1}
-@media(min-width:861px){.card.lead-en .fix{max-width:40em}}
+.card.lead-en{border-top:10px solid var(--red)}
+.card.featured{grid-column:1/-1}
+@media(min-width:861px){.card.featured .fix{max-width:40em}}
 
 .bundle{padding:clamp(48px,7vw,96px) 0;background:var(--ink);color:var(--paper)}
 .bundle h2{color:var(--yellow)}
@@ -189,7 +190,7 @@ nav .links a:hover{border-bottom-color:var(--ink)}
 .bundle li::before{content:"✓";color:var(--green);font-weight:800;margin-right:.6em}
 .stub{background:var(--yellow);color:var(--ink);border-radius:22px;padding:26px;transform:rotate(1.2deg);box-shadow:10px 10px 0 var(--copper)}
 .stub .big{font-size:clamp(46px,7vw,84px);font-weight:800;line-height:.9;letter-spacing:-.04em}
-.stub .big small{font-size:.3em;font-weight:700;vertical-align:top}
+.stub .big small{font-size:.3em;font-weight:700;vertical-align:top;letter-spacing:0;margin-left:.15em}
 .stub .mo{font-size:clamp(22px,2.6vw,30px);font-weight:700}
 .stub .save{display:inline-block;background:var(--red);color:#fff;font-weight:800;padding:.25em .6em;border-radius:8px;transform:rotate(-2deg);margin-top:12px}
 
@@ -241,6 +242,12 @@ footer a{color:var(--yellow)}
   <div class="wrap">
     <h2>Start with the one that's costing you jobs.</h2>
     <div class="cards" id="cards">
+      <a class="card web featured" href="/websites/">
+        <span class="pain"><q>My website doesn't book me any jobs.</q></span>
+        <span class="fix">The Job-Ready Website — one fast page built to turn a visitor into a booked call: tap-to-call, an instant quote form that texts you, your services and towns, your real Google reviews. Live in 5 days, on your domain.</span>
+        <span class="price">$497 build · $47/mo care <small>· you own the site and the domain</small></span>
+        <span class="go">Fix my website <span>→</span></span>
+      </a>
       <a class="card lead-en" href="/leads/">
         <span class="pain"><q>Nobody's calling in the first place.</q></span>
         <span class="fix">The Lead Engine — we put you in Google's pay-per-lead program (the "Google Guaranteed" spots above everything) and run it: budget, bids, junk-lead disputes. You pay Google only when a real homeowner calls.</span>
@@ -252,12 +259,6 @@ footer a{color:var(--yellow)}
         <span class="fix">Never Miss a Call — an AI receptionist that picks up 24/7, triages the job, books a real arrival window, and texts you the details. Emergencies ring your cell.</span>
         <span class="price">$497 setup · $197/mo <small>· first 5 shops this month: $297 setup</small></span>
         <span class="go">Fix my phones <span>→</span></span>
-      </a>
-      <a class="card web" href="/websites/">
-        <span class="pain"><q>My website doesn't book me any jobs.</q></span>
-        <span class="fix">The Job-Ready Website — one fast page built to turn a visitor into a booked call: tap-to-call, instant quote form that texts you, your services and area, live in 5 days.</span>
-        <span class="price">$497 build · $47/mo care</span>
-        <span class="go">Fix my website <span>→</span></span>
       </a>
       <a class="card pln" href="/planner/">
         <span class="pain"><q>Remodel leads say "just looking" and vanish.</q></span>
@@ -343,7 +344,17 @@ if (!reduce) { let i = 0; setInterval(() => { i = (i + 1) % trades.length; el.te
 // deal the pain cards in when they scroll into view
 const cards = [...document.querySelectorAll(".card")];
 if (reduce) cards.forEach(c => c.classList.add("in"));
-else new IntersectionObserver((es, o) => { if (es[0].isIntersecting) { cards.forEach((c, i) => setTimeout(() => c.classList.add("in"), i * 140)); o.disconnect(); } }, { threshold: .25 }).observe(document.getElementById("cards"));
+else {
+  let dealt = false;
+  const deal = () => { if (dealt) return; dealt = true; cards.forEach((c, i) => setTimeout(() => c.classList.add("in"), i * 120)); };
+  const grid = document.getElementById("cards");
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver((es) => { if (es.some(e => e.isIntersecting)) { deal(); io.disconnect(); } }, { threshold: 0, rootMargin: "0px 0px -12% 0px" });
+    cards.forEach(c => io.observe(c));
+  } else deal();
+  // never let the offers stay hidden: whatever happens, show them within 3s
+  setTimeout(deal, 3000);
+}
 </script>
 </body>
 </html>

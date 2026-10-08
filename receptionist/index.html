@@ -446,7 +446,15 @@ async function playCall(){
   }
 }
 document.getElementById("replay").addEventListener("click", playCall);
-new IntersectionObserver((e, o) => { if (e[0].isIntersecting) { playCall(); o.disconnect(); } }, { threshold: .3 }).observe(document.getElementById("phone"));
+{
+  let played = false;
+  const start = () => { if (played) return; played = true; playCall(); };
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver((e) => { if (e.some(x => x.isIntersecting)) { start(); io.disconnect(); } }, { threshold: 0, rootMargin: "0px 0px -20% 0px" });
+    io.observe(document.getElementById("phone"));
+  } else start();
+  setTimeout(start, 6000); // the demo never stays blank
+}
 
 // ---- counters + calculator ----
 function countUp(el){
