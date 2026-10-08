@@ -920,7 +920,7 @@ function renderProjs(){
   $('projs').querySelectorAll('button.open').forEach(b=>b.onclick=()=>openProj(b.dataset.id));
 }
 $('newProj').onclick=async()=>{
-  const name=prompt('Business name (e.g. Top Sky Roofing)'); if(!name) return;
+  const name=prompt('Business name (e.g. Keystone Roofing)'); if(!name) return;
   const trade=prompt('Trade (roofing / plumbing / hvac / electrical…)','')||''; const town=prompt('Town (Phoenixville, PA)','')||'';
   const website=prompt('Their website (blank if none)','')||''; const phone=prompt('Owner cell (optional)','')||'';
   $('wMsg').textContent='Creating…';
