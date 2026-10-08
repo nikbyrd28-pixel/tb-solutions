@@ -6,11 +6,13 @@ Nick's one-screen CRM. Replaces the archived TB Command for what actually matter
 - **Receptionist tab** — 30-day stats, booked `rx_jobs` (status editable), `rx_calls` with summaries + recordings.
 - **RX Clients tab** — every receptionist line. **Edit brain**: company, owner cell, receptionist name, fees, zips/area, hours, arrival windows, emergency policy, free-text knowledge, and the bookable services (keywords, urgency, fee override, safety steps). Saves to `rx_businesses`/`rx_services`; `rx-agent` builds the prompt from those rows on every call, so edits are live on the next call. **+ New client line** creates the row (inactive, demo services copied) — then run `provision.mjs` for the number and flip Line active.
 
+- **Work tab** — client projects. **+ New client** = one tap, the whole Google Rank Fix playbook (17 steps: logo, SEO site, review activation, NAP, Apple Maps, hours, About tab…) lands on the card. Tap the box on a step to cycle todo → in progress → done → n/a; the finding line is what the client reads. **Copy link / Text it** sends them `/audit/?t=<token>` — a read-only page of what's broken and what's being fixed, updating live as you tick. Add your own steps with **+ Add a step**. Edit the master list in `hq_playbook` (SQL) — new projects pick it up, old ones keep theirs.
+
 - **Agents tab** — the fleet (Prospector, SEO, GBP, Meta, Content, Review) with status read from what each produced, plus the inbox of written posts: Copy → paste → Posted ✓. See `AGENTS.md`.
 
 Access: Supabase auth login; user must be in `hq_admins` (Nick is). Add another admin:
 `insert into hq_admins(user_id) select id from auth.users where email='x@y.com';`
 
-Backend: `supabase/001_hq.sql` + `supabase/002_hq_rx_editor.sql` + … + `supabase/006_hq_agents.sql` (agent posts, review asks, `rx-review` cron) (`hq_rx_business`, `hq_rx_business_save`, `hq_rx_service_save`, `hq_rx_business_create`) — `is_hq_admin()`, `hq_pipeline(days)`, `hq_set_status(src,id,status,notes)`, `hq_rx(days)`, `hq_rx_job_status(id,status)`. All SECURITY DEFINER, all gated on `is_hq_admin()`; no table policies were widened.
+Backend: `supabase/001_hq.sql` + `supabase/002_hq_rx_editor.sql` + … + `supabase/006_hq_agents.sql` + `supabase/013_hq_work.sql` (projects, playbook, `audit_public`) (agent posts, review asks, `rx-review` cron) (`hq_rx_business`, `hq_rx_business_save`, `hq_rx_service_save`, `hq_rx_business_create`) — `is_hq_admin()`, `hq_pipeline(days)`, `hq_set_status(src,id,status,notes)`, `hq_rx(days)`, `hq_rx_job_status(id,status)`. All SECURITY DEFINER, all gated on `is_hq_admin()`; no table policies were widened.
 
 Add to phone home screen: open tbsol.net/hq/ → Share → Add to Home Screen.

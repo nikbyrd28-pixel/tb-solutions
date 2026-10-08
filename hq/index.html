@@ -182,6 +182,30 @@ details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf
 .tag.site{background:var(--copper);color:#fff}
 .tag.ok{background:var(--green);color:#fff}
 .fnote{font-size:12px;color:var(--muted);font-weight:600;margin:0 0 12px}
+/* ---- Work ---- */
+.prog{height:10px;border:2px solid var(--ink);border-radius:999px;background:#fff;overflow:hidden;margin:10px 0 4px}
+.prog i{display:block;height:100%;background:var(--green);transition:width .4s}
+.pcard .st{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:3px 8px;border-radius:6px;background:#eee;white-space:nowrap}
+.pcard .st.audit{background:var(--yellow)}.pcard .st.pitched{background:var(--copper);color:#fff}.pcard .st.active{background:var(--green);color:#fff}.pcard .st.done{background:var(--ink);color:var(--yellow)}.pcard .st.lost{background:#ddd}
+.wgrp{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:18px 0 8px;display:flex;justify-content:space-between;align-items:baseline}
+.wgrp b{color:var(--ink);font-size:12px}
+.step{background:#fff;border:2px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:8px;display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start}
+.step.done{border-color:var(--green);background:#f3fbf5}.step.doing{border-color:var(--copper)}.step.na{opacity:.45}
+.step .box{width:34px;height:34px;border-radius:10px;border:2px solid var(--ink);background:#fff;font-weight:800;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto;user-select:none}
+.step.done .box{background:var(--green);color:#fff;border-color:var(--green)}.step.doing .box{background:var(--copper);color:#fff;border-color:var(--copper)}.step.na .box{background:#ddd;border-color:#ddd}
+.step h4{font-size:15px;font-weight:800;line-height:1.2}
+.step.done h4{text-decoration:line-through;text-decoration-color:var(--green);text-decoration-thickness:2px}
+.step .how{font-size:13px;color:var(--muted);font-weight:600;margin-top:2px;line-height:1.35}
+.step input.find{width:100%;margin-top:6px;border:0;border-bottom:2px dashed var(--line);padding:4px 0;font-size:14px;font-weight:600;background:transparent;color:var(--ink)}
+.step input.find:focus{outline:0;border-bottom-color:var(--ink)}
+.step .x{font-size:11px;color:var(--muted);font-weight:700;cursor:pointer;background:none;border:0;padding:0;margin-top:4px}
+.step .x:hover{color:var(--red)}
+.wtop{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start}
+.wtop select{border:2px solid var(--ink);border-radius:10px;padding:6px 8px;font-weight:700;background:#fff}
+.share{background:var(--ink);color:var(--paper);border-radius:14px;padding:12px 14px;margin:12px 0;font-size:14px;font-weight:600;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.share code{font-family:ui-monospace,monospace;font-size:12px;color:var(--yellow);word-break:break-all;flex:1;min-width:0}
+.share button{border:2px solid var(--yellow);background:var(--yellow);color:var(--ink);border-radius:999px;padding:5px 12px;font-weight:800;cursor:pointer}
+.share a{color:var(--yellow);font-weight:800}
 </style>
 </head>
 <body>
@@ -198,6 +222,7 @@ details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf
 <div id="app" class="hidden">
   <div class="tabs">
     <button data-tab="prospects" class="on">Call list<i id="nPros"></i></button>
+    <button data-tab="work">Work<i id="nWork"></i></button>
     <button data-tab="finder">Finder</button>
     <button data-tab="leads">Leads<i id="nLeads"></i></button>
     <button data-tab="rx">Receptionist<i id="nRx"></i></button>
@@ -209,6 +234,15 @@ details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf
       <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">Quality only: Today is owner-run shops with a real gap on the phone, best first. No answer, voicemail and call-backs cycle straight back onto Today so you can hit them again whenever. Dead is gone for good — the number's blocked so it never comes back.</div>
       <div class="filters" id="proFilters"></div>
       <div id="pros"></div>
+    </section>
+    <section id="t-work" class="hidden">
+      <div id="wList">
+        <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">Every client's Google Rank Fix on one screen. <b>+ New client</b> drops in the whole playbook — logo, SEO site, review activation, NAP cleanup, trust links, Apple Maps, hours, About tab, review replies. Tap a step to move it along, write the one-line finding, and <b>Share audit</b> hands the client a live page of exactly what's broken and what you're fixing. That page is the pitch.</div>
+        <div class="acts" style="margin:0 0 12px"><button id="newProj" style="background:var(--ink);color:var(--yellow)">+ New client</button><span class="when" id="wMsg"></span></div>
+        <div class="filters" id="wFilters"></div>
+        <div id="projs"></div>
+      </div>
+      <div id="wEdit" class="hidden"></div>
     </section>
     <section id="t-finder" class="hidden">
       <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">Find businesses to call. Pick a trade and a town, tap Scan: it pulls every shop off Google, opens each one's website, flags the gaps (no site, can't book, breaks on a phone, closed weekends) and writes you the opener. Best call first. Everything 50+ lands on Today; the rest is parked.</div>
@@ -296,14 +330,16 @@ $('scrim').onclick=e=>{ if(e.target.id==='scrim') $('scrim').classList.remove('s
 // ---- tabs ----
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
-  ['prospects','finder','leads','rx','clients','agents'].forEach(t=>$('t-'+t).classList.toggle('hidden',t!==b.dataset.tab));
+  ['prospects','work','finder','leads','rx','clients','agents'].forEach(t=>$('t-'+t).classList.toggle('hidden',t!==b.dataset.tab));
   if(b.dataset.tab==='finder') finderInit();
+  if(b.dataset.tab==='work') workInit();
 });
 
 async function load(){
   const [p,r,pr,ap,ra,ab,ar,rs,sq,mc]=await Promise.all([supa.rpc('hq_pipeline',{p_days:180}), supa.rpc('hq_rx',{p_days:30}), supa.rpc('hq_prospects'), supa.rpc('hq_agent_posts',{p_days:60}), supa.rpc('hq_review_asks',{p_days:60}), supa.rpc('hq_agent_brains'), supa.rpc('hq_agent_runs',{p_days:30}), supa.rpc('hq_post_results',{p_days:60}), supa.rpc('hq_seo'), supa.rpc('hq_meta_config')]);
   posts=ap.data||[]; reviews=ra.data||{asks:[],no_url:[],pending:0}; brains=ab.data||[]; runs=ar.data||[]; results=rs.data||{}; seo=sq.data||{keywords:[],links:[]}; metaCfg=mc.data||null;
   pros=pr.data||[]; renderPros();
+  workLoaded=true; loadProjs().catch(e=>console.error(e));
   // never let one bad card blank the whole tab again — show the error where the cards go
   renderAgents().catch(e=>{ $('agents').innerHTML='<div class="empty">Agents tab broke: '+esc(e.message)+'</div>'; console.error(e); });
   if(p.error){ $('leads').innerHTML='<div class="empty">'+esc(p.error.message)+'</div>'; } else { leads=p.data||[]; renderLeads(); }
@@ -855,6 +891,90 @@ function renderRx(){
       <div class="acts"><button class="edit" data-id="${b.id}" style="background:var(--yellow)">Edit brain</button>${b.owner_phone?`<a href="tel:${tel(b.owner_phone)}">Call owner</a>`:''}${b.agent_number?`<a href="tel:${tel(b.agent_number)}">Call agent</a>`:''}</div>
     </div>`).join('');
   $('bizs').querySelectorAll('button.edit').forEach(b=>b.onclick=()=>openBiz(b.dataset.id));
+}
+
+// ---- Work: client projects + the Google Rank Fix playbook ----
+const PSTAT=[['audit','Auditing'],['pitched','Pitched'],['active','Working'],['done','Done'],['lost','Lost']];
+const ISTAT=['todo','doing','done','na'], IGLYPH={todo:'',doing:'…',done:'✓',na:'–'};
+let projs=[], wfilter='open', wcur=null, workLoaded=false;
+async function workInit(){ if(workLoaded) return; workLoaded=true; await loadProjs(); }
+async function loadProjs(){
+  const {data,error}=await supa.rpc('hq_projects');
+  if(error){ $('projs').innerHTML='<div class="empty">'+esc(error.message)+(/does not exist|function/i.test(error.message)?'<br><small>Run hq/supabase/013_hq_work.sql in Supabase first.</small>':'')+'</div>'; return; }
+  projs=data||[]; renderProjs();
+}
+function renderProjs(){
+  const open=projs.filter(p=>!['done','lost'].includes(p.status));
+  $('nWork').textContent=open.length||''; $('nWork').style.display=open.length?'':'none';
+  const counts={open:open.length,all:projs.length}; PSTAT.forEach(([k])=>counts[k]=projs.filter(p=>p.status===k).length);
+  $('wFilters').innerHTML=[['open','Open'],...PSTAT,['all','All']].map(([k,l])=>`<button data-f="${k}" class="${wfilter===k?'on':''}">${l}<b>${counts[k]||0}</b></button>`).join('');
+  $('wFilters').querySelectorAll('button').forEach(b=>b.onclick=()=>{ wfilter=b.dataset.f; renderProjs(); });
+  const list=wfilter==='all'?projs:wfilter==='open'?open:projs.filter(p=>p.status===wfilter);
+  $('projs').innerHTML=list.length?list.map(p=>{ const pct=p.total?Math.round(p.done/p.total*100):0; return `<div class="card pcard">
+      <div class="top"><div><h3>${esc(p.name)}</h3><div class="biz">${esc([p.trade,p.town].filter(Boolean).join(' · ')||'—')}</div></div><span class="st ${esc(p.status)}">${esc((PSTAT.find(s=>s[0]===p.status)||[,p.status])[1])}</span></div>
+      <div class="prog"><i style="width:${pct}%"></i></div>
+      <div class="when">${p.done}/${p.total} steps done${p.doing?` · ${p.doing} in progress`:''} · ${ago(p.updated_at)}</div>
+      <div class="acts"><button class="open" data-id="${p.id}" style="background:var(--yellow)">Open</button>${p.phone?`<a href="tel:${tel(p.phone)}" class="call">Call</a><a href="sms:${tel(p.phone)}">Text</a>`:''}${p.website?`<a href="${esc(/^https?:/.test(p.website)?p.website:'https://'+p.website)}" target="_blank">Site</a>`:''}<a href="/audit/?t=${esc(p.share_token)}" target="_blank">Audit page</a></div>
+    </div>`; }).join(''):'<div class="empty">No clients here yet. Tap <b>+ New client</b> — it loads the whole playbook in one go.</div>';
+  $('projs').querySelectorAll('button.open').forEach(b=>b.onclick=()=>openProj(b.dataset.id));
+}
+$('newProj').onclick=async()=>{
+  const name=prompt('Business name (e.g. Top Sky Roofing)'); if(!name) return;
+  const trade=prompt('Trade (roofing / plumbing / hvac / electrical…)','')||''; const town=prompt('Town (Phoenixville, PA)','')||'';
+  const website=prompt('Their website (blank if none)','')||''; const phone=prompt('Owner cell (optional)','')||'';
+  $('wMsg').textContent='Creating…';
+  const {data,error}=await supa.rpc('hq_project_create',{p:{name,trade,town,website,phone:phone?'+1'+phone.replace(/\D/g,'').replace(/^1/,''):''}});
+  $('wMsg').textContent=''; if(error){ alert(error.message); return; }
+  await loadProjs(); openProj(data);
+};
+async function openProj(id){
+  const {data,error}=await supa.rpc('hq_project',{p_id:id}); if(error||!data){ alert(error?error.message:'not found'); return; }
+  wcur=data; const p=data.project, items=data.items||[];
+  $('wList').classList.add('hidden'); $('wEdit').classList.remove('hidden');
+  const groups=[]; items.forEach(i=>{ if(!groups.includes(i.grp)) groups.push(i.grp); });
+  const shareUrl=location.origin+'/audit/?t='+p.share_token;
+  const inp=(k,label,type='text',ph='')=>`<label class="f">${label}<input data-k="${k}" type="${type}" value="${esc(p[k]??'')}" placeholder="${esc(ph)}"></label>`;
+  const live=items.filter(i=>i.status!=='na'), done=items.filter(i=>i.status==='done');
+  $('wEdit').innerHTML=`<div class="ed edit">
+    <div class="acts" style="margin:0 0 12px"><button id="wBack">← All clients</button><button id="wDel" style="margin-left:auto;border-color:var(--line);color:var(--muted)">Delete</button></div>
+    <div class="wtop"><div><h3 style="font-size:24px;font-weight:800;line-height:1.05;text-transform:none;letter-spacing:-.02em;color:var(--ink);margin:0">${esc(p.name)}</h3><div class="biz">${esc([p.trade,p.town].filter(Boolean).join(' · ')||'')}</div></div>
+      <select id="wStatus">${PSTAT.map(([k,l])=>`<option value="${k}" ${k===p.status?'selected':''}>${l}</option>`).join('')}</select></div>
+    <div class="prog"><i style="width:${live.length?Math.round(done.length/live.length*100):0}%"></i></div>
+    <div class="when">${done.length}/${live.length} steps done</div>
+    <div class="share"><span>Client's audit page</span><code>${esc(shareUrl)}</code><button id="wCopy">Copy link</button><a href="${esc(shareUrl)}" target="_blank">Open</a>${p.phone?`<a href="sms:${tel(p.phone)}&body=${encodeURIComponent('Here’s what I found on your Google presence and what I’d fix: '+shareUrl)}">Text it</a>`:''}</div>
+    <details class="sec"><summary><span><b>Client details</b><small>${esc([p.owner_name,fmtPhone(p.phone),p.website].filter(Boolean).join(' · ')||'tap to fill in')}</small></span><i>›</i></summary><div class="secb">
+      <div class="g2">${inp('name','Business name')}${inp('trade','Trade','text','roofing')}</div>
+      <div class="g2">${inp('town','Town','text','Phoenixville, PA')}${inp('owner_name','Owner')}</div>
+      <div class="g2">${inp('phone','Owner cell','tel')}${inp('email','Email','email')}</div>
+      <div class="g2">${inp('website','Website','url','https://')}${inp('gbp_url','Google Business Profile link','url','https://maps.google.com/…')}</div>
+      <label class="f">Notes (private)<textarea data-k="notes">${esc(p.notes||'')}</textarea></label>
+      <div class="acts"><button id="wSave" class="save">Save details</button><span class="st" id="wSaved" style="color:var(--green);font-weight:700"></span></div>
+    </div></details>
+    <div id="wSteps">${groups.map(g=>{ const gi=items.filter(i=>i.grp===g); return `<div class="wgrp"><span>${esc(g)}</span><b>${gi.filter(i=>i.status==='done').length}/${gi.filter(i=>i.status!=='na').length}</b></div>`+gi.map(stepHtml).join(''); }).join('')}</div>
+    <div class="acts" style="margin-top:14px"><button id="wAdd">+ Add a step</button></div>
+    <div class="hint">Tap the box to cycle: blank → in progress → done → n/a. The finding line is what the client reads on their audit page — write it like you'd say it: "3 different phone numbers online", "Apple Maps unclaimed".</div>
+  </div>`;
+  $('wBack').onclick=()=>{ $('wEdit').classList.add('hidden'); $('wList').classList.remove('hidden'); loadProjs(); };
+  $('wCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(shareUrl); $('wCopy').textContent='Copied ✓'; setTimeout(()=>$('wCopy').textContent='Copy link',1500); }catch{ prompt('Copy this link',shareUrl); } };
+  $('wStatus').onchange=async()=>{ const {error}=await supa.rpc('hq_project_save',{p_id:p.id,p:{status:$('wStatus').value}}); if(error) alert(error.message); else p.status=$('wStatus').value; };
+  $('wSave').onclick=async()=>{ const q={}; $('wEdit').querySelectorAll('[data-k]').forEach(el=>{ let v=el.value.trim(); if(el.dataset.k==='phone'&&v) v='+1'+v.replace(/\D/g,'').replace(/^1/,''); q[el.dataset.k]=v; });
+    const {error}=await supa.rpc('hq_project_save',{p_id:p.id,p:q}); if(error){ alert(error.message); return; } $('wSaved').textContent='Saved.'; setTimeout(()=>$('wSaved').textContent='',1500); Object.assign(p,q); };
+  $('wDel').onclick=async()=>{ if(!confirm('Delete '+p.name+' and every step? This can\'t be undone.')) return; const {error}=await supa.rpc('hq_project_delete',{p_id:p.id}); if(error){ alert(error.message); return; } $('wBack').onclick(); };
+  $('wAdd').onclick=async()=>{ const label=prompt('What\'s the step?'); if(!label) return; const grp=prompt('Group: '+groups.join(' / '),groups[groups.length-1]||'Extra')||'Extra'; const {error}=await supa.rpc('hq_project_item_add',{p_project:p.id,p_grp:grp,p_label:label}); if(error){ alert(error.message); return; } openProj(p.id); };
+  wireSteps();
+}
+function stepHtml(i){ return `<div class="step ${esc(i.status)}" data-id="${i.id}">
+    <div class="box" title="tap to change">${IGLYPH[i.status]||''}</div>
+    <div><h4>${esc(i.label)}</h4>${i.how?`<div class="how">${esc(i.how)}</div>`:''}<input class="find" placeholder="What you found — the client sees this" value="${esc(i.finding||'')}">${i.key?'':'<button class="x">remove</button>'}</div>
+  </div>`; }
+function wireSteps(){
+  $('wSteps').querySelectorAll('.step').forEach(el=>{
+    const id=el.dataset.id, item=wcur.items.find(x=>x.id===id);
+    el.querySelector('.box').onclick=async()=>{ const next=ISTAT[(ISTAT.indexOf(item.status)+1)%ISTAT.length]; const {error}=await supa.rpc('hq_project_item_set',{p_id:id,p_status:next}); if(error){ alert(error.message); return; } item.status=next; openProj(wcur.project.id); };
+    const f=el.querySelector('.find'); f.onblur=async()=>{ if(f.value.trim()===(item.finding||'')) return; const {error}=await supa.rpc('hq_project_item_set',{p_id:id,p_finding:f.value}); if(error) alert(error.message); else item.finding=f.value.trim(); };
+    f.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); f.blur(); } };
+    const x=el.querySelector('.x'); if(x) x.onclick=async()=>{ if(!confirm('Remove this step?')) return; const {error}=await supa.rpc('hq_project_item_delete',{p_id:id}); if(error){ alert(error.message); return; } openProj(wcur.project.id); };
+  });
 }
 
 // ---- client brain editor ----
