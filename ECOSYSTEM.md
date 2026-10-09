@@ -2,7 +2,7 @@
 *The one source of truth for what exists, where it lives, and whether it's alive. Updated Oct 9, 2026.*
 
 ## The business (what we sell)
-**TB Solutions = the front office for the trades** (plumbers, HVAC, electricians). One hub, five offers, one bundle. The flywheel: Lead Engine rings the phone -> Receptionist books it -> Review Engine stacks reviews -> cheaper leads.
+**TB Solutions = the front office for the trades** (plumbers, HVAC, electricians). One hub, five offers, one bundle. The flywheel: Google Guaranteed Setup rings the phone -> Receptionist books it -> Review Engine stacks reviews -> cheaper leads.
 
 | Offer | Price | Funnel | Status |
 |---|---|---|---|
@@ -10,10 +10,10 @@
 | Job-Ready Website | $497 build + $47/mo care | tbsol.net/websites/ | LIVE (selling) |
 | Review Engine | $97/mo, no setup | tbsol.net/reviews/ | LIVE (selling; delivery = n8n flow, build on first sale) |
 | Remodel Planner (blueprint-to-quote funnel) | $697 build + $67/mo, or $297 added to a website | tbsol.net/planner/ | LIVE (selling; delivery = DNE planner templatized, de-brand on first sale) |
-| Lead Engine (Google LSA setup + management) | $497 setup + $147/mo (lead spend paid to Google directly) | tbsol.net/leads/ | LIVE (selling; delivery = LSA application, weekly tuning, dispute filing) |
-| └ LSA migration front door (same offer, urgency angle: Google moved LSA into Google Ads, missed calls billable since Oct 1 2026) | sells Lead Engine, upsells Front Office | tbsol.net/lsa/ | LIVE — calculator + free-audit form → edge fn `lsa-intake` → table `lsa_leads` |
+| Google Guaranteed Setup (Google LSA setup + management) | $497 setup + $147/mo (lead spend paid to Google directly) | tbsol.net/leads/ | LIVE (selling; delivery = LSA application, weekly tuning, dispute filing) |
+| └ LSA migration front door (same offer, urgency angle: Google moved LSA into Google Ads, missed calls billable since Oct 1 2026) | sells Google Guaranteed Setup, upsells The Works | tbsol.net/lsa/ | LIVE — calculator + free-audit form → edge fn `lsa-intake` → table `lsa_leads` |
 | **Google Rank Fix** (local SEO: free 17-point audit → 14-day fix; review activation, NAP cleanup, Apple Maps, trust links, GBP fields, site tags) | $697 fix + $97/mo | tbsol.net/rank/ | LIVE (selling; delivery = HQ → Work playbook per client, client watches `/audit/?t=…`) |
-| Full Front Office (all three) | $797 setup + $297/mo | hub | LIVE (selling) |
+| The Works (all three) | $797 setup + $297/mo | hub | LIVE (selling) |
 | **Offer sheet** (all of the above on one page, printable) | — | tbsol.net/offers/ | LIVE — text this link to prospects |
 
 ## Live stack

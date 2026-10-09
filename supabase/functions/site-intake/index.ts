@@ -9,7 +9,7 @@ const cfg = (k: string) => Deno.env.get(k) || "";
 
 const OFFERS: Record<string, string> = {
   websites: "Job-Ready Website", receptionist: "Never Miss a Call", reviews: "Review Engine", planner: "Remodel Planner",
-  leads: "Lead Engine", rank: "Google Rank Fix", bundle: "Full Front Office", general: "Not sure yet",
+  leads: "Google Guaranteed Setup", rank: "Google Rank Fix", bundle: "The Works", general: "Not sure yet",
 };
 
 function phoneE164(s: string): string | null { const d = String(s || "").replace(/\D/g, ""); return d.length === 10 ? `+1${d}` : d.length === 11 && d[0] === "1" ? `+${d}` : null; }
@@ -33,26 +33,30 @@ Deno.serve(async (req) => {
   if (b._honey) return Response.json({ ok: true }, { headers: CORS }); // bot filled the hidden field
 
   const phone = phoneE164(b.phone);
-  if (!phone) return Response.json({ ok: false, error: "Enter a 10-digit US cell number so Nick can text you." }, { status: 400, headers: CORS });
+  if (!phone) return Response.json({ ok: false, error: "Enter a 10-digit US cell number so Nick can reach you." }, { status: 400, headers: CORS });
   const name = S(b.name, 120);
   if (!name) return Response.json({ ok: false, error: "What should Nick call you?" }, { status: 400, headers: CORS });
 
   const offerKey = (S(b.offer, 30) || "general").toLowerCase();
   const offer = OFFERS[offerKey] || S(b.offer, 60) || "Not sure yet";
   const page = S(b.page, 120);
+  const consent = b.sms_consent === true || b.sms_consent === "1" || b.sms_consent === "true";
   const row = {
     name, phone, business: S(b.business, 120), email: S(b.email, 160), website: S(b.website, 200),
     interest: offer, goal: S(b.goal, 500), about: S(b.trade, 40),
     ref: [page, S(b.utm, 200)].filter(Boolean).join(" "),
-    status: "new", notes: null,
+    status: "new", notes: consent ? null : "No SMS consent: CALL, don't text.",
+    sms_consent: consent, sms_consent_at: consent ? new Date().toISOString() : null, sms_consent_text: consent ? S(b.sms_consent_text, 600) : null,
+    ip: req.headers.get("x-forwarded-for")?.split(",")[0] || null, user_agent: req.headers.get("user-agent")?.slice(0, 300) || null,
   };
   const r = await fetch(`${SB_URL}/rest/v1/intakes`, { method: "POST", headers: { apikey: SERVICE, Authorization: `Bearer ${SERVICE}`, "Content-Type": "application/json", Prefer: "return=representation" }, body: JSON.stringify(row) });
-  if (!r.ok) { console.error("insert", r.status, await r.text()); return Response.json({ ok: false, error: "Couldn't save that. Text Nick directly at (484) 841-8501." }, { status: 500, headers: CORS }); }
+  if (!r.ok) { console.error("insert", r.status, await r.text()); return Response.json({ ok: false, error: "Couldn't save that. Call Nick at (484) 841-8501." }, { status: 500, headers: CORS }); }
 
   const nick = cfg("NICK_PHONE");
   if (nick) {
-    await sms(nick, `LEAD — ${offer}\n${name}${row.business ? " · " + row.business : ""}${row.about ? " · " + row.about : ""}\n${phone}\n${row.goal || "(no note)"}\nfrom ${page || "tbsol.net"}`);
-    await sms(phone, `Hey ${name.split(" ")[0]}, Nick at TB Solutions. Got your note about the ${offer}. I'll text you back within the hour with a quick plan and what it'd cost. Reply STOP to opt out.`);
+    await sms(nick, `JOB REQUEST — ${offer}\n${name}${row.business ? " · " + row.business : ""}${row.about ? " · " + row.about : ""}\n${phone}${consent ? "" : "  (NO SMS CONSENT: CALL)"}\n${row.goal || "(no note)"}\nfrom ${page || "tbsol.net"}`);
+    // Only text the prospect if they checked the consent box (Twilio toll-free / TCPA). Otherwise Nick calls.
+    if (consent) await sms(phone, `TB Solutions: Hey ${name.split(" ")[0]}, Nick here. Got your note about the ${offer}. I'll text you within the hour with what I'd do and what it costs. Msg&data rates may apply. Reply STOP to opt out, HELP for help.`);
   }
   return Response.json({ ok: true }, { headers: CORS });
 });

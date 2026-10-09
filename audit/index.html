@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Your Google audit | TB Solutions</title>
+<title>Your Google checkup | TB Solutions</title>
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#FFD23F">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2314110F'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial Black,Arial' font-weight='900' font-size='28' fill='%23FFD23F'%3ETB%3C/text%3E%3C/svg%3E">
@@ -59,14 +59,14 @@ footer{padding:18px 0 40px;font-size:.85em;font-weight:500;color:var(--muted);te
 <body>
 <header><div class="wrap">
   <nav><a class="brand" href="https://tbsol.net"><b>TB</b> Solutions</a><a href="sms:+14848418501" style="text-decoration:none;border-bottom:3px solid var(--ink)">Text Nick</a></nav>
-  <span class="kick" id="kick">Google audit</span>
+  <span class="kick" id="kick">Google checkup</span>
   <h1 id="name">Loading…</h1>
   <p class="lead" id="lead"></p>
 </div></header>
 
-<main class="wrap" id="main"><div class="empty">Pulling up the audit…</div></main>
+<main class="wrap" id="main"><div class="empty">Pulling up your checkup…</div></main>
 
-<footer class="wrap">TB Solutions · the front office for the trades · Pottstown, PA · <a href="https://tbsol.net">tbsol.net</a></footer>
+<footer class="wrap">TB Solutions · the works for the trades · Pottstown, PA · <a href="https://tbsol.net">tbsol.net</a></footer>
 
 <script>
 const supa=window.supabase.createClient('https://qgbjiqdwzgkjkmqyjsmc.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro');
@@ -75,13 +75,13 @@ const GLYPH={todo:'',doing:'…',done:'✓',na:'–'}, TAG={todo:'needs fixing',
 (async()=>{
   const t=new URLSearchParams(location.search).get('t');
   const {data,error}=t?await supa.rpc('audit_public',{p_token:t}):{data:null};
-  if(error||!data){ $('name').textContent='Audit not found'; $('main').innerHTML='<div class="empty">This link isn\'t live. Text Nick at (484) 841-8501 and he\'ll send a fresh one.</div>'; return; }
-  document.title=data.name+' — Google audit | TB Solutions';
+  if(error||!data){ $('name').textContent='Checkup not found'; $('main').innerHTML='<div class="empty">This link isn\'t live. Text Nick at (484) 841-8501 and he\'ll send a fresh one.</div>'; return; }
+  document.title=data.name+' — Google checkup | TB Solutions';
   $('name').textContent=data.name;
   const where=[data.trade,data.town].filter(Boolean).join(' · ');
   const items=(data.items||[]).filter(i=>i.status!=='na'), done=items.filter(i=>i.status==='done'), doing=items.filter(i=>i.status==='doing'), todo=items.filter(i=>i.status==='todo');
   const working=['active','done'].includes(data.status);
-  $('kick').textContent=working?'Your Google Rank Fix — live progress':'Your Google audit';
+  $('kick').textContent=working?'Your Google Rank Fix: live progress':'Your Google checkup';
   $('lead').textContent=working
     ?`${where?where+'. ':''}Every step of the fix, updated as it's done. ${done.length} of ${items.length} finished.`
     :`${where?where+'. ':''}I went through everything about ${data.name} that shows up online. Here's what's holding the ranking back, and what I'd fix — in the order it'd get done.`;
@@ -104,7 +104,7 @@ const GLYPH={todo:'',doing:'…',done:'✓',na:'–'}, TAG={todo:'needs fixing',
     <div class="cta">
       <h3>${working?'Questions? Text me.':'Want this done?'}</h3>
       <p>${working?'Every step above updates as it\'s finished. If something looks off, text me and I\'ll look same day.':'One text and I start. No contracts, month to month, you keep the domain, the Google profile and every login. Most of this list is done inside two weeks.'}</p>
-      <a class="btn" href="sms:+14848418501&body=${encodeURIComponent('Hey Nick — saw the audit for '+data.name+'. Let’s talk.')}">Text Nick</a>
+      <a class="btn" href="sms:+14848418501&body=${encodeURIComponent('Hey Nick, saw the checkup for '+data.name+'. Let’s talk.')}">Text Nick</a>
       <a class="btn ghost" href="https://tbsol.net/rank/">What the Rank Fix includes →</a>
     </div>`;
 })();

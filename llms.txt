@@ -1,16 +1,16 @@
 # TB Solutions
-> The front office for the trades. Nick Byrd, Pottstown, PA. Serving Chester County, Montgomery County and the 422 corridor.
+> Phones, websites and reviews for the trades. Nick Byrd, Pottstown, PA. Serving Chester County, Montgomery County and the 422 corridor.
 
-TB Solutions runs the front office for plumbing, HVAC and electrical shops: an AI receptionist
+TB Solutions runs the works for plumbing, HVAC and electrical shops: an AI receptionist
 that answers when the owner cannot and books the job, Google Local Services Ads management,
-Google review automation, and job-booking websites. Prices are published; nothing is on a contract.
+a Google review ask after every job, and job-booking websites. Prices are published; nothing is on a contract.
 
 ## Services
 - [Never Miss a Call](https://tbsol.net/services/ai-receptionist-for-contractors/): An AI receptionist that answers in your company name when your line rings out, books the job into your arrival windows, and texts you. $297 setup, $197/mo. $297 setup, $197/month.
-- [Lead Engine](https://tbsol.net/services/google-local-services-ads-management/): Google Guaranteed setup or migration, campaign rebuilt, budget capped, and junk leads disputed weekly so you get the credits back. $297 setup, $147/mo. $297 setup, $147/month.
+- [Google Guaranteed Setup](https://tbsol.net/services/google-local-services-ads-management/): Google Guaranteed setup or migration, the account rebuilt, budget capped, and junk calls disputed weekly so you get the credits back. $297 setup, $147/mo. $297 setup, $147/month.
 - [Review Engine](https://tbsol.net/services/google-review-automation/): Every finished job gets a text asking for a Google review, timed and worded right, one tap. Unhappy customers route to you first. $97/mo, no setup fee. no setup fee setup, $97/month.
-- [Job-Ready Website](https://tbsol.net/services/websites-for-contractors/): One fast mobile page built to convert a homeowner holding a phone over a leak: click-to-call, service area, reviews, a form that texts you. $497 build, $47/mo. $497 setup, $47/month.
-- [Google Rank Fix](https://tbsol.net/rank/): Free written audit of the 17 things Google grades a local shop on (reviews, listings, hours, Apple Maps, Business Profile, site), then every broken one fixed in 14 days. $697 fix, $97/month.
+- [Job-Ready Website](https://tbsol.net/services/websites-for-contractors/): One fast mobile page built to turn a homeowner holding a phone over a leak into a booked call: click-to-call, service area, reviews, a form that texts you. $497 build, $47/mo. $497 setup, $47/month.
+- [Google Rank Fix](https://tbsol.net/rank/): Free written checkup of the 17 things Google grades a local shop on (reviews, listings, hours, Apple Maps, Business Profile, site), then every broken one fixed in 14 days. $697 fix, $97/month.
 
 ## Trades served
 - [plumbers](https://tbsol.net/for/plumbers/): water heater leaks, burst pipes, sewer backups, no hot water and clogged mains.
