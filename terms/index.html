@@ -26,28 +26,50 @@
  "description": "The terms that govern use of TB Solutions' website, tools, and services."
 }
 </script>
+<meta name="theme-color" content="#10263F">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2310263F'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial Black,Arial' font-weight='900' font-size='28' fill='%23F5B800'%3ETB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@450;500;600;700&display=swap">
+<link rel="stylesheet" href="/site.css">
 <style>
-  :root{--text:#eef1ff;--muted:#96a0c4;--line:rgba(150,190,255,.18);--cyan:#5df2e0;--bg:#05070f}
-  *{box-sizing:border-box}
-  body{margin:0;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:var(--text);line-height:1.7;background:linear-gradient(180deg,#070a12,#03040a);min-height:100vh}
-  .wrap{max-width:720px;margin:0 auto;padding:40px 20px 80px}
-  a{color:var(--cyan)}
-  h1{font-size:30px;letter-spacing:-.01em;margin:6px 0 4px}
-  h2{font-size:18px;margin:28px 0 8px;color:var(--text)}
-  p,li{color:var(--muted);font-size:15px}
-  .brand{font-weight:900;font-size:16px}
-  .brand a{text-decoration:none;color:var(--text)}
-  .brand span{color:var(--cyan)}
-  .date{color:var(--muted);font-size:13px;margin-bottom:24px}
-  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+/* long-form legal text, unique to the policy pages */
+.nav .back{white-space:nowrap}
+.prose{max-width:42em}
+.prose h2{margin-top:1.6em;font-size:clamp(26px,3vw,36px);margin-bottom:.35em}
+.prose h2:first-child{margin-top:0}
+.prose p{margin-bottom:1em;max-width:none;color:var(--ink-2)}
+.prose ul,.prose ol{padding-left:1.2em;margin-bottom:1em;color:var(--ink-2)}
+.prose li{margin:.35em 0}
+.prose a{color:var(--ink);font-weight:600}
+.prose b,.prose strong{color:var(--ink)}
+.date{color:var(--mute);font-size:.95rem;font-weight:500;margin-top:1em}
+.box{background:var(--white);border:1px solid var(--line-2);border-radius:var(--r-lg);padding:clamp(18px,2.4vw,26px);box-shadow:var(--shadow);margin:1.4em 0}
+.box p{margin:0;color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="brand"><a href="/">TB <span>Solutions</span></a></div>
-  <h1>Terms of Service</h1>
-  <p class="date">Effective July 20, 2026</p>
 
+<header class="wrap">
+  <nav class="nav">
+    <span style="display:flex;align-items:center;gap:1.4em">
+      <a class="brand" href="/"><b>TB</b> Solutions</a>
+      <a class="back" href="/">← Home</a>
+    </span>
+    <a class="phone" href="tel:+14848418501"><small>Call Nick</small>(484) 841-8501</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Legal</div>
+    <h1>Terms of <mark>Service</mark></h1>
+    <p class="date">Effective July 20, 2026</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap prose">
   <p>These terms govern your use of tbsol.net and the tools we provide (client portals, CRMs, capture pages, and marketing software — together, the "Services"), operated by TB Solutions of Chester County, Pennsylvania. By using the Services, you agree to these terms.</p>
 
   <h2>1. Services</h2>
@@ -91,8 +113,16 @@
 
   <h2>Contact</h2>
   <p>TB Solutions · Chester County, PA · <a href="mailto:nikbyrd28@gmail.com">nikbyrd28@gmail.com</a></p>
+  </div>
+</section>
 
-  <footer>© TB Solutions · <a href="/">Home</a> · <a href="/privacy/">Privacy Policy</a></footer>
-</div>
+<footer>
+  <div class="wrap">
+    <span><span class="brand">TB Solutions</span> · Nick Byrd · Pottstown, PA · Serving Chester &amp; Montgomery County · <a href="tel:+14848418501">(484) 841-8501</a></span>
+    <span><a href="/websites/">Websites</a> · <a href="/receptionist/">Phones</a> · <a href="/reviews/">Reviews</a> · <a href="/rank/">Google rank</a> · <a href="/offers/">All offers</a> · <a href="/sms-terms/">SMS terms</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></span>
+  </div>
+  <div class="wrap" style="margin-top:10px"><span>© TB Solutions · <a href="/">Home</a> · <a href="/privacy/">Privacy Policy</a></span></div>
+</footer>
+
 </body>
 </html>

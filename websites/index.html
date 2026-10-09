@@ -6,12 +6,12 @@
 <title>Job-Ready Website — Sites That Book Jobs</title>
 <link rel="canonical" href="https://tbsol.net/websites/">
 <meta name="description" content="A one-page website for plumbers, HVAC and electricians built to do one thing: turn a visitor into a booked call. $497 build, $47/month care. Live in 5 days.">
-<meta name="theme-color" content="#1B4FD8">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231B4FD8'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial Black,Arial' font-weight='900' font-size='28' fill='%23FFF8E1'%3ETB%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#10263F">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2310263F'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial Black,Arial' font-weight='900' font-size='28' fill='%23F5B800'%3ETB%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap">
-<link rel="stylesheet" media="print" onload="this.media='all';this.onload=null" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap"></noscript>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@450;500;600;700&display=swap">
+<link rel="stylesheet" href="/site.css">
 <script defer src="/track.js"></script>
 <script defer src="/lead.js"></script>
 <script type="application/ld+json">
@@ -104,142 +104,89 @@
  ]
 }
 </script>
-<style>
-:root{--blue:#1B4FD8;--blue-deep:#143CA6;--ink:#14110F;--paper:#FFF8E1;--yellow:#FFD23F;--green:#1F9D55;--red:#D7263D;--max:1080px;--gutter:clamp(16px,4vw,40px)}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:"Bricolage Grotesque",system-ui,sans-serif;background:var(--blue);color:var(--paper);font-size:clamp(17px,1.6vw,20px);line-height:1.45}
-.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gutter)}
-h1,h2,h3{font-weight:800;line-height:.95;letter-spacing:-.02em;font-variation-settings:"opsz" 96,"wdth" 92}
-h2{font-size:clamp(32px,5.5vw,58px);margin-bottom:.5em}
-p{max-width:34em}
-a{color:inherit}
-.btn{display:inline-flex;align-items:center;gap:.5em;background:var(--yellow);color:var(--ink);text-decoration:none;font-weight:700;padding:.85em 1.3em;border-radius:999px;border:3px solid var(--yellow);transition:transform .15s;cursor:pointer}
-.btn:hover{transform:translateY(-2px)}
-.btn.ghost{background:transparent;color:var(--paper);border-color:var(--paper)}
-a:focus-visible{outline:4px solid var(--yellow);outline-offset:3px}
-nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0;font-weight:700}
-nav .brand{text-decoration:none}
-nav .brand b{background:var(--yellow);color:var(--ink);padding:.1em .45em;border-radius:6px;margin-right:.4em}
-.hero{padding:clamp(28px,6vw,72px) 0 clamp(40px,6vw,80px)}
-.two{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,5vw,64px);align-items:center}
-@media(max-width:860px){.two{grid-template-columns:1fr}}
-.hero h1{font-size:clamp(40px,7.5vw,84px);font-variation-settings:"opsz" 96,"wdth" 85}
-.hero h1 em{font-style:normal;background:var(--yellow);color:var(--ink);padding:0 .12em;border-radius:.12em;box-shadow:0 .1em 0 var(--ink)}
-.hero .lead{font-size:clamp(19px,2vw,24px);font-weight:500;margin:.9em 0 1.2em;max-width:26em}
-/* real work */
-.shot{max-width:330px;margin:0 auto}
-.shot .frame{display:block;background:var(--ink);border-radius:38px;padding:10px;box-shadow:12px 12px 0 rgba(0,0,0,.28);transform:rotate(2deg);transition:transform .2s}
-.shot .frame:hover{transform:rotate(0) translateY(-4px)}
-.shot img{display:block;width:100%;height:auto;border-radius:28px}
-.shot figcaption{margin-top:18px;font-size:.9em;font-weight:600;text-align:center}
-.proof{display:grid;grid-template-columns:1.45fr 1fr;gap:clamp(24px,4vw,56px);align-items:center;margin-top:1.4em}
-@media(max-width:860px){.proof{grid-template-columns:1fr}}
-.browser{border:3px solid var(--ink);border-radius:16px;overflow:hidden;background:#fff;box-shadow:10px 10px 0 var(--ink)}
-.browser .bar{display:flex;gap:6px;align-items:center;padding:9px 12px;border-bottom:3px solid var(--ink);background:var(--paper);font-size:.8em;font-weight:700}
-.browser .bar i{width:10px;height:10px;border-radius:50%;border:2px solid var(--ink)}
-.browser .bar span{margin-left:8px}
-.browser img{display:block;width:100%;height:auto}
-.built{list-style:none;display:grid;gap:14px}
-.built li{border-left:6px solid var(--blue);padding:2px 0 2px 14px;font-weight:600}
-.built li b{display:block;font-size:1.15em}
-@media (prefers-reduced-motion:reduce){.shot .frame{transform:none}}
-section{padding:clamp(48px,7vw,96px) 0}
-.paper{background:var(--paper);color:var(--ink)}
-.have{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:1.2em}
-@media(max-width:700px){.have{grid-template-columns:1fr}}
-.have div{border:3px solid var(--ink);border-radius:16px;padding:16px;background:#fff;font-weight:600}
-.have b{display:block;font-size:1.1em;margin-bottom:.2em}
-.price-row{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,4vw,48px);align-items:center}
-@media(max-width:860px){.price-row{grid-template-columns:1fr}}
-.tag{background:var(--yellow);color:var(--ink);border-radius:24px;padding:26px;transform:rotate(-1deg);box-shadow:10px 10px 0 var(--ink)}
-.tag .big{font-size:clamp(52px,8vw,96px);font-weight:800;line-height:.9;letter-spacing:-.04em}
-.tag .big small{font-size:.32em;font-weight:700;vertical-align:top;letter-spacing:0;margin-left:.15em}
-.tag .mo{font-size:clamp(22px,2.8vw,32px);font-weight:700}
-.tag ul{list-style:none;margin-top:16px;display:grid;gap:8px;font-weight:600}
-.tag li::before{content:"✓";margin-right:.6em;color:var(--green);font-weight:800}
-details{border-top:3px solid var(--ink);padding:16px 0}
-details:last-of-type{border-bottom:3px solid var(--ink)}
-summary{cursor:pointer;font-weight:700;font-size:1.1em;list-style:none;display:flex;justify-content:space-between;gap:1em}
-summary::after{content:"+";font-weight:800;font-size:1.3em;transition:transform .2s}
-details[open] summary::after{transform:rotate(45deg)}
-details p{margin-top:.5em}
-footer{padding:26px 0 40px;font-size:.85em;font-weight:500;display:flex;flex-wrap:wrap;gap:1em 2em;justify-content:space-between}
-footer a{text-decoration:underline}
-
-</style>
 </head>
 <body>
 
 <header class="wrap">
-  <nav>
-    <a class="brand" href="/"><b>TB</b> Solutions</a>
-    <a href="/" style="font-size:.9em;text-decoration:underline">← all services</a>
+  <nav class="nav">
+    <span style="display:flex;align-items:center;gap:1.4em">
+      <a class="brand" href="/"><b>TB</b> Solutions</a>
+      <a class="back" href="/">← All offers</a>
+    </span>
+    <a class="phone" href="tel:+14848418501"><small>Call Nick</small>(484) 841-8501</a>
   </nav>
 </header>
 
 <section class="hero">
-  <div class="wrap two">
+  <div class="wrap hero-grid">
     <div>
-      <h1>Your website should <em>book jobs</em>, not just sit there.</h1>
+      <div class="eyebrow">The Job-Ready Website</div>
+      <h1>Your website should <mark>book jobs</mark>, not just sit there.</h1>
       <p class="lead">Most trades sites are a digital business card from 2014. The Job-Ready Website is one fast page with one purpose: a homeowner lands on it, and thirty seconds later their quote request is a text on your phone.</p>
-      <a class="btn" href="#start">Get my site started</a>
-      <a class="btn ghost" href="https://www.dnecontracting.com/" target="_blank" rel="noopener">See one live</a>
+      <div class="ctas">
+        <a class="btn primary" href="#start">Get my site started</a>
+        <a class="btn ghost" href="https://www.dnecontracting.com/" target="_blank" rel="noopener">See one live</a>
+      </div>
     </div>
     <div>
-      <figure class="shot">
-        <a class="frame" href="https://www.dnecontracting.com/" target="_blank" rel="noopener" aria-label="Open dnecontracting.com, a Job-Ready Website we built">
-          <img src="/img/work/dne-phone.webp" width="600" height="1200" alt="The D N E Contracting website on a phone: headline, a three-field quote form, and Call and Get Your Free Quote buttons pinned to the bottom of the screen." fetchpriority="high">
+      <div class="device-stage">
+        <a class="device" href="https://www.dnecontracting.com/" target="_blank" rel="noopener" aria-label="Open dnecontracting.com, a Job-Ready Website we built">
+          <span class="ground"></span>
+          <span class="body"><img src="/img/work/dne-phone.webp" width="600" height="1200" alt="The D N E Contracting website on a phone: headline, a three-field quote form, and Call and Get Your Free Quote buttons pinned to the bottom of the screen." fetchpriority="high"></span>
         </a>
-        <figcaption><b>D N E Contracting</b>, Pottstown PA. Built by us, live now.</figcaption>
-      </figure>
+      </div>
+      <p class="device-cap"><b>D N E Contracting</b>, Pottstown PA. Built by us, live now.</p>
     </div>
   </div>
 </section>
 
-<section class="paper">
+<section class="band">
   <div class="wrap">
+    <div class="eyebrow">What's on the page</div>
     <h2>What's on it. Nothing that isn't.</h2>
     <p>No sliders, no stock handshakes, no "welcome to our website." Every block exists to move a homeowner toward calling you.</p>
-    <div class="have">
-      <div><b>Tap-to-call everywhere</b>On a phone, your number is one thumb away at all times. That's where 80% of your visitors are.</div>
-      <div><b>Quote form → your phone</b>Name, issue, town, number. The second they hit send, it's a text in your pocket, not an email you find Tuesday.</div>
-      <div><b>Your services, priced honest</b>What you do, your service area, your dispatch fee policy, stated plainly, the way you'd say it.</div>
-      <div><b>Your reviews, front and center</b>Pulls your real Google rating and reviews onto the page. (12 reviews? Pair it with the <a href="/reviews/">Review Engine</a>.)</div>
-      <div><b>Fast and findable</b>Loads in under a second on a phone, set up for "plumber near me" searches in your towns.</div>
-      <div><b>Works with the receptionist</b>Add <a href="/receptionist/">Never Miss a Call</a> and the site's number gets answered 24/7 and booked automatically.</div>
+    <div class="features">
+      <div><b>Tap-to-call everywhere</b><p>On a phone, your number is one thumb away at all times. That's where 80% of your visitors are.</p></div>
+      <div><b>Quote form → your phone</b><p>Name, issue, town, number. The second they hit send, it's a text in your pocket, not an email you find Tuesday.</p></div>
+      <div><b>Your services, priced honest</b><p>What you do, your service area, your dispatch fee policy, stated plainly, the way you'd say it.</p></div>
+      <div><b>Your reviews, front and center</b><p>Pulls your real Google rating and reviews onto the page. (12 reviews? Pair it with the <a href="/reviews/">Review Engine</a>.)</p></div>
+      <div><b>Fast and findable</b><p>Loads in under a second on a phone, set up for "plumber near me" searches in your towns.</p></div>
+      <div><b>Works with the receptionist</b><p>Add <a href="/receptionist/">Never Miss a Call</a> and the site's number gets answered 24/7 and booked automatically.</p></div>
     </div>
   </div>
 </section>
 
-<section class="paper" id="work" style="padding-top:0">
+<section id="work">
   <div class="wrap">
+    <div class="eyebrow">Real work</div>
     <h2>Here's one we built.</h2>
-    <div class="proof">
-      <a class="browser" href="https://www.dnecontracting.com/" target="_blank" rel="noopener" aria-label="Open dnecontracting.com">
+    <div class="two" style="align-items:start;margin-top:1.4em">
+      <a class="laptop" href="https://www.dnecontracting.com/" target="_blank" rel="noopener" aria-label="Open dnecontracting.com" style="text-decoration:none">
         <div class="bar"><i></i><i></i><i></i><span>dnecontracting.com</span></div>
         <img src="/img/work/dne-desktop.webp" width="1200" height="717" loading="lazy" alt="The D N E Contracting homepage on a laptop: headline on the left, free consultation form on the right.">
       </a>
-      <ul class="built">
-        <li><b>Quote form up top</b>Project, ZIP, phone. Three fields, then it goes straight to the owner.</li>
-        <li><b>Call button pinned on phones</b>Call and Get a Quote stay on screen the whole scroll.</li>
-        <li><b>12 town pages</b>Phoenixville, Exton, West Chester and more, so she shows up where her customers search.</li>
-        <li><b>Client portal</b>Customers log in to see their project and message her.</li>
-      </ul>
+      <div class="features" style="grid-template-columns:1fr;margin-top:0">
+        <div><b>Quote form up top</b><p>Project, ZIP, phone. Three fields, then it goes straight to the owner.</p></div>
+        <div><b>Call button pinned on phones</b><p>Call and Get a Quote stay on screen the whole scroll.</p></div>
+        <div><b>12 town pages</b><p>Phoenixville, Exton, West Chester and more, so she shows up where her customers search.</p></div>
+        <div><b>Client portal</b><p>Customers log in to see their project and message her.</p></div>
+      </div>
     </div>
-    <p style="margin-top:1.6em"><a href="https://www.dnecontracting.com/" target="_blank" rel="noopener" style="font-weight:700">See it live on your phone</a></p>
+    <p class="fine"><a href="https://www.dnecontracting.com/" target="_blank" rel="noopener">See it live on your phone</a></p>
   </div>
 </section>
 
-<section>
-  <div class="wrap price-row">
+<section class="on-dark">
+  <div class="wrap two">
     <div>
-      <h2 style="color:var(--paper)">One price. Live in 5 days.</h2>
+      <div class="eyebrow">Pricing</div>
+      <h2>One price. Live in 5 days.</h2>
       <p>You send me your logo (or just your name), your services, and your towns. I build it, you say "yeah that's us," it goes live on your domain. The care plan keeps it fast, backed up, and updated whenever you text me a change.</p>
       <p style="margin-top:.8em">No contract. Cancel the care plan any time; the site is yours.</p>
+      <a class="btn primary" href="#start" style="margin-top:1.4em">Get my site started</a>
     </div>
     <div class="tag">
-      <div style="font-weight:800">THE JOB-READY WEBSITE</div>
+      <div class="name">The Job-Ready Website</div>
       <div class="big">$497<small>build</small></div>
       <div class="mo">then $47 / month care</div>
       <ul>
@@ -253,28 +200,39 @@ footer a{text-decoration:underline}
   </div>
 </section>
 
-<section class="paper">
+<section>
   <div class="wrap">
+    <div class="eyebrow">Questions</div>
     <h2>What owners ask.</h2>
-    <details><summary>I already have a website.</summary><p>Does it text you a lead within a minute of someone filling the form? If yes, keep it. If it's a brochure, this replaces it, or sits on a new domain next to it and we send your ads there.</p></details>
-    <details><summary>Do I need this if I have the receptionist?</summary><p>They cover different doors. The receptionist catches people who call. The website catches people who search first, and most homeowners under 50 look you up before dialing.</p></details>
-    <details><summary>Why one page?</summary><p>Because a homeowner with water in the basement doesn't browse. One page, one decision: call or request a quote. More pages mostly give people places to leave.</p></details>
-    <details><summary>Who owns the domain and the site?</summary><p>You do, both. If you ever cancel, I hand over everything and it keeps running wherever you host it.</p></details>
-    <details><summary>Can you do more than one page?</summary><p>Yeah. Town pages and service pages for search are an add-on once the main page is earning. Start with the one that books jobs.</p></details>
+    <div class="faq">
+      <details><summary>I already have a website.</summary><p>Does it text you a lead within a minute of someone filling the form? If yes, keep it. If it's a brochure, this replaces it, or sits on a new domain next to it and we send your ads there.</p></details>
+      <details><summary>Do I need this if I have the receptionist?</summary><p>They cover different doors. The receptionist catches people who call. The website catches people who search first, and most homeowners under 50 look you up before dialing.</p></details>
+      <details><summary>Why one page?</summary><p>Because a homeowner with water in the basement doesn't browse. One page, one decision: call or request a quote. More pages mostly give people places to leave.</p></details>
+      <details><summary>Who owns the domain and the site?</summary><p>You do, both. If you ever cancel, I hand over everything and it keeps running wherever you host it.</p></details>
+      <details><summary>Can you do more than one page?</summary><p>Yeah. Town pages and service pages for search are an add-on once the main page is earning. Start with the one that books jobs.</p></details>
+    </div>
   </div>
 </section>
 
-<section id="start">
-  <div class="wrap">
-    <h2 style="color:var(--paper)">Five days from now, it's booking.</h2>
-    <div data-lead="websites" data-cta="Get my site started" data-ask="What do you do, and what towns do you work?" data-theme="dark"></div>
-    <p style="margin-top:1em;font-weight:600">Or call Nick: <a href="tel:+14848418501">(484) 841-8501</a></p>
+<section class="band" id="start">
+  <div class="wrap two">
+    <div>
+      <div class="eyebrow">Get started</div>
+      <h2>Five days from now, it's booking.</h2>
+      <p style="margin-top:1em;font-weight:600">Or call Nick: <a href="tel:+14848418501">(484) 841-8501</a></p>
+    </div>
+    <div class="panel">
+      <div data-lead="websites" data-cta="Get my site started" data-ask="What do you do, and what towns do you work?"></div>
+    </div>
   </div>
-  <footer class="wrap">
-    <span>A <a href="/">TB Solutions</a> service · Nick Byrd, Chester County, PA</span>
-    <span><a href="/sms-terms/">SMS terms</a> &nbsp; <a href="/privacy/">Privacy</a></span>
-  </footer>
 </section>
+
+<footer>
+  <div class="wrap">
+    <span><span class="brand">TB Solutions</span> · Nick Byrd · Pottstown, PA · Serving Chester &amp; Montgomery County · <a href="tel:+14848418501">(484) 841-8501</a></span>
+    <span><a href="/websites/">Websites</a> · <a href="/receptionist/">Phones</a> · <a href="/reviews/">Reviews</a> · <a href="/rank/">Google rank</a> · <a href="/offers/">All offers</a> · <a href="/sms-terms/">SMS terms</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></span>
+  </div>
+</footer>
 
 </body>
 </html>

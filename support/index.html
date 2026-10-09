@@ -5,48 +5,58 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex" />
 <title>Support & Requests — TB Solutions</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%235df2e0'/%3E%3Cstop offset='.55' stop-color='%236f9dff'/%3E%3Cstop offset='1' stop-color='%23b98bff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='15' fill='%23070a12'/%3E%3Ctext x='50%25' y='53%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-weight='900' font-size='30' fill='url(%23g)'%3ETB%3C/text%3E%3C/svg%3E" />
+<meta name="theme-color" content="#10263F">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2310263F'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial Black,Arial' font-weight='900' font-size='28' fill='%23F5B800'%3ETB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@450;500;600;700&display=swap">
+<link rel="stylesheet" href="/site.css">
 <style>
-  :root{--cyan:#5df2e0;--blue:#6f9dff;--violet:#b98bff;--text:#eef1ff;--muted:#96a0c4;--line:rgba(150,190,255,.18);--line2:rgba(150,195,255,.36);--grad:linear-gradient(120deg,var(--cyan),var(--blue) 55%,var(--violet))}
-  *{box-sizing:border-box}
-  body{margin:0;font-family:"Space Grotesk",Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--text);min-height:100vh;
-    background:radial-gradient(circle at 12% -8%,rgba(94,242,224,.12),transparent 36%),radial-gradient(circle at 88% 4%,rgba(185,139,255,.12),transparent 38%),linear-gradient(180deg,#05070f,#03040a);
-    display:flex;align-items:flex-start;justify-content:center;padding:34px 16px}
-  .wrap{width:min(600px,100%)}
-  .brand{font-weight:900;font-size:20px;letter-spacing:-.02em;margin-bottom:18px}
-  .brand span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .eyebrow{color:var(--cyan);text-transform:uppercase;letter-spacing:.2em;font-size:12px;font-weight:800}
-  h1{font-size:clamp(26px,5vw,38px);line-height:1.05;letter-spacing:-.02em;margin:10px 0 8px}
-  .lead{color:var(--muted);font-size:16px;margin:0 0 22px}
-  .card{background:linear-gradient(160deg,rgba(150,190,255,.07),rgba(150,190,255,.02));border:1px solid var(--line2);border-radius:22px;padding:24px}
-  label{display:block;margin:14px 0 0;font-size:13px;color:var(--muted);font-weight:600}
-  label .req{color:var(--violet)}
-  input,select,textarea{width:100%;background:rgba(3,4,10,.5);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;color:var(--text);font:inherit;font-size:15px;margin-top:6px}
-  textarea{min-height:110px;resize:vertical}
-  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(94,242,224,.14)}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  option{color:#03040a}
-  .types{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-  .types label{margin:0;cursor:pointer}
-  .types input{display:none}
-  .types span{display:inline-block;border:1px solid var(--line2);border-radius:999px;padding:8px 13px;font-size:13px;font-weight:700;color:var(--muted)}
-  .types input:checked + span{background:var(--grad);color:#03040a;border:0}
-  button{width:100%;margin-top:20px;border:0;background:var(--grad);color:#03040a;border-radius:999px;padding:15px;font:inherit;font-weight:900;font-size:16px;cursor:pointer}
-  button:disabled{opacity:.6}
-  .fine{color:var(--muted);font-size:12px;margin-top:12px;text-align:center}
-  .ok{display:none;text-align:center;padding:20px 6px}
-  .ok.show{display:block}
-  .tick{width:66px;height:66px;border-radius:50%;background:var(--grad);color:#03040a;display:grid;place-items:center;font-size:32px;font-weight:900;margin:0 auto 16px}
-  @media(max-width:560px){.row{grid-template-columns:1fr}}
+/* support form, unique to this page */
+.nav .back{white-space:nowrap}
+.form-wrap{max-width:640px}
+.panel label{display:block;margin:16px 0 0;font-size:.85rem;color:var(--ink-2);font-weight:600}
+.panel label .req{color:var(--orange)}
+.panel input,.panel select,.panel textarea{width:100%;background:var(--white);border:1.5px solid var(--line-2);border-radius:var(--r);padding:12px 14px;color:var(--ink);font:inherit;font-size:1rem;font-weight:500;margin-top:6px}
+.panel textarea{min-height:120px;resize:vertical}
+.panel input:focus,.panel select:focus,.panel textarea:focus{outline:3px solid var(--orange);outline-offset:1px;border-color:var(--ink)}
+.panel input[type=file]{padding:9px 12px;font-size:.92rem}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.row{grid-template-columns:1fr}}
+.types{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.types label{margin:0;cursor:pointer}
+.types input{display:none}
+.types span{display:inline-block;background:var(--white);border:1px solid var(--line-2);border-radius:var(--r);padding:8px 13px;font-size:.9rem;font-weight:600;color:var(--ink-2);transition:background .15s,color .15s}
+.types span:hover{border-color:var(--ink)}
+.types input:checked + span{background:var(--navy);color:var(--white);border-color:var(--navy)}
+.types input:focus-visible + span{outline:3px solid var(--orange);outline-offset:2px}
+.panel button{width:100%;margin-top:22px}
+.panel button:disabled{opacity:.6;cursor:default;transform:none}
+.panel .fine{text-align:center;margin-top:14px;max-width:none}
+.ok{display:none;text-align:center;padding:20px 6px}
+.ok.show{display:block}
+.ok .lead{margin:0 auto}
+.tick{width:66px;height:66px;border-radius:50%;background:var(--yellow);color:var(--ink);display:grid;place-items:center;font-family:var(--display);font-size:32px;font-weight:800;margin:0 auto 16px}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="brand">TB <span>Solutions</span></div>
-  <div class="eyebrow">Support &amp; requests</div>
-  <h1>Need something changed or fixed?</h1>
-  <p class="lead">Report a problem, request a change, or share an idea for your website. I'll get a notification the moment you submit.</p>
-  <div class="card">
+
+<header class="wrap">
+  <nav class="nav">
+    <span style="display:flex;align-items:center;gap:1.4em">
+      <a class="brand" href="/"><b>TB</b> Solutions</a>
+      <a class="back" href="/">← Home</a>
+    </span>
+    <a class="phone" href="tel:+14848418501"><small>Call Nick</small>(484) 841-8501</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap form-wrap">
+    <div class="eyebrow">Support &amp; requests</div>
+    <h1>Need something <mark>changed or fixed</mark>?</h1>
+    <p class="lead">Report a problem, request a change, or share an idea for your website. I'll get a notification the moment you submit.</p>
+    <div class="panel">
     <form id="f" action="https://formsubmit.co/nikbyrd28@gmail.com" method="POST">
       <div class="row">
         <div><label>Your name <span class="req">*</span></label><input name="name" required autocomplete="name"></div>
@@ -76,16 +86,25 @@
       <input type="hidden" name="_subject" value="New support ticket: TB Solutions">
       <input type="hidden" name="_template" value="table">
       <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
-      <button type="submit" id="btn">Submit request →</button>
+      <button type="submit" id="btn" class="btn primary">Submit request →</button>
       <p class="fine">You'll get a reply as soon as it's reviewed. Urgent site-down issues get bumped to the top.</p>
     </form>
     <div class="ok" id="ok">
       <div class="tick">✓</div>
-      <h1 style="font-size:26px">Request received!</h1>
+      <h2 style="font-size:clamp(26px,3vw,36px)">Request received!</h2>
       <p class="lead">Thanks. It's logged and I've been notified. You'll hear back soon, and faster if you marked it urgent.</p>
     </div>
+    </div>
   </div>
-</div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span><span class="brand">TB Solutions</span> · Nick Byrd · Pottstown, PA · Serving Chester &amp; Montgomery County · <a href="tel:+14848418501">(484) 841-8501</a></span>
+    <span><a href="/websites/">Websites</a> · <a href="/receptionist/">Phones</a> · <a href="/reviews/">Reviews</a> · <a href="/rank/">Google rank</a> · <a href="/offers/">All offers</a> · <a href="/sms-terms/">SMS terms</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></span>
+  </div>
+</footer>
+
 <script>
 var N8N='https://n8n-fouz.srv1786777.hstgr.cloud/webhook/12eeac52-a592-4988-b61a-2c2a16baa388';
 var f=document.getElementById('f');

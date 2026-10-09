@@ -6,12 +6,12 @@
 <title>Review Engine — Google Reviews on Autopilot</title>
 <link rel="canonical" href="https://tbsol.net/reviews/">
 <meta name="description" content="After every job, your customer gets one friendly text with your Google review link. $97/month, no setup fee. For plumbers, HVAC and electricians.">
-<meta name="theme-color" content="#1F9D55">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231F9D55'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial Black,Arial' font-weight='900' font-size='28' fill='%23FFF8E1'%3E★%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#10263F">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2310263F'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial Black,Arial' font-weight='900' font-size='28' fill='%23F5B800'%3ETB%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap">
-<link rel="stylesheet" media="print" onload="this.media='all';this.onload=null" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap"></noscript>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@450;500;600;700&display=swap">
+<link rel="stylesheet" href="/site.css">
 <script defer src="/track.js"></script>
 <script defer src="/lead.js"></script>
 <script type="application/ld+json">
@@ -105,82 +105,41 @@
 }
 </script>
 <style>
-:root{--green:#1F9D55;--green-deep:#157A40;--ink:#14110F;--paper:#FFF8E1;--yellow:#FFD23F;--blue:#1B4FD8;--red:#D7263D;--max:1080px;--gutter:clamp(16px,4vw,40px)}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:"Bricolage Grotesque",system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:clamp(17px,1.6vw,20px);line-height:1.45}
-.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gutter)}
-h1,h2,h3{font-weight:800;line-height:.95;letter-spacing:-.02em;font-variation-settings:"opsz" 96,"wdth" 92}
-h2{font-size:clamp(32px,5.5vw,58px);margin-bottom:.5em}
-p{max-width:34em}
-a{color:inherit}
-.btn{display:inline-flex;align-items:center;gap:.5em;background:var(--ink);color:var(--paper);text-decoration:none;font-weight:700;padding:.85em 1.3em;border-radius:999px;border:3px solid var(--ink);transition:transform .15s}
-.btn:hover{transform:translateY(-2px)}
-.btn.green{background:var(--green);border-color:var(--green);color:#fff}
-.btn.ghost{background:transparent;color:var(--ink)}
-a:focus-visible{outline:4px solid var(--blue);outline-offset:3px}
-nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0;font-weight:700}
-nav .brand{text-decoration:none}
-nav .brand b{background:var(--ink);color:var(--yellow);padding:.1em .45em;border-radius:6px;margin-right:.4em}
-.hero{padding:clamp(28px,6vw,72px) 0 clamp(40px,6vw,80px)}
-.two{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,5vw,64px);align-items:center}
-@media(max-width:860px){.two{grid-template-columns:1fr}}
-.hero h1{font-size:clamp(40px,7.5vw,84px);font-variation-settings:"opsz" 96,"wdth" 85}
-.hero .lead{font-size:clamp(19px,2vw,24px);font-weight:500;margin:.9em 0 1.2em;max-width:26em}
-/* duel scoreboard */
-.duel{background:#fff;border:3px solid var(--ink);border-radius:24px;box-shadow:12px 12px 0 var(--ink);padding:22px;max-width:400px;margin:0 auto}
-.duel .row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:12px 0}
-.duel .row+.row{border-top:3px solid #ECEAE4}
-.duel .who{font-weight:800;font-size:1.05em}
-.duel .who small{display:block;font-weight:600;opacity:.65;font-size:.8em}
-.duel .n{font-weight:800;font-size:2.2em;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
-.duel .stars{color:#E8A013;letter-spacing:.05em}
+/* review scoreboard + sample text */
+.duel{background:var(--white);border:1px solid var(--line-2);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);padding:22px 24px;max-width:400px;margin:0 auto}
+.duel .row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:14px 0}
+.duel .row+.row{border-top:1px solid var(--line)}
+.duel .who{font-family:var(--display);font-weight:700;font-size:1.25rem;line-height:1.1}
+.duel .who small{display:block;font-family:var(--text);font-weight:500;color:var(--mute);font-size:.8rem;margin-top:.2em}
+.duel .n{font-family:var(--display);font-weight:800;font-size:2.4rem;font-variant-numeric:tabular-nums;line-height:1;text-align:right}
+.duel .stars{color:var(--yellow-2);letter-spacing:.05em;text-align:right;font-size:.9rem}
 .duel .you .n{color:var(--green)}
-.duel .cap{text-align:center;font-weight:700;padding-top:14px;border-top:3px solid var(--ink);margin-top:4px}
+.duel .cap{text-align:center;font-weight:600;padding-top:14px;border-top:1px solid var(--line-2);margin-top:4px;font-size:.95rem}
 .duel .cap b{color:var(--green)}
-section{padding:clamp(48px,7vw,96px) 0}
-.ink{background:var(--ink);color:var(--paper)}
-.ink h2{color:var(--yellow)}
-.steps{list-style:none;counter-reset:n;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,3vw,32px);margin-top:1.2em}
-@media(max-width:860px){.steps{grid-template-columns:1fr}}
-.steps li{counter-increment:n;border-top:3px solid var(--paper);padding-top:14px}
-.steps li::before{content:counter(n);font-size:2.4em;font-weight:800;color:var(--green);display:block;line-height:1}
-.steps h3{font-size:1.2em;margin:.3em 0 .25em}
-.sample{background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:18px;padding:16px;max-width:420px;font-size:.95em;margin-top:1.4em}
-.sample b{display:block;margin-bottom:.3em;font-size:.85em;opacity:.6}
-.price-row{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,4vw,48px);align-items:center}
-@media(max-width:860px){.price-row{grid-template-columns:1fr}}
-.tag{background:var(--green);color:#fff;border-radius:24px;padding:26px;transform:rotate(1deg);box-shadow:10px 10px 0 var(--ink)}
-.tag .big{font-size:clamp(52px,8vw,96px);font-weight:800;line-height:.9;letter-spacing:-.04em}
-.tag .big small{font-size:.3em;font-weight:700;vertical-align:top}
-.tag ul{list-style:none;margin-top:16px;display:grid;gap:8px;font-weight:600}
-.tag li::before{content:"✓";margin-right:.6em;color:var(--yellow);font-weight:800}
-details{border-top:3px solid var(--ink);padding:16px 0}
-details:last-of-type{border-bottom:3px solid var(--ink)}
-summary{cursor:pointer;font-weight:700;font-size:1.1em;list-style:none;display:flex;justify-content:space-between;gap:1em}
-summary::after{content:"+";font-weight:800;font-size:1.3em;transition:transform .2s}
-details[open] summary::after{transform:rotate(45deg)}
-details p{margin-top:.5em}
-footer{padding:26px 0 40px;font-size:.85em;font-weight:500;display:flex;flex-wrap:wrap;gap:1em 2em;justify-content:space-between}
-footer a{text-decoration:underline}
+.sample{background:var(--white);color:var(--ink);border:1px solid var(--line-2);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:18px 22px;max-width:none;font-size:1em;margin-top:2.2em;line-height:1.45}
+.sample b{display:block;margin-bottom:.5em;font-family:var(--display);font-size:.8rem;letter-spacing:.1em;color:var(--mute)}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important}}
 </style>
 </head>
 <body>
 
 <header class="wrap">
-  <nav>
-    <a class="brand" href="/"><b>TB</b> Solutions</a>
-    <a href="/" style="font-size:.9em;text-decoration:underline">← all services</a>
+  <nav class="nav">
+    <span style="display:flex;align-items:center;gap:1.4em">
+      <a class="brand" href="/"><b>TB</b> Solutions</a>
+      <a class="back" href="/">← All offers</a>
+    </span>
+    <a class="phone" href="tel:+14848418501"><small>Call Nick</small>(484) 841-8501</a>
   </nav>
 </header>
 
 <section class="hero">
-  <div class="wrap two">
+  <div class="wrap hero-grid">
     <div>
-      <h1>You do better work. He gets the call.</h1>
+      <div class="eyebrow">The Review Engine</div>
+      <h1>You do better work. <mark>He gets the call.</mark></h1>
       <p class="lead">When a homeowner searches "plumber near me," they don't call the best plumber. They call the one with 200 reviews. The Review Engine asks every happy customer for you: one friendly text, right when the job's done.</p>
-      <a class="btn green" href="#start">Start getting reviews</a>
+      <a class="btn primary" href="#start">Start getting reviews</a>
     </div>
     <div>
       <div class="duel" aria-hidden="true">
@@ -198,11 +157,12 @@ footer a{text-decoration:underline}
   </div>
 </section>
 
-<section class="ink">
+<section class="band">
   <div class="wrap">
+    <div class="eyebrow">How it works</div>
     <h2>How it works. You do nothing.</h2>
     <ol class="steps">
-      <li><h3>Job gets done</h3><p>You mark it complete. If you run our <a href="/receptionist/" style="color:var(--yellow)">receptionist</a>, it already knows.</p></li>
+      <li><h3>Job gets done</h3><p>You mark it complete. If you run our <a href="/receptionist/">receptionist</a>, it already knows.</p></li>
       <li><h3>One friendly text</h3><p>Your customer gets a short thank-you from your shop with your Google review link. One tap, they're on your review page.</p></li>
       <li><h3>Reviews stack up</h3><p>Replies come back to you, so problems reach your phone fast. The happy ones land on Google where the next customer sees them.</p></li>
     </ol>
@@ -213,17 +173,19 @@ footer a{text-decoration:underline}
   </div>
 </section>
 
-<section>
-  <div class="wrap price-row">
+<section class="on-dark">
+  <div class="wrap two">
     <div>
+      <div class="eyebrow">Pricing</div>
       <h2>Less than one lost job a year.</h2>
       <p>Going from 12 reviews to 60 changes which name gets tapped on Google Maps. If better placement wins you one extra $350 job a quarter, the engine pays for itself three times over.</p>
       <p style="margin-top:.8em">Setup is a 10-minute call: your Google review link, your customer list flow, your wording. Texts go only to customers who've agreed to hear from you. We handle the opt-in language so you're compliant.</p>
+      <a class="btn primary" href="#start" style="margin-top:1.4em">Start getting reviews</a>
     </div>
     <div class="tag">
-      <div style="font-weight:800">THE REVIEW ENGINE</div>
+      <div class="name">The Review Engine</div>
       <div class="big">$97<small>/mo</small></div>
-      <div style="font-weight:700;font-size:1.2em">No setup fee · no contract</div>
+      <div class="mo">No setup fee · no contract</div>
       <ul>
         <li>Automatic review ask after every job</li>
         <li>Written in your shop's voice</li>
@@ -235,28 +197,39 @@ footer a{text-decoration:underline}
   </div>
 </section>
 
-<section style="padding-top:0">
+<section>
   <div class="wrap">
+    <div class="eyebrow">Questions</div>
     <h2>What owners ask.</h2>
+    <div class="faq">
     <details><summary>Is this allowed? Buying reviews gets you banned.</summary><p>Buying reviews does. Asking your own customers is exactly what Google wants. We ask every customer the same way, no cherry-picking, no incentives, which is what keeps it clean.</p></details>
     <details><summary>What about unhappy customers?</summary><p>They get the same ask, but because it's a text conversation with your shop, most of them reply to you instead of going straight to Google. You hear about the problem while you can still fix it.</p></details>
     <details><summary>I feel weird asking.</summary><p>That's why you're at 12 reviews. The text does the asking so you never have to. Customers who just got their water back actually like being asked.</p></details>
     <details><summary>Where do the numbers show up?</summary><p>A short text to you every Friday: how many asked, how many clicked, your new review count and rating. No dashboard to log into unless you want one.</p></details>
+    </div>
   </div>
 </section>
 
-<section class="ink" id="start">
-  <div class="wrap">
-    <h2>Be the name with the reviews.</h2>
-    <div data-lead="reviews" data-cta="Start getting reviews" data-ask="What's your shop, and how many jobs a week?" data-theme="dark"></div>
-    <p style="margin-top:1em;font-weight:600">Or call Nick: <a href="tel:+14848418501">(484) 841-8501</a></p>
-    <p style="margin-top:.6em"><a href="/receptionist/" style="color:var(--paper)">Pair it with the receptionist</a></p>
+<section class="band" id="start">
+  <div class="wrap two">
+    <div>
+      <div class="eyebrow">Get started</div>
+      <h2>Be the name with the reviews.</h2>
+      <p style="margin-top:1em;font-weight:600">Or call Nick: <a href="tel:+14848418501">(484) 841-8501</a></p>
+      <p class="fine"><a href="/receptionist/">Pair it with the receptionist</a></p>
+    </div>
+    <div class="panel">
+      <div data-lead="reviews" data-cta="Start getting reviews" data-ask="What's your shop, and how many jobs a week?"></div>
+    </div>
   </div>
-  <footer class="wrap" style="color:var(--paper)">
-    <span>A <a href="/">TB Solutions</a> service · Nick Byrd, Chester County, PA</span>
-    <span><a href="/sms-terms/">SMS terms</a> &nbsp; <a href="/privacy/">Privacy</a></span>
-  </footer>
 </section>
+
+<footer>
+  <div class="wrap">
+    <span><span class="brand">TB Solutions</span> · Nick Byrd · Pottstown, PA · Serving Chester &amp; Montgomery County · <a href="tel:+14848418501">(484) 841-8501</a></span>
+    <span><a href="/websites/">Websites</a> · <a href="/receptionist/">Phones</a> · <a href="/reviews/">Reviews</a> · <a href="/rank/">Google rank</a> · <a href="/offers/">All offers</a> · <a href="/sms-terms/">SMS terms</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></span>
+  </div>
+</footer>
 
 <script>
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;

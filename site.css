@@ -165,6 +165,7 @@ section{padding:clamp(56px,7vw,104px) 0}
 .panel{background:var(--white);border:1px solid var(--line-2);border-radius:var(--r-lg);padding:clamp(18px,2.4vw,26px);box-shadow:var(--shadow)}
 .on-dark .panel{color:var(--ink)}
 .on-dark .panel .fine{color:var(--mute)!important}
+.on-dark .tag p,.on-dark .tag .fine{color:var(--mute)}
 .panel .ptitle{font-family:var(--display);font-weight:700;font-size:1.25rem;margin-bottom:.6em}
 
 /* footer */
