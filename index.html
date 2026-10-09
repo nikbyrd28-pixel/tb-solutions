@@ -158,6 +158,18 @@ nav .links a:hover{border-bottom-color:var(--ink)}
 @keyframes swap{from{transform:translateY(-.5em) rotate(-2deg);opacity:0}to{transform:none;opacity:1}}
 .hero p.lead{font-size:clamp(19px,2vw,24px);font-weight:500;margin:1em 0 1.2em;max-width:28em}
 .hero small{display:block;font-weight:600;opacity:.75;margin-top:.9em}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:40px;align-items:center}
+.hero-shot{display:none}
+@media(min-width:960px){
+  .hero-grid{grid-template-columns:1fr 250px}
+  .hero-shot{display:block}
+  .hero h1{font-size:clamp(42px,6.4vw,84px)}
+}
+.hero-shot a{display:block;background:var(--ink);border-radius:34px;padding:9px;transform:rotate(3deg);box-shadow:10px 10px 0 rgba(20,17,15,.25);transition:transform .2s}
+.hero-shot a:hover{transform:rotate(0) translateY(-4px)}
+.hero-shot img{display:block;width:100%;height:auto;border-radius:26px}
+.hero-shot figcaption{margin-top:16px;font-size:.8em;font-weight:700;text-align:center}
+@media (prefers-reduced-motion:reduce){.hero-shot a{transform:none}}
 
 .pick{background:var(--paper);padding:clamp(48px,7vw,96px) 0}
 .pick h2{max-width:14em}
@@ -179,7 +191,8 @@ nav .links a:hover{border-bottom-color:var(--ink)}
 .card.pln{border-top:10px solid var(--copper)}
 .card.rank{border-top:10px solid var(--red)}
 .card.lead-en{border-top:10px solid var(--red)}
-.card.featured{grid-column:1/-1}
+.card.featured,.card.rev{grid-column:1/-1}
+@media(min-width:861px){.card.rev .fix{max-width:40em}}
 @media(min-width:861px){.card.featured .fix{max-width:40em}}
 
 .bundle{padding:clamp(48px,7vw,96px) 0;background:var(--ink);color:var(--paper)}
@@ -229,12 +242,20 @@ footer a{color:var(--yellow)}
 </header>
 
 <section class="hero">
-  <div class="wrap">
+  <div class="wrap hero-grid">
+    <div>
     <h1>The front office for <span class="trade"><span id="trade">plumbers.</span></span></h1>
-    <p class="lead">You do the work. We answer the phone, book the jobs, build the website, and keep the reviews coming — so the next customer calls you, not the other guy.</p>
+    <p class="lead">You do the work. We answer the phone, book the jobs, build the website, and keep the reviews coming, so the next customer calls you, not the other guy.</p>
     <a class="btn" href="tel:+16109986138">Hear it: call the demo line</a>
     <a class="btn ghost" href="#pick">See what we fix</a>
     <small>Built in Chester County, PA. Works anywhere in the US.</small>
+    </div>
+    <figure class="hero-shot">
+      <a href="/websites/#work" aria-label="See the D N E Contracting website we built">
+        <img src="/img/work/dne-phone.webp" width="600" height="1200" alt="A website we built for D N E Contracting, shown on a phone, with a quote form and pinned call buttons." fetchpriority="high">
+      </a>
+      <figcaption>Real build: D N E Contracting</figcaption>
+    </figure>
   </div>
 </section>
 
@@ -244,37 +265,37 @@ footer a{color:var(--yellow)}
     <div class="cards" id="cards">
       <a class="card web featured" href="/websites/">
         <span class="pain"><q>My website doesn't book me any jobs.</q></span>
-        <span class="fix">The Job-Ready Website — one fast page built to turn a visitor into a booked call: tap-to-call, an instant quote form that texts you, your services and towns, your real Google reviews. Live in 5 days, on your domain.</span>
+        <span class="fix">The Job-Ready Website. One fast page built to turn a visitor into a booked call: tap-to-call, an instant quote form that texts you, your services and towns, your real Google reviews. Live in 5 days, on your domain.</span>
         <span class="price">$497 build · $47/mo care <small>· you own the site and the domain</small></span>
         <span class="go">Fix my website <span>→</span></span>
       </a>
       <a class="card lead-en" href="/leads/">
         <span class="pain"><q>Nobody's calling in the first place.</q></span>
-        <span class="fix">The Lead Engine — we put you in Google's pay-per-lead program (the "Google Guaranteed" spots above everything) and run it: budget, bids, junk-lead disputes. You pay Google only when a real homeowner calls.</span>
+        <span class="fix">The Lead Engine. We put you in Google's pay-per-lead program (the "Google Guaranteed" spots above everything) and run it: budget, bids, junk-lead disputes. You pay Google only when a real homeowner calls.</span>
         <span class="price">$497 setup · $147/mo <small>· lead spend goes to Google, never through us</small></span>
         <span class="go">Make my phone ring <span>→</span></span>
       </a>
       <a class="card rx" href="/receptionist/">
         <span class="pain"><q>My phone goes to voicemail when I'm on a job.</q></span>
-        <span class="fix">Never Miss a Call — an AI receptionist that picks up 24/7, triages the job, books a real arrival window, and texts you the details. Emergencies ring your cell.</span>
+        <span class="fix">Never Miss a Call. An AI receptionist that picks up 24/7, triages the job, books a real arrival window, and texts you the details. Emergencies ring your cell.</span>
         <span class="price">$497 setup · $197/mo <small>· first 5 shops this month: $297 setup</small></span>
         <span class="go">Fix my phones <span>→</span></span>
       </a>
       <a class="card pln" href="/planner/">
         <span class="pain"><q>Remodel leads say "just looking" and vanish.</q></span>
-        <span class="fix">The Remodel Planner — an interactive planner on your site: homeowners pick the project, upload blueprints or photos, and you get a lead with scope and budget attached.</span>
+        <span class="fix">The Remodel Planner. An interactive planner on your site: homeowners pick the project, upload blueprints or photos, and you get a lead with scope and budget attached.</span>
         <span class="price">$697 build · $67/mo <small>· or $297 added to a website</small></span>
         <span class="go">Fix my remodel leads <span>→</span></span>
       </a>
       <a class="card rank" href="/rank/">
         <span class="pain"><q>I'm not on the map when people search.</q></span>
-        <span class="fix">The Google Rank Fix — a free written audit of the 17 things Google grades you on (reviews, listings, hours, Apple Maps, your profile, your site), then every broken one fixed in 14 days while you watch the list tick off.</span>
+        <span class="fix">The Google Rank Fix. A free written audit of the 17 things Google grades you on (reviews, listings, hours, Apple Maps, your profile, your site), then every broken one fixed in 14 days while you watch the list tick off.</span>
         <span class="price">$697 fix · $97/mo <small>· free audit first, keep it either way</small></span>
         <span class="go">Get me on the map <span>→</span></span>
       </a>
       <a class="card rev" href="/reviews/">
         <span class="pain"><q>The other guy has 200 reviews. I have 12.</q></span>
-        <span class="fix">The Review Engine — after every job, your customer gets one friendly text with your Google review link. You find out about problems fast instead of in public.</span>
+        <span class="fix">The Review Engine. After every job, your customer gets one friendly text with your Google review link. You find out about problems fast instead of in public.</span>
         <span class="price">$97/mo · no setup fee</span>
         <span class="go">Fix my reviews <span>→</span></span>
       </a>
@@ -286,7 +307,7 @@ footer a{color:var(--yellow)}
   <div class="wrap row">
     <div>
       <h2>Or take the whole front office.</h2>
-      <p>Phones, website, and reviews working as one system: the receptionist books the job, the website backs you up, the review ask goes out when the job's done. One person to text when you need anything — Nick.</p>
+      <p>Phones, website, and reviews working as one system: the receptionist books the job, the website backs you up, the review ask goes out when the job's done. One person to text when you need anything: Nick.</p>
       <ul>
         <li>Never Miss a Call receptionist, live 24/7</li>
         <li>Job-Ready Website on your domain</li>
@@ -323,7 +344,7 @@ footer a{color:var(--yellow)}
     <p class="lead" style="font-weight:500">Dial (610) 998-6138 and say "my water heater is leaking." That's what answers your phone when you're under a sink.</p>
     <div class="ctas">
       <a class="btn" href="tel:+16109986138">Call the demo line</a>
-      <a class="btn ghost" href="sms:+14848418501?&body=Hey%20Nick%2C%20saw%20tbsol.net.%20Got%2010%20min%3F">Text Nick — (484) 841-8501</a>
+      <a class="btn ghost" href="sms:+14848418501?&body=Hey%20Nick%2C%20saw%20tbsol.net.%20Got%2010%20min%3F">Text Nick (484) 841-8501</a>
     </div>
   </div>
 </section>

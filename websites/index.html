@@ -126,20 +126,23 @@ nav .brand b{background:var(--yellow);color:var(--ink);padding:.1em .45em;border
 .hero h1{font-size:clamp(40px,7.5vw,84px);font-variation-settings:"opsz" 96,"wdth" 85}
 .hero h1 em{font-style:normal;background:var(--yellow);color:var(--ink);padding:0 .12em;border-radius:.12em;box-shadow:0 .1em 0 var(--ink)}
 .hero .lead{font-size:clamp(19px,2vw,24px);font-weight:500;margin:.9em 0 1.2em;max-width:26em}
-/* phone demo */
-.phone{background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:30px;box-shadow:12px 12px 0 var(--ink);max-width:360px;margin:0 auto;overflow:hidden;font-size:15px}
-.phone .site{padding:16px}
-.phone .site .nm{font-weight:800;font-size:1.15em}
-.phone .site .call{display:block;background:var(--green);color:#fff;font-weight:800;text-align:center;border-radius:12px;padding:.7em;margin:10px 0;text-decoration:none}
-.phone .form{border:2px solid #ECEAE4;border-radius:12px;padding:12px;display:grid;gap:8px}
-.phone .form b{font-size:.95em}
-.phone .fld{border:2px solid #ECEAE4;border-radius:8px;padding:.5em .6em;min-height:2.1em;color:#333;background:#FAFAF7;white-space:nowrap;overflow:hidden}
-.phone .fld .caret{display:inline-block;width:2px;height:1em;background:var(--ink);vertical-align:-.15em;animation:blink 1s steps(1) infinite}
-@keyframes blink{50%{opacity:0}}
-.phone .send{background:var(--blue);color:#fff;font-weight:800;text-align:center;border-radius:8px;padding:.6em;opacity:.95}
-.toast{position:relative;margin:-10px 12px 14px;background:var(--ink);color:var(--yellow);font-weight:700;border-radius:12px;padding:.7em .9em;transform:translateY(16px);opacity:0;font-size:.95em}
-.toast.show{animation:pop .45s cubic-bezier(.2,1.5,.4,1) forwards}
-@keyframes pop{to{transform:none;opacity:1}}
+/* real work */
+.shot{max-width:330px;margin:0 auto}
+.shot .frame{display:block;background:var(--ink);border-radius:38px;padding:10px;box-shadow:12px 12px 0 rgba(0,0,0,.28);transform:rotate(2deg);transition:transform .2s}
+.shot .frame:hover{transform:rotate(0) translateY(-4px)}
+.shot img{display:block;width:100%;height:auto;border-radius:28px}
+.shot figcaption{margin-top:18px;font-size:.9em;font-weight:600;text-align:center}
+.proof{display:grid;grid-template-columns:1.45fr 1fr;gap:clamp(24px,4vw,56px);align-items:center;margin-top:1.4em}
+@media(max-width:860px){.proof{grid-template-columns:1fr}}
+.browser{border:3px solid var(--ink);border-radius:16px;overflow:hidden;background:#fff;box-shadow:10px 10px 0 var(--ink)}
+.browser .bar{display:flex;gap:6px;align-items:center;padding:9px 12px;border-bottom:3px solid var(--ink);background:var(--paper);font-size:.8em;font-weight:700}
+.browser .bar i{width:10px;height:10px;border-radius:50%;border:2px solid var(--ink)}
+.browser .bar span{margin-left:8px}
+.browser img{display:block;width:100%;height:auto}
+.built{list-style:none;display:grid;gap:14px}
+.built li{border-left:6px solid var(--blue);padding:2px 0 2px 14px;font-weight:600}
+.built li b{display:block;font-size:1.15em}
+@media (prefers-reduced-motion:reduce){.shot .frame{transform:none}}
 section{padding:clamp(48px,7vw,96px) 0}
 .paper{background:var(--paper);color:var(--ink)}
 .have{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:1.2em}
@@ -162,7 +165,7 @@ details[open] summary::after{transform:rotate(45deg)}
 details p{margin-top:.5em}
 footer{padding:26px 0 40px;font-size:.85em;font-weight:500;display:flex;flex-wrap:wrap;gap:1em 2em;justify-content:space-between}
 footer a{text-decoration:underline}
-@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important}.toast{opacity:1;transform:none}}
+
 </style>
 </head>
 <body>
@@ -179,25 +182,16 @@ footer a{text-decoration:underline}
     <div>
       <h1>Your website should <em>book jobs</em>, not just sit there.</h1>
       <p class="lead">Most trades sites are a digital business card from 2014. The Job-Ready Website is one fast page with one purpose: a homeowner lands on it, and thirty seconds later their quote request is a text on your phone.</p>
-      <a class="btn" href="sms:+14848418501?&body=Hey%20Nick%2C%20I%20need%20the%20job-ready%20website.%20Got%2010%20min%3F">Text Nick — get yours started</a>
+      <a class="btn" href="sms:+14848418501?&body=Hey%20Nick%2C%20I%20need%20the%20job-ready%20website.%20Got%2010%20min%3F">Text Nick to start</a>
       <a class="btn ghost" href="https://www.dnecontracting.com/" target="_blank" rel="noopener">See one live</a>
     </div>
     <div>
-      <div class="phone" aria-hidden="true">
-        <div class="site">
-          <div class="nm">Keystone Plumbing</div>
-          <div style="font-size:.9em;opacity:.7">Serving the 422 corridor · Licensed &amp; insured</div>
-          <span class="call">📞 Tap to call now</span>
-          <div class="form">
-            <b>Get a quote in 2 hours</b>
-            <div class="fld" id="f1"></div>
-            <div class="fld" id="f2"></div>
-            <div class="fld" id="f3"></div>
-            <div class="send">Send my quote request</div>
-          </div>
-        </div>
-        <div class="toast" id="toast">📲 NEW LEAD — Dave K, water heater, 19460. Texted to you.</div>
-      </div>
+      <figure class="shot">
+        <a class="frame" href="https://www.dnecontracting.com/" target="_blank" rel="noopener" aria-label="Open dnecontracting.com, a Job-Ready Website we built">
+          <img src="/img/work/dne-phone.webp" width="600" height="1200" alt="The D N E Contracting website on a phone: headline, a three-field quote form, and Call and Get Your Free Quote buttons pinned to the bottom of the screen." fetchpriority="high">
+        </a>
+        <figcaption><b>D N E Contracting</b>, Pottstown PA. Built by us, live now.</figcaption>
+      </figure>
     </div>
   </div>
 </section>
@@ -208,12 +202,31 @@ footer a{text-decoration:underline}
     <p>No sliders, no stock handshakes, no "welcome to our website." Every block exists to move a homeowner toward calling you.</p>
     <div class="have">
       <div><b>Tap-to-call everywhere</b>On a phone, your number is one thumb away at all times. That's where 80% of your visitors are.</div>
-      <div><b>Quote form → your phone</b>Name, issue, town, number. The second they hit send, it's a text in your pocket — not an email you find Tuesday.</div>
-      <div><b>Your services, priced honest</b>What you do, your service area, your dispatch fee policy — stated plainly, the way you'd say it.</div>
+      <div><b>Quote form → your phone</b>Name, issue, town, number. The second they hit send, it's a text in your pocket, not an email you find Tuesday.</div>
+      <div><b>Your services, priced honest</b>What you do, your service area, your dispatch fee policy, stated plainly, the way you'd say it.</div>
       <div><b>Your reviews, front and center</b>Pulls your real Google rating and reviews onto the page. (12 reviews? Pair it with the <a href="/reviews/">Review Engine</a>.)</div>
       <div><b>Fast and findable</b>Loads in under a second on a phone, set up for "plumber near me" searches in your towns.</div>
       <div><b>Works with the receptionist</b>Add <a href="/receptionist/">Never Miss a Call</a> and the site's number gets answered 24/7 and booked automatically.</div>
     </div>
+  </div>
+</section>
+
+<section class="paper" id="work" style="padding-top:0">
+  <div class="wrap">
+    <h2>Here's one we built.</h2>
+    <div class="proof">
+      <a class="browser" href="https://www.dnecontracting.com/" target="_blank" rel="noopener" aria-label="Open dnecontracting.com">
+        <div class="bar"><i></i><i></i><i></i><span>dnecontracting.com</span></div>
+        <img src="/img/work/dne-desktop.webp" width="1200" height="717" loading="lazy" alt="The D N E Contracting homepage on a laptop: headline on the left, free consultation form on the right.">
+      </a>
+      <ul class="built">
+        <li><b>Quote form up top</b>Project, ZIP, phone. Three fields, then it goes straight to the owner.</li>
+        <li><b>Call button pinned on phones</b>Call and Get a Quote stay on screen the whole scroll.</li>
+        <li><b>12 town pages</b>Phoenixville, Exton, West Chester and more, so she shows up where her customers search.</li>
+        <li><b>Client portal</b>Customers log in to see their project and message her.</li>
+      </ul>
+    </div>
+    <p style="margin-top:1.6em"><a href="https://www.dnecontracting.com/" target="_blank" rel="noopener" style="font-weight:700">See it live on your phone</a></p>
   </div>
 </section>
 
@@ -232,7 +245,7 @@ footer a{text-decoration:underline}
         <li>One-page job-getter on your domain</li>
         <li>Quote form texted straight to you</li>
         <li>Hosting, backups, security included</li>
-        <li>Unlimited small changes — just text Nick</li>
+        <li>Unlimited small changes, just text Nick</li>
         <li>Live in 5 business days</li>
       </ul>
     </div>
@@ -242,11 +255,11 @@ footer a{text-decoration:underline}
 <section class="paper">
   <div class="wrap">
     <h2>What owners ask.</h2>
-    <details><summary>I already have a website.</summary><p>Does it text you a lead within a minute of someone filling the form? If yes, keep it. If it's a brochure, this replaces it — or sits on a new domain next to it and we send your ads there.</p></details>
-    <details><summary>Do I need this if I have the receptionist?</summary><p>They cover different doors. The receptionist catches people who call. The website catches people who search first — and most homeowners under 50 look you up before dialing.</p></details>
+    <details><summary>I already have a website.</summary><p>Does it text you a lead within a minute of someone filling the form? If yes, keep it. If it's a brochure, this replaces it, or sits on a new domain next to it and we send your ads there.</p></details>
+    <details><summary>Do I need this if I have the receptionist?</summary><p>They cover different doors. The receptionist catches people who call. The website catches people who search first, and most homeowners under 50 look you up before dialing.</p></details>
     <details><summary>Why one page?</summary><p>Because a homeowner with water in the basement doesn't browse. One page, one decision: call or request a quote. More pages mostly give people places to leave.</p></details>
     <details><summary>Who owns the domain and the site?</summary><p>You do, both. If you ever cancel, I hand over everything and it keeps running wherever you host it.</p></details>
-    <details><summary>Can you do more than one page?</summary><p>Yeah — town pages and service pages for search are an add-on once the main page is earning. Start with the one that books jobs.</p></details>
+    <details><summary>Can you do more than one page?</summary><p>Yeah. Town pages and service pages for search are an add-on once the main page is earning. Start with the one that books jobs.</p></details>
   </div>
 </section>
 
@@ -254,7 +267,7 @@ footer a{text-decoration:underline}
   <div class="wrap">
     <h2 style="color:var(--paper)">Five days from now, it's booking.</h2>
     <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:1em">
-      <a class="btn" href="sms:+14848418501?&body=Hey%20Nick%2C%20I%20need%20the%20job-ready%20website.%20Got%2010%20min%3F">Text Nick — (484) 841-8501</a>
+      <a class="btn" href="sms:+14848418501?&body=Hey%20Nick%2C%20I%20need%20the%20job-ready%20website.%20Got%2010%20min%3F">Text Nick (484) 841-8501</a>
       <a class="btn ghost" href="tel:+16109986138">Or call the receptionist demo</a>
     </div>
   </div>
@@ -264,28 +277,5 @@ footer a{text-decoration:underline}
   </footer>
 </section>
 
-<script>
-const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const fields = [["f1","Dave Kerr"],["f2","Water heater leaking — basement"],["f3","Phoenixville, 19460 · (610) 555-0199"]];
-const toast = document.getElementById("toast");
-async function type(id, text){
-  const el = document.getElementById(id);
-  el.innerHTML = '<span class="caret"></span>';
-  for (let i = 1; i <= text.length; i++){ el.innerHTML = text.slice(0,i) + '<span class="caret"></span>'; await new Promise(r=>setTimeout(r, 34)); }
-  el.textContent = text;
-}
-async function play(){
-  if (reduce){ fields.forEach(([id,t])=>document.getElementById(id).textContent=t); toast.classList.add("show"); return; }
-  while (true){
-    fields.forEach(([id])=>document.getElementById(id).textContent=""); toast.classList.remove("show");
-    await new Promise(r=>setTimeout(r,700));
-    for (const [id,t] of fields) await type(id,t);
-    await new Promise(r=>setTimeout(r,500));
-    toast.classList.add("show");
-    await new Promise(r=>setTimeout(r,4200));
-  }
-}
-new IntersectionObserver((es,o)=>{ if(es[0].isIntersecting){ play(); o.disconnect(); } },{threshold:.3}).observe(document.querySelector(".phone"));
-</script>
 </body>
 </html>
