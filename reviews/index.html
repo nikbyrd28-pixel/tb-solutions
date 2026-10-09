@@ -13,6 +13,7 @@
 <link rel="stylesheet" media="print" onload="this.media='all';this.onload=null" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap"></noscript>
 <script defer src="/track.js"></script>
+<script defer src="/lead.js"></script>
 <script type="application/ld+json">
 {
  "@context": "https://schema.org",
@@ -178,8 +179,8 @@ footer a{text-decoration:underline}
   <div class="wrap two">
     <div>
       <h1>You do better work. He gets the call.</h1>
-      <p class="lead">When a homeowner searches "plumber near me," they don't call the best plumber. They call the one with 200 reviews. The Review Engine asks every happy customer for you — one friendly text, right when the job's done.</p>
-      <a class="btn green" href="sms:+14848418501?&body=Hey%20Nick%2C%20set%20up%20the%20review%20engine%20for%20my%20shop.">Text Nick — start at $97/mo</a>
+      <p class="lead">When a homeowner searches "plumber near me," they don't call the best plumber. They call the one with 200 reviews. The Review Engine asks every happy customer for you: one friendly text, right when the job's done.</p>
+      <a class="btn green" href="#start">Start getting reviews</a>
     </div>
     <div>
       <div class="duel" aria-hidden="true">
@@ -201,13 +202,13 @@ footer a{text-decoration:underline}
   <div class="wrap">
     <h2>How it works. You do nothing.</h2>
     <ol class="steps">
-      <li><h3>Job gets done</h3><p>You mark it complete — or if you run our <a href="/receptionist/" style="color:var(--yellow)">receptionist</a>, it already knows.</p></li>
+      <li><h3>Job gets done</h3><p>You mark it complete. If you run our <a href="/receptionist/" style="color:var(--yellow)">receptionist</a>, it already knows.</p></li>
       <li><h3>One friendly text</h3><p>Your customer gets a short thank-you from your shop with your Google review link. One tap, they're on your review page.</p></li>
-      <li><h3>Reviews stack up</h3><p>Replies come back to you, so problems reach your phone fast — and the happy ones land on Google where the next customer sees them.</p></li>
+      <li><h3>Reviews stack up</h3><p>Replies come back to you, so problems reach your phone fast. The happy ones land on Google where the next customer sees them.</p></li>
     </ol>
     <div class="sample">
       <b>WHAT YOUR CUSTOMER SEES</b>
-      "Hey Dave, it's Keystone Plumbing — thanks for having us out today! If Mike took good care of you, a quick Google review helps us a ton: [your link]. Either way, reply here if anything's not right. Reply STOP to opt out."
+      "Hey Dave, it's Keystone Plumbing. Thanks for having us out today! If Mike took good care of you, a quick Google review helps us a ton: [your link]. Either way, reply here if anything's not right. Reply STOP to opt out."
     </div>
   </div>
 </section>
@@ -217,7 +218,7 @@ footer a{text-decoration:underline}
     <div>
       <h2>Less than one lost job a year.</h2>
       <p>Going from 12 reviews to 60 changes which name gets tapped on Google Maps. If better placement wins you one extra $350 job a quarter, the engine pays for itself three times over.</p>
-      <p style="margin-top:.8em">Setup is a 10-minute call: your Google review link, your customer list flow, your wording. Texts go only to customers who've agreed to hear from you — we handle the opt-in language so you're compliant.</p>
+      <p style="margin-top:.8em">Setup is a 10-minute call: your Google review link, your customer list flow, your wording. Texts go only to customers who've agreed to hear from you. We handle the opt-in language so you're compliant.</p>
     </div>
     <div class="tag">
       <div style="font-weight:800">THE REVIEW ENGINE</div>
@@ -237,20 +238,19 @@ footer a{text-decoration:underline}
 <section style="padding-top:0">
   <div class="wrap">
     <h2>What owners ask.</h2>
-    <details><summary>Is this allowed? Buying reviews gets you banned.</summary><p>Buying reviews does. Asking your own customers is exactly what Google wants — we ask every customer the same way, no cherry-picking, no incentives, which is what keeps it clean.</p></details>
-    <details><summary>What about unhappy customers?</summary><p>They get the same ask — but because it's a text conversation with your shop, most of them reply to you instead of going straight to Google. You hear about the problem while you can still fix it.</p></details>
-    <details><summary>I feel weird asking.</summary><p>That's why you're at 12 reviews. The text does the asking so you never have to — and customers who just got their water back actually like being asked.</p></details>
+    <details><summary>Is this allowed? Buying reviews gets you banned.</summary><p>Buying reviews does. Asking your own customers is exactly what Google wants. We ask every customer the same way, no cherry-picking, no incentives, which is what keeps it clean.</p></details>
+    <details><summary>What about unhappy customers?</summary><p>They get the same ask, but because it's a text conversation with your shop, most of them reply to you instead of going straight to Google. You hear about the problem while you can still fix it.</p></details>
+    <details><summary>I feel weird asking.</summary><p>That's why you're at 12 reviews. The text does the asking so you never have to. Customers who just got their water back actually like being asked.</p></details>
     <details><summary>Where do the numbers show up?</summary><p>A short text to you every Friday: how many asked, how many clicked, your new review count and rating. No dashboard to log into unless you want one.</p></details>
   </div>
 </section>
 
-<section class="ink">
+<section class="ink" id="start">
   <div class="wrap">
     <h2>Be the name with the reviews.</h2>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:1em">
-      <a class="btn" style="background:var(--yellow);border-color:var(--yellow);color:var(--ink)" href="sms:+14848418501?&body=Hey%20Nick%2C%20set%20up%20the%20review%20engine%20for%20my%20shop.">Text Nick — (484) 841-8501</a>
-      <a class="btn ghost" style="color:var(--paper);border-color:var(--paper)" href="/receptionist/">Pair it with the receptionist</a>
-    </div>
+    <div data-lead="reviews" data-cta="Start getting reviews" data-ask="What's your shop, and how many jobs a week?" data-theme="dark"></div>
+    <p style="margin-top:1em;font-weight:600">Or call Nick: <a href="tel:+14848418501">(484) 841-8501</a></p>
+    <p style="margin-top:.6em"><a href="/receptionist/" style="color:var(--paper)">Pair it with the receptionist</a></p>
   </div>
   <footer class="wrap" style="color:var(--paper)">
     <span>A <a href="/">TB Solutions</a> service · Nick Byrd, Chester County, PA</span>

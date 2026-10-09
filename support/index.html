@@ -58,22 +58,22 @@
       </div>
       <label>What kind of request? <span class="req">*</span></label>
       <div class="types">
-        <label><input type="radio" name="ticket_type" value="Problem / bug" required><span>🐞 Problem / bug</span></label>
-        <label><input type="radio" name="ticket_type" value="Change / edit"><span>✏️ Change / edit</span></label>
-        <label><input type="radio" name="ticket_type" value="New idea"><span>💡 New idea</span></label>
-        <label><input type="radio" name="ticket_type" value="SEO / Google"><span>🔍 SEO / Google</span></label>
-        <label><input type="radio" name="ticket_type" value="Hosting / down"><span>🖥️ Hosting / down</span></label>
-        <label><input type="radio" name="ticket_type" value="Question"><span>❓ Question</span></label>
+        <label><input type="radio" name="ticket_type" value="Problem / bug" required><span>Problem / bug</span></label>
+        <label><input type="radio" name="ticket_type" value="Change / edit"><span>Change / edit</span></label>
+        <label><input type="radio" name="ticket_type" value="New idea"><span>New idea</span></label>
+        <label><input type="radio" name="ticket_type" value="SEO / Google"><span>SEO / Google</span></label>
+        <label><input type="radio" name="ticket_type" value="Hosting / down"><span>Hosting / down</span></label>
+        <label><input type="radio" name="ticket_type" value="Question"><span>Question</span></label>
       </div>
       <label>How urgent?</label>
-      <select name="priority"><option>Normal</option><option>Low — whenever</option><option>Urgent — site is down / broken</option></select>
+      <select name="priority"><option>Normal</option><option>Low: whenever</option><option>Urgent: site is down or broken</option></select>
       <label>Describe it <span class="req">*</span></label>
       <textarea name="details" required placeholder="What's happening, what you'd like changed, or your idea. The more detail the better."></textarea>
       <label>Add a picture or file (optional)</label><input type="file" id="fileInp" accept="image/*,.pdf,.doc,.docx,.txt,.zip">
       <label>…or paste a link (optional)</label><input name="attachment" placeholder="Google Drive, Dropbox, image URL">
       <input type="hidden" name="type" value="support-ticket">
       <input type="hidden" name="status" value="New">
-      <input type="hidden" name="_subject" value="New support ticket — TB Solutions">
+      <input type="hidden" name="_subject" value="New support ticket: TB Solutions">
       <input type="hidden" name="_template" value="table">
       <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
       <button type="submit" id="btn">Submit request →</button>
@@ -82,7 +82,7 @@
     <div class="ok" id="ok">
       <div class="tick">✓</div>
       <h1 style="font-size:26px">Request received!</h1>
-      <p class="lead">Thanks — it's logged and I've been notified. You'll hear back soon, and faster if you marked it urgent.</p>
+      <p class="lead">Thanks. It's logged and I've been notified. You'll hear back soon, and faster if you marked it urgent.</p>
     </div>
   </div>
 </div>
@@ -93,7 +93,7 @@ var SUPA='https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
 var AKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
 function uploadFile(file){
   if(!file) return Promise.resolve('');
-  if(file.size>10*1024*1024){ alert('File is over 10MB — please pick a smaller one or paste a link instead.'); return Promise.resolve(''); }
+  if(file.size>10*1024*1024){ alert('File is over 10MB. Please pick a smaller one or paste a link instead.'); return Promise.resolve(''); }
   var safe=(file.name||'file').replace(/[^a-zA-Z0-9._-]/g,'_').slice(-60);
   var path='tickets/'+Date.now()+'-'+Math.random().toString(36).slice(2,7)+'-'+safe;
   return fetch(SUPA+'/storage/v1/object/uploads/'+path,{method:'POST',headers:{apikey:AKEY,Authorization:'Bearer '+AKEY,'Content-Type':file.type||'application/octet-stream','x-upsert':'false'},body:file})

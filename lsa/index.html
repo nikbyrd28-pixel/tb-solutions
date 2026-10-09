@@ -259,7 +259,7 @@ footer a{text-decoration:none;border-bottom:2px solid currentColor}
         <div class="l">walking out the door every month</div>
         <div class="split"><span><b id="r_charges">$0</b> billed by Google for calls you missed</span><span><b id="r_jobs">$0</b> in jobs those callers were worth</span></div>
       </div>
-      <a class="btn" href="#audit">Fix it — free audit</a>
+      <a class="btn" href="#audit">Fix it: free audit</a>
     </form>
   </div>
 </section>
@@ -281,7 +281,7 @@ footer a{text-decoration:none;border-bottom:2px solid currentColor}
 <section class="paper" id="price">
   <div class="wrap">
     <h2>Priced under one lead a week.</h2>
-    <p>No contract. Month to month. Cancel by texting Nick. Your Google Ads account, your phone number, your data — all stay yours. Lead spend is paid to Google directly; we never touch it.</p>
+    <p>No contract. Month to month. Cancel by texting Nick. Your Google Ads account, your phone number, your data. All stay yours. Lead spend is paid to Google directly; we never touch it.</p>
     <div class="plans">
       <div class="tag main">
         <h3>Lead Engine</h3>
@@ -292,7 +292,7 @@ footer a{text-decoration:none;border-bottom:2px solid currentColor}
           <li>Lead history exported before it's deleted</li>
           <li>Campaign rebuilt: budget cap, area, hours, GBP match</li>
           <li>Weekly lead review + dispute filing</li>
-          <li>Budget watch — we flag spend creep same day</li>
+          <li>Budget watch: we flag spend creep same day</li>
           <li>Monday scorecard texted to you</li>
           <li>Not on LSA yet? We handle the application too</li>
         </ul>
@@ -304,7 +304,7 @@ footer a{text-decoration:none;border-bottom:2px solid currentColor}
         <div class="mo">then $297 / month</div>
         <ul>
           <li>Everything in Lead Engine</li>
-          <li>24/7 AI receptionist on your LSA line — no call rings out, no missed-call charges</li>
+          <li>24/7 AI receptionist on your LSA line: no call rings out, no missed-call charges</li>
           <li>Missed-call text-back in 30 seconds</li>
           <li>Booked jobs pushed into Housecall Pro</li>
           <li>Review Engine: every finished job asks for a Google review</li>
@@ -356,12 +356,12 @@ footer a{text-decoration:none;border-bottom:2px solid currentColor}
       <div class="err" id="err"></div>
       <div class="ctas">
         <button class="btn" id="btn" type="submit">Text me my audit</button>
-        <a class="btn ghost" href="sms:+1NICK?&body=Hey%20Nick%2C%20I%20run%20LSA.%20Can%20you%20check%20my%20account%3F" data-sms="nick">Or just text Nick</a>
+        <a class="btn ghost" href="tel:+14848418501">Or call Nick: (484) 841-8501</a>
       </div>
     </form>
     <div class="ok" id="ok">
       <h3 style="font-size:1.5em;margin-bottom:.4em">Got it. Nick's on it.</h3>
-      <p id="okmsg">You'll get a text shortly. Rough number from what you entered: <b id="ok_total">—</b>/month under the new rules.</p>
+      <p id="okmsg">You'll get a text shortly. Rough number from what you entered: <b id="ok_total">$0</b>/month under the new rules.</p>
     </div>
   </div>
   <footer class="wrap">
@@ -374,7 +374,7 @@ footer a{text-decoration:none;border-bottom:2px solid currentColor}
 const NICK_NUMBER = "+14848418501";
 const INTAKE = "https://qgbjiqdwzgkjkmqyjsmc.supabase.co/functions/v1/lsa-intake";
 document.querySelectorAll('[data-sms="nick"]').forEach(a => a.href = a.href.replace("+1NICK", NICK_NUMBER));
-document.getElementById("track").innerHTML += document.getElementById("track").innerHTML; // seamless marquee
+document.getElementById("track").innerHTML += document.getElementById("track").innerHTML; // doubled so the marquee loops without a gap
 
 // ---- calculator (same math as the edge function, kept local so it's instant) ----
 const TICKET = { plumbing: 425, hvac: 650, electrical: 380, roofing: 1200, other: 400 }, BOOK_RATE = .35;

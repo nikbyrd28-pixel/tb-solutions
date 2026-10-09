@@ -72,11 +72,17 @@ main{padding:28px 0 40px}
 .btn.ghost{background:transparent;color:var(--ink)}
 footer{padding:18px 0 40px;font-size:.85em;font-weight:500;color:var(--muted);text-align:center}
 @media print{header,.offer,.rules{box-shadow:none!important;break-inside:avoid}.cta,nav{display:none}body{background:#fff}}
+@media print{.tb-lead,#start{display:none}}
+#start{margin-top:28px;background:var(--ink);color:var(--paper);border-radius:20px;padding:22px 24px}
+#start h3{color:var(--yellow);font-size:20px;font-weight:800;margin-bottom:10px}
+#start a{color:var(--paper)}
 </style>
+<script defer src="/track.js"></script>
+<script defer src="/lead.js"></script>
 </head>
 <body>
 <header><div class="wrap">
-  <nav><a class="brand" href="https://tbsol.net"><b>TB</b> Solutions</a><a href="sms:+14848418501" style="text-decoration:none;border-bottom:3px solid var(--ink)">Text Nick</a></nav>
+  <nav><a class="brand" href="https://tbsol.net"><b>TB</b> Solutions</a><a href="#start" style="text-decoration:none;border-bottom:3px solid var(--ink)">Text Nick</a></nav>
   <span class="kick">Offer sheet · October 2026</span>
   <h1>The front office for the trades.</h1>
   <p class="lead">Phone answered. Google leads handled. Reviews stacked. For plumbers, HVAC and electricians who'd rather be on the job than on the phone. No contracts, month to month, cancel by text.</p>
@@ -153,7 +159,7 @@ footer{padding:18px 0 40px;font-size:.85em;font-weight:500;color:var(--muted);te
     <div>
       <h2>Google Rank Fix</h2>
       <div class="who">Local SEO · get in the map pack</div>
-      <p>A free written audit of the 17 things Google grades a local shop on — reviews, every listing, hours, Apple Maps, the Business Profile, the site — then every broken one fixed in 14 days on a live page you can watch tick off.</p>
+      <p>A free written audit of the 17 things Google grades a local shop on (reviews, every listing, hours, Apple Maps, the Business Profile, the site), then every broken one fixed in 14 days on a live page you can watch tick off.</p>
       <ul><li>Free audit first, yours to keep</li><li>Review activation to your past customers</li><li>Name-address-phone cleaned everywhere, Apple Maps claimed</li><li>Monthly: reviews asked, listings watched, weekly Google post</li></ul>
       <a class="more" href="/rank/">The 17 checks →</a>
     </div>
@@ -172,11 +178,17 @@ footer{padding:18px 0 40px;font-size:.85em;font-weight:500;color:var(--muted);te
   </div>
 
   <div class="cta">
-    <a class="btn" href="sms:+14848418501?&body=Hey%20Nick%2C%20saw%20the%20offer%20sheet.%20Let%27s%20talk.">Text Nick</a>
+    <a class="btn" href="#start">Text Nick</a>
     <a class="btn ghost" href="tel:+16109986138">Call the demo receptionist</a>
     <a class="btn ghost" href="https://buy.stripe.com/28E28talAfU0gUodya6Ri01" rel="noopener">Pay and get started</a>
   </div>
   <p style="opacity:.75;font-size:14px;margin-top:10px">Card payment is handled by Stripe. The amount and what it covers are shown before you confirm.</p>
+
+  <section id="start">
+    <h3>Text me a plan</h3>
+    <div data-lead="general" data-cta="Text me a plan" data-ask="Which offer, and what's costing you jobs?" data-theme="dark"></div>
+    <p style="margin-top:12px;font-weight:600"><a href="tel:+14848418501">Or call Nick: (484) 841-8501</a></p>
+  </section>
 </main>
 <footer class="wrap">TB Solutions · Nick Byrd · tbsol.net · Not affiliated with Google or Housecall Pro.</footer>
 </body>

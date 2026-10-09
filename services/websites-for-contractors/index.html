@@ -17,6 +17,7 @@
 <link rel="stylesheet" media="print" onload="this.media='all';this.onload=null" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap"></noscript>
 <script defer src="/track.js"></script>
+<script defer src="/lead.js"></script>
 <style>:root{--yellow:#FFD23F;--ink:#14110F;--paper:#FFF8E1;--copper:#B5542B;--green:#1F9D55;--line:#e6dfc8;--muted:#6b645a;--max:760px;--gutter:clamp(16px,4vw,32px)}
 *{box-sizing:border-box;margin:0;padding:0}
 @font-face{font-family:"Bricolage fallback";src:local("Arial");size-adjust:97%;ascent-override:94%;descent-override:24%;line-gap-override:0%}
@@ -50,6 +51,8 @@ p{margin:0 0 15px;max-width:38em}
 .faq{border-top:2px solid var(--line);padding-top:16px;margin-top:10px}
 .cta{background:var(--yellow);border:2px solid var(--ink);border-radius:18px;padding:24px;margin:38px 0;box-shadow:5px 5px 0 var(--ink)}
 .cta h2{margin:0 0 6px;font-size:24px}
+.cta .alt{margin:14px 0 0;font-size:15px;font-weight:700}
+.cta .alt a{color:var(--ink)}
 .foot{border-top:2px solid var(--line);margin-top:40px;padding:20px 0 48px;color:var(--muted);font-size:14px}
 .foot a{color:var(--muted)}</style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://tbsol.net/"},{"@type":"ListItem","position":2,"name":"Services","item":"https://tbsol.net/services/"},{"@type":"ListItem","position":3,"name":"Job-Ready Website","item":"https://tbsol.net/services/websites-for-contractors/"}]}</script>
@@ -63,19 +66,22 @@ p{margin:0 0 15px;max-width:38em}
   <p class="eyebrow">Job-Ready Website</p>
   <h1>A one-page website that books jobs</h1>
   <p class="lead">Nobody reads a contractor website. They are standing in water holding a phone, and they need the call button.</p>
+  <div class="row"><a class="btn" href="#start">Get my site started</a></div>
   <div class="price"><b>$497 setup, then $47/mo</b>
         <small>No contract. Live in a week. Edits and hosting included in the monthly.</small></div>
       <h2>Built for the thumb, not the desktop</h2><p>One page, loads fast on a bad signal, with the phone number fixed where a thumb lands. Service area, what you do, your reviews, and a form that texts you instead of sending an email nobody opens. No slider, no stock photo of a smiling man in a hard hat, no five-page menu.</p>
   <h2>It matches your Google profile</h2><p>Name, address, phone and service area are written to match your Google Business Profile exactly, because mismatches between the two are a quiet drag on local ranking.</p>
       <h2>How it works with me</h2><p>No contracts, month to month, cancel by texting me. Your phone number, your Google account and your data stay yours the whole way through. Setup is one twenty-minute call and, where the phone is involved, one forwarding code you dial yourself. I am in Pottstown, PA and I only take shops in Chester County, Montgomery County and the 422 corridor, so if something breaks you are talking to the person who built it.</p>
-      <h2>Where I work</h2><p class="towns">Pottstown · Phoenixville · West Chester · Exton · Downingtown · Royersford · Collegeville · Spring City · Limerick · Boyertown · Malvern · Paoli · Kennett Square · Coatesville · Norristown · Conshohocken — and anywhere inside about 30 minutes of Pottstown, PA.</p>
+      <h2>Where I work</h2><p class="towns">Pottstown · Phoenixville · West Chester · Exton · Downingtown · Royersford · Collegeville · Spring City · Limerick · Boyertown · Malvern · Paoli · Kennett Square · Coatesville · Norristown · Conshohocken, and anywhere inside about 30 minutes of Pottstown, PA.</p>
       <h2>Other things I run for shops around here</h2>
       <div class="grid"><a href="/services/ai-receptionist-for-contractors/">Never Miss a Call<small>$197/mo</small></a><a href="/services/google-local-services-ads-management/">Lead Engine<small>$147/mo</small></a><a href="/services/google-review-automation/">Review Engine<small>$97/mo</small></a></div>
   <h2>Questions people actually ask</h2><div class="faq"><h3>How long does it take?</h3><p>Live in a week, assuming you can get me your service area, your hours and a few photos of real work.</p></div><div class="faq"><h3>Do I own it?</h3><p>Yes. Your domain, your content, your Google account. Always yours.</p></div>
-  <div class="cta">
+  <div class="cta" id="start">
     <h2>Hear it before you buy it</h2>
-    <p>Call the demo line and you will hear exactly what goes on your phone. No form, no salesman.</p>
-    <div class="row"><a class="btn" href="tel:+16109986138">Call (610) 998-6138</a><a class="btn ghost" href="sms:+14848418501">Text Nick</a></div>
+    <p>Call the demo line and you will hear exactly what goes on your phone. Or leave your number and I will text you. No salesman.</p>
+    <div class="row"><a class="btn" href="tel:+16109986138">Call (610) 998-6138</a></div>
+    <div data-lead="websites" data-cta="Get my site started"></div>
+    <p class="alt">Or call Nick: <a href="tel:+14848418501">(484) 841-8501</a></p>
   </div>
   <p class="foot">TB Solutions · Nick Byrd · Pottstown, PA · serving Chester County, Montgomery County and the 422 corridor<br>
     <a href="/offers/">All offers and prices</a> · <a href="/">Home</a> · Not affiliated with Google or Housecall Pro.</p>

@@ -1,5 +1,5 @@
 # TB Solutions — Ecosystem Map
-*The one source of truth for what exists, where it lives, and whether it's alive. Updated Oct 4, 2026.*
+*The one source of truth for what exists, where it lives, and whether it's alive. Updated Oct 9, 2026.*
 
 ## The business (what we sell)
 **TB Solutions = the front office for the trades** (plumbers, HVAC, electricians). One hub, five offers, one bundle. The flywheel: Lead Engine rings the phone -> Receptionist books it -> Review Engine stacks reviews -> cheaper leads.
@@ -36,6 +36,7 @@
 | **Finder** | HQ → Finder — type a trade + town, Scan: edge fn `hq-finder` pulls shops from Google Places, opens each site, grades it (no site / no booking / mobile / stale / SSL), scores with Prospector rules, writes the opener + est. $/mo, files 50+ onto Today via `hq_finder_import`. Needs `GOOGLE_PLACES_KEY` in `rx_config` (saved from the tab) | `hq/supabase/functions/hq-finder/`, `hq/supabase/012_hq_finder.sql` |
 | **Agents (the fleet)** | Prospector, SEO, GBP, Meta, Content, Review — HQ → Agents; posts in `agent_posts`, review texts via edge fn `rx-review` + pg_cron | `hq/AGENTS.md` |
 | **Clip Engine** | one livestream URL → 2 longform + LinkedIn + X cuts + 5 captioned 9:16 shorts (×YT/IG/FB/TikTok = 20 posts); approve at tbsol.net/clips/, n8n posts via Ayrshare. Tables `clip_sources`/`clip_items`, worker `clips/worker` (docker, runs next to n8n), workflows `n8n/clip-intake.json` + `n8n/clip-publisher.json` | `clips/` |
+| **Lead forms (every sales page)** | `/lead.js` → `<div data-lead="offer">` renders a 4-field form → edge fn `site-intake` → table `intakes` (src `intake` in HQ → Leads) → texts Nick (`NICK_PHONE`) + auto-reply to the prospect. Home hero + bottom, websites, receptionist, reviews, planner, leads, rank, offers, for/*, services/*. `sms:` buttons are gone from sales pages; "Or call Nick" tel link stays as the fallback | `lead.js`, `supabase/functions/site-intake/` |
 | Analytics | `track.js` → `track-visitor` edge fn → `visitors`/`pageviews` | root |
 | Onboarding | `receptionist/supabase/new_client_template.sql` — 20-min new client | — |
 

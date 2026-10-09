@@ -17,6 +17,7 @@
 <link rel="stylesheet" media="print" onload="this.media='all';this.onload=null" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap"></noscript>
 <script defer src="/track.js"></script>
+<script defer src="/lead.js"></script>
 <style>:root{--yellow:#FFD23F;--ink:#14110F;--paper:#FFF8E1;--copper:#B5542B;--green:#1F9D55;--line:#e6dfc8;--muted:#6b645a;--max:760px;--gutter:clamp(16px,4vw,32px)}
 *{box-sizing:border-box;margin:0;padding:0}
 @font-face{font-family:"Bricolage fallback";src:local("Arial");size-adjust:97%;ascent-override:94%;descent-override:24%;line-gap-override:0%}
@@ -50,10 +51,12 @@ p{margin:0 0 15px;max-width:38em}
 .faq{border-top:2px solid var(--line);padding-top:16px;margin-top:10px}
 .cta{background:var(--yellow);border:2px solid var(--ink);border-radius:18px;padding:24px;margin:38px 0;box-shadow:5px 5px 0 var(--ink)}
 .cta h2{margin:0 0 6px;font-size:24px}
+.cta .alt{margin:14px 0 0;font-size:15px;font-weight:700}
+.cta .alt a{color:var(--ink)}
 .foot{border-top:2px solid var(--line);margin-top:40px;padding:20px 0 48px;color:var(--muted);font-size:14px}
 .foot a{color:var(--muted)}</style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://tbsol.net/"},{"@type":"ListItem","position":2,"name":"Services","item":"https://tbsol.net/services/"},{"@type":"ListItem","position":3,"name":"HVAC companies","item":"https://tbsol.net/for/hvac-companies/"}]}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do you only work with HVAC companies?","acceptedAnswer":{"@type":"Answer","text":"No — plumbers, HVAC companies, electricians are just where most of my shops are. The setup is the same for any trade that runs service calls."}},{"@type":"Question","name":"Do I keep my number?","acceptedAnswer":{"@type":"Answer","text":"Yes. You forward to it only when you do not pick up, so nothing changes for anyone who reaches you directly."}},{"@type":"Question","name":"How long is setup?","acceptedAnswer":{"@type":"Answer","text":"One 20-minute call and one forwarding code on your phone. Usually live the same week."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do you only work with HVAC companies?","acceptedAnswer":{"@type":"Answer","text":"No. Plumbers, HVAC companies and electricians are just where most of my shops are. The setup is the same for any trade that runs service calls."}},{"@type":"Question","name":"Do I keep my number?","acceptedAnswer":{"@type":"Answer","text":"Yes. You forward to it only when you do not pick up, so nothing changes for anyone who reaches you directly."}},{"@type":"Question","name":"How long is setup?","acceptedAnswer":{"@type":"Answer","text":"One 20-minute call and one forwarding code on your phone. Usually live the same week."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Service","name":"Call answering for HVAC companies","serviceType":"HVAC answering service","provider":{"@type":"LocalBusiness","name":"TB Solutions","telephone":"(484) 841-8501"},"areaServed":[{"@type":"City","name":"Pottstown, PA"},{"@type":"City","name":"Phoenixville, PA"},{"@type":"City","name":"West Chester, PA"},{"@type":"City","name":"Exton, PA"},{"@type":"City","name":"Downingtown, PA"},{"@type":"City","name":"Royersford, PA"},{"@type":"City","name":"Collegeville, PA"},{"@type":"City","name":"Spring City, PA"},{"@type":"City","name":"Limerick, PA"},{"@type":"City","name":"Boyertown, PA"},{"@type":"City","name":"Malvern, PA"},{"@type":"City","name":"Paoli, PA"},{"@type":"City","name":"Kennett Square, PA"},{"@type":"City","name":"Coatesville, PA"},{"@type":"City","name":"Norristown, PA"},{"@type":"City","name":"Conshohocken, PA"}]}</script>
 </head>
 <body>
@@ -63,18 +66,21 @@ p{margin:0 0 15px;max-width:38em}
   <p class="eyebrow">For HVAC shops</p>
   <h1>Built for HVAC companies</h1>
   <p class="lead">You are on a job. The phone rings. No heat in February is an emergency with a clock on it, and every hour on voicemail is a job gone.</p>
-  <h2>The calls you are missing</h2><p>For a HVAC company, the ones that get away are no heat, no cooling, frozen lines, thermostat failures and furnace lockouts. They come in while you are already working, and the homeowner does not leave a voicemail — they call the next shop in the results.</p>
-      <h2>What picks up instead</h2><p>It answers in your company name, only after your own line rings out. It gets the problem, gives the safety step — the furnace switch and the thermostat batteries before anyone is dispatched — checks the zip is in your area, states your dispatch fee, and books into the arrival windows you actually run. You get a text with the name, address and the problem in their words.</p>
+  <div class="row"><a class="btn" href="#start">Set up my front office</a></div>
+  <h2>The calls you are missing</h2><p>For a HVAC company, the ones that get away are no heat, no cooling, frozen lines, thermostat failures and furnace lockouts. They come in while you are already working, and the homeowner does not leave a voicemail. They call the next shop in the results.</p>
+      <h2>What picks up instead</h2><p>It answers in your company name, only after your own line rings out. It gets the problem, gives the safety step (the furnace switch and the thermostat batteries before anyone is dispatched), checks the zip is in your area, states your dispatch fee, and books into the arrival windows you actually run. You get a text with the name, address and the problem in their words.</p>
       <h2>It will not quote your work</h2><p>It states your dispatch fee and nothing else. Pricing a HVAC repair over the phone is how you end up arguing in somebody's basement, so it says the tech prices it on site. Every time.</p>
       
-      <div class="price"><b>$297 setup, then $197/mo</b><small>First five shops — $497 after. No contract. If it does not book you a job in 30 days, the month is refunded.</small></div>
-      <h2>Where I work</h2><p class="towns">Pottstown · Phoenixville · West Chester · Exton · Downingtown · Royersford · Collegeville · Spring City · Limerick · Boyertown · Malvern · Paoli · Kennett Square · Coatesville · Norristown · Conshohocken — and anywhere inside about 30 minutes of Pottstown.</p>
+      <div class="price"><b>$297 setup, then $197/mo</b><small>First five shops. $497 after. No contract. If it does not book you a job in 30 days, the month is refunded.</small></div>
+      <h2>Where I work</h2><p class="towns">Pottstown · Phoenixville · West Chester · Exton · Downingtown · Royersford · Collegeville · Spring City · Limerick · Boyertown · Malvern · Paoli · Kennett Square · Coatesville · Norristown · Conshohocken, and anywhere inside about 30 minutes of Pottstown.</p>
       <h2>The rest of the front office</h2><div class="grid"><a href="/services/ai-receptionist-for-contractors/">Never Miss a Call<small>$197/mo</small></a><a href="/services/google-local-services-ads-management/">Lead Engine<small>$147/mo</small></a><a href="/services/google-review-automation/">Review Engine<small>$97/mo</small></a><a href="/services/websites-for-contractors/">Job-Ready Website<small>$47/mo</small></a></div>
-  <h2>Questions people actually ask</h2><div class="faq"><h3>Do you only work with HVAC companies?</h3><p>No — plumbers, HVAC companies, electricians are just where most of my shops are. The setup is the same for any trade that runs service calls.</p></div><div class="faq"><h3>Do I keep my number?</h3><p>Yes. You forward to it only when you do not pick up, so nothing changes for anyone who reaches you directly.</p></div><div class="faq"><h3>How long is setup?</h3><p>One 20-minute call and one forwarding code on your phone. Usually live the same week.</p></div>
-  <div class="cta">
+  <h2>Questions people actually ask</h2><div class="faq"><h3>Do you only work with HVAC companies?</h3><p>No. Plumbers, HVAC companies and electricians are just where most of my shops are. The setup is the same for any trade that runs service calls.</p></div><div class="faq"><h3>Do I keep my number?</h3><p>Yes. You forward to it only when you do not pick up, so nothing changes for anyone who reaches you directly.</p></div><div class="faq"><h3>How long is setup?</h3><p>One 20-minute call and one forwarding code on your phone. Usually live the same week.</p></div>
+  <div class="cta" id="start">
     <h2>Hear it before you buy it</h2>
-    <p>Call the demo line and you will hear exactly what goes on your phone. No form, no salesman.</p>
-    <div class="row"><a class="btn" href="tel:+16109986138">Call (610) 998-6138</a><a class="btn ghost" href="sms:+14848418501">Text Nick</a></div>
+    <p>Call the demo line and you'll hear exactly what goes on your phone. Or leave your number and I'll text you a plan. No salesman.</p>
+    <div class="row"><a class="btn" href="tel:+16109986138">Call (610) 998-6138</a></div>
+    <div data-lead="general" data-cta="Text me a plan" data-ask="What's costing you jobs right now?" style="margin-top:1em"></div>
+    <p class="alt">Or call Nick: <a href="tel:+14848418501">(484) 841-8501</a></p>
   </div>
   <p class="foot">TB Solutions · Nick Byrd · Pottstown, PA · serving Chester County, Montgomery County and the 422 corridor<br>
     <a href="/offers/">All offers and prices</a> · <a href="/">Home</a> · Not affiliated with Google or Housecall Pro.</p>

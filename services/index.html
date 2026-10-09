@@ -17,6 +17,7 @@
 <link rel="stylesheet" media="print" onload="this.media='all';this.onload=null" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap"></noscript>
 <script defer src="/track.js"></script>
+<script defer src="/lead.js"></script>
 <style>:root{--yellow:#FFD23F;--ink:#14110F;--paper:#FFF8E1;--copper:#B5542B;--green:#1F9D55;--line:#e6dfc8;--muted:#6b645a;--max:760px;--gutter:clamp(16px,4vw,32px)}
 *{box-sizing:border-box;margin:0;padding:0}
 @font-face{font-family:"Bricolage fallback";src:local("Arial");size-adjust:97%;ascent-override:94%;descent-override:24%;line-gap-override:0%}
@@ -50,6 +51,8 @@ p{margin:0 0 15px;max-width:38em}
 .faq{border-top:2px solid var(--line);padding-top:16px;margin-top:10px}
 .cta{background:var(--yellow);border:2px solid var(--ink);border-radius:18px;padding:24px;margin:38px 0;box-shadow:5px 5px 0 var(--ink)}
 .cta h2{margin:0 0 6px;font-size:24px}
+.cta .alt{margin:14px 0 0;font-size:15px;font-weight:700}
+.cta .alt a{color:var(--ink)}
 .foot{border-top:2px solid var(--line);margin-top:40px;padding:20px 0 48px;color:var(--muted);font-size:14px}
 .foot a{color:var(--muted)}</style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://tbsol.net/"},{"@type":"ListItem","position":2,"name":"Services","item":"https://tbsol.net/services/"}]}</script>
@@ -62,17 +65,20 @@ p{margin:0 0 15px;max-width:38em}
   <p class="eyebrow">Services</p>
   <h1>The front office for your shop</h1>
   <p class="lead">Four things, all priced on the page, none of them on a contract.</p>
+  <div class="row"><a class="btn" href="#start">Text me a plan</a></div>
   <div class="grid"><a href="/services/ai-receptionist-for-contractors/">Never Miss a Call<small>$297 setup · $197/mo</small></a><a href="/services/google-local-services-ads-management/">Lead Engine<small>$297 setup · $147/mo</small></a><a href="/services/google-review-automation/">Review Engine<small>no setup fee setup · $97/mo</small></a><a href="/services/websites-for-contractors/">Job-Ready Website<small>$497 setup · $47/mo</small></a></div>
     <h2>Why they are priced on the page</h2><p>Every agency around here makes you book a call to find out what it costs. I think that is a tell. The numbers are the numbers, they are the same for every shop, and you can cancel by texting me.</p>
     <h2>Who I work with</h2><div class="grid"><a href="/for/plumbers/">Plumbers<small>plumbing</small></a><a href="/for/hvac-companies/">HVAC companies<small>HVAC</small></a><a href="/for/electricians/">Electricians<small>electrical</small></a></div>
-    <h2>Start with the phone</h2><p>If you only do one thing, do the receptionist. A shop missing fifteen or twenty calls a month is losing more in a week than the whole thing costs in a month, and it is the only one of these that pays for itself off a single booked job. The ads, the reviews and the website all work better once the phone is actually being answered — there is no point buying leads that ring out.</p>
+    <h2>Start with the phone</h2><p>If you only do one thing, do the receptionist. A shop missing fifteen or twenty calls a month is losing more in a week than the whole thing costs in a month, and it is the only one of these that pays for itself off a single booked job. The ads, the reviews and the website all work better once the phone is actually being answered. There is no point buying leads that ring out.</p>
     <h2>What setup actually involves</h2><p>One twenty-minute call where I get your services, your fees, your hours, your arrival windows and your service area. Then you dial one forwarding code on your business phone so calls you do not pick up roll over. That is the onboarding. Your number stays yours, your Google account stays yours, your data stays yours.</p>
-    <h2>Where I work</h2><p class="towns">Pottstown · Phoenixville · West Chester · Exton · Downingtown · Royersford · Collegeville · Spring City · Limerick · Boyertown · Malvern · Paoli · Kennett Square · Coatesville · Norristown · Conshohocken — and anywhere inside about 30 minutes of Pottstown, PA.</p>
+    <h2>Where I work</h2><p class="towns">Pottstown · Phoenixville · West Chester · Exton · Downingtown · Royersford · Collegeville · Spring City · Limerick · Boyertown · Malvern · Paoli · Kennett Square · Coatesville · Norristown · Conshohocken, and anywhere inside about 30 minutes of Pottstown, PA.</p>
   <h2>Questions people actually ask</h2><div class="faq"><h3>Do I have to buy all of it?</h3><p>No. Most shops start with the receptionist because it pays for itself fastest, and add the others when they want to.</p></div><div class="faq"><h3>Is there a contract?</h3><p>No. Month to month on everything. You cancel by texting me.</p></div>
-  <div class="cta">
+  <div class="cta" id="start">
     <h2>Hear it before you buy it</h2>
-    <p>Call the demo line and you will hear exactly what goes on your phone. No form, no salesman.</p>
-    <div class="row"><a class="btn" href="tel:+16109986138">Call (610) 998-6138</a><a class="btn ghost" href="sms:+14848418501">Text Nick</a></div>
+    <p>Call the demo line and you will hear exactly what goes on your phone. Or leave your number and I will text you. No salesman.</p>
+    <div class="row"><a class="btn" href="tel:+16109986138">Call (610) 998-6138</a></div>
+    <div data-lead="general" data-cta="Text me a plan"></div>
+    <p class="alt">Or call Nick: <a href="tel:+14848418501">(484) 841-8501</a></p>
   </div>
   <p class="foot">TB Solutions · Nick Byrd · Pottstown, PA · serving Chester County, Montgomery County and the 422 corridor<br>
     <a href="/offers/">All offers and prices</a> · <a href="/">Home</a> · Not affiliated with Google or Housecall Pro.</p>

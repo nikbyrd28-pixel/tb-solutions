@@ -7,7 +7,7 @@
 <link rel="canonical" href="https://tbsol.net/receptionist/">
 <meta name="description" content="Your business line, answering itself. Picks up when you're under a sink, books the job into your real schedule, texts you the details. $497 setup, $197/month. Live in 48 hours. Call the demo and try to stump it.">
 <meta name="theme-color" content="#FFD23F">
-<meta property="og:title" content="Never Miss a Call — the phone that books its own jobs">
+<meta property="og:title" content="Never Miss a Call: the phone that books its own jobs">
 <meta property="og:description" content="Call the demo line and say your water heater is leaking. Thirty seconds later you're booked and the owner has a text. Built for plumbers, HVAC and electricians.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23FFD23F'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial Black,Arial' font-weight='900' font-size='34' fill='%2314110F'%3E%E2%98%8E%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,6 +15,8 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap">
 <link rel="stylesheet" media="print" onload="this.media='all';this.onload=null" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@96,80..92,400..800&display=swap"></noscript>
+<script defer src="/track.js"></script>
+<script defer src="/lead.js"></script>
 <script type="application/ld+json">
 {
  "@context": "https://schema.org",
@@ -251,14 +253,14 @@ footer a{text-decoration:none;border-bottom:2px solid currentColor}
 
 <section class="hero">
   <div class="wrap">
-    <h1 class="sr-only">Never Miss a Call — the AI receptionist for plumbers, HVAC and electricians</h1>
+    <h1 class="sr-only">Never Miss a Call: the AI receptionist for plumbers, HVAC and electricians</h1>
     <div class="ring" aria-live="polite" id="ring"><span class="word">Ring.</span></div>
     <p class="scene">Your phone rang while you were <span class="slot" id="slot"><span class="in">under a sink.</span></span></p>
     <p class="gone" id="gone">That was a <span class="money" id="money">$425</span> water heater job. <span class="vm" id="vm">Voicemail.</span></p>
     <p class="lead">Never Miss a Call is your business line, answering itself. It picks up on the fourth ring, talks like someone who's worked your front desk for years, books the job into your real schedule, and texts you the address before the caller hangs up. Built for plumbers, HVAC and electricians. Live in 48 hours.</p>
     <div class="ctas">
       <a class="btn" href="tel:+1DEMO" data-tel="demo">Call the demo line</a>
-      <a class="btn ghost" href="sms:+1NICK?&body=Hey%20Nick%2C%20saw%20the%20receptionist%20page.%20Got%2010%20min%3F" data-sms="nick">Text Nick for 10 minutes</a>
+      <a class="btn ghost" href="#start">Get my phones answered</a>
       <small>Don't take my word for it. Call it like a customer, say "my water heater is leaking," and try to stump it.</small>
     </div>
   </div>
@@ -357,14 +359,15 @@ footer a{text-decoration:none;border-bottom:2px solid currentColor}
   </div>
 </section>
 
-<section class="final">
+<section class="final" id="start">
   <div class="wrap">
     <h2>Call it. Try to stump it.</h2>
-    <p class="lead">Ask it something weird. Tell it you're in the wrong town. Then text Nick for 10 minutes and it's answering your phone in 48 hours.</p>
-    <div class="ctas">
-      <a class="btn" href="tel:+1DEMO" data-tel="demo">Call the demo line</a>
-      <a class="btn ghost" href="sms:+1NICK?&body=Hey%20Nick%2C%20I%20want%20the%20receptionist.%20When%20can%20we%20set%20up%3F" data-sms="nick">Text Nick</a>
+    <p class="lead">Ask it something weird. Tell it you're in the wrong town. Then fill this out and it's answering your phone in 48 hours.</p>
+    <div class="ctas" style="margin-bottom:1.2em">
+      <a class="btn ghost" href="tel:+1DEMO" data-tel="demo">Call the demo line</a>
     </div>
+    <div data-lead="receptionist" data-cta="Get my phones answered" data-ask="What trade, and how many trucks?"></div>
+    <p style="margin-top:1em;font-weight:600">Or call Nick: <a href="tel:+14848418501">(484) 841-8501</a></p>
   </div>
   <footer class="wrap">
     <span>Never Miss a Call is a <a href="https://tbsol.net">TB Solutions</a> product. Nick Byrd, Chester County, PA.</span>
@@ -373,11 +376,9 @@ footer a{text-decoration:none;border-bottom:2px solid currentColor}
 </section>
 
 <script>
-// ===== Edit these two numbers once the demo line is provisioned =====
+// ===== Edit this number once the demo line is provisioned =====
 const DEMO_NUMBER = "+16109986138";   // e.g. "+16105551234" (Vapi/Twilio number)
-const NICK_NUMBER = "+14848418501";   // e.g. "+14845551234"
 document.querySelectorAll('[data-tel="demo"]').forEach(a => a.href = "tel:" + DEMO_NUMBER);
-document.querySelectorAll('[data-sms="nick"]').forEach(a => a.href = a.href.replace("+1NICK", NICK_NUMBER));
 
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const wait = ms => new Promise(r => setTimeout(r, ms));
@@ -411,7 +412,7 @@ async function hero(){
 }
 hero();
 
-// ---- marquee: duplicate track for seamless loop ----
+// ---- marquee: duplicate track so the loop never breaks ----
 const track = document.getElementById("track"); track.innerHTML += track.innerHTML;
 
 // ---- the call, as texts ----
@@ -428,7 +429,7 @@ const script = [
   ["them","Dave Kerr, 41 Nutt Rd. Yeah this number"],
   ["us","You're booked, Dave. Text confirmation coming now. The tech will give you an exact price before any work starts."],
   ["sys","Customer texted ✓ · Job logged ✓"],
-  ["owner","NEW JOB (EMERGENCY) — Dave Kerr, 41 Nutt Rd 19460\nWater heater leaking, valve shut\nMon Oct 5, 7–9 AM · $89 dispatch\nCallback: (610) 555-0199"]
+  ["owner","NEW JOB (EMERGENCY): Dave Kerr, 41 Nutt Rd 19460\nWater heater leaking, valve shut\nMon Oct 5, 7–9 AM · $89 dispatch\nCallback: (610) 555-0199"]
 ];
 const msgs = document.getElementById("msgs");
 let run = 0;
