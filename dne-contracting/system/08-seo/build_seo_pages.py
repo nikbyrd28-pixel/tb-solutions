@@ -13,17 +13,17 @@ SERVICES = {
  "kitchen-remodeling": dict(name="Kitchen Remodeling", short="kitchen", type="kitchen", scene="kitchen", photo="img/subfloor.jpg",
    kw=["kitchen remodeling contractor", "kitchen renovation", "kitchen remodel cost estimate", "cabinet and countertop installation", "kitchen plumbing relocation"],
    h1="Kitchen remodeling contractor serving {area}",
-   intro="A kitchen remodel is the project most homeowners put off the longest, usually because the first few quotes felt like a sales pitch. D N E Contracting does it differently: a free in-home consultation with the owner, honest options for your actual layout, and one point of contact from demo day to the last cabinet pull.",
-   bullets=["Full kitchen renovations: layout changes, islands and peninsulas, walls opened up", "Cabinets, quartz and granite countertops, backsplash, flooring and lighting coordination", "Sinks, dishwashers, disposals, pot fillers and gas lines moved where they belong (we are plumbers first)", "Permits, inspections and a written schedule, tracked on your private project page"],
+   intro="From a tired layout to a room you actually want to cook in. Cabinets, counters, plumbing, lighting coordination and the schedule that holds it together. The owner runs the free in-home consultation herself, and the estimate comes in writing afterward.",
+   bullets=["Layout changes, islands and peninsulas", "Cabinets, countertops, backsplash and flooring", "Sinks, dishwashers, disposals and gas lines moved where they belong", "Permits, inspections and one point of contact"],
    time="Most kitchens take 3–6 weeks",
-   faq=[("How much does a kitchen remodel cost in {area}?", "It depends on layout changes, cabinet grade and how much plumbing or electrical moves. We never guess from a photo. After a free in-home visit you get a written estimate specific to your kitchen, with every line item explained. You can also use the online remodel planner for a ballpark before we visit."),
+   faq=[("How much does a kitchen remodel cost in {area}?", "It depends on layout changes, cabinet grade and how much plumbing or electrical moves. We never guess from a photo. After a free in-home visit you get a written estimate specific to your kitchen, with every line item explained. You can sketch your kitchen in the online planner before we visit."),
         ("Can you move my sink or add an island sink?", "Yes. Relocating drains and supply lines is core plumbing work for us, so you are not paying a general contractor to subcontract the part that matters most."),
         ("Do I need a permit for a kitchen remodel in {county}?", "Usually yes once plumbing, electrical or structural work is involved. We pull the permits and schedule the inspections; you do not have to deal with the township.")]),
  "bathroom-remodeling": dict(name="Bathroom Remodeling", short="bathroom", type="bathroom", scene="bathroom", photo="img/tubvalve.jpg",
    kw=["bathroom remodeling contractor", "tub to shower conversion", "walk-in shower installation", "bathroom renovation", "master bath remodel"],
    h1="Bathroom remodeling and tub-to-shower conversions in {area}",
-   intro="Bathrooms are where leaks hide and shortcuts show up two years later. We waterproof properly, tile properly, and vent properly, whether it is a hall bath refresh, a curbless walk-in shower, or a full primary bathroom renovation.",
-   bullets=["Tub-to-shower conversions and curbless, low-threshold walk-in showers", "Full gut renovations: tile, vanities, toilets, lighting, heated floors", "Proper waterproofing membranes and ventilation that actually clears the mirror", "Aging-in-place and accessibility options: grab bars, wider doors, bench seats"],
+   intro="Tub-to-shower conversions, full gut renovations, or a fresh update on a bathroom that has seen better days. The plumbing is done by the owner, and the estimate comes in writing after a free in-home visit.",
+   bullets=["Tiled and curbless showers, tubs, vanities and toilets", "Waterproofing done properly the first time", "Accessibility and aging-in-place options", "Ventilation, lighting and heated floors"],
    time="Most bathrooms take 2–4 weeks",
    faq=[("How long does a bathroom remodel take?", "A hall bath or tub-to-shower conversion usually takes 2–3 weeks; a full primary bathroom 3–4 weeks. The schedule goes in writing before we start and is tracked on your private project page."),
         ("Can you convert my tub to a walk-in shower?", "Yes, it is one of the most common projects we do in {area}. We handle the demolition, new drain, waterproofing, tile, glass and fixtures."),
@@ -31,8 +31,8 @@ SERVICES = {
  "basement-remodeling": dict(name="Basement Remodeling", short="basement", type="basement", scene="basement", photo="img/sump.jpg",
    kw=["basement finishing contractor", "basement remodeling", "basement bathroom addition", "finished basement", "sump pump installation"],
    h1="Basement finishing and basement bathroom additions in {area}",
-   intro="Most finished-basement problems start with water nobody dealt with first. We fix the drainage, sump and moisture issues, then build the family room, bathroom, laundry or wet bar you actually want down there.",
-   bullets=["Framing, insulation, drywall, flooring, recessed lighting and egress", "Basement bathrooms and laundry rooms, with sealed sewage ejector systems where needed", "Sump pumps, drain tile and moisture control before any finishes go in", "Township permits and inspections handled for you"],
+   intro="Turning the space you avoid into a room you use: bathrooms, laundry, family rooms, wet bars, and fixing the water problem first. Most basement projects start because a bathroom or laundry is going in, and that plumbing is done by the owner.",
+   bullets=["Framing, insulation, drywall and flooring", "Bathroom or laundry additions with ejector pumps where needed", "Sump pumps, drainage and moisture control before anything else", "Egress, permits and inspections"],
    time="Most basements take 3–6 weeks",
    faq=[("Can I add a bathroom to a basement with no plumbing?", "Yes. Depending on the slab and the sewer line, we either cut a single pit for a sealed ejector or tie into existing drainage. Two quotes telling you to break up half the slab is often a sign to get a third."),
         ("Do you finish basements that have had water problems?", "That is exactly where we start: we diagnose the water first and put the fix in writing before any framing or drywall."),
@@ -40,11 +40,11 @@ SERVICES = {
  "plumbing-water-heaters": dict(name="Plumbing & Water Heaters", short="plumbing", type="repair", scene="roughin", photo="img/pex.jpg",
    kw=["plumber", "water heater replacement", "tankless water heater installation", "PEX repipe", "plumbing repair"],
    h1="Plumbing repairs and water heater replacement in {area}",
-   intro="Remodeling is most of what we do, but plumbing is where we started and it still gets answered. Water heaters, leaks, repipes and fixture swaps, done by the same calm, licensed crew, just faster.",
-   bullets=["Tank and tankless water heater replacement, including gas line upsizing and venting", "Leaks, burst or frozen pipes, main shut-off valves and pressure problems", "Galvanized-to-PEX whole-house repipes with labeled manifolds", "Faucets, toilets, disposals, drains and fixture installation"],
+   intro="Remodeling is most of what we do, but plumbing is where we started. Water heaters, leaks, repipes and fixture swaps, scheduled and done by the owner.",
+   bullets=["Tank and tankless water heater replacement", "Leaks, burst pipes, frozen lines, main shut-offs", "Faucets, toilets, fixtures, drains", "Galvanized-to-PEX repipes"],
    time="Most repairs same or next day",
    faq=[("Should I switch to a tankless water heater?", "If you run out of hot water or want to free up floor space, often yes. We size the unit, upsize the gas line if needed and add isolation valves so it can be flushed each year. If a standard tank is the smarter buy for your house, we will say so."),
-        ("Do you do emergency plumbing in {area}?", "For active leaks, no hot water or sewage backups, call rather than filling out a form. Shut the main off if you can and we will talk you through it."),
+        ("How soon can you do a repair or water heater in {area}?", "Repairs and water heaters are usually same or next day. Call or text and we will give you a real time."),
         ("Are you licensed and insured?", "Yes. D N E Contracting is a registered Pennsylvania Home Improvement Contractor and fully insured, and the owner is on every job.")]),
 }
 
@@ -70,8 +70,8 @@ CSS = """:root{--paper:#fff;--paper-2:#F6F6F6;--ink:#111;--ink-2:#333;--mute:#66
 a{color:inherit}h1,h2,h3{font-family:var(--serif);font-weight:normal;line-height:1.15;margin:0 0 .5em}h1{font-size:clamp(2rem,4.5vw,3.1rem)}h2{font-size:1.7rem}h3{font-size:1.2rem}
 .wrap{max-width:var(--max);margin:0 auto;padding:0 20px}header{border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:5}
 header .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:64px}.brand{display:flex;align-items:center;gap:8px;text-decoration:none;font-family:var(--serif);font-size:1.2rem;white-space:nowrap}
-nav a{text-decoration:none;margin-left:18px;font-size:.95rem}nav .tel{font-weight:700}.btn{display:inline-block;background:var(--red);color:#fff;text-decoration:none;font-weight:700;padding:12px 18px}.btn.o{background:transparent;color:var(--ink);border:1px solid var(--ink)}
-@media(max-width:800px){nav a:not(.btn):not(.tel){display:none}nav .btn{padding:10px 12px;font-size:.9rem;white-space:nowrap}nav .tel{margin-left:0;margin-right:10px}.brand{font-size:1.05rem}}
+nav{display:flex;align-items:center;gap:14px;min-width:0}nav a{text-decoration:none;font-size:.95rem;white-space:nowrap}nav .tel{font-weight:700}nav .ico{display:none;width:44px;height:44px;background:var(--red);color:#fff;align-items:center;justify-content:center;border-radius:4px}.btn{display:inline-block;background:var(--red);color:#fff;text-decoration:none;font-weight:700;padding:12px 18px}.btn.o{background:transparent;color:var(--ink);border:1px solid var(--ink)}
+@media(max-width:800px){header .wrap{min-height:58px}nav a:not(.ico){display:none}nav .ico{display:flex}.brand{font-size:1.05rem}body{padding-bottom:64px}.sticky-call{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1.6fr;gap:8px;padding:8px 12px;background:#fff;border-top:1px solid var(--line);z-index:6}.sticky-call .btn{text-align:center}}@media(min-width:801px){.sticky-call{display:none}}
 .hero{padding:44px 0 36px;border-bottom:1px solid var(--line)}.hero .wrap{display:grid;grid-template-columns:7fr 5fr;gap:40px;align-items:center}@media(max-width:860px){.hero .wrap{grid-template-columns:1fr}}
 .crumbs{font-size:.85rem;color:var(--mute);margin-bottom:12px}.crumbs a{text-decoration:none}.lead{font-size:1.15rem;max-width:56ch;color:var(--ink-2)}.facts{color:var(--mute);font-size:.92rem}
 .photo{aspect-ratio:4/3;background:var(--paper-2);position:relative;overflow:hidden;border:1px solid var(--line)}.photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -79,9 +79,10 @@ nav a{text-decoration:none;margin-left:18px;font-size:.95rem}nav .tel{font-weigh
 .sec{padding:40px 0}.sec.alt{background:var(--paper-2)}.cols{display:grid;grid-template-columns:1fr 1fr;gap:40px}@media(max-width:800px){.cols{grid-template-columns:1fr}}
 ul.checks{padding-left:0;list-style:none}ul.checks li{padding:8px 0 8px 28px;position:relative;border-bottom:1px solid var(--line)}ul.checks li::before{content:"✓";position:absolute;left:0;color:var(--red);font-weight:700}
 .chips a{display:inline-block;border:1px solid var(--line);padding:6px 10px;margin:0 8px 8px 0;text-decoration:none;font-size:.92rem;background:#fff}.chips a:hover{border-color:var(--ink)}
+.svclist{list-style:none;padding:0;margin:0}.svclist li{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.svclist a{text-decoration:none}.svclist span{color:var(--mute);font-size:.9rem;white-space:nowrap}
 .faq details{border-top:1px solid var(--line);padding:12px 0}.faq summary{cursor:pointer;font-family:var(--serif);font-size:1.15rem}.faq p{color:var(--ink-2);margin:8px 0 0}
-.cta{background:var(--navy);color:#fff;padding:44px 0}.cta .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}.cta h2{margin:0}.cta p{margin:4px 0 0;color:#cfd8e2}.cta .btn{background:#fff;color:var(--navy)}
-footer{background:var(--paper-2);border-top:1px solid var(--line);padding:40px 0 24px;font-size:.95rem}footer .grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:28px}@media(max-width:800px){footer .grid{grid-template-columns:1fr 1fr}}
+.cta{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:40px 0}.cta .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}.cta h2{margin:0}.cta p{margin:4px 0 0;color:var(--ink-2)}
+footer{background:var(--paper-2);border-top:1px solid var(--line);padding:40px 0 24px;font-size:.95rem}footer .grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:28px}@media(max-width:800px){footer .grid{grid-template-columns:1fr;text-align:center;gap:26px}footer .brand{justify-content:center}footer p{margin-left:auto;margin-right:auto}}
 footer h4{margin:0 0 10px;font-family:var(--sans);font-size:.95rem}footer a{display:block;text-decoration:none;color:var(--ink-2);margin-bottom:6px}footer .fine{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;border-top:1px solid var(--line);margin-top:28px;padding-top:16px;color:var(--mute);font-size:.85rem}footer .fine a{display:inline}
 .proj{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}@media(max-width:900px){.proj{grid-template-columns:1fr 1fr}}@media(max-width:520px){.proj{grid-template-columns:1fr}}.proj .photo{aspect-ratio:3/2}.proj b{display:block;margin-top:8px;font-family:var(--serif);font-weight:normal;font-size:1.1rem}.proj span{color:var(--mute);font-size:.9rem}
 """
@@ -108,17 +109,18 @@ def shell(title, desc, canonical, body, ld, scene_needed=True):
 <body>
 <header><div class="wrap">
  <a class="brand" href="./"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="#B8322B"/></svg><span>D N E Contracting</span></a>
- <nav aria-label="Main"><a href="./kitchen-remodeling">Kitchens</a><a href="./bathroom-remodeling">Bathrooms</a><a href="./basement-remodeling">Basements</a><a href="./plumbing-water-heaters">Plumbing</a><a href="./#projects">Our work</a><a href="./#reviews">Reviews</a><a class="tel" href="tel:{TEL}">{PHONE}</a><a class="btn" href="./#planner">Get Your Free Quote</a></nav>
+ <nav aria-label="Main"><a href="./kitchen-remodeling">Kitchens</a><a href="./bathroom-remodeling">Bathrooms</a><a href="./basement-remodeling">Basements</a><a href="./plumbing-water-heaters">Plumbing</a><a href="./#projects">Projects</a><a class="tel" href="tel:{TEL}">{PHONE}</a><a class="btn" href="./#planner">Book a free consultation</a><a class="ico" href="tel:{TEL}" aria-label="Call"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L8 9.7a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.6 2.6.7a2 2 0 0 1 1.7 2z"/></svg></a></nav>
 </div></header>
 <main>
 {body}
 </main>
+<div class="sticky-call"><a class="btn o" href="tel:{TEL}">Call</a><a class="btn" href="./#planner">Book a free consultation</a></div>
 <footer><div class="wrap">
  <div class="grid">
-  <div><a class="brand" href="./" style="margin-bottom:10px"><span>D N E Contracting</span></a><p style="max-width:40ch;color:var(--ink-2)">Women-owned kitchen, bathroom and basement remodeling, plus plumbing and water heaters, serving Chester County, the 422 corridor and greater Philadelphia.</p><p>PA HIC #PA096110 · Fully insured</p></div>
+  <div><a class="brand" href="./" style="margin-bottom:10px"><span>D N E Contracting</span></a><p style="max-width:40ch;color:var(--ink-2)">Women-owned kitchen, bathroom and basement remodeling, plus plumbing and water heaters. Chester and Montgomery counties, the 422 corridor and greater Philadelphia.</p><p>PA HIC #PA096110 · Fully insured</p></div>
   <div><h4>Services</h4>{''.join(f'<a href="./{s}">{v["name"]}</a>' for s,v in SERVICES.items())}<a href="./#planner">Online remodel planner</a></div>
   <div><h4>Areas we serve</h4>{''.join(f'<a href="./remodeling-{t["slug"]}">{t["name"]}, PA</a>' for t in TOWNS)}</div>
-  <div><h4>Company</h4><a href="./#about">About the owner</a><a href="./#projects">Our work</a><a href="./#reviews">Reviews</a><a href="./#faq">FAQ</a><a href="./#refer">Refer a friend</a><a href="./#portal">Client portal</a><a href="tel:{TEL}">{PHONE}</a><a href="mailto:{EMAIL}">{EMAIL}</a></div>
+  <div><h4>Company</h4><a href="./#about">About</a><a href="./#projects">Projects</a><a href="./#reviews">Reviews</a><a href="./#faq">FAQ</a><a href="./#refer">Refer a friend</a><a href="./#portal">Client portal</a><a href="tel:{TEL}">{PHONE}</a><a href="mailto:{EMAIL}">{EMAIL}</a></div>
  </div>
  <div class="fine"><span>© {datetime.date.today().year} D N E Contracting</span><span>Website by <a href="https://tbsol.net">TB Solutions</a></span></div>
 </div></footer>
@@ -139,10 +141,10 @@ def scene(sc, photo, alt, var=0):
     return f'<div class="photo s3d" data-scene="{sc}" data-var="{var}"><img src="./{photo}" alt="{e(alt)}" loading="lazy"></div>'
 
 def service_page(slug, S):
-    area = "Chester County and the 422 corridor"; county = "Chester County"
+    area = "Chester and Montgomery counties"; county = "Chester County"
     url = f"{SITE}/{slug}"
     title = f"{S['name']} in Chester County & the 422 Corridor | D N E Contracting"
-    desc = f"Women-owned {S['name'].lower()} contractor serving West Chester, Exton, Phoenixville, Royersford and greater Philadelphia. Free in-home consultation, written estimates, owner on every job. Call {PHONE}."
+    desc = f"Women-owned {S['name'].lower()} contractor serving Chester and Montgomery counties, the 422 corridor and greater Philadelphia. Free in-home consultation, written estimates, owner on every job. Call {PHONE}."
     faq = [(q.format(area=area, county=county), a.format(area=area, county=county)) for q,a in S["faq"]]
     towns = ''.join(f'<a href="./remodeling-{t["slug"]}">{S["name"]} in {t["name"]}</a>' for t in TOWNS)
     others = ''.join(f'<a href="./{k}">{v["name"]}</a>' for k,v in SERVICES.items() if k!=slug)
@@ -151,21 +153,21 @@ def service_page(slug, S):
  <div><div class="crumbs"><a href="./">Home</a> › {e(S['name'])}</div>
   <h1>{e(S['h1'].format(area=area))}</h1>
   <p class="lead">{e(S['intro'])}</p>
-  <p><a class="btn" href="./#planner?type={S['type']}">Start with the free planner</a> &nbsp; <a class="btn o" href="tel:{TEL}">Call or text {PHONE}</a></p>
+  <p><a class="btn" href="./#planner?type={S['type']}">Book a free consultation</a> &nbsp; <a class="btn o" href="tel:{TEL}">Call or text {PHONE}</a></p>
   <p class="facts">Licensed &amp; insured · Women-owned · {e(S['time'])} · Serving Chester County, the 422 corridor and greater Philadelphia</p></div>
- {scene(S['scene'], S['photo'], f"3D rendering of a {S['short']} remodel by D N E Contracting")}
+ {scene(S['scene'], S['photo'], f"3D rendering of a {S['short']} remodel at the plumbing stage")}
 </div></section>
 <section class="sec"><div class="wrap cols">
  <div><h2>What a D N E {S['short']} project includes</h2><ul class="checks">{''.join(f'<li>{e(b)}</li>' for b in S['bullets'])}</ul></div>
  <div><h2>How the free consultation works</h2>
-  <p>The owner comes to your home, walks the space with you and asks what is bugging you about it. No clipboard close, no "sign today" pricing. You get a written estimate specific to your house a few days later, and you decide on your own time.</p>
-  <p>Before the visit you can sketch your room in the <a href="./#planner?type={S['type']}">online remodel planner</a>, see it in 3D, and get a realistic ballpark so the conversation starts from real numbers.</p>
+  <p>The owner comes to your home, walks the space with you and asks what is bugging you about it. A few days later you get a written estimate specific to your house, and you decide on your own time.</p>
+  <p>Before the visit you can sketch your room in the <a href="./#planner?type={S['type']}">online planner</a>. The estimate comes in writing after the visit.</p>
   <p>Every client gets a <a href="./#portal">private project page</a> with photos, the schedule and payments, so you always know where things stand.</p>
   <h3 style="margin-top:22px">Other services</h3><div class="chips">{others}</div></div>
 </div></section>
 <section class="sec alt"><div class="wrap"><h2>{e(S['name'])} questions we hear most</h2>{faq_html(faq)}</div></section>
-<section class="sec"><div class="wrap"><h2>Where we do {S['short']} work</h2><p class="facts">Chester County is home base for remodeling, and we cover the 422 corridor and greater Philadelphia.</p><div class="chips">{towns}</div></div></section>
-<section class="cta"><div class="wrap"><div><h2>Ready to talk about your {S['short']}?</h2><p>Free, in your home, no pressure. You never have to decide on the spot.</p></div><a class="btn" href="./#planner?type={S['type']}">Book a free consultation</a></div></section>
+<section class="sec"><div class="wrap"><h2>Where we do {S['short']} work</h2><p class="facts">Chester and Montgomery counties and the 422 corridor, plus Bucks, Delaware and Philadelphia counties and nearby South Jersey.</p><div class="chips">{towns}</div></div></section>
+<section class="cta"><div class="wrap"><div><h2>Book a free consultation</h2><p>In your home. Nothing to decide on the spot.</p></div><a class="btn" href="./#planner?type={S['type']}">Book a visit</a></div></section>
 """
     ld = {"@context":"https://schema.org","@graph":[
         {"@type":"Service","@id":url+"#service","name":S["name"],"serviceType":S["name"],"provider":biz_ld(),"areaServed":[{"@type":"AdministrativeArea","name":"Chester County, PA"},{"@type":"AdministrativeArea","name":"Montgomery County, PA"},{"@type":"Place","name":"422 corridor, PA"},{"@type":"City","name":"Philadelphia"}],"url":url,"description":S["intro"],
@@ -178,27 +180,27 @@ def town_page(t):
     slug = f"remodeling-{t['slug']}"; url = f"{SITE}/{slug}"; area = f"{t['name']}, PA"; county = t["county"]
     title = f"Kitchen, Bathroom & Basement Remodeling in {t['name']}, PA | D N E Contracting"
     desc = f"Women-owned remodeling contractor and plumber serving {t['name']} ({t['zip']}) and {county}. Kitchen, bathroom and basement remodels start to finish, water heaters and repairs. Free in-home consultation. {PHONE}."
-    faq = [(f"Do you serve all of {t['name']}?", f"Yes, {t['name']} and the surrounding parts of {county} are inside our regular service area, so there is no travel surcharge and we can usually schedule a free consultation within the week."),
+    faq = [(f"Do you serve all of {t['name']}?", f"Yes. {t['name']} and the surrounding parts of {county} are inside our regular service area."),
            (f"What permits do remodels need in {t['name']}?", f"Kitchens, bathrooms and finished basements almost always need township permits once plumbing, electrical or structural work is involved. We pull them and schedule the inspections for you."),
-           (f"Can I get a ballpark before you visit my {t['name']} home?", "Yes. Sketch the room in the online remodel planner, see it in 3D and get a realistic range. The exact number comes in writing after the free in-home visit.")]
-    svcs = ''.join(f"""<div><a href="./{k}" style="text-decoration:none">{scene(v['scene'], v['photo'], f"3D rendering of a {v['short']} remodel in {t['name']}, PA", i%3)}<b>{v['name']} in {t['name']}</b></a><span>{e(v['time'])}</span></div>""" for i,(k,v) in enumerate(SERVICES.items()))
+           (f"Can I get a price before you visit my {t['name']} home?", "Not a real one. A number before anyone has stood in the room is a guess. You can sketch the room in the online planner before the visit, and the estimate comes in writing after it.")]
+    svcs = ''.join(f"""<li><a href="./{k}"><b>{v['name']}</b></a><span>{e(v['time'])}</span></li>""" for k,v in SERVICES.items())
     near = ''.join(f'<a href="./remodeling-{n}">{TOWN_BY[n]["name"]}</a>' for n in t["near"] if n in TOWN_BY)
     body = f"""
 <section class="hero"><div class="wrap">
  <div><div class="crumbs"><a href="./">Home</a> › Areas we serve › {e(t['name'])}</div>
   <h1>Kitchen, bathroom and basement remodeling in {e(t['name'])}, PA</h1>
-  <p class="lead">D N E Contracting is a women-owned remodeling contractor and licensed plumber serving {e(t['name'])} and {e(county)}. We know the local housing stock: {e(t['note'])}. The consultation is free, in your home, and you never have to decide on the spot.</p>
-  <p><a class="btn" href="./#planner">Get your free quote</a> &nbsp; <a class="btn o" href="tel:{TEL}">Call or text {PHONE}</a></p>
+  <p class="lead">D N E Contracting is a women-owned remodeling contractor and licensed plumber serving {e(t['name'])} and {e(county)}. Kitchen, bathroom and basement remodels, plus plumbing repairs and water heaters. The consultation is free, in your home, and you never have to decide on the spot.</p>
+  <p><a class="btn" href="./#planner">Book a free consultation</a> &nbsp; <a class="btn o" href="tel:{TEL}">Call or text {PHONE}</a></p>
   <p class="facts">Licensed &amp; insured · Owner on every job · Serving {e(t['name'])} {t['zip']} and all of {e(county)}</p></div>
  {scene('plans', 'img/plans.jpg', f"Planning a remodel at the kitchen table in {t['name']}, PA")}
 </div></section>
-<section class="sec"><div class="wrap"><h2>What we do in {e(t['name'])}</h2><div class="proj">{svcs}</div></div></section>
+<section class="sec"><div class="wrap cols"><div><h2>What we do in {e(t['name'])}</h2><ul class="svclist">{svcs}</ul></div>{scene(SERVICES['kitchen-remodeling']['scene'], SERVICES['kitchen-remodeling']['photo'], "3D rendering of a kitchen remodel at the plumbing stage", 1)}</div></section>
 <section class="sec alt"><div class="wrap cols">
- <div><h2>Why {e(t['name'])} homeowners call us</h2><ul class="checks"><li>Free, no-pressure in-home consultation with the owner</li><li>Plumbers first, so the part of the remodel that leaks is done by the people who own it</li><li>Written estimates and schedules, tracked on a private project page</li><li>Permits and inspections with {e(t['name'])}'s township handled for you</li><li>Clean job sites, shoes off at the door, one point of contact</li></ul></div>
+ <div><h2>How we work in {e(t['name'])}</h2><ul class="checks"><li>Free in-home consultation with the owner</li><li>The plumbing is done by the owner, not subcontracted</li><li>Written estimates and schedules</li><li>Permits and inspections handled for you</li><li>Shoes off at the door, one point of contact</li></ul></div>
  <div><h2>{e(t['name'])} remodeling questions</h2>{faq_html(faq)}</div>
 </div></section>
 <section class="sec"><div class="wrap"><h2>Nearby areas we also serve</h2><div class="chips">{near}<a href="./#contact">Somewhere else nearby? Ask</a></div></div></section>
-<section class="cta"><div class="wrap"><div><h2>Thinking about a project in {e(t['name'])}?</h2><p>Sketch it in the planner or just call. Either way, the visit is free.</p></div><a class="btn" href="./#planner">Book a free consultation</a></div></section>
+<section class="cta"><div class="wrap"><div><h2>Book a free consultation in {e(t['name'])}</h2><p>In your home. Nothing to decide on the spot.</p></div><a class="btn" href="./#planner">Book a visit</a></div></section>
 """
     ld = {"@context":"https://schema.org","@graph":[
         {"@type":"WebPage","@id":url,"url":url,"name":title,"isPartOf":{"@id":f"{SITE}/#website"},"about":biz_ld(),"description":desc},
