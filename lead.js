@@ -69,7 +69,7 @@
       '<input name="business" placeholder="Company name (optional)" autocomplete="organization"></div>' +
       '<textarea name="goal" placeholder="' + esc(ask) + '"></textarea>' +
       '<input class="hp" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">' +
-      '<label class="consent"><input type="checkbox" name="sms_consent" value="1"><span>' + esc(CONSENT).replace("Reply STOP", "Reply <b>STOP</b>") + ' See our <a href="/sms-terms/" target="_blank" rel="noopener">SMS terms</a>.</span></label>' +
+      '<label class="consent"><input type="checkbox" name="sms_consent" value="1"><span>' + esc(CONSENT).replace("Reply STOP", "Reply <b>STOP</b>") + ' See our <a href="/sms-terms/" target="_blank" rel="noopener">SMS terms</a> and <a href="/privacy/" target="_blank" rel="noopener">privacy policy</a>.</span></label>' +
       '<label class="consent"><input type="checkbox" name="age_terms" value="1" required><span>' + esc(AGE_TERMS) + ' <a href="/terms/" target="_blank" rel="noopener">Terms of service</a> and <a href="/privacy/" target="_blank" rel="noopener">privacy policy</a>.</span></label>' +
       '<div class="err" role="alert"></div>' +
       '<button type="submit">' + esc(cta) + ' →</button>' +
@@ -81,7 +81,7 @@
       err.style.display = "none";
       var d = {};
       ["name", "phone", "email", "business", "goal", "_honey"].forEach(function (k) { d[k] = f.elements[k].value.trim(); });
-      var hasPhone = d.phone.replace(/\D/g, "").length >= 10;
+      var digits = d.phone.replace(/\D/g, ""), hasPhone = digits.length === 10 || (digits.length === 11 && digits[0] === "1");
       d.sms_consent = hasPhone && !!f.elements.sms_consent.checked;
       d.sms_consent_text = d.sms_consent ? CONSENT : "";
       d.age_terms = !!f.elements.age_terms.checked;

@@ -12,6 +12,9 @@ const OFFERS: Record<string, string> = {
   leads: "Google Guaranteed Setup", rank: "Google Rank Fix", bundle: "The Works", general: "Not sure yet",
 };
 
+// Canonical consent wording (mirrors lead.js). Stored server-side so the record can't be spoofed by a crafted POST.
+const SMS_CONSENT_TEXT = "Yes, text me. By checking this box I agree to receive text messages from TB Solutions at the number above about my request. Message frequency varies. Message and data rates may apply. Reply STOP to cancel or HELP for help. Consent is not required to buy anything; leave it unchecked and Nick will call instead.";
+const AGE_TERMS_TEXT = "I am 18 years of age or older and I agree to the Terms of service and privacy policy.";
 function phoneE164(s: string): string | null { const d = String(s || "").replace(/\D/g, ""); return d.length === 10 ? `+1${d}` : d.length === 11 && d[0] === "1" ? `+${d}` : null; }
 const S = (v: unknown, n = 200) => v == null || v === "" ? null : String(v).slice(0, n).trim();
 
@@ -52,8 +55,8 @@ Deno.serve(async (req) => {
     interest: offer, goal: S(b.goal, 500), about: S(b.trade, 40),
     ref: [page, S(b.utm, 200)].filter(Boolean).join(" "),
     status: "new", notes: consent ? null : phone ? "No SMS consent: CALL, don't text." : "No phone given: EMAIL only.",
-    sms_consent: consent, sms_consent_at: consent ? new Date().toISOString() : null, sms_consent_text: consent ? S(b.sms_consent_text, 600) : null,
-    age_terms: ageTerms, age_terms_at: new Date().toISOString(), age_terms_text: S(b.age_terms_text, 300),
+    sms_consent: consent, sms_consent_at: consent ? new Date().toISOString() : null, sms_consent_text: consent ? SMS_CONSENT_TEXT : null,
+    age_terms: ageTerms, age_terms_at: new Date().toISOString(), age_terms_text: AGE_TERMS_TEXT,
     ip: req.headers.get("x-forwarded-for")?.split(",")[0] || null, user_agent: req.headers.get("user-agent")?.slice(0, 300) || null,
   };
   const r = await fetch(`${SB_URL}/rest/v1/intakes`, { method: "POST", headers: { apikey: SERVICE, Authorization: `Bearer ${SERVICE}`, "Content-Type": "application/json", Prefer: "return=representation" }, body: JSON.stringify(row) });
