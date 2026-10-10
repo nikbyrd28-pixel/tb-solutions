@@ -1,9 +1,9 @@
 {
   "agent": "seo",
   "name": "SEO build",
-  "lastBuild": "2026-10-08T11:16:42.432Z",
+  "lastBuild": "2026-10-10T11:21:31.208Z",
   "pages": 11,
-  "sitemapUrls": 21,
+  "sitemapUrls": 22,
   "clusters": {
     "services": 5,
     "trades": 3,

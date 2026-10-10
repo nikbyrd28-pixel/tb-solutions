@@ -20,19 +20,22 @@
 <script defer src="/track.js"></script>
 <script defer src="/lead.js"></script>
 <style>
-/* breadcrumb + related-service list, unique to the /services/ pages */
-.crumb{font-size:.9rem;color:var(--mute);font-weight:500;padding:14px 0 0}
+/* breadcrumb, long-form prose and card list, unique to the generated pages */
+.crumb{font-size:.9rem;color:var(--mute);font-weight:500}
 .crumb a{color:var(--mute);text-decoration:none}
 .crumb a:hover{color:var(--ink)}
 .nav .back{white-space:nowrap}
+.prose{max-width:42em}
 .prose h2{margin-top:1.6em;font-size:clamp(26px,3vw,36px);margin-bottom:.35em}
 .prose h2:first-child{margin-top:0}
 .prose p{margin-bottom:1em;max-width:40em}
+.prose ul,.prose ol{padding-left:1.2em;margin-bottom:1em}
+.prose li{margin:.35em 0}
 .towns{color:var(--ink-2);font-weight:500}
-.more{list-style:none;display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));margin-top:1.2em}
-.more a{display:block;background:var(--white);border:1px solid var(--line-2);border-radius:var(--r-lg);padding:16px 18px;text-decoration:none;color:var(--ink);font-family:var(--display);font-weight:700;font-size:1.25rem;box-shadow:var(--shadow);transition:transform .15s}
+.more{list-style:none;display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));margin:1.2em 0}
+.more a{display:block;background:var(--white);border:1px solid var(--line-2);border-radius:var(--r-lg);padding:16px 18px;text-decoration:none;color:var(--ink);font-family:var(--display);font-weight:700;font-size:1.25rem;line-height:1.1;box-shadow:var(--shadow);transition:transform .15s}
 .more a:hover{transform:translateY(-2px)}
-.more a small{display:block;font-family:var(--text);color:var(--mute);font-weight:500;font-size:.9rem;margin-top:3px}
+.more a small{display:block;font-family:var(--text);color:var(--mute);font-weight:500;font-size:.9rem;line-height:1.4;margin-top:5px}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://tbsol.net/"},{"@type":"ListItem","position":2,"name":"Services","item":"https://tbsol.net/services/"},{"@type":"ListItem","position":3,"name":"Job-Ready Website","item":"https://tbsol.net/services/websites-for-contractors/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How long does it take?","acceptedAnswer":{"@type":"Answer","text":"Live in a week, assuming you can get me your service area, your hours and a few photos of real work."}},{"@type":"Question","name":"Do I own it?","acceptedAnswer":{"@type":"Answer","text":"Yes. Your domain, your content, your Google account. Always yours."}}]}</script>
@@ -104,7 +107,7 @@
     <div>
       <div class="eyebrow">Get started</div>
       <h2>Hear it before you buy it</h2>
-      <p>Call the demo line and you will hear exactly what goes on your phone. Or leave your number and I will text you. No salesman.</p>
+      <p>Call the demo line and you will hear exactly what goes on your phone. Or leave your number and I will text you what I would do and what it costs. No salesman.</p>
       <div class="ctas" style="margin-top:1.2em"><a class="btn ghost" href="tel:+16109986138">Call (610) 998-6138</a></div>
       <p style="margin-top:1.2em;font-weight:600">Or call Nick: <a href="tel:+14848418501">(484) 841-8501</a></p>
     </div>
@@ -119,7 +122,7 @@
     <span><span class="brand">TB Solutions</span> · Nick Byrd · Pottstown, PA · Serving Chester &amp; Montgomery County · <a href="tel:+14848418501">(484) 841-8501</a></span>
     <span><a href="/websites/">Websites</a> · <a href="/receptionist/">Phones</a> · <a href="/reviews/">Reviews</a> · <a href="/rank/">Google rank</a> · <a href="/offers/">All offers</a> · <a href="/sms-terms/">SMS terms</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></span>
   </div>
-  <div class="wrap" style="margin-top:10px"><span>Serving Chester County, Montgomery County and the 422 corridor · <a href="/offers/">All offers and prices</a> · Not affiliated with Google or Housecall Pro.</span></div>
+  <div class="wrap" style="margin-top:10px"><span>Serving Chester County, Montgomery County and the 422 corridor · <a href="/offers/">All offers and prices</a> · <a href="/">Home</a> · Not affiliated with Google or Housecall Pro.</span></div>
 </footer>
 
 </body>

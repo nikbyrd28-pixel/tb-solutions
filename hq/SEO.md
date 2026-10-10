@@ -14,6 +14,11 @@ node tools/seo-build.mjs && node tools/seo-check.mjs
 ```
 
 **Never hand-edit anything under `/services/`, `/for/` or `/guides/`.** The build overwrites it.
+(2026-10-10: the site.css port and the lead forms had been hand-edited into the generated pages, so the
+first rebuild would have thrown them away. The template in `seo-build.mjs` now emits that layout —
+navy header, hero + price tag, prose band, `lead.js` form with SMS consent, shared footer — and the
+copy-pass wording lives in `seo-data.mjs`. If the look of those pages needs to change, change the
+template, not the HTML.)
 Hand-built pages (`/`, `/receptionist/`, `/offers/`, `/leads/`, …) are left alone and stay in the
 sitemap — the checker reports their problems as notes rather than failing on them.
 
@@ -37,7 +42,7 @@ Two tables, both shown in HQ → Agents under the SEO card:
 | Cluster | Pages | Targets |
 |---|---|---|
 | `/services/` | 4 + hub | "ai receptionist for contractors", "local services ads management", "google review automation", "websites for plumbers" |
-| `/for/` | 3 | "answering service for plumbers / HVAC / electricians" + Chester County. `/for/plumbers/` has its own title, body and FAQ written for "plumbing answering service" / "ai answering service for plumbers" (2026-10-07); `/for/electricians/` for "electrician answering service" (2026-10-08 — estimate visits vs service calls, the GFCI and breaker steps, the 911-first rule); HVAC still runs the shared template until "hvac after hours answering service" gets its run. A trade gets `title / h1 / desc / body / faq` in `TRADES` only when there is a keyword behind it and 400 honest words to put under it. |
+| `/for/` | 3 | "answering service for plumbers / HVAC / electricians" + Chester County. `/for/plumbers/` has its own title, body and FAQ written for "plumbing answering service" / "ai answering service for plumbers" (2026-10-07); `/for/electricians/` for "electrician answering service" (2026-10-08 — estimate visits vs service calls, the GFCI and breaker steps, the 911-first rule); `/for/hvac-companies/` for "hvac after hours answering service" (2026-10-10 — the phone checks before a truck rolls: thermostat batteries, furnace switch, breaker, oil in the tank, frozen coil; gas smell and CO as leave-the-house calls; the November-to-March no-heat rule). A trade gets `title / h1 / desc / body / faq` in `TRADES` only when there is a keyword behind it and 400 honest words to put under it. |
 | `/guides/` | 2 + hub | "what a missed call costs a contractor", "contractors weekend calls" |
 
 All 11 pass the gate: unique titles under 62 characters, unique descriptions, one `<h1>`,

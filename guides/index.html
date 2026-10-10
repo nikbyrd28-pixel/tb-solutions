@@ -20,7 +20,7 @@
 <script defer src="/track.js"></script>
 <script defer src="/lead.js"></script>
 <style>
-/* breadcrumb, prose and card list, unique to the /guides/ pages */
+/* breadcrumb, long-form prose and card list, unique to the generated pages */
 .crumb{font-size:.9rem;color:var(--mute);font-weight:500}
 .crumb a{color:var(--mute);text-decoration:none}
 .crumb a:hover{color:var(--ink)}
@@ -28,15 +28,14 @@
 .prose{max-width:42em}
 .prose h2{margin-top:1.6em;font-size:clamp(26px,3vw,36px);margin-bottom:.35em}
 .prose h2:first-child{margin-top:0}
-.prose p{margin-bottom:1em}
+.prose p{margin-bottom:1em;max-width:40em}
 .prose ul,.prose ol{padding-left:1.2em;margin-bottom:1em}
 .prose li{margin:.35em 0}
+.towns{color:var(--ink-2);font-weight:500}
 .more{list-style:none;display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));margin:1.2em 0}
 .more a{display:block;background:var(--white);border:1px solid var(--line-2);border-radius:var(--r-lg);padding:16px 18px;text-decoration:none;color:var(--ink);font-family:var(--display);font-weight:700;font-size:1.25rem;line-height:1.1;box-shadow:var(--shadow);transition:transform .15s}
 .more a:hover{transform:translateY(-2px)}
 .more a small{display:block;font-family:var(--text);color:var(--mute);font-weight:500;font-size:.9rem;line-height:1.4;margin-top:5px}
-.more.guides{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
-.more.guides a{padding:22px 24px;font-size:1.5rem}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://tbsol.net/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://tbsol.net/guides/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do you publish on a schedule?","acceptedAnswer":{"@type":"Answer","text":"No. A guide goes up when there is something worth saying. Filler on a schedule is how sites get buried."}},{"@type":"Question","name":"Can I use this with my own guys?","acceptedAnswer":{"@type":"Answer","text":"Yes. Send the missed-call one to anyone who thinks the phone is handled."}}]}</script>
@@ -55,11 +54,14 @@
 
 <section class="hero">
   <div class="wrap">
-    <p class="crumb" style="margin-bottom:1.2em"><a href="/">Home</a> › Guides</p>
-    <div class="eyebrow">Guides</div>
-    <h1><mark>Guides</mark></h1>
-    <p class="lead">Short, specific, and written for somebody who runs a truck.</p>
-    <ul class="more guides"><li><a href="/guides/what-a-missed-call-costs-a-contractor/">What a Missed Call Actually Costs a Contractor<small>Count last month's missed calls, multiply by your job value, and see what a ringing-out phone is costing you.</small></a></li><li><a href="/guides/why-contractors-lose-weekend-calls/">Why Contractors Lose Weekend Calls<small>Marking yourself closed on Saturday does not stop the calls, it just hands the emergencies to the next shop.</small></a></li></ul>
+    <div>
+      <p class="crumb" style="padding:0;margin-bottom:1.2em"><a href="/">Home</a> › Guides</p>
+      <div class="eyebrow">Guides</div>
+      <h1><mark>Guides</mark></h1>
+      <p class="lead">Short, specific, and written for somebody who runs a truck.</p>
+      <ul class="more guides"><li><a href="/guides/what-a-missed-call-costs-a-contractor/">What a Missed Call Actually Costs a Contractor<small>Count last month's missed calls, multiply by your job value, and see what a ringing-out phone is costing you.</small></a></li><li><a href="/guides/why-contractors-lose-weekend-calls/">Why Contractors Lose Weekend Calls<small>Marking yourself closed on Saturday does not stop the calls, it just hands the emergencies to the next shop.</small></a></li></ul>
+    </div>
+    
   </div>
 </section>
 
@@ -73,7 +75,7 @@
   </div>
 </section>
 
-<section>
+<section class="band">
   <div class="wrap">
     <div class="eyebrow">Questions</div>
     <h2>Questions people actually ask</h2>
@@ -84,14 +86,14 @@
   </div>
 </section>
 
-<section class="band" id="start">
+<section class="on-dark" id="start">
   <div class="wrap two">
     <div>
       <div class="eyebrow">Get started</div>
       <h2>Hear it before you buy it</h2>
-      <p>Call the demo line and you will hear exactly what goes on your phone. Or leave your number and I will text you what I'd do and what it costs. No salesman.</p>
-      <div class="ctas" style="margin-top:1.2em"><a class="btn ghost" href="tel:+16109986138">Call the demo line</a></div>
-      <p class="fine">Demo line: <a href="tel:+16109986138">(610) 998-6138</a> · Or call Nick: <a href="tel:+14848418501">(484) 841-8501</a></p>
+      <p>Call the demo line and you will hear exactly what goes on your phone. Or leave your number and I will text you what I would do and what it costs. No salesman.</p>
+      <div class="ctas" style="margin-top:1.2em"><a class="btn ghost" href="tel:+16109986138">Call (610) 998-6138</a></div>
+      <p style="margin-top:1.2em;font-weight:600">Or call Nick: <a href="tel:+14848418501">(484) 841-8501</a></p>
     </div>
     <div class="panel">
       <div data-lead="general" data-cta="Text me what it costs"></div>
