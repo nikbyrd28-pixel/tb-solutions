@@ -49,6 +49,7 @@
   var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
 
   var CONSENT = "Yes, text me. By checking this box I agree to receive text messages from TB Solutions at the number above about my request. Message frequency varies. Message and data rates may apply. Reply STOP to cancel or HELP for help. Consent is not required to buy anything; leave it unchecked and Nick will call instead.";
+  var AGE_TERMS = "I am 18 years of age or older and I agree to the";
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function utm() { try { return (window.adSrc && window.adSrc()) || ""; } catch (e) { return ""; } }
 
@@ -63,11 +64,13 @@
     f.innerHTML =
       '<div class="who"><img src="/img/nick-320.webp" width="52" height="52" alt="Nick Byrd" loading="lazy"><div><b>Nick Byrd, owner</b><span>Pottstown, PA. You deal with me, not a sales team.</span></div></div>' +
       '<div class="r"><input name="name" placeholder="Your name" autocomplete="name" required>' +
-      '<input name="phone" type="tel" placeholder="Cell number" autocomplete="tel" inputmode="tel" required></div>' +
-      '<input name="business" placeholder="Company name (optional)" autocomplete="organization">' +
+      '<input name="phone" type="tel" placeholder="Cell number (optional)" autocomplete="tel" inputmode="tel"></div>' +
+      '<div class="r"><input name="email" type="email" placeholder="Email (optional)" autocomplete="email" inputmode="email">' +
+      '<input name="business" placeholder="Company name (optional)" autocomplete="organization"></div>' +
       '<textarea name="goal" placeholder="' + esc(ask) + '"></textarea>' +
       '<input class="hp" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">' +
-      '<label class="consent"><input type="checkbox" name="sms_consent" value="1"><span>' + esc(CONSENT).replace("Reply STOP", "Reply <b>STOP</b>") + ' See our <a href="/sms-terms/" target="_blank" rel="noopener">SMS terms</a> and <a href="/privacy/" target="_blank" rel="noopener">privacy policy</a>.</span></label>' +
+      '<label class="consent"><input type="checkbox" name="sms_consent" value="1"><span>' + esc(CONSENT).replace("Reply STOP", "Reply <b>STOP</b>") + ' See our <a href="/sms-terms/" target="_blank" rel="noopener">SMS terms</a>.</span></label>' +
+      '<label class="consent"><input type="checkbox" name="age_terms" value="1" required><span>' + esc(AGE_TERMS) + ' <a href="/terms/" target="_blank" rel="noopener">Terms of service</a> and <a href="/privacy/" target="_blank" rel="noopener">privacy policy</a>.</span></label>' +
       '<div class="err" role="alert"></div>' +
       '<button type="submit">' + esc(cta) + ' →</button>' +
       '<div class="fine">Nick gets back to you within the hour, 8am–8pm. No contract, no pitch.</div>';
@@ -77,11 +80,18 @@
       e.preventDefault();
       err.style.display = "none";
       var d = {};
-      ["name", "phone", "business", "goal", "_honey"].forEach(function (k) { d[k] = f.elements[k].value.trim(); });
-      d.sms_consent = !!f.elements.sms_consent.checked;
+      ["name", "phone", "email", "business", "goal", "_honey"].forEach(function (k) { d[k] = f.elements[k].value.trim(); });
+      var hasPhone = d.phone.replace(/\D/g, "").length >= 10;
+      d.sms_consent = hasPhone && !!f.elements.sms_consent.checked;
       d.sms_consent_text = d.sms_consent ? CONSENT : "";
+      d.age_terms = !!f.elements.age_terms.checked;
+      d.age_terms_text = d.age_terms ? AGE_TERMS + " Terms of service and privacy policy." : "";
       if (!d.name) return fail("What should Nick call you?");
-      if (d.phone.replace(/\D/g, "").length < 10) return fail("Enter a 10-digit cell number so Nick can text you.");
+      if (d.phone && !hasPhone) return fail("That cell number needs 10 digits.");
+      if (d.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) return fail("That email doesn't look right.");
+      if (!hasPhone && !d.email) return fail("Leave a cell number or an email so Nick can reach you.");
+      if (f.elements.sms_consent.checked && !hasPhone) return fail("Add your cell number if you'd like Nick to text you.");
+      if (!d.age_terms) return fail("Please confirm you're 18 or older and agree to the terms.");
       d.offer = offer; d.page = location.pathname; d.utm = utm();
       btn.disabled = true; btn.textContent = "Sending…";
       fetch(URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(d) })
@@ -90,7 +100,7 @@
           if (!j.ok) return fail(j.error || "Couldn't send that.");
           try { window.trackLead && window.trackLead(offer); } catch (x) {}
           var first = d.name.split(" ")[0];
-          f.innerHTML = '<div class="ok">Got it, ' + esc(first) + '. Nick will ' + (d.sms_consent ? 'text' : 'call') + ' you at ' + esc(d.phone) + ' within the hour.<br><br>' +
+          f.innerHTML = '<div class="ok">Got it, ' + esc(first) + '. Nick will ' + (d.sms_consent ? 'text' : hasPhone ? 'call' : 'email') + ' you at ' + esc(hasPhone ? d.phone : d.email) + ' within the hour.<br><br>' +
             'In a hurry? <a href="tel:+14848418501">Call him now: (484) 841-8501</a></div>';
         })
         .catch(function () { fail("Couldn't send that."); });

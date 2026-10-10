@@ -32,21 +32,28 @@ Deno.serve(async (req) => {
   let b: any; try { b = await req.json(); } catch { return new Response("bad json", { status: 400, headers: CORS }); }
   if (b._honey) return Response.json({ ok: true }, { headers: CORS }); // bot filled the hidden field
 
-  const phone = phoneE164(b.phone);
-  if (!phone) return Response.json({ ok: false, error: "Enter a 10-digit US cell number so Nick can reach you." }, { status: 400, headers: CORS });
+  const rawPhone = S(b.phone, 40);
+  const phone = rawPhone ? phoneE164(rawPhone) : null;
+  if (rawPhone && !phone) return Response.json({ ok: false, error: "That cell number needs 10 digits." }, { status: 400, headers: CORS });
+  const email = S(b.email, 160);
+  if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return Response.json({ ok: false, error: "That email doesn't look right." }, { status: 400, headers: CORS });
+  if (!phone && !email) return Response.json({ ok: false, error: "Leave a cell number or an email so Nick can reach you." }, { status: 400, headers: CORS });
   const name = S(b.name, 120);
   if (!name) return Response.json({ ok: false, error: "What should Nick call you?" }, { status: 400, headers: CORS });
+  const ageTerms = b.age_terms === true || b.age_terms === "1" || b.age_terms === "true";
+  if (!ageTerms) return Response.json({ ok: false, error: "Please confirm you're 18 or older and agree to the terms." }, { status: 400, headers: CORS });
 
   const offerKey = (S(b.offer, 30) || "general").toLowerCase();
   const offer = OFFERS[offerKey] || S(b.offer, 60) || "Not sure yet";
   const page = S(b.page, 120);
-  const consent = b.sms_consent === true || b.sms_consent === "1" || b.sms_consent === "true";
+  const consent = !!phone && (b.sms_consent === true || b.sms_consent === "1" || b.sms_consent === "true"); // SMS consent is meaningless without a number
   const row = {
-    name, phone, business: S(b.business, 120), email: S(b.email, 160), website: S(b.website, 200),
+    name, phone, business: S(b.business, 120), email, website: S(b.website, 200),
     interest: offer, goal: S(b.goal, 500), about: S(b.trade, 40),
     ref: [page, S(b.utm, 200)].filter(Boolean).join(" "),
-    status: "new", notes: consent ? null : "No SMS consent: CALL, don't text.",
+    status: "new", notes: consent ? null : phone ? "No SMS consent: CALL, don't text." : "No phone given: EMAIL only.",
     sms_consent: consent, sms_consent_at: consent ? new Date().toISOString() : null, sms_consent_text: consent ? S(b.sms_consent_text, 600) : null,
+    age_terms: ageTerms, age_terms_at: new Date().toISOString(), age_terms_text: S(b.age_terms_text, 300),
     ip: req.headers.get("x-forwarded-for")?.split(",")[0] || null, user_agent: req.headers.get("user-agent")?.slice(0, 300) || null,
   };
   const r = await fetch(`${SB_URL}/rest/v1/intakes`, { method: "POST", headers: { apikey: SERVICE, Authorization: `Bearer ${SERVICE}`, "Content-Type": "application/json", Prefer: "return=representation" }, body: JSON.stringify(row) });
@@ -54,9 +61,9 @@ Deno.serve(async (req) => {
 
   const nick = cfg("NICK_PHONE");
   if (nick) {
-    await sms(nick, `JOB REQUEST — ${offer}\n${name}${row.business ? " · " + row.business : ""}${row.about ? " · " + row.about : ""}\n${phone}${consent ? "" : "  (NO SMS CONSENT: CALL)"}\n${row.goal || "(no note)"}\nfrom ${page || "tbsol.net"}`);
+    await sms(nick, `JOB REQUEST — ${offer}\n${name}${row.business ? " · " + row.business : ""}${row.about ? " · " + row.about : ""}\n${phone || email}${!phone ? "  (NO PHONE: EMAIL)" : consent ? "" : "  (NO SMS CONSENT: CALL)"}\n${row.goal || "(no note)"}\nfrom ${page || "tbsol.net"}`);
     // Only text the prospect if they checked the consent box (Twilio toll-free / TCPA). Otherwise Nick calls.
-    if (consent) await sms(phone, `TB Solutions: Hey ${name.split(" ")[0]}, Nick here. Got your note about the ${offer}. I'll text you within the hour with what I'd do and what it costs. Msg&data rates may apply. Reply STOP to opt out, HELP for help.`);
+    if (consent && phone) await sms(phone, `TB Solutions: Hey ${name.split(" ")[0]}, Nick here. Got your note about the ${offer}. I'll text you within the hour with what I'd do and what it costs. Msg&data rates may apply. Reply STOP to opt out, HELP for help.`);
   }
   return Response.json({ ok: true }, { headers: CORS });
 });
