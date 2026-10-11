@@ -310,7 +310,7 @@ for (const g of GUIDES) {
 // ---- /guides/ hub ----
 page({
   path: '/guides/', title: 'Guides for Contractors | TB Solutions',
-  desc: 'Plain-English guides for plumbing, HVAC and electrical shops: what missed calls cost, why weekend calls disappear, and what to do about both.',
+  desc: 'Plain-English guides for plumbing, HVAC and electrical shops: what missed calls cost, why weekend calls disappear, and what an answering service really costs.',
   h1: 'Guides', mark: 'Guides', eyebrow: 'Guides', lead: 'Short, specific, and written for somebody who runs a truck.',
   back: ['Home', '/'],
   crumbs: [['Home', '/'], ['Guides', '/guides/']],

@@ -43,9 +43,9 @@ Two tables, both shown in HQ → Agents under the SEO card:
 |---|---|---|
 | `/services/` | 4 + hub | "ai receptionist for contractors", "local services ads management", "google review automation", "websites for plumbers" |
 | `/for/` | 3 | "answering service for plumbers / HVAC / electricians" + Chester County. `/for/plumbers/` has its own title, body and FAQ written for "plumbing answering service" / "ai answering service for plumbers" (2026-10-07); `/for/electricians/` for "electrician answering service" (2026-10-08 — estimate visits vs service calls, the GFCI and breaker steps, the 911-first rule); `/for/hvac-companies/` for "hvac after hours answering service" (2026-10-10 — the phone checks before a truck rolls: thermostat batteries, furnace switch, breaker, oil in the tank, frozen coil; gas smell and CO as leave-the-house calls; the November-to-March no-heat rule). A trade gets `title / h1 / desc / body / faq` in `TRADES` only when there is a keyword behind it and 400 honest words to put under it. |
-| `/guides/` | 2 + hub | "what a missed call costs a contractor", "contractors weekend calls" |
+| `/guides/` | 3 + hub | "what a missed call costs a contractor", "contractors weekend calls", "how much does an answering service cost for a plumber" (2026-10-11 — `/guides/answering-service-cost-vs-receptionist/`: per-minute vs per-call vs flat, the off-the-plan-page fees, BLS May 2025 receptionist wage, cost per booked job) |
 
-All 11 pass the gate: unique titles under 62 characters, unique descriptions, one `<h1>`,
+All 12 pass the gate: unique titles under 62 characters, unique descriptions, one `<h1>`,
 canonical, BreadcrumbList + FAQPage (+ Service / Article) schema that parses, 300+ real words,
 3+ internal links, no mobile overflow.
 
@@ -79,9 +79,10 @@ site is the kind of thing a shop owner notices and never mentions — he just do
    `TOWNS`. Only build the ones you can say something true about — a town where you have a client,
    a job, or a specific local fact. 48 generated-and-identical town pages is the exact failure mode
    that gets a site buried.
-2. **More guides.** The two that exist are the backlink earners. Candidates with real substance:
-   what an answering service actually costs vs a receptionist; how the Oct 2026 LSA rule change
-   affects a small shop; what to do when your Google profile gets suspended.
+2. **More guides.** The three that exist are the backlink earners. Candidates with real substance
+   (all have `seo_keywords` rows): Google Local Services Ads for plumbers; AI receptionist vs
+   answering service; how to get more Google reviews as a contractor; what to do when your Google
+   profile gets suspended. The cost guide shipped 2026-10-11.
 3. **`/for/roofers/`, `/for/landscapers/`** once you have a client in either.
 4. **Homeowner cluster** — "water heater leaking Pottstown" and similar. This brings homeowners,
    not buyers, so it is only worth building when you have shops to route those leads to. Keep it

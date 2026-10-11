@@ -277,4 +277,39 @@ export const GUIDES = [
       ['Does the hours field affect ranking?', 'It affects whether people click, and whether they call. Open businesses get the call; that behaviour feeds back into how often you get shown.'],
     ],
   },
+  {
+    // Written for "how much does an answering service cost for a plumber" (seo_keywords, 2026-10-11).
+    // Figures: 2026 published rate cards and pricing guides for live answering services; BLS OEWS May 2025
+    // for the receptionist wage. Re-check both before quoting them anywhere else.
+    slug: 'answering-service-cost-vs-receptionist',
+    published: '2026-10-11',
+    title: 'How Much Does an Answering Service Cost a Plumber?',
+    desc: 'What a plumber really pays for an answering service in 2026: per-minute, per-call and flat plans, the fees off the plan page, and what a receptionist costs.',
+    h1: 'What an answering service actually costs a plumber',
+    mark: 'actually costs',
+    blurb: 'Per-minute, per-call, flat rate, or a person at a desk. The real numbers, and the one that matters: what you pay per booked job.',
+    lead: 'The plan page says one number. Your bill says another. Here is how the math works for a shop with two trucks.',
+    body: [
+      ['The three ways they bill you',
+       'Every answering service you will find for a plumbing shop charges one of three ways. Per minute: you buy a block of minutes a month and pay for every one an operator spends on your line. The big national names are billing $1.85 to $2.60 a minute in 2026, and the cheaper home-services rate cards run about $0.80 to $1.25. Per call: a flat $5 to $12 for every call an operator picks up, no matter how long it runs. Flat monthly: one price for everything, which is how most of the AI services bill and how a few of the human ones do once you are past their basic tier. The entry plans from the big per-minute services land somewhere between $235 and $350 a month and come with roughly 200 minutes. That is the number on the plan page. It is not the number on the bill.'],
+      ['Do the minutes for your own shop',
+       'A plumbing call is not a thirty-second call. A homeowner with water on the floor needs a minute to say what is wrong, a minute to give the address and callback, and a minute while the operator reads the script back. Call it three and a half minutes. A shop taking 100 calls a month through the service is burning 350 minutes, which blows through a 200-minute plan in the third week. At $1.85 to $2.60 a minute the whole month runs $650 to $900, and the overage minutes past your block are billed 20 to 50 percent higher than the plan rate. One pricing guide works the example out at 130 calls a month and lands between $940 and $1,170. Those are the calls you are already missing, so you do not get to pick a smaller number.'],
+      ['The fees that are not on the plan page',
+       'Setup fees are common and sometimes only waived if you sign a year. Warm transfers, where the operator rings you and hands the caller over, run about $3 each on some plans. Extra tracking numbers, a second transfer destination, a CRM connection: $5 to $15 a month per item. Spanish costs more. And if you ever leave, some of them charge $250 to $300 to port your number out, which is why you should never let an answering service own your phone number in the first place. Read the whole rate card, not the big number at the top of it.'],
+      ['What a receptionist costs instead',
+       'The Bureau of Labor Statistics puts the median receptionist at $18.27 an hour as of May 2025, which is $38,010 a year before you add the employer side of payroll tax, workers comp, a chair, and a computer. Call it $42,000 all in for one person, forty hours a week. A part-timer at twenty hours is still around $20,000 a year. And here is the problem a plumber runs into with either one: she works eight to five, Monday to Friday. Those are the hours you miss the fewest calls. The calls you lose are the 6pm water heater, the Saturday sewer backup, and the three that come in while you are under a sink with both hands wet. A receptionist is a good hire when you have the volume to keep her busy and an office for her to sit in. She is not a fix for the phone at night.'],
+      ['What you are actually buying',
+       'This is the part the plan pages skip. A per-minute service takes a message. The operator reads a script, writes down the name and number, and emails or texts you a note that says "customer has leak, please call back." You still have to call back, and by the time you do, the one with water on the floor has called the next shop. So the real question is not what the service costs a month. It is what it costs per booked job. A $700 month that produces a list of 100 callbacks is not the same thing as a $200 month that produces 40 appointments on your calendar, and the second one is cheaper even though it looks more expensive to a service that charges by the minute.'],
+      ['The AI option, with the honest caveats',
+       'An AI receptionist is the flat-rate end of this. The one I run for plumbers around Pottstown is $197 a month, with a $497 setup, or $297 setup at the founding rate for the first five shops. No per-minute meter, no per-call fee, no extra for nights and weekends, and it books the job into the arrival windows you run instead of taking a message. What it does not do: it will not sound like a person who has worked your desk for twelve years, it will not quote a repair over the phone, and if a caller asks, it says it is the automated line. Some owners are not comfortable with that, and that is a fair reason to pick a human service. Just price the human service on the minutes you will actually use, and count what you get at the end of the month: a callback list or a booked calendar.'],
+      ['The short version',
+       'Per-minute human service, used by a plumbing shop that is honest about its call volume: $600 to $1,200 a month, for messages. Per-call: $5 to $12 a call, same result. A receptionist: around $42,000 a year, for the hours you already cover yourself. An AI receptionist: a couple hundred a month flat, for bookings. Run your own missed-call count against each one before you sign anything, and never sign a year.'],
+    ],
+    faq: [
+      ['What is the cheapest answering service for a plumber?', 'On paper, a 200-minute per-minute plan at around $235 to $350 a month. In practice that plan is gone by the third week for a shop taking 100 calls through it, and the overage is what you pay. The cheapest option is the one with the lowest cost per booked job, which is almost never the one with the lowest number on the plan page.'],
+      ['Per-minute or per-call, which is better for plumbing?', 'Per-call if your calls run long, which plumbing calls do. Per-minute if most of your calls are quick confirmations. Either way, ask for a sample bill from a shop your size, not the rate card.'],
+      ['Does an answering service book appointments?', 'Most human services take a message and send it to you. Some will book into a shared calendar for an extra per-call or per-transfer fee. The AI receptionist books directly into your arrival windows as part of the flat $197 a month, and texts both you and the customer.'],
+      ['Is an answering service cheaper than a receptionist?', 'For an owner-operated shop, yes, by a wide margin: a few hundred a month against roughly $42,000 a year all in. But the receptionist is there eight to five and the calls you miss are mostly outside those hours, so the comparison that matters is between the services that answer when you cannot.'],
+    ],
+  },
 ];
