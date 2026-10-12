@@ -19,6 +19,7 @@ ones that matter now: shop owners searching for the thing TB Solutions actually 
 | Date | answering service for plumbers | ai receptionist for contractors | missed calls contractor | marketing for plumbers chester county | local services ads management pa | Named by ChatGPT? | Notes |
 |---|---|---|---|---|---|---|---|
 | 2026-10-05 | — | — | — | — | — | no | Baseline. 11 trades pages generated, not yet live on main. |
+| 2026-10-12 | — | — | — | — | — | not checked | Checked from the agent's web-search index, not a logged-out Google SERP from Chester County, so these are "not in the top ~10 of that index", not a Google position. Also checked the five `live` seo_keywords rows ("plumbing answering service", "ai answering service for plumbers", "hvac after hours answering service", "electrician answering service", "how much does an answering service cost for a plumber"): tbsol.net absent from the top 10 for all five. The index still holds the OLD homepage title ("Chester County Digital Marketing & Web Design") — the trades pages are not in it yet. Real positions need Search Console or a phone in Pottstown. 13 generated pages live; LSA guide shipped today. |
 
 ## Google Business Profile
 

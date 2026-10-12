@@ -1,19 +1,19 @@
 {
   "agent": "seo",
   "name": "SEO build",
-  "lastBuild": "2026-10-11T11:16:30.022Z",
-  "pages": 12,
-  "sitemapUrls": 23,
+  "lastBuild": "2026-10-12T11:25:21.215Z",
+  "pages": 13,
+  "sitemapUrls": 24,
   "clusters": {
     "services": 5,
     "trades": 3,
-    "guides": 4
+    "guides": 5
   },
   "counts": {
     "services": 4,
     "trades": 3,
     "towns": 16,
-    "guides": 3
+    "guides": 4
   },
   "urls": [
     "/services/ai-receptionist-for-contractors/",
@@ -27,6 +27,7 @@
     "/guides/what-a-missed-call-costs-a-contractor/",
     "/guides/why-contractors-lose-weekend-calls/",
     "/guides/answering-service-cost-vs-receptionist/",
+    "/guides/local-services-ads-for-plumbers/",
     "/guides/"
   ]
 }

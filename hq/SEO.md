@@ -43,9 +43,9 @@ Two tables, both shown in HQ → Agents under the SEO card:
 |---|---|---|
 | `/services/` | 4 + hub | "ai receptionist for contractors", "local services ads management", "google review automation", "websites for plumbers" |
 | `/for/` | 3 | "answering service for plumbers / HVAC / electricians" + Chester County. `/for/plumbers/` has its own title, body and FAQ written for "plumbing answering service" / "ai answering service for plumbers" (2026-10-07); `/for/electricians/` for "electrician answering service" (2026-10-08 — estimate visits vs service calls, the GFCI and breaker steps, the 911-first rule); `/for/hvac-companies/` for "hvac after hours answering service" (2026-10-10 — the phone checks before a truck rolls: thermostat batteries, furnace switch, breaker, oil in the tank, frozen coil; gas smell and CO as leave-the-house calls; the November-to-March no-heat rule). A trade gets `title / h1 / desc / body / faq` in `TRADES` only when there is a keyword behind it and 400 honest words to put under it. |
-| `/guides/` | 3 + hub | "what a missed call costs a contractor", "contractors weekend calls", "how much does an answering service cost for a plumber" (2026-10-11 — `/guides/answering-service-cost-vs-receptionist/`: per-minute vs per-call vs flat, the off-the-plan-page fees, BLS May 2025 receptionist wage, cost per booked job) |
+| `/guides/` | 4 + hub | "what a missed call costs a contractor", "contractors weekend calls", "how much does an answering service cost for a plumber" (2026-10-11 — `/guides/answering-service-cost-vs-receptionist/`: per-minute vs per-call vs flat, the off-the-plan-page fees, BLS May 2025 receptionist wage, cost per booked job), "google local services ads for plumbers" (2026-10-12 — `/guides/local-services-ads-for-plumbers/`: per-lead vs per-click, ~$57/lead Feb 2026 agency dataset, the Oct 1 2026 missed-call charge and 20-second rule, manual disputes gone since July 2024 → "Rate this lead" within 30 days, PA has no statewide trade license / HICPA over $5k, the LSA ranking signals) |
 
-All 12 pass the gate: unique titles under 62 characters, unique descriptions, one `<h1>`,
+All 13 pass the gate: unique titles under 62 characters, unique descriptions, one `<h1>`,
 canonical, BreadcrumbList + FAQPage (+ Service / Article) schema that parses, 300+ real words,
 3+ internal links, no mobile overflow.
 
@@ -79,10 +79,15 @@ site is the kind of thing a shop owner notices and never mentions — he just do
    `TOWNS`. Only build the ones you can say something true about — a town where you have a client,
    a job, or a specific local fact. 48 generated-and-identical town pages is the exact failure mode
    that gets a site buried.
-2. **More guides.** The three that exist are the backlink earners. Candidates with real substance
-   (all have `seo_keywords` rows): Google Local Services Ads for plumbers; AI receptionist vs
-   answering service; how to get more Google reviews as a contractor; what to do when your Google
-   profile gets suspended. The cost guide shipped 2026-10-11.
+2. **More guides.** The four that exist are the backlink earners. Candidates with real substance
+   (all have `seo_keywords` rows): AI receptionist vs answering service; how to get more Google
+   reviews as a contractor; what to do when your Google profile gets suspended. The cost guide
+   shipped 2026-10-11, the LSA guide 2026-10-12.
+   Wording note (2026-10-12): Google removed the manual LSA lead *dispute* in July 2024; what exists
+   now is automatic credits plus a "Rate this lead" feedback within 30 days, and out-of-area /
+   wrong-job-type calls are no longer credited. The LSA guide says so. `/lsa/`, `/offers/`, the
+   home page and the Lead Engine service page still say "disputed weekly" — Nick's call whether to
+   keep the word (it is what plumbers say) or re-word to "every charged lead reviewed and rated".
 3. **`/for/roofers/`, `/for/landscapers/`** once you have a client in either.
 4. **Homeowner cluster** — "water heater leaking Pottstown" and similar. This brings homeowners,
    not buyers, so it is only worth building when you have shops to route those leads to. Keep it
