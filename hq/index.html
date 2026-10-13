@@ -207,6 +207,22 @@ details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf
 .share code{font-family:ui-monospace,monospace;font-size:12px;color:var(--yellow);word-break:break-all;flex:1 1 100%;min-width:0}
 .share button{border:2px solid var(--yellow);background:var(--yellow);color:var(--ink);border-radius:999px;padding:5px 12px;font-weight:800;cursor:pointer}
 .share a{color:var(--yellow);font-weight:800}
+.step.regressed{border-color:var(--red);background:#fff4f4}
+.step.regressed .box{border-color:var(--red)}
+.step .meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:4px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.step .meta .reg{background:var(--red);color:#fff;padding:2px 7px;border-radius:6px}
+.step .meta .auto{background:#eee;padding:2px 7px;border-radius:6px}
+.step .next{font-size:13px;font-weight:600;color:var(--ink);background:#faf7ec;border-left:4px solid var(--copper);padding:5px 9px;margin-top:6px;border-radius:0 10px 10px 0;line-height:1.35}
+.step .next b{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--copper);margin-right:4px}
+.pcard .reg,.wscore .reg{background:var(--red);color:#fff;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:3px 8px;border-radius:6px;white-space:nowrap}
+.pcard.regressed{border-color:var(--red)}
+.wscore{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0 4px}
+.wscore .n{font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.wscore .n small{font-size:14px;color:var(--muted);font-weight:800;letter-spacing:0}
+.wscore .when{flex:1 1 auto}
+.wscore button{border:2px solid var(--ink);background:#fff;border-radius:999px;padding:6px 12px;font-weight:800;cursor:pointer;font-size:13px}
+.wscore button:disabled{opacity:.5;cursor:wait}
+.werr{font-size:13px;font-weight:700;color:var(--red);margin:4px 0}
 .plrow{grid-template-columns:2fr 1fr 1fr auto;align-items:end;gap:8px}
 @media (max-width:480px){.plrow{grid-template-columns:1fr 1fr;grid-template-areas:"a a" "b c" "d d"}.plrow>label:nth-child(1){grid-area:a}.plrow>label:nth-child(2){grid-area:b}.plrow>label:nth-child(3){grid-area:c}.plrow>button{grid-area:d;justify-self:start}}
 </style>
@@ -242,7 +258,7 @@ details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf
     </section>
     <section id="t-work" class="hidden">
       <div id="wList">
-        <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">Every client's Google Rank Fix on one screen. <b>+ New client</b> drops in the whole playbook — logo, SEO site, review activation, NAP cleanup, trust links, Apple Maps, hours, About tab, review replies. Tap a step to move it along, write the one-line finding, and <b>Share audit</b> hands the client a live page of exactly what's broken and what you're fixing. That page is the pitch.</div>
+        <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">Every client's Google Rank Fix on one screen. <b>+ New client</b> drops in the whole playbook — logo, SEO site, review activation, NAP cleanup, trust links, Apple Maps, hours, About tab, review replies. Tap a step to move it along, write the one-line finding, and <b>Share audit</b> hands the client a live page of exactly what's broken and what you're fixing. That page is the pitch. The machine does the first pass: every new client gets their site and Google listing checked the second they're added, and every month after. Anything that slips flips back to red.</div>
         <div class="acts" style="margin:0 0 12px"><button id="newProj" style="background:var(--ink);color:var(--yellow)">+ New client</button><span class="when" id="wMsg"></span></div>
         <div class="filters" id="wFilters"></div>
         <div id="projs"></div>
@@ -984,10 +1000,10 @@ function renderProjs(){
   $('wFilters').innerHTML=[['open','Open'],...PSTAT,['all','All']].map(([k,l])=>`<button data-f="${k}" class="${wfilter===k?'on':''}">${l}<b>${counts[k]||0}</b></button>`).join('');
   $('wFilters').querySelectorAll('button').forEach(b=>b.onclick=()=>{ wfilter=b.dataset.f; renderProjs(); });
   const list=wfilter==='all'?projs:wfilter==='open'?open:projs.filter(p=>p.status===wfilter);
-  $('projs').innerHTML=list.length?list.map(p=>{ const pct=p.total?Math.round(p.done/p.total*100):0; return `<div class="card pcard">
+  $('projs').innerHTML=list.length?list.map(p=>{ const pct=p.total?Math.round(p.done/p.total*100):0; return `<div class="card pcard ${p.regressed?'regressed':''}">
       <div class="top"><div><h3>${esc(p.name)}</h3><div class="biz">${esc([p.trade,p.town].filter(Boolean).join(' · ')||'—')}</div></div><span class="st ${esc(p.status)}">${esc((PSTAT.find(s=>s[0]===p.status)||[,p.status])[1])}</span></div>
       <div class="prog"><i style="width:${pct}%"></i></div>
-      <div class="when">${p.done}/${p.total} steps done${p.doing?` · ${p.doing} in progress`:''} · ${ago(p.updated_at)}</div>
+      <div class="when">Score ${p.done}/${p.total}${p.doing?` · ${p.doing} in progress`:''}${p.regressed?` · <span class="reg">${p.regressed} slipped</span>`:''} · ${p.audited_at?'checked '+ago(p.audited_at):'not checked yet'}${p.audit_error?' · <span style="color:var(--red)">check failed</span>':''}</div>
       <div class="acts"><button class="open" data-id="${p.id}" style="background:var(--yellow)">Open</button>${p.phone?`<a href="tel:${tel(p.phone)}" class="call">Call</a><a href="sms:${tel(p.phone)}">Text</a>`:''}${p.website?`<a href="${esc(/^https?:/.test(p.website)?p.website:'https://'+p.website)}" target="_blank">Site</a>`:''}<a href="/audit/?t=${esc(p.share_token)}" target="_blank">Audit page</a></div>
     </div>`; }).join(''):'<div class="empty">No clients here yet. Tap <b>+ New client</b> — it loads the whole playbook in one go.</div>';
   $('projs').querySelectorAll('button.open').forEach(b=>b.onclick=()=>openProj(b.dataset.id));
@@ -998,9 +1014,24 @@ $('newProj').onclick=async()=>{
   const website=prompt('Their website (blank if none)','')||''; const phone=prompt('Owner cell (optional)','')||'';
   $('wMsg').textContent='Creating…';
   const {data,error}=await supa.rpc('hq_project_create',{p:{name,trade,town,website,phone:phone?'+1'+phone.replace(/\D/g,'').replace(/^1/,''):''}});
-  $('wMsg').textContent=''; if(error){ alert(error.message); return; }
+  if(error){ $('wMsg').textContent=''; alert(error.message); return; }
+  $('wMsg').textContent='Checking their website and Google listing…';
+  const r=await runAudit(data);
+  $('wMsg').textContent=r.ok?`Checked. ${r.done}/${r.total} already fine.`:(r.message||r.error||'Check failed, you can re-run it from the project.');
+  setTimeout(()=>$('wMsg').textContent='',4000);
   await loadProjs(); openProj(data);
 };
+// The rank-audit edge function: opens their site, reads their Google listing, writes a finding on every
+// step it can check. Admin JWT goes with it; the function checks is_hq_admin() itself.
+async function runAudit(id){
+  try{
+    const {data:{session}}=await supa.auth.getSession(); if(!session) return {ok:false,error:'not logged in'};
+    const r=await fetch(SUPA_URL+'/functions/v1/rank-audit',{method:'POST',headers:{'Content-Type':'application/json',apikey:SUPA_KEY,Authorization:'Bearer '+session.access_token},body:JSON.stringify({project_id:id})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) return {ok:false,error:j.error||('HTTP '+r.status)};
+    return j;
+  }catch(e){ return {ok:false,error:e.message||'network'}; }
+}
 async function openProj(id){
   const {data,error}=await supa.rpc('hq_project',{p_id:id}); if(error||!data){ alert(error?error.message:'not found'); return; }
   wcur=data; const p=data.project, items=data.items||[];
@@ -1008,13 +1039,14 @@ async function openProj(id){
   const groups=[]; items.forEach(i=>{ if(!groups.includes(i.grp)) groups.push(i.grp); });
   const shareUrl=location.origin+'/audit/?t='+p.share_token;
   const inp=(k,label,type='text',ph='')=>`<label class="f">${label}<input data-k="${k}" type="${type}" value="${esc(p[k]??'')}" placeholder="${esc(ph)}"></label>`;
-  const live=items.filter(i=>i.status!=='na'), done=items.filter(i=>i.status==='done');
+  const live=items.filter(i=>i.status!=='na'), done=items.filter(i=>i.status==='done'), regs=items.filter(i=>i.regressed&&i.status!=='na');
   $('wEdit').innerHTML=`<div class="ed edit">
     <div class="acts" style="margin:0 0 12px"><button id="wBack">← All clients</button></div>
     <div class="wtop"><div><h3 style="font-size:24px;font-weight:800;line-height:1.05;text-transform:none;letter-spacing:-.02em;color:var(--ink);margin:0">${esc(p.name)}</h3><div class="biz">${esc([p.trade,p.town].filter(Boolean).join(' · ')||'')}</div></div>
       <select id="wStatus">${PSTAT.map(([k,l])=>`<option value="${k}" ${k===p.status?'selected':''}>${l}</option>`).join('')}</select></div>
     <div class="prog"><i style="width:${live.length?Math.round(done.length/live.length*100):0}%"></i></div>
-    <div class="when">${done.length}/${live.length} steps done</div>
+    <div class="wscore"><div class="n">${done.length}<small>/${live.length}</small></div>${regs.length?`<span class="reg">${regs.length} slipped since last check</span>`:''}<span class="when">${p.audited_at?'Machine check '+ago(p.audited_at):'Not machine-checked yet'}${p.audit_summary&&p.audit_summary.reviews!=null?` · ${p.audit_summary.reviews} reviews on Google`:''}${p.audit_summary&&p.audit_summary.google_name&&p.place_id?'':p.audited_at?' · <span style="color:var(--red)">not found on Google</span>':''}</span><button id="wRerun">Re-run audit</button></div>
+    ${p.audit_error?`<div class="werr">Last check failed: ${esc(p.audit_error)}</div>`:''}
     <div class="share"><span>Client's audit page</span><code>${esc(shareUrl)}</code><button id="wCopy">Copy link</button><a href="${esc(shareUrl)}" target="_blank">Open</a>${p.phone?`<a href="sms:${tel(p.phone)}&body=${encodeURIComponent('Here’s what I found on your Google presence and what I’d fix: '+shareUrl)}">Text it</a>`:''}</div>
     <details class="sec"><summary><span><b>Client details</b><small>${esc([p.owner_name,fmtPhone(p.phone),p.website].filter(Boolean).join(' · ')||'tap to fill in')}</small></span><i>›</i></summary><div class="secb">
       <div class="g2">${inp('name','Business name')}${inp('trade','Trade','text','roofing')}</div>
@@ -1026,9 +1058,10 @@ async function openProj(id){
     </div></details>
     <div id="wSteps">${groups.map(g=>{ const gi=items.filter(i=>i.grp===g&&!(i.status==='na'&&!i.key)); if(!gi.length) return ''; return `<div class="wgrp"><span>${esc(g)}</span><b>${gi.filter(i=>i.status==='done').length}/${gi.filter(i=>i.status!=='na').length}</b></div>`+gi.map(stepHtml).join(''); }).join('')}</div>
     <div class="acts" style="margin-top:14px"><button id="wAdd">+ Add a step</button></div>
-    <div class="hint">Tap the box to cycle: blank → in progress → done → n/a. The finding line is what the client reads on their audit page — write it like you'd say it: "3 different phone numbers online", "Apple Maps unclaimed".</div>
+    <div class="hint">Tap the box to cycle: blank → in progress → done → n/a. The finding line is what the client reads on their audit page — write it like you'd say it: "3 different phone numbers online", "Apple Maps unclaimed". Lines marked <b>machine</b> were written by the audit and get refreshed every month; type over one and it's yours. The copper note under a step is private, only you see it. Red means it was done and slipped back.</div>
   </div>`;
   $('wBack').onclick=()=>{ $('wEdit').classList.add('hidden'); $('wList').classList.remove('hidden'); loadProjs(); };
+  $('wRerun').onclick=async()=>{ const b=$('wRerun'); b.disabled=true; b.textContent='Checking…'; const r=await runAudit(p.id); if(!r.ok) alert(r.message||r.error||'Check failed'); openProj(p.id); };
   $('wCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(shareUrl); $('wCopy').textContent='Copied ✓'; setTimeout(()=>$('wCopy').textContent='Copy link',1500); }catch{ prompt('Copy this link',shareUrl); } };
   $('wStatus').onchange=async()=>{ const {error}=await supa.rpc('hq_project_save',{p_id:p.id,p:{status:$('wStatus').value}}); if(error) alert(error.message); else p.status=$('wStatus').value; };
   $('wSave').onclick=async()=>{ const q={}; $('wEdit').querySelectorAll('[data-k]').forEach(el=>{ let v=el.value.trim(); if(el.dataset.k==='phone'&&v) v='+1'+v.replace(/\D/g,'').replace(/^1/,''); q[el.dataset.k]=v; });
@@ -1036,9 +1069,11 @@ async function openProj(id){
   $('wAdd').onclick=async()=>{ const label=prompt('What\'s the step?'); if(!label) return; const grp=prompt('Group: '+groups.join(' / '),groups[groups.length-1]||'Extra')||'Extra'; const {error}=await supa.rpc('hq_project_item_add',{p_project:p.id,p_grp:grp,p_label:label}); if(error){ alert(error.message); return; } openProj(p.id); };
   wireSteps();
 }
-function stepHtml(i){ return `<div class="step ${esc(i.status)}" data-id="${i.id}">
+function stepHtml(i){ const reg=i.regressed&&i.status!=='na'; return `<div class="step ${esc(i.status)} ${reg?'regressed':''}" data-id="${i.id}">
     <div class="box" title="tap to change">${IGLYPH[i.status]||''}</div>
-    <div><h4>${esc(i.label)}</h4>${i.how?`<div class="how">${esc(i.how)}</div>`:''}<textarea class="find" rows="1" placeholder="What you found — the client sees this">${esc(i.finding||'')}</textarea>${i.key?'':'<button class="x">remove</button>'}</div>
+    <div><h4>${esc(i.label)}</h4>${i.how?`<div class="how">${esc(i.how)}</div>`:''}<textarea class="find" rows="1" placeholder="What you found — the client sees this">${esc(i.finding||'')}</textarea>
+      ${reg||i.auto||i.checked_at?`<div class="meta">${reg?'<span class="reg">slipped</span>':''}${i.auto?'<span class="auto">machine</span>':''}${i.checked_at?`<span>checked ${esc(ago(i.checked_at))}</span>`:''}</div>`:''}
+      ${i.next_step?`<div class="next"><b>You</b>${esc(i.next_step)}</div>`:''}${i.key?'':'<button class="x">remove</button>'}</div>
   </div>`; }
 function wireSteps(){
   $('wSteps').querySelectorAll('.step').forEach(el=>{

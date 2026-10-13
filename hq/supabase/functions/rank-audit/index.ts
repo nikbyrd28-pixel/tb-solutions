@@ -119,7 +119,7 @@ async function audit(key: string, p: Proj) {
     website: site?.finalUrl ?? siteUrl, reviews: place?.userRatingCount ?? null, rating: place?.rating ?? null, competitors, duplicates: duplicates.length,
   };
   const applied = await rpc<{ ok: boolean; done: number; total: number; regressed: number; updated: number }>("rank_audit_apply", { p_project: p.id, p_results: results, p_summary: summary });
-  return { ok: true, project_id: p.id, name: p.name, ...summary, ...applied, checks: results.map(r => ({ key: r.key, check: r.check })) };
+  return { project_id: p.id, name: p.name, ...summary, ...applied, ok: true, checks: results.map(r => ({ key: r.key, check: r.check })) };
 }
 
 Deno.serve(async (req) => {

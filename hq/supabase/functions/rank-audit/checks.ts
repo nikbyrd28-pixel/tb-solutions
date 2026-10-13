@@ -236,7 +236,7 @@ export function buildResults(i: Input): Result[] {
     const open24 = hrs.length > 0 && hrs.every(x => /open 24 hours/i.test(x));
     R.push({
       key: "hours", check: !p ? "manual" : hrs.length ? "manual" : "fail",
-      finding: !p ? undefined : hrs.length ? `Google lists hours${open24 ? " (open 24 hours)" : ` (${hrs[0]}${/closed/i.test(hrs.find(x => /^sat/i.test(x)) || "") ? ", closed Saturday" : ""})`}.${h && !h.hours_text ? " The website shows no hours." : ""}` : "No hours on the Google listing, so people cannot tell if you are open.",
+      finding: !p ? undefined : hrs.length ? `Google lists hours${open24 ? " (open 24 hours)" : ` (${hrs[0].replace(/\s*[–—-]\s*/g, " to ")}${/closed/i.test(hrs.find(x => /^sat/i.test(x)) || "") ? ", closed Saturday" : ""})`}.${h && !h.hours_text ? " The website shows no hours." : ""}` : "No hours on the Google listing, so people cannot tell if you are open.",
       next_step: hrs.length ? "Match Yelp, Facebook and Apple to the Google hours. Confirm 24 hours is real if it says so." : "Get the real hours from the owner and set them on Google first.",
       evidence: { google_hours: hrs, open_24h: open24, site_mentions_hours: h?.hours_text ?? null },
     });

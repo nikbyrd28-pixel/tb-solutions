@@ -13,7 +13,7 @@
 --   * rank_audit_due()  <- which projects the monthly cron re-checks (active + done).
 --   * hq_project_audit_run(project) <- HQ taps "Re-run audit": asks pg_net to call the function.
 --   * audit_public(token) gains `checked_at` per item and `audited_at` on the project. Nothing else.
---   * pg_cron: 1st of the month, 11:40 UTC.
+--   * pg_cron: daily 11:40 UTC, re-checks whatever is 28+ days stale (5 per run) = monthly per client.
 --
 -- Run after 013_hq_work.sql. Idempotent.
 
@@ -62,13 +62,17 @@ begin
       n_upd := n_upd + 1;
 
     elsif v_check = 'fail' then
-      -- a fail on a step that was done (by Nick or by a past pass) is a regression
+      -- a fail on a step that was done (by Nick or by a past pass) is a regression: back to todo,
+      -- the stale "fixed" line is replaced by what the machine sees now, and Nick gets a dated note.
       if cur.status = 'done' then n_reg := n_reg + 1; end if;
       update public.hq_project_items set
         status     = case when status = 'na' then 'na' when status = 'doing' then 'doing' else 'todo' end,
-        finding    = case when auto or finding is null then coalesce(v_finding, finding) else finding end,
-        auto       = case when auto or finding is null then true else auto end,
-        next_step  = nullif(trim(coalesce(r->>'next_step','')),''),
+        finding    = case when cur.status = 'done' or auto or finding is null then coalesce(v_finding, finding) else finding end,
+        auto       = case when cur.status = 'done' or auto or finding is null then true else auto end,
+        next_step  = case when cur.status = 'done'
+                       then 'Slipped since the last check (' || to_char(now(), 'Mon DD') || '). Was done, now fails again.'
+                            || coalesce(' ' || nullif(trim(coalesce(r->>'next_step','')),''), '')
+                       else nullif(trim(coalesce(r->>'next_step','')),'') end,
         evidence   = coalesce(r->'evidence', evidence),
         regressed  = (cur.status = 'done'),
         checked_at = now(), updated_at = now()
@@ -101,11 +105,15 @@ begin
     'total', (select count(*) from public.hq_project_items where project_id = p_project and status <> 'na'));
 end $$;
 
--- Which projects the monthly re-check covers: clients who paid (active) or finished (done, on the $97/mo).
+-- Which projects the re-check covers: clients who paid (active) or finished (done, on the $97/mo),
+-- not looked at in 28 days, oldest first, five per run. The cron fires daily, so each project gets
+-- its monthly look without one run having to open 30 websites inside the function's time limit.
 create or replace function public.rank_audit_due()
 returns jsonb language sql stable security definer set search_path = public as $$
-  select coalesce(jsonb_agg(id order by audited_at nulls first), '[]')
-  from public.hq_projects where status in ('active','done')
+  select coalesce(jsonb_agg(id), '[]') from (
+    select id from public.hq_projects
+    where status in ('active','done') and (audited_at is null or audited_at < now() - interval '28 days')
+    order by audited_at nulls first limit 5) d
 $$;
 
 -- Service role only. Never anon, never authenticated: the edge function holds the service key.
@@ -167,6 +175,11 @@ begin
   return found;
 end $$;
 
+-- 014 re-creates these two; make sure the anon lockdown from audit/FIXES.sql holds whether or not that ran.
+revoke execute on function public.hq_projects() from public, anon;
+revoke execute on function public.hq_project_item_set(uuid, text, text) from public, anon;
+grant  execute on function public.hq_projects(), public.hq_project_item_set(uuid, text, text) to authenticated;
+
 -- ---------- the client page: same contract, plus when each line was last checked ----------
 -- Still never phone / email / notes / business_id / evidence / next_step.
 create or replace function public.audit_public(p_token text)
@@ -180,11 +193,15 @@ returns jsonb language sql stable security definer set search_path = public as $
   where p.share_token = p_token and length(p_token) >= 16
 $$;
 grant execute on function public.audit_public(text) to anon, authenticated;
+-- audit_public is the one anon surface. Everything the machine writes that the client must not see
+-- (evidence, next_step, auto) is simply never selected above.
 
 -- ---------- monthly re-check (pg_cron + pg_net, same pattern as rx-review-engine) ----------
--- 1st of every month, 11:40 UTC (6:40am ET). The function checks x-rx-sync-secret (RX_SYNC_SECRET in rx_config).
+-- Fires daily at 11:40 UTC (6:40am ET); rank_audit_due() hands back only projects 28+ days stale, five at
+-- a time, so every paying client is re-checked once a month. The function checks x-rx-sync-secret
+-- (RX_SYNC_SECRET in rx_config). Job name kept as "monthly" because that is what it does per client.
 select cron.unschedule(jobid) from cron.job where jobname = 'rank-audit-monthly';
-select cron.schedule('rank-audit-monthly', '40 11 1 * *', $cron$
+select cron.schedule('rank-audit-monthly', '40 11 * * *', $cron$
   select net.http_post(
     url := 'https://qgbjiqdwzgkjkmqyjsmc.supabase.co/functions/v1/rank-audit',
     headers := jsonb_build_object('Content-Type','application/json','x-rx-sync-secret', coalesce((select value from public.rx_config where key='RX_SYNC_SECRET'),'')),

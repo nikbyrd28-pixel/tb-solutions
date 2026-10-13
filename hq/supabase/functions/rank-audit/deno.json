@@ -1,0 +1,5 @@
+{
+  "tasks": { "test": "deno test --allow-read test/", "check": "deno check index.ts checks.ts" },
+  "test": { "include": ["test/"] },
+  "permissions": { "read": true }
+}
