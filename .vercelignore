@@ -1,1 +1,3 @@
 chalk/
+audit/*.sql
+audit/*.md

@@ -207,6 +207,8 @@ details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf
 .share code{font-family:ui-monospace,monospace;font-size:12px;color:var(--yellow);word-break:break-all;flex:1 1 100%;min-width:0}
 .share button{border:2px solid var(--yellow);background:var(--yellow);color:var(--ink);border-radius:999px;padding:5px 12px;font-weight:800;cursor:pointer}
 .share a{color:var(--yellow);font-weight:800}
+.plrow{grid-template-columns:2fr 1fr 1fr auto;align-items:end;gap:8px}
+@media (max-width:480px){.plrow{grid-template-columns:1fr 1fr;grid-template-areas:"a a" "b c" "d d"}.plrow>label:nth-child(1){grid-area:a}.plrow>label:nth-child(2){grid-area:b}.plrow>label:nth-child(3){grid-area:c}.plrow>button{grid-area:d;justify-self:start}}
 </style>
 </head>
 <body>
@@ -229,6 +231,8 @@ details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf
     <button data-tab="rx">Receptionist<i id="nRx"></i></button>
     <button data-tab="clients">RX Clients</button>
     <button data-tab="agents">Agents</button>
+    <button data-tab="reviews">Reviews<i id="nRev"></i></button>
+    <button data-tab="planner">Planner<i id="nPln"></i></button>
   </div>
   <main>
     <section id="t-prospects">
@@ -293,6 +297,26 @@ details.log pre{white-space:pre-wrap;font:inherit;font-size:13px;background:#faf
       <h2 style="margin-top:18px">What they did</h2>
       <div id="runs"></div>
     </section>
+    <section id="t-reviews" class="hidden">
+      <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">The Review Engine ($97/mo). Job done, text with the Google link two hours later, one reminder on day 3 if nobody tapped, then it stops. Turn it on per client here; paste their review link or Place ID; done. Receptionist jobs feed it on their own, the owner has a Job done button and a paste box in their app, and the hook URL takes Housecall Pro / Jobber / Zapier.</div>
+      <div class="stats" id="rvStats"></div>
+      <div id="rvClients"></div>
+      <h2 style="margin-top:18px">Recent asks</h2>
+      <div class="filters" id="rvFilters"></div>
+      <div id="rvList"></div>
+    </section>
+    <section id="t-planner" class="hidden">
+      <div id="plList">
+        <div class="sticker" style="background:var(--yellow);border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-weight:700;margin-bottom:12px;font-size:15px">The Remodel Planner ($697 + $67/mo). <b>+ New client</b> turns a plumber on in one tap: their name, phone and colors on the page, D N E's project types and price ranges copied in to start. Hand them the link (or drop it on their site), every finished planner texts and emails the owner, and you get a text on their first lead.</div>
+        <div class="stats" id="plStats"></div>
+        <div class="acts" style="margin:0 0 12px"><button id="newPl" style="background:var(--ink);color:var(--yellow)">+ New client</button><span class="when" id="plMsg"></span></div>
+        <div id="plClients"></div>
+        <h2 style="margin-top:18px">Recent job requests</h2>
+        <div class="filters" id="plFilters"></div>
+        <div id="plLeads"></div>
+      </div>
+      <div id="plEdit" class="hidden"></div>
+    </section>
   </main>
 </div>
 
@@ -331,9 +355,11 @@ $('scrim').onclick=e=>{ if(e.target.id==='scrim') $('scrim').classList.remove('s
 // ---- tabs ----
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
-  ['prospects','work','finder','leads','rx','clients','agents'].forEach(t=>$('t-'+t).classList.toggle('hidden',t!==b.dataset.tab));
+  ['prospects','work','finder','leads','rx','clients','agents','reviews','planner'].forEach(t=>$('t-'+t).classList.toggle('hidden',t!==b.dataset.tab));
   if(b.dataset.tab==='finder') finderInit();
   if(b.dataset.tab==='work') workInit();
+  if(b.dataset.tab==='reviews') loadReviews();
+  if(b.dataset.tab==='planner') loadPlanner();
 });
 
 async function load(){
@@ -345,6 +371,7 @@ async function load(){
   renderAgents().catch(e=>{ $('agents').innerHTML='<div class="empty">Agents tab broke: '+esc(e.message)+'</div>'; console.error(e); });
   if(p.error){ $('leads').innerHTML='<div class="empty">'+esc(p.error.message)+'</div>'; } else { leads=p.data||[]; renderLeads(); }
   if(r.error){ $('jobs').innerHTML='<div class="empty">'+esc(r.error.message)+'</div>'; } else { rx=r.data; renderRx(); }
+  loadReviews().catch(e=>console.error(e));
 }
 
 // ---- prospects (the call list) ----
@@ -888,10 +915,56 @@ function renderRx(){
     </div>`).join(''):'<div class="empty">No calls in the last 30 days.</div>';
   $('bizs').innerHTML=(rx.businesses||[]).map(b=>`<div class="card">
       <div class="top"><div><h3>${esc(b.name)}</h3><div class="biz">${esc(b.trade||'')} · /${esc(b.slug)}</div></div><span class="pill ${b.active?'booked':''}">${b.active?'active':'off'}</span></div>
-      <div class="sum">Owner: ${esc(b.owner_name||'—')} ${esc(fmtPhone(b.owner_phone))}<br>Agent line: <b>${esc(fmtPhone(b.agent_number)||'not provisioned')}</b></div>
+      <div class="sum">Owner: ${esc(b.owner_name||'—')} ${esc(fmtPhone(b.owner_phone))}<br>Agent line: <b>${esc(fmtPhone(b.agent_number)||'not provisioned')}</b><br>Reviews: ${(()=>{ const c=(rvData.clients||[]).find(x=>x.id===b.id); return c?(c.on?`<b>${c.month_sent}</b> asked · <b>${c.month_clicked}</b> tapped this month`:'off'):'—'; })()}</div>
       <div class="acts"><button class="edit" data-id="${b.id}" style="background:var(--yellow)">Edit brain</button>${b.owner_phone?`<a href="tel:${tel(b.owner_phone)}">Call owner</a>`:''}${b.agent_number?`<a href="tel:${tel(b.agent_number)}">Call agent</a>`:''}</div>
     </div>`).join('');
   $('bizs').querySelectorAll('button.edit').forEach(b=>b.onclick=()=>openBiz(b.dataset.id));
+}
+
+// ---- Reviews: the Review Engine across every client (reviews/supabase/001_rx_review_engine.sql) ----
+let rvData={clients:[],requests:[],month:{}}, rvf='all', rvMsg={};
+const RV_STATUS={queued:['Waiting','#eee','var(--ink)'],sent:['Texted','var(--blue)','#fff'],clicked:['Tapped','var(--green)','#fff'],reviewed:['Reviewed','var(--green)','#fff'],stopped:['Stopped','#ddd','var(--ink)'],failed:['Failed','var(--red)','#fff'],skipped:['Skipped','#ddd','var(--ink)']};
+async function loadReviews(){
+  const {data,error}=await supa.rpc('hq_reviews',{p_days:60});
+  if(error){ $('rvClients').innerHTML='<div class="empty">'+esc(error.message)+'</div>'; return; }
+  rvData=data||{clients:[],requests:[],month:{}}; renderReviews();
+  if(rx) renderRx(); // refresh the per-client line on RX Clients
+}
+function renderReviews(){
+  const m=rvData.month||{}, cl=rvData.clients||[], all=rvData.requests||[];
+  const failed=all.filter(r=>r.status==='failed').length; $('nRev').textContent=failed||''; $('nRev').style.display=failed?'':'none';
+  $('rvStats').innerHTML=[[m.on||0,'Shops on'],[m.sent||0,'Asked this month'],[m.clicked||0,'Tapped'],[m.queued||0,'Waiting to go']].map(([n,l])=>`<div><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+  const hook=t=>`${SUPA_URL}/functions/v1/rx-review-io/hook/${t}`;
+  $('rvClients').innerHTML=cl.length?cl.map(c=>`<div class="card ${c.on?'':'lost'}" data-id="${c.id}">
+      <div class="top"><div><h3>${esc(c.name)}</h3><div class="biz">${c.on?`<b>${c.month_sent}</b> asked · <b>${c.month_clicked}</b> tapped this month · ${c.queued} waiting${c.stopped?' · '+c.stopped+' stopped':''}${c.google&&c.google.count!=null?` · Google: ${c.google.count} at ${c.google.rating??'?'}`:''}${c.last_sent?' · last text '+ago(c.last_sent):''}`:'Review Engine off'}</div></div>
+        <span class="pill ${c.on?'booked':''}">${c.on?'on':'off'}</span></div>
+      ${c.on&&!c.link?`<div class="sum" style="color:var(--copper);font-weight:700">No review link or Place ID. Nothing goes out until one is set.</div>`:''}
+      <div class="g2" style="margin-top:8px"><label class="f">Google review link<input data-k="review_url" type="url" value="${esc(c.review_url||'')}" placeholder="https://g.page/r/…/review"></label><label class="f">Place ID<input data-k="google_place_id" value="${esc(c.google_place_id||'')}" placeholder="ChIJ…"></label></div>
+      <div class="acts"><button class="rvOn" style="background:${c.on?'#fff':'var(--ink)'};color:${c.on?'var(--ink)':'var(--yellow)'}">${c.on?'Turn off':'Turn on'}</button><button class="rvSave">Save link</button><button class="rvAsk">+ Job done</button><button class="rvHook">Hook URL</button><span class="when rvMsg">${esc(rvMsg[c.id]||'')}</span></div>
+      <div class="np" style="display:none;margin-top:10px"><div class="g2"><label class="f">Customer<input class="rvName" placeholder="Dave Smith"></label><label class="f">Cell<input class="rvPhone" type="tel" placeholder="(610) 555-0101"></label></div><div class="acts"><button class="rvGo" style="background:var(--ink);color:var(--yellow)">Add · texts in 2h</button><button class="rvGoNow">Text now</button></div></div>
+    </div>`).join(''):'<div class="empty">No receptionist clients yet. Add one under RX Clients first.</div>';
+  rvMsg={};
+  $('rvClients').querySelectorAll('.card').forEach(card=>{
+    const id=card.dataset.id, c=cl.find(x=>x.id===id), msg=card.querySelector('.rvMsg'), g=k=>card.querySelector(`[data-k=${k}]`).value;
+    const say=t=>{ msg.textContent=t; rvMsg={[id]:t}; };
+    const save=async p=>{ const {error}=await supa.rpc('hq_review_settings',{p_business:id,p}); say(error?error.message:'Saved.'); if(!error) loadReviews(); };
+    card.querySelector('.rvOn').onclick=()=>save({on:!c.on,review_url:g('review_url'),google_place_id:g('google_place_id')});
+    card.querySelector('.rvSave').onclick=()=>save({review_url:g('review_url'),google_place_id:g('google_place_id')});
+    card.querySelector('.rvAsk').onclick=()=>{ const np=card.querySelector('.np'); np.style.display=np.style.display==='none'?'block':'none'; };
+    card.querySelector('.rvHook').onclick=async()=>{ try{ await navigator.clipboard.writeText(hook(c.hook_token)); msg.textContent='Hook URL copied. Paste it as a "job completed" webhook in Housecall Pro / Jobber / Zapier.'; }catch{ msg.textContent=hook(c.hook_token); } };
+    const ask=async now=>{ const {data,error}=await supa.rpc('hq_review_request',{p_business:id,p_name:card.querySelector('.rvName').value.trim(),p_phone:card.querySelector('.rvPhone').value.trim(),p_now:now});
+      say(error?error.message:data.ok===false?data.error:data.dup?'Already on the list.':data.status==='stopped'?'That number said STOP.':now?'Sending.':'Added. Goes out in 2 hours.'); if(!error) loadReviews(); };
+    card.querySelector('.rvGo').onclick=()=>ask(false); card.querySelector('.rvGoNow').onclick=()=>ask(true);
+  });
+  const list=all.filter(r=>rvf==='all'||(rvf==='open'?['queued','sent'].includes(r.status):r.status===rvf));
+  $('rvFilters').innerHTML=[['all','All'],['open','In progress'],['clicked','Tapped'],['stopped','Stopped'],['failed','Failed']].map(([k,l])=>`<button data-f="${k}" class="${rvf===k?'on':''}">${l}</button>`).join('');
+  $('rvFilters').querySelectorAll('button').forEach(b=>b.onclick=()=>{ rvf=b.dataset.f; renderReviews(); });
+  $('rvList').innerHTML=list.length?list.slice(0,200).map(r=>{ const [sl,bg,fg]=RV_STATUS[r.status]||[r.status,'#eee','var(--ink)']; return `<div class="card ${['clicked','reviewed'].includes(r.status)?'won':['stopped','skipped','failed'].includes(r.status)?'lost':''}">
+      <div class="top"><div><h3>${esc(r.customer_name||fmtPhone(r.phone))}</h3><div class="biz">${esc(r.business)} · ${esc(fmtPhone(r.phone))} · ${esc(r.source)} · ${r.touches} text${r.touches===1?'':'s'} · ${ago(r.created_at)}</div></div><span class="src" style="background:${bg};color:${fg}">${sl}</span></div>
+      ${r.note?`<div class="when">${esc(r.note)}</div>`:''}
+      <div class="acts">${['queued','sent'].includes(r.status)&&r.touches<2?`<button data-act="send_now" data-id="${r.id}">Send now</button>`:''}${['queued','sent'].includes(r.status)?`<button data-act="stop" data-id="${r.id}">Stop</button>`:''}</div>
+    </div>`; }).join(''):'<div class="empty">Nothing yet.</div>';
+  $('rvList').querySelectorAll('button[data-act]').forEach(b=>b.onclick=async()=>{ const {error}=await supa.rpc('hq_review_action',{p_id:b.dataset.id,p_action:b.dataset.act}); if(error){ alert(error.message); return; } loadReviews(); });
 }
 
 // ---- Work: client projects + the Google Rank Fix playbook ----
@@ -1106,6 +1179,141 @@ async function saveBiz(){
   if(hk||cur.integrations.some(x=>x.provider==='housecallpro')){ const r2=await supa.rpc('hq_rx_integration_save',{p_business:cur.business.id,p_provider:'housecallpro',p_api_key:hk,p_active:ha,p_settings:{}}); if(r2.error){ alert('Integration: '+r2.error.message); return; } $('hcp_key').value=''; }
   $('saveSt').textContent='Saved. Live on the next call.'; $('saveBiz').textContent='Save'; $('saveBiz').classList.remove('dirty'); setTimeout(()=>$('saveSt').textContent='',2500);
   const r=await supa.rpc('hq_rx',{p_days:30}); rx=r.data; renderRx();
+}
+
+// ---- Planner: the Remodel Planner across every client (planner/supabase/001_planner_clients.sql) ----
+let plData={clients:[],stats:{}}, plLeads=[], plf='all', plLoaded=false, plCur=null;
+const PL_STATUS=['new','contacted','booked','quoted','won','lost'];
+const plUrl=c=>location.origin+'/planner/app/?c='+encodeURIComponent(c.slug);
+const plEmbed=c=>`<iframe src="${plUrl(c)}" title="Remodel Planner" style="width:100%;min-height:760px;border:0" loading="lazy"></iframe>`;
+async function loadPlanner(){
+  const [a,b]=await Promise.all([supa.rpc('hq_planner'),supa.rpc('hq_planner_leads',{p_client:null,p_days:90})]);
+  if(a.error){ $('plClients').innerHTML='<div class="empty">'+esc(a.error.message)+(/does not exist|function/i.test(a.error.message)?'<br><small>Run planner/supabase/001_planner_clients.sql in Supabase first.</small>':'')+'</div>'; return; }
+  plData=a.data||{clients:[],stats:{}}; plLeads=b.data||[]; plLoaded=true; renderPlanner();
+}
+function renderPlanner(){
+  const s=plData.stats||{}, cl=plData.clients||[];
+  $('nPln').textContent=s.new||''; $('nPln').style.display=s.new?'':'none';
+  $('plStats').innerHTML=[[s.on||0,'Planners on'],[s.month||0,'Requests this month'],[s.new||0,'New, uncalled'],[cl.length,'Clients']].map(([n,l])=>`<div><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+  $('plClients').innerHTML=cl.length?cl.map(c=>`<div class="card ${c.active?'':'lost'}" data-id="${c.id}">
+      <div class="top"><div><h3>${esc(c.business_name)}</h3><div class="biz">${esc(c.slug)}${c.notify_phone?' · texts '+esc(fmtPhone(c.notify_phone)):' · <b style="color:var(--red)">no notify phone</b>'}${c.notify_email?' · '+esc(c.notify_email):''}${c.hostnames&&c.hostnames.length?' · '+esc(c.hostnames.join(', ')):''}</div></div><span class="pill ${c.active?'booked':''}">${c.active?'live':'off'}</span></div>
+      <div class="sum"><b>${c.leads}</b> request${c.leads==1?'':'s'}${c.leads_new?` · <b style="color:var(--copper)">${c.leads_new} new</b>`:''}${c.last_lead_at?' · last '+ago(c.last_lead_at):''}${c.first_lead_at?'':' · no leads yet'}</div>
+      <div class="acts"><button class="plOpen" style="background:var(--yellow)">Edit</button><button class="plCopy">Copy link</button><a href="${esc(plUrl(c))}" target="_blank">Open</a>${c.phone?`<a href="sms:${tel(c.phone)}&body=${encodeURIComponent('Your remodel planner is live: '+plUrl(c))}">Text it</a>`:''}<button class="plToggle">${c.active?'Turn off':'Turn on'}</button><span class="when plMsgC"></span></div>
+    </div>`).join(''):'<div class="empty">No planner clients yet. Tap <b>+ New client</b>.</div>';
+  $('plClients').querySelectorAll('.card').forEach(card=>{
+    const id=card.dataset.id, c=cl.find(x=>x.id===id), msg=card.querySelector('.plMsgC');
+    card.querySelector('.plOpen').onclick=()=>openPl(id);
+    card.querySelector('.plCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(plUrl(c)); msg.textContent='Link copied.'; }catch{ prompt('Copy this link',plUrl(c)); } };
+    card.querySelector('.plToggle').onclick=async()=>{ const {error}=await supa.rpc('hq_planner_client_save',{p_id:id,p:{active:!c.active}}); if(error){ alert(error.message); return; } loadPlanner(); };
+  });
+  const list=plLeads.filter(l=>plf==='all'||(plf==='open'?['new','contacted'].includes(l.status):l.status===plf));
+  $('plFilters').innerHTML=[['all','All'],['open','Open'],['new','New'],['booked','Booked'],['won','Won'],['lost','Lost']].map(([k,l])=>`<button data-f="${k}" class="${plf===k?'on':''}">${l}</button>`).join('');
+  $('plFilters').querySelectorAll('button').forEach(b=>b.onclick=()=>{ plf=b.dataset.f; renderPlanner(); });
+  $('plLeads').innerHTML=plLeadsHtml(list.slice(0,200));
+  wirePlLeads($('plLeads'));
+}
+function plLeadsHtml(list){
+  return list.length?list.map(l=>`<div class="card ${l.status==='won'?'won':l.status==='lost'?'lost':''}" data-lead="${l.id}">
+      <div class="top"><div><h3>${esc(l.name)}</h3><div class="biz">${esc(l.business)}${l.town?' · '+esc(l.town):''} · ${ago(l.created_at)}</div></div><span class="src dne">${esc(l.score_tier||'')}</span></div>
+      <div class="sum">${esc([l.project_label,l.scope_label].filter(Boolean).join(' · '))}${l.timeline?' · '+esc(l.timeline):''}${l.budget?' · budget '+esc(l.budget):''}${l.notes?'<br>'+esc(l.notes):''}</div>
+      ${l.est_low!=null?`<div class="val">$${(+l.est_low).toLocaleString()}–$${(+l.est_high).toLocaleString()} typical</div>`:''}
+      ${(l.attachments||[]).length?`<div class="when">${l.attachments.length} file${l.attachments.length===1?'':'s'}: ${l.attachments.map(a=>`<a href="#" data-file="${esc(a.path)}">${esc(a.name)}</a>`).join(', ')}</div>`:''}
+      <div class="acts">${l.phone?`<a class="call" href="tel:${tel(l.phone)}">Call</a><a href="sms:${tel(l.phone)}">Text</a>`:''}${l.email?`<a href="mailto:${esc(l.email)}">Email</a>`:''}<span class="when">${esc(fmtPhone(l.phone)||l.email||'')}${l.contact_pref?' · prefers '+esc(l.contact_pref):''}${l.phone&&!l.sms_consent?' · <b>no SMS consent: call</b>':''}</span>
+        <select class="plSt ${esc(l.status)}">${PL_STATUS.map(s=>`<option value="${s}" ${s===l.status?'selected':''}>${s}</option>`).join('')}</select></div>
+    </div>`).join(''):'<div class="empty">Nothing yet.</div>';
+}
+function wirePlLeads(root){
+  root.querySelectorAll('.card[data-lead]').forEach(card=>{
+    const id=card.dataset.lead;
+    card.querySelector('.plSt').onchange=async e=>{ const {error}=await supa.rpc('hq_planner_lead_set',{p_id:id,p_status:e.target.value}); if(error) alert(error.message); else { const l=plLeads.find(x=>x.id===id); if(l) l.status=e.target.value; e.target.className='plSt '+e.target.value; } };
+    card.querySelectorAll('a[data-file]').forEach(a=>a.onclick=async ev=>{ ev.preventDefault(); const {data,error}=await supa.storage.from('planner-uploads').createSignedUrl(a.dataset.file,600); if(error){ alert(error.message); return; } window.open(data.signedUrl,'_blank'); });
+  });
+}
+$('newPl').onclick=async()=>{
+  const business_name=prompt('Business name (e.g. Keystone Plumbing)'); if(!business_name) return;
+  const phone=prompt('Shop phone, shown on the page (10 digits)','')||''; const notify=prompt('Owner cell for lead texts (blank = shop phone)','')||'';
+  const email=prompt('Owner email for lead emails (optional)','')||''; const area=prompt('Service area in plain words (optional)','')||'';
+  $('plMsg').textContent='Creating…';
+  const {data,error}=await supa.rpc('hq_planner_client_create',{p:{business_name,phone:phone?fmtPhone(phone):'',notify_phone:notify||phone,email,notify_email:email,service_area:area}});
+  $('plMsg').textContent=''; if(error){ alert(error.message); return; }
+  await loadPlanner(); openPl(data);
+};
+async function openPl(id){
+  if(!plLoaded) await loadPlanner();
+  const c=(plData.clients||[]).find(x=>x.id===id); if(!c){ alert('not found'); return; }
+  plCur=JSON.parse(JSON.stringify(c)); const K=plCur.intake||{};
+  const {data:leads}=await supa.rpc('hq_planner_leads',{p_client:id,p_days:365});
+  $('plList').classList.add('hidden'); $('plEdit').classList.remove('hidden');
+  const inp=(k,label,type='text',ph='')=>`<label class="f">${label}<input data-k="${k}" type="${type}" value="${esc(plCur[k]??'')}" placeholder="${esc(ph)}"></label>`;
+  const kin=(k,label)=>`<label class="f">${label}<input data-i="${k}" value="${esc(K[k]??'')}"></label>`;
+  const tog=(k,label)=>`<label class="tog"><input type="checkbox" data-i="${k}" ${K[k]!==false?'checked':''}> ${label}</label>`;
+  const url=plUrl(plCur);
+  $('plEdit').innerHTML=`<div class="ed edit">
+    <div class="acts" style="margin:0 0 12px"><button id="plBack">← All planners</button><span class="tog" style="margin-left:auto"><input type="checkbox" id="plActive" ${plCur.active?'checked':''}> Planner is live</span></div>
+    <h3 style="font-size:24px;font-weight:800;line-height:1.05;text-transform:none;letter-spacing:-.02em;color:var(--ink);margin:0 0 10px">${esc(plCur.business_name)}</h3>
+    <div class="share"><span>Their planner link</span><code>${esc(url)}</code><button id="plCopyL">Copy link</button><a href="${esc(url)}" target="_blank">Open</a><button id="plEmbedB">Copy embed</button></div>
+    <details class="sec" open><summary><span><b>Brand</b><small>${esc([plCur.phone,plCur.service_area].filter(Boolean).join(' · ')||'name, phone, color, logo')}</small></span><i>›</i></summary><div class="secb">
+      <div class="g2">${inp('business_name','Business name')}${inp('slug','Slug (in the link)','text','keystone-plumbing')}</div>
+      <div class="g2">${inp('owner_name','Owner first name')}${inp('phone','Phone shown on the page','tel','(610) 555-0101')}</div>
+      <div class="g2">${inp('email','Email shown on the page','email')}${inp('website_url','Their website (Back link)','url','https://')}</div>
+      <div class="g2">${inp('primary_color','Brand color (hex)','text','#B8322B')}${inp('logo_url','Logo URL (optional)','url','https://…/logo.png')}</div>
+      <div class="g2">${inp('license','License line (footer)','text','PA HIC #PA000000')}${inp('service_area','Service area, plain words','text','Chester and Montgomery counties')}</div>
+      <label class="f">Custom domains (one per line; point the DNS at Vercel, then add it to the tb-solutions project)<textarea data-k="hostnames" style="min-height:60px">${esc((plCur.hostnames||[]).join('\n'))}</textarea></label>
+    </div></details>
+    <details class="sec"><summary><span><b>Where leads go</b><small>${esc([plCur.notify_phone?'texts '+fmtPhone(plCur.notify_phone):'NO TEXT NUMBER',plCur.notify_email||'no email'].join(' · '))}</small></span><i>›</i></summary><div class="secb">
+      <div class="g2">${inp('notify_phone','Owner cell (gets the text)','tel')}${inp('notify_email','Owner email (gets the email)','email')}</div>
+      <label class="tog"><input type="checkbox" data-i="autoreply" ${K.autoreply?'checked':''}> Auto-text the homeowner a "got it" (only when they tick consent)</label>
+      <div class="hint">The first lead each new client gets also texts you (NICK_PHONE). Owner login for their own leads: set <code>owner_user_id</code> in SQL for now.</div>
+    </div></details>
+    <details class="sec"><summary><span><b>Words on the page</b><small>${esc(K.headline||'')}</small></span><i>›</i></summary><div class="secb">
+      ${kin('headline','Headline')}${kin('intro','Intro line')}${kin('submit_label','Submit button')}${kin('thanks','Thank-you line')}
+      <div class="acts">${tog('show_estimate','Show price ranges')}${tog('allow_upload','Allow photo / plan upload')}${tog('ask_town','Ask for town')}<label class="tog"><input type="checkbox" data-i="ask_zip" ${K.ask_zip?'checked':''}> Ask for ZIP</label></div>
+    </div></details>
+    <details class="sec" open><summary><span><b>Projects and price ranges</b><small>${(plCur.services||[]).map(s=>s.label).join(', ')}</small></span><i>›</i></summary><div class="secb">
+      <div class="hint" style="margin-bottom:8px">What the homeowner picks, and the "usually runs" range for each size of job. The owner approves these numbers; the real quote comes after the walkthrough.</div>
+      <div id="plSvcs"></div>
+      <div class="acts"><button id="plAddSvc">+ Project type</button></div>
+    </div></details>
+    <div class="acts" style="margin-top:12px"><button id="plSave" style="background:var(--ink);color:var(--yellow)">Save</button><span class="st" id="plSaved" style="color:var(--green);font-weight:700"></span></div>
+    <h2 style="margin-top:18px">Job requests (${(leads||[]).length})</h2>
+    <div id="plCLeads">${plLeadsHtml(leads||[])}</div>
+  </div>`;
+  plLeads=plLeads.concat((leads||[]).filter(l=>!plLeads.some(x=>x.id===l.id)));
+  wirePlLeads($('plCLeads'));
+  renderPlSvcs();
+  $('plBack').onclick=()=>{ $('plEdit').classList.add('hidden'); $('plList').classList.remove('hidden'); loadPlanner(); };
+  $('plCopyL').onclick=async()=>{ try{ await navigator.clipboard.writeText(url); $('plCopyL').textContent='Copied ✓'; setTimeout(()=>$('plCopyL').textContent='Copy link',1500); }catch{ prompt('Copy this link',url); } };
+  $('plEmbedB').onclick=async()=>{ try{ await navigator.clipboard.writeText(plEmbed(plCur)); $('plEmbedB').textContent='Copied ✓'; setTimeout(()=>$('plEmbedB').textContent='Copy embed',1500); }catch{ prompt('Paste this on their site',plEmbed(plCur)); } };
+  $('plAddSvc').onclick=()=>{ plCur.services=plCur.services||[]; plCur.services.push({key:'new-'+Date.now().toString(36),label:'New project type',blurb:'',time:'',scopes:[{key:'small',label:'Small job',low:1000,high:3000},{key:'mid',label:'Mid-size job',low:3000,high:10000},{key:'full',label:'Full job',low:10000,high:30000}]}); renderPlSvcs(); };
+  $('plSave').onclick=savePl;
+}
+function renderPlSvcs(){
+  const root=$('plSvcs'); if(!root) return;
+  root.innerHTML=(plCur.services||[]).map((s,i)=>`<div class="svc open" data-i="${i}">
+      <div class="h"><span>${esc(s.label)}</span><button class="x" data-rm="${i}" style="font-size:12px;color:var(--red);background:none;border:0;cursor:pointer;font-weight:700">remove</button></div>
+      <div class="body">
+        <div class="g3"><label class="f">Name<input data-s="label" value="${esc(s.label)}"></label><label class="f">Key (in the data)<input data-s="key" value="${esc(s.key)}"></label><label class="f">How long<input data-s="time" value="${esc(s.time||'')}" placeholder="Usually 2-4 weeks"></label></div>
+        <div class="hint" style="margin-bottom:6px">Sizes of job and the typical range for each</div>
+        ${(s.scopes||[]).map((x,j)=>`<div class="g3 plrow" data-j="${j}"><label class="f">Scope<input data-x="label" value="${esc(x.label)}"></label><label class="f">Low $<input data-x="low" type="number" value="${esc(x.low??'')}"></label><label class="f">High $<input data-x="high" type="number" value="${esc(x.high??'')}"></label><button class="x" data-rmx="${j}" style="font-size:12px;color:var(--red);background:none;border:0;cursor:pointer;font-weight:700;margin-bottom:14px">remove</button></div>`).join('')}
+        <div class="acts"><button data-addx="${i}">+ Size</button></div>
+      </div></div>`).join('');
+  const sync=()=>{ root.querySelectorAll('.svc').forEach(el=>{ const s=plCur.services[+el.dataset.i]; el.querySelectorAll('[data-s]').forEach(inp=>s[inp.dataset.s]=inp.value.trim()); s.key=(s.key||s.label).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); el.querySelectorAll('[data-j]').forEach(row=>{ const x=s.scopes[+row.dataset.j]; row.querySelectorAll('[data-x]').forEach(inp=>{ x[inp.dataset.x]=inp.dataset.x==='label'?inp.value.trim():(inp.value===''?null:+inp.value); }); x.key=x.key||x.label.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,30); }); }); };
+  root.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{ sync(); if(!confirm('Remove this project type?')) return; plCur.services.splice(+b.dataset.rm,1); renderPlSvcs(); });
+  root.querySelectorAll('[data-rmx]').forEach(b=>b.onclick=()=>{ sync(); const s=plCur.services[+b.closest('.svc').dataset.i]; s.scopes.splice(+b.dataset.rmx,1); renderPlSvcs(); });
+  root.querySelectorAll('[data-addx]').forEach(b=>b.onclick=()=>{ sync(); const s=plCur.services[+b.dataset.addx]; s.scopes=s.scopes||[]; s.scopes.push({key:'s'+Date.now().toString(36),label:'Another size',low:null,high:null}); renderPlSvcs(); });
+  root._sync=sync;
+}
+async function savePl(){
+  const root=$('plEdit'), g=k=>root.querySelector(`[data-k="${k}"]`).value.trim();
+  if($('plSvcs')._sync) $('plSvcs')._sync();
+  const intake={}; root.querySelectorAll('[data-i]').forEach(el=>{ intake[el.dataset.i]=el.type==='checkbox'?el.checked:el.value.trim(); });
+  const color=g('primary_color'); if(color&&!/^#[0-9a-fA-F]{6}$/.test(color)){ alert('Brand color must look like #B8322B'); return; }
+  const bad=(plCur.services||[]).find(s=>!s.label||(s.scopes||[]).some(x=>x.low!=null&&x.high!=null&&x.low>x.high)); if(bad){ alert('Check "'+(bad.label||'a project type')+'": every scope needs a name and low ≤ high.'); return; }
+  const p={business_name:g('business_name'),slug:g('slug'),owner_name:g('owner_name'),phone:g('phone'),email:g('email'),website_url:g('website_url'),primary_color:color||'#B8322B',logo_url:g('logo_url'),license:g('license'),service_area:g('service_area'),
+    hostnames:g('hostnames').split('\n').map(x=>x.trim()).filter(Boolean),notify_phone:g('notify_phone'),notify_email:g('notify_email'),intake,services:plCur.services,active:$('plActive').checked};
+  const {error}=await supa.rpc('hq_planner_client_save',{p_id:plCur.id,p}); if(error){ alert(error.message); return; }
+  $('plSaved').textContent='Saved. Live on their next visit.'; setTimeout(()=>$('plSaved').textContent='',2500);
+  await loadPlanner(); const fresh=(plData.clients||[]).find(x=>x.id===plCur.id); if(fresh) openPl(fresh.id);
 }
 </script>
 </body>

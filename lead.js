@@ -1,4 +1,4 @@
-/* TB Solutions — drop-in lead form. One line on any page:
+/* TB Solutions: drop-in lead form. One line on any page:
      <div data-lead="websites"></div>   ...   <script defer src="/lead.js"></script>
    data-lead = offer key (websites | receptionist | reviews | planner | leads | rank | bundle | general)
    data-cta  = button text (optional)      data-ask = placeholder for the note (optional)

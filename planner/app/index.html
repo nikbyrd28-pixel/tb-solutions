@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Remodel Planner</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Tell us about your remodel: the room, the scope, the timeline and the budget, and send photos or plans. You get a typical price range and a call back.">
+<style>
+/* Same bones as the planner on dnecontracting.com; every color and word that belongs to the shop comes from config. */
+:root{--paper:#FFFFFF;--paper-2:#F6F6F6;--ink:#111;--ink-2:#333;--mute:#666;--line:#DDD;--brand:#B8322B;--ok:#2E6B3F;
+  --serif:Georgia,"Times New Roman",serif;--sans:Arial,Helvetica,system-ui,sans-serif;box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#FFFFFF}}
+:root[data-theme="dark"]{--paper:#FFFFFF}
+*{box-sizing:inherit}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--sans);font-size:16.5px;line-height:1.6;color:var(--ink);background:var(--paper-2);min-height:100vh;display:flex;flex-direction:column}
+img,svg{max-width:100%}
+h1,h2,h3{font-family:var(--serif);font-weight:normal;line-height:1.15;margin:0 0 .4em}
+h1{font-size:clamp(1.6rem,4vw,2.3rem)}
+h3{font-size:1.2rem}
+p{margin:0 0 1em}
+a{color:var(--ink)}
+:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+.top{background:var(--paper);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:14px;min-height:64px}
+.wrap{width:100%;max-width:680px;margin:0 auto;padding:0 16px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:var(--serif);font-size:1.15rem;min-width:0}
+.brand img{height:36px;width:auto;max-width:160px;object-fit:contain}
+.brand .mark{width:30px;height:30px;flex:none;background:var(--brand);color:#fff;display:grid;place-items:center;font-family:var(--sans);font-weight:bold;font-size:.85rem}
+.brand span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.call{margin-left:auto;display:inline-flex;align-items:center;gap:8px;color:#fff;background:var(--brand);text-decoration:none;font-weight:600;white-space:nowrap;border:1px solid var(--brand);padding:9px 14px;font-size:.95rem}
+.call.icon{padding:9px 11px}
+@media (max-width:520px){.call span{display:none}}
+main{flex:1;padding:28px 0 48px}
+.intro{margin-bottom:18px}
+.intro p{color:var(--ink-2);max-width:56ch}
+.area{color:var(--mute);font-size:.92rem}
+.planner{background:#fff;color:var(--ink);padding:22px;border:1px solid var(--line)}
+.planner h3{margin-bottom:4px}
+.hint{color:var(--mute);font-size:.9rem;margin:0 0 6px}
+.step-bar{display:flex;gap:6px;margin:14px 0 20px}
+.step-bar i{flex:1;height:3px;background:var(--line)}
+.step-bar i.on{background:var(--brand)}
+fieldset{border:0;padding:0;margin:0;min-width:0}
+.q{display:none}.q.on{display:block}
+.q>label,.field>label{display:block;font-weight:600;margin-bottom:8px}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.choices.scopes{grid-template-columns:1fr}
+.choices label{position:relative;margin:0;border:1px solid var(--line);padding:11px;cursor:pointer;text-align:center;font-weight:500;background:#fff}
+.choices.scopes label{text-align:left;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.choices.scopes label small{color:var(--mute);white-space:nowrap;font-size:.9rem}
+.choices input{position:absolute;opacity:0;width:0;height:0}
+.choices label:has(input:checked){border-color:var(--ink);background:var(--ink);color:#fff}
+.choices label:has(input:checked) small{color:#ddd}
+.choices label:has(input:focus-visible){outline:2px solid var(--brand)}
+.field{margin-bottom:14px}
+.field input,.field textarea,.field select{width:100%;font:inherit;padding:11px 12px;border:1px solid var(--line);background:#fff;color:var(--ink)}
+.field textarea{resize:vertical}
+.err{color:var(--brand);font-size:.88rem;margin-top:4px;display:none}
+.q.bad>.err,.field.bad .err{display:block}
+.field.bad input,.field.bad textarea{border-color:var(--brand)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--ink);cursor:pointer;font:inherit;font-weight:bold;font-size:.95rem;padding:12px 18px;text-decoration:none;background:transparent;color:var(--ink)}
+.btn.p{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.g{color:var(--ink)}
+.btn:disabled{opacity:.6;cursor:default}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:14px}
+.est{border:1px solid var(--line);border-left:3px solid var(--brand);padding:14px 16px;margin:0 0 16px;background:var(--paper-2)}
+.est b{display:block;font-family:var(--serif);font-size:1.5rem;font-weight:normal;line-height:1.1}
+.est small{color:var(--mute);display:block;margin-top:4px;font-size:.88rem}
+.up{border:1px dashed var(--line);padding:14px;text-align:center;background:var(--paper-2)}
+.up input{width:100%;font:inherit;font-size:.92rem}
+.up ul{list-style:none;padding:0;margin:10px 0 0;text-align:left;font-size:.9rem;color:var(--ink-2)}
+.up li{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-top:1px solid var(--line)}
+.up li button{background:none;border:0;color:var(--brand);cursor:pointer;font:inherit}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:.88rem;color:var(--ink-2);margin:4px 0 0}
+.consent input{margin-top:4px;flex:none;width:18px;height:18px}
+.done{background:#fff;border:1px solid var(--line);padding:26px 22px}
+.done .ok{display:inline-block;color:var(--ok);font-weight:600;margin-bottom:8px}
+.summary{margin:14px 0;border-top:1px solid var(--line)}
+.summary div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:.95rem}
+.summary span:first-child{color:var(--mute)}
+.summary span:last-child{text-align:right}
+footer{border-top:1px solid var(--line);background:var(--paper);padding:18px 0;font-size:.85rem;color:var(--mute)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between}
+footer a{color:var(--mute)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 16px;font-size:.92rem;opacity:0;transition:.25s;max-width:calc(100vw - 32px);pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.offline{text-align:center;padding:60px 16px;color:var(--mute)}
+.sr{position:absolute;left:-9999px}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" id="brand" href="#"><span class="mark" id="mark"></span><span id="bizName">Remodel Planner</span></a>
+  <a class="call icon" id="callBtn" href="#" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L8 9.7a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.6 2.6.7a2 2 0 0 1 1.7 2z"/></svg><span id="callTxt"></span></a>
+</div></header>
+
+<main><div class="wrap">
+  <div id="loading" class="offline">Loading…</div>
+  <div id="notlive" class="offline" hidden><h1>This planner is not live yet.</h1><p>If you were sent this link, the shop is still setting it up. Check back soon.</p></div>
+  <div id="app" hidden>
+    <div class="intro"><h1 id="headline"></h1><p id="introTxt"></p><p class="area" id="areaTxt" hidden></p></div>
+    <div class="planner" id="planner"></div>
+    <div class="done" id="done" hidden></div>
+  </div>
+</div></main>
+
+<footer><div class="wrap">
+  <span id="footBiz"></span>
+  <span>Built by <a href="https://tbsol.net/planner/" rel="noopener">TB Solutions</a></span>
+</div></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+const SB_URL = (window.PLANNER_SB_URL) || 'https://qgbjiqdwzgkjkmqyjsmc.supabase.co';
+const SB_KEY = (window.PLANNER_SB_KEY) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnYmppcWR3emdramttcXlqc21jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNzc1NTEsImV4cCI6MjA5OTk1MzU1MX0.Naocw-B0B6Z7CLg197yxLezd58a6f5XoMLEiea5b0Ro';
+const INTAKE_URL = SB_URL + '/functions/v1/planner-intake';
+const $ = (s, r) => (r || document).querySelector(s), $$ = (s, r) => [...(r || document).querySelectorAll(s)];
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const money = n => '$' + Math.round(n).toLocaleString('en-US');
+const store = { get(k, d){ try{ return JSON.parse(sessionStorage.getItem('planner:' + k)) ?? d; }catch{ return d; } }, set(k, v){ try{ sessionStorage.setItem('planner:' + k, JSON.stringify(v)); }catch{} }, del(k){ try{ sessionStorage.removeItem('planner:' + k); }catch{} } };
+function toast(m){ const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('on'), 3500); }
+
+// ---- who is this planner for? ?c=<slug>, then <html data-client>, then the hostname (custom domains) ----
+const qs = new URLSearchParams(location.search);
+const SLUG = (qs.get('c') || qs.get('client') || document.documentElement.dataset.client || document.body.dataset.client || '').toLowerCase().trim() || null;
+const HOST = SLUG ? null : location.hostname;
+
+async function loadConfig(){
+  if (window.PLANNER_CONFIG) return window.PLANNER_CONFIG;      // host page can inline it
+  const r = await fetch(SB_URL + '/rest/v1/rpc/planner_config', { method: 'POST', headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_slug: SLUG, p_host: HOST }) });
+  if (!r.ok) throw new Error('config ' + r.status);
+  return await r.json();
+}
+
+// phone mask, same as the shop site
+document.addEventListener('input', e => { const t = e.target; if (t.type !== 'tel') return; let d = t.value.replace(/\D/g, ''); if (d.length > 10 && d[0] === '1') d = d.slice(1); d = d.slice(0, 10); t.value = d.length > 6 ? `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}` : d.length > 3 ? `(${d.slice(0,3)}) ${d.slice(3)}` : d; });
+const validPhone = v => { const d = v.replace(/\D/g, ''); return d.length === 10 || (d.length === 11 && d[0] === '1'); };
+const validEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+const cleanPhone = v => { let d = v.replace(/\D/g, ''); if (d.length === 11 && d[0] === '1') d = d.slice(1); return d.length === 10 ? '(' + d.slice(0,3) + ') ' + d.slice(3,6) + '-' + d.slice(6) : v.trim(); };
+function utm(){ const o = {}; ['utm_source','utm_medium','utm_campaign','utm_content','gclid','fbclid'].forEach(k => { if (qs.get(k)) o[k] = qs.get(k); }); return Object.keys(o).length ? o : null; }
+
+function brand(C){
+  document.title = 'Remodel Planner | ' + C.business_name;
+  document.documentElement.style.setProperty('--brand', C.primary_color || '#B8322B');
+  const link = document.querySelector('link[rel=icon]') || document.head.appendChild(Object.assign(document.createElement('link'), { rel: 'icon' }));
+  link.href = 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="${C.primary_color || '#B8322B'}"/><text x="50%" y="56%" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-weight="bold" font-size="30" fill="#fff">${esc((C.business_name || 'P')[0])}</text></svg>`);
+  $('#bizName').textContent = C.business_name;
+  $('#brand').href = C.website_url || '#';
+  if (C.logo_url) { const img = document.createElement('img'); img.src = C.logo_url; img.alt = C.business_name; $('#mark').replaceWith(img); } else { $('#mark').textContent = (C.business_name || 'P').replace(/[^A-Za-z0-9]/g, '').slice(0, 2).toUpperCase() || 'P'; }
+  if (C.phone) { const d = C.phone.replace(/\D/g, ''); $('#callBtn').href = 'tel:+1' + d.replace(/^1/, ''); $('#callTxt').textContent = C.phone; $('#callBtn').hidden = false; $('#callBtn').classList.remove('icon'); }
+  $('#headline').textContent = C.intake.headline;
+  $('#introTxt').textContent = C.intake.intro;
+  if (C.service_area) { $('#areaTxt').textContent = 'Serving ' + C.service_area + '.'; $('#areaTxt').hidden = false; }
+  $('#footBiz').innerHTML = esc(C.business_name) + (C.license ? ' · ' + esc(C.license) : '') + (C.phone ? ' · <a href="tel:+1' + esc(C.phone.replace(/\D/g, '').replace(/^1/, '')) + '">' + esc(C.phone) + '</a>' : '') + (C.email ? ' · <a href="mailto:' + esc(C.email) + '">' + esc(C.email) + '</a>' : '');
+}
+
+function build(C){
+  const root = $('#planner'), K = C.intake, services = C.services || [];
+  const files = [];
+  const steps = ['type', 'scope', 'timeline', 'budget', 'contact'];
+  root.innerHTML = `
+  <h3>Your project</h3>
+  <p class="hint">Takes about a minute. No obligation.</p>
+  <div class="step-bar">${steps.map((s, i) => `<i class="${i === 0 ? 'on' : ''}"></i>`).join('')}</div>
+  <form novalidate>
+   <fieldset class="q on" data-q="1"><label>What are you thinking about?</label><div class="choices">
+     ${services.map(s => `<label><input type="radio" name="project_type" value="${esc(s.key)}">${esc(s.label)}</label>`).join('')}</div><div class="err">Pick one to continue.</div></fieldset>
+   <fieldset class="q" data-q="2"><label>How big a job is it?</label><div class="choices scopes" id="scopes"></div><div class="err">Pick the closest one.</div></fieldset>
+   <fieldset class="q" data-q="3"><label>Where are you with it?</label><div class="choices">
+     ${(K.timelines || []).map(t => `<label><input type="radio" name="timeline" value="${esc(t.key)}">${esc(t.label)}</label>`).join('')}</div><div class="err">Pick the closest one.</div></fieldset>
+   <fieldset class="q" data-q="4"><label>Rough budget in mind? (It's fine if you don't know.)</label><div class="choices">
+     ${(K.budgets || []).map(b => `<label><input type="radio" name="budget" value="${esc(b.key)}">${esc(b.label)}</label>`).join('')}</div><div class="err">Pick one, or "not sure".</div></fieldset>
+   <fieldset class="q" data-q="5">
+     <div class="est" id="est" hidden></div>
+     <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" autocomplete="name" required><div class="err">Please add your name.</div></div>
+     <div class="field"><label for="f-phone">Phone</label><input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(484) 555-0123"><div class="err">A 10-digit phone number, please.</div></div>
+     <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email"><div class="err">That email doesn't look right.</div></div>
+     ${K.ask_town !== false ? `<div class="field"><label for="f-town">Town</label><input id="f-town" name="town" autocomplete="address-level2" placeholder="e.g. Limerick"></div>` : ''}
+     ${K.ask_zip ? `<div class="field"><label for="f-zip">ZIP</label><input id="f-zip" name="zip" inputmode="numeric" autocomplete="postal-code" maxlength="5"><div class="err">A 5-digit ZIP, please.</div></div>` : ''}
+     <div class="field"><label for="f-notes">Anything you want us to know?</label><textarea id="f-notes" name="notes" rows="2" placeholder="Optional"></textarea></div>
+     ${K.allow_upload !== false ? `<div class="field"><label for="f-files">Photos, sketches or plans (optional)</label><div class="up"><input id="f-files" type="file" accept="image/*,.pdf" multiple><ul id="fileList"></ul></div><p class="hint" style="margin-top:6px">Up to 6 files, 8 MB each. Photos of the room as it is today help the most.</p></div>` : ''}
+     <div class="field"><label>How do you prefer we reach out?</label><div class="choices"><label><input type="radio" name="contact_pref" value="text" checked>Text</label><label><input type="radio" name="contact_pref" value="call">Call</label><label><input type="radio" name="contact_pref" value="email">Email</label></div></div>
+     <label class="consent"><input type="checkbox" name="sms_consent" value="1"><span>It's OK to text me about this request. Message and data rates may apply. Reply STOP to opt out.</span></label>
+     <input type="text" name="company" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+   </fieldset>
+   <div class="nav"><button type="button" class="btn g" data-back hidden>Back</button><button type="button" class="btn p" data-next>Continue</button><button type="submit" class="btn p" data-submit hidden>${esc(K.submit_label || 'Send my project')}</button></div>
+   <p class="hint" style="margin-top:10px;text-align:center">We never share your details or send you anything you didn't ask for.</p>
+  </form>`;
+  const form = $('form', root); let step = 1; const LAST = 5;
+  const svc = () => services.find(s => s.key === form.elements.project_type.value);
+  const scope = () => { const s = svc(); const v = form.elements.scope && form.elements.scope.value; return s && (s.scopes || []).find(x => x.key === v); };
+
+  function renderScopes(){ const s = svc(); const box = $('#scopes', root); const keep = form.elements.scope && form.elements.scope.value;
+    box.innerHTML = s ? (s.scopes || []).map(x => `<label><input type="radio" name="scope" value="${esc(x.key)}">${esc(x.label)}${K.show_estimate !== false && x.low != null ? `<small>${money(x.low)} to ${money(x.high)}</small>` : ''}</label>`).join('') : '';
+    if (keep && form.elements.scope) [...(form.elements.scope.length ? form.elements.scope : [form.elements.scope])].forEach(r => r.checked = r.value === keep); }
+  function renderEst(){ const e = $('#est', root), s = svc(), sc = scope();
+    if (K.show_estimate === false || !s || !sc || sc.low == null) { e.hidden = true; return; }
+    e.innerHTML = `<small>Projects like this usually run</small><b>${money(sc.low)} to ${money(sc.high)}</b><small>${esc(s.label)} · ${esc(sc.label)}${s.time ? ' · ' + esc(s.time) : ''}. The real number comes after we see the space.</small>`; e.hidden = false; }
+
+  // draft restore (per tab)
+  const draft = store.get('draft:' + C.slug, {});
+  Object.entries(draft).forEach(([k, v]) => { const el = form.elements[k]; if (!el || k === 'scope') return; if (el.length && el[0] && el[0].type === 'radio') [...el].forEach(r => r.checked = r.value === v); else if (el.type !== 'file' && el.type !== 'checkbox') el.value = v; });
+  renderScopes(); if (draft.scope && form.elements.scope) [...(form.elements.scope.length ? form.elements.scope : [form.elements.scope])].forEach(r => r.checked = r.value === draft.scope);
+  const pre = qs.get('type'); if (pre && form.elements.project_type) { [...form.elements.project_type].forEach(r => r.checked = r.value === pre); renderScopes(); }
+  form.addEventListener('change', e => { if (e.target.name === 'project_type') { renderScopes(); } const d = {}; new FormData(form).forEach((v, k) => { if (k !== 'company' && typeof v === 'string') d[k] = v; }); store.set('draft:' + C.slug, d); });
+
+  const fl = $('#f-files', root);
+  if (fl) { fl.addEventListener('change', () => { for (const f of fl.files) { if (files.length >= 6) { toast('Up to 6 files.'); break; } if (f.size > 8 * 1024 * 1024) { toast(f.name + ' is over 8 MB.'); continue; } files.push(f); } fl.value = ''; listFiles(); }); }
+  function listFiles(){ const ul = $('#fileList', root); if (!ul) return; ul.innerHTML = files.map((f, i) => `<li><span>${esc(f.name)} <small>(${Math.round(f.size / 1024)} KB)</small></span><button type="button" data-rm="${i}">remove</button></li>`).join(''); $$('[data-rm]', ul).forEach(b => b.onclick = () => { files.splice(+b.dataset.rm, 1); listFiles(); }); }
+
+  function show(){ $$('.q', form).forEach(q => q.classList.toggle('on', +q.dataset.q === step)); $$('.step-bar i', root).forEach((i, x) => i.classList.toggle('on', x < step));
+    $('[data-back]', form).hidden = step === 1; $('[data-next]', form).hidden = step === LAST; $('[data-submit]', form).hidden = step !== LAST;
+    if (step === LAST) renderEst();
+    root.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
+  function valid(){ const q = $('.q.on', form); let ok = true;
+    if (step < LAST) { ok = !!$('input:checked', q); q.classList.toggle('bad', !ok); }
+    else { const checks = [['name', v => v.trim().length > 1]]; const ph = form.elements.phone.value.trim(), em = form.elements.email.value.trim();
+      checks.push(['phone', v => (v.trim() === '' && em !== '') || validPhone(v)]); checks.push(['email', v => (v.trim() === '' && ph !== '') || validEmail(v)]);
+      if (form.elements.zip) checks.push(['zip', v => v.trim() === '' || /^\d{5}$/.test(v.trim())]);
+      checks.forEach(([n, fn]) => { const el = form.elements[n], f = el.closest('.field'), good = fn(el.value); f.classList.toggle('bad', !good); if (!good) ok = false; });
+      if (!ph && !em) { toast('Leave a phone number or an email so we can reach you.'); } }
+    if (!ok) { const bad = $('.bad', form); if (bad) bad.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+    return ok; }
+  form.addEventListener('input', e => { const f = e.target.closest('.field.bad'); if (f) f.classList.remove('bad'); });
+  $('[data-next]', form).addEventListener('click', () => { if (!valid()) return; step++; show(); });
+  $('[data-back]', form).addEventListener('click', () => { step--; show(); });
+  form.addEventListener('submit', async e => { e.preventDefault(); if (!valid()) return; if (form.elements.company.value) return;
+    const d = {}; new FormData(form).forEach((v, k) => { if (k !== 'company' && typeof v === 'string') d[k] = v.trim(); });
+    const s = svc(), sc = scope();
+    const payload = { slug: C.slug, name: d.name, phone: d.phone ? cleanPhone(d.phone) : '', email: d.email || '', town: d.town || '', zip: d.zip || '',
+      project_type: d.project_type, project_label: s ? s.label : d.project_type, scope: d.scope || '', scope_label: sc ? sc.label : '',
+      timeline: d.timeline, budget: d.budget, budget_label: ((K.budgets || []).find(b => b.key === d.budget) || {}).label || d.budget,
+      notes: d.notes || '', contact_pref: d.contact_pref || 'text', sms_consent: !!form.elements.sms_consent.checked,
+      answers: d, source_url: location.href, utm: utm(), _honey: '' };
+    const btn = $('[data-submit]', form); btn.disabled = true; btn.textContent = 'Sending…';
+    try {
+      let r;
+      if (files.length) { const fd = new FormData(); fd.append('payload', JSON.stringify(payload)); files.forEach(f => fd.append('files', f, f.name)); r = await fetch(INTAKE_URL, { method: 'POST', body: fd }); }
+      else r = await fetch(INTAKE_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || j.ok === false) throw new Error(j.error || 'Send failed');
+      store.del('draft:' + C.slug);
+      done(C, payload, j, s, sc);
+    } catch (err) { btn.disabled = false; btn.textContent = K.submit_label || 'Send my project'; toast((err && err.message) || 'That did not go through. Try again' + (C.phone ? ', or call ' + C.phone : '') + '.'); }
+  });
+  show();
+}
+
+function done(C, p, j, s, sc){
+  const first = (p.name || '').split(' ')[0];
+  const lo = j.est_low != null ? j.est_low : sc && sc.low, hi = j.est_high != null ? j.est_high : sc && sc.high;
+  const rows = [['Project', [s && s.label, sc && sc.label].filter(Boolean).join(' · ')], ['Typical range', lo != null && C.intake.show_estimate !== false ? money(lo) + ' to ' + money(hi) : ''], ['Timeline', ((C.intake.timelines || []).find(t => t.key === p.timeline) || {}).label || ''], ['Budget', p.budget_label || ''], ['Files', j.files ? j.files + ' attached' : ''], ['We will reach you by', p.contact_pref]].filter(r => r[1]);
+  $('#planner').hidden = true;
+  $('#done').innerHTML = `<span class="ok">Received</span><h1>Thanks${first ? ', ' + esc(first) : ''}.</h1><p>${esc(C.intake.thanks)}</p>
+    <div class="summary">${rows.map(r => `<div><span>${esc(r[0])}</span><span>${esc(r[1])}</span></div>`).join('')}</div>
+    ${C.phone ? `<p>Need it sooner? Call or text <a href="tel:+1${esc(C.phone.replace(/\D/g, '').replace(/^1/, ''))}">${esc(C.phone)}</a>.</p>` : ''}
+    ${C.website_url ? `<a class="btn g" href="${esc(C.website_url)}">Back to ${esc(C.business_name)}</a>` : ''}`;
+  $('#done').hidden = false; window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+loadConfig().then(C => {
+  $('#loading').hidden = true;
+  if (!C || !C.slug) { $('#notlive').hidden = false; return; }
+  C.intake = C.intake || {};
+  brand(C); build(C); $('#app').hidden = false;
+}).catch(err => { console.error(err); $('#loading').hidden = true; $('#notlive').hidden = false; });
+})();
+</script>
+</body>
+</html>

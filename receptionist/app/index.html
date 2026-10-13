@@ -175,6 +175,7 @@ details.sec[open]{border-color:var(--ink)}
     <button data-tab="desk">Desk</button>
     <button data-tab="money">Money</button>
     <button data-tab="mkt">Marketing<i id="nMkt"></i></button>
+    <button data-tab="reviews">Reviews<i id="nRev"></i></button>
     <button data-tab="settings">What it says</button>
   </div>
   <main>
@@ -195,6 +196,7 @@ details.sec[open]{border-color:var(--ink)}
     </section>
     <section id="t-money" class="hidden"><div id="money"></div></section>
     <section id="t-mkt" class="hidden"><div id="mkt"></div></section>
+    <section id="t-reviews" class="hidden"><div id="reviews"></div></section>
     <section id="t-settings" class="hidden"><div id="bizEdit"></div></section>
   </main>
 </div>
@@ -240,12 +242,13 @@ async function enter(){
 }
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
-  ['today','calls','leads','desk','money','mkt','settings'].forEach(t=>$('t-'+t).classList.toggle('hidden',t!==b.dataset.tab));
+  ['today','calls','leads','desk','money','mkt','reviews','settings'].forEach(t=>$('t-'+t).classList.toggle('hidden',t!==b.dataset.tab));
   if(b.dataset.tab==='settings'&&!$('bizEdit').innerHTML) openEditor();
   if(b.dataset.tab==='leads') loadLeads();
   if(b.dataset.tab==='desk') renderDesk();
   if(b.dataset.tab==='money') loadMoney();
   if(b.dataset.tab==='mkt') loadMkt();
+  if(b.dataset.tab==='reviews') loadReviews();
 });
 
 function render(){
@@ -409,6 +412,70 @@ function renderMkt(){
     c.querySelector('.copy').onclick=async e=>{ try{ await navigator.clipboard.writeText(p.body); e.target.textContent='Copied'; }catch{ alert('Long-press the text to copy.'); } };
     const x=c.querySelector('.posted'); if(x) x.onclick=()=>set('posted'); const y=c.querySelector('.skip'); if(y) y.onclick=()=>set('skipped'); const z=c.querySelector('.undo'); if(z) z.onclick=()=>set('draft'); });
   root.querySelectorAll('button[data-bsave]').forEach(b=>b.onclick=async()=>{ const a=b.dataset.bsave, v=root.querySelector(`textarea[data-brain="${a}"]`).value; const {error}=await supa.rpc('rx_owner_brain_save',{p_agent:a,p_instructions:v}); b.nextElementSibling.textContent=error?error.message:'Saved — they read it on the next run.'; });
+}
+
+// ---- Reviews: the Review Engine. Job done → text with the Google link 2h later → one reminder on day 3 → stop. ----
+let rv=null, rvf='all', rvMsg='';
+const RV_STATUS={queued:['Waiting','#eee','var(--ink)'],sent:['Texted','var(--blue)','#fff'],clicked:['Tapped','var(--green)','#fff'],reviewed:['Reviewed','var(--green)','#fff'],stopped:['Stopped','#ddd','var(--ink)'],failed:['Failed','var(--red)','#fff'],skipped:['Skipped','#ddd','var(--ink)']};
+async function loadReviews(){
+  const {data,error}=await supa.rpc('rx_owner_reviews',{p_days:60});
+  if(error||!data){ $('reviews').innerHTML='<div class="empty">Couldn\'t load.</div>'; return; }
+  rv=data; renderReviews();
+}
+function parseCustomers(text){
+  // "Dave Smith, 610-555-0101" per line, or CSV with a header. Name and phone in either order.
+  return text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean).map(l=>{
+    const cells=l.split(/[,\t;]/).map(c=>c.trim().replace(/^"|"$/g,''));
+    const pi=cells.findIndex(c=>c.replace(/\D/g,'').length>=10);
+    if(pi<0) return null;
+    return {phone:cells[pi], name:cells.filter((c,i)=>i!==pi&&c&&!/^(name|phone|customer|mobile|cell)$/i.test(c)).join(' ').trim()};
+  }).filter(Boolean);
+}
+function renderReviews(){
+  const root=$('reviews'), c=rv.counts||{}, g=rv.google;
+  $('nRev').textContent=c.queued||''; $('nRev').style.display=c.queued?'':'none';
+  if(!rv.on){ root.innerHTML=`<div class="card"><h3>Review Engine</h3><div class="sum">Not switched on for your shop yet. When it is, every customer gets one text with your Google review link two hours after the job, a reminder three days later if they didn't tap it, then nothing more. $97 a month. Text Nick at <a href="sms:+14848418501">(484) 841-8501</a>.</div></div>`; return; }
+  const list=(rv.requests||[]).filter(r=>rvf==='all'||(rvf==='open'?['queued','sent'].includes(r.status):r.status===rvf));
+  const when=r=>r.status==='queued'&&r.next_at?'goes out '+(new Date(r.next_at)<=new Date()?'any minute':ago(r.next_at).replace(' ago','').replace(/^(\d+)/,'in $1')):r.clicked_at?'tapped '+ago(r.clicked_at):r.sent_at?'texted '+ago(r.sent_at)+(r.touches>1?' · reminder sent':r.next_at?' · reminder '+new Date(r.next_at).toLocaleDateString([],{weekday:'short'}):''):ago(r.created_at);
+  root.innerHTML=`
+    <div class="stats today">
+      <div><div class="n">${c.month_sent||0}</div><div class="l">Asked this month</div></div>
+      <div><div class="n">${c.month_clicked||0}</div><div class="l">Tapped the link</div></div>
+      <div><div class="n">${g&&g.count!=null?g.count:'—'}</div><div class="l">Google reviews</div></div>
+      <div><div class="n">${g&&g.rating!=null?g.rating:'—'}</div><div class="l">Rating</div></div>
+    </div>
+    ${rv.link?`<div class="card"><h3>Job done? Add the customer.</h3><div class="sum">They get your review link two hours from now. Only add people who said it's okay to text them.</div>
+      <div class="g2" style="margin-top:8px"><label class="f">Name<input id="rvName" placeholder="Dave Smith"></label><label class="f">Cell<input id="rvPhone" type="tel" inputmode="tel" placeholder="(610) 555-0101"></label></div>
+      <div class="acts"><button id="rvAdd" style="background:var(--ink);color:var(--yellow)">Add · texts in 2h</button><button id="rvAddNow">Text now</button><span class="hint" id="rvAddMsg">${esc(rvMsg)}</span></div>
+      <details class="log" style="margin-top:10px"><summary>Paste a list instead (CSV or one per line)</summary>
+        <textarea id="rvPaste" style="width:100%;margin-top:6px;border:2px solid var(--line);border-radius:10px;padding:8px;font-size:14px;min-height:90px;resize:vertical" placeholder="Dave Smith, 610-555-0101&#10;Jane Doe, 610-555-0102"></textarea>
+        <div class="acts"><button id="rvImport">Add them all</button><span class="hint" id="rvImportMsg"></span></div></details></div>`
+    :`<div class="card" style="box-shadow:4px 4px 0 var(--yellow)"><h3>One thing first: your Google review link</h3><div class="sum">Google Business Profile → Ask for reviews → copy the link. Or paste your Place ID and we build the link. Nothing goes out until one of these is set.</div></div>`}
+    <details class="sec" ${rv.link?'':'open'}><summary><span><b>Review link</b><small>${rv.link?esc(rv.link):'not set'}</small></span><i>›</i></summary><div class="secb">
+      <label class="f">Google review link<input id="rvUrl" type="url" value="${esc(rv.review_url||'')}" placeholder="https://g.page/r/…/review"></label>
+      <label class="f">Or Place ID<input id="rvPid" value="${esc(rv.google_place_id||'')}" placeholder="ChIJ…"></label>
+      <div class="hint">With a Place ID we also pull your Google review count and rating every morning.</div>
+      <div class="acts"><button id="rvSaveLink" style="background:var(--ink);color:var(--yellow)">Save</button><span class="hint" id="rvLinkMsg"></span></div></div></details>
+    <h2>Customers asked</h2>
+    <div class="filters" id="rvFilters">${[['all','All'],['open','In progress'],['clicked','Tapped'],['reviewed','Reviewed'],['stopped','Stopped']].map(([k,l])=>`<button data-f="${k}" class="${rvf===k?'on':''}">${l}</button>`).join('')}</div>
+    <div id="rvList">${list.length?list.map(r=>{ const [sl,bg,fg]=RV_STATUS[r.status]||[r.status,'#eee','var(--ink)']; return `<div class="card ${r.status==='clicked'||r.status==='reviewed'?'won':r.status==='stopped'||r.status==='skipped'||r.status==='failed'?'lost':''}">
+      <div class="top"><div><h3>${esc(r.customer_name||fmtPhone(r.phone))}</h3><div class="biz">${esc(fmtPhone(r.phone))} · ${when(r)}</div></div><span class="src" style="background:${bg};color:${fg}">${sl}</span></div>
+      ${r.note?`<div class="hint">${esc(r.note)}</div>`:''}
+      <div class="acts"><a href="tel:${tel(r.phone)}">Call</a><a href="sms:${tel(r.phone)}">Text</a>${['queued','sent'].includes(r.status)&&r.touches<2?`<button data-act="send_now" data-id="${r.id}">Send now</button>`:''}${['queued','sent'].includes(r.status)?`<button data-act="stop" data-id="${r.id}">Stop</button>`:''}</div>
+    </div>`; }).join(''):'<div class="empty">Nobody here yet. Mark a job done, or add a customer above.</div>'}</div>
+    ${(rv.weekly||[]).length?`<h2>By week</h2><div class="card">${rv.weekly.map(w=>`<div class="tr"><b>${new Date(w.week).toLocaleDateString([],{month:'short',day:'numeric'})}</b> · ${w.sent} asked · ${w.clicked} tapped${w.reviewed?' · '+w.reviewed+' reviewed':''}</div>`).join('')}</div>`:''}
+    <div class="card"><div class="sum">Every text says Reply STOP to opt out. A customer who says STOP is never texted again, by anyone here. Replies to the review text come to your cell.</div></div>`;
+  rvMsg='';
+  root.querySelectorAll('#rvFilters button').forEach(b=>b.onclick=()=>{ rvf=b.dataset.f; renderReviews(); });
+  const add=async now=>{ const name=$('rvName').value.trim(), phone=$('rvPhone').value.trim(); if(phone.replace(/\D/g,'').length<10){ $('rvAddMsg').textContent='Need a 10-digit cell.'; return; }
+    const {data,error}=await supa.rpc('rx_owner_review_request',{p_name:name,p_phone:phone,p_now:now}); if(error){ $('rvAddMsg').textContent=error.message; return; }
+    rvMsg=data.ok===false?data.error:data.dup?'Already on the list.':data.status==='stopped'?'That number said STOP. Not sending.':now?'Sending.':'Added. Goes out in 2 hours.'; loadReviews(); };
+  const a=$('rvAdd'); if(a){ a.onclick=()=>add(false); $('rvAddNow').onclick=()=>add(true);
+    $('rvImport').onclick=async()=>{ const rows=parseCustomers($('rvPaste').value); if(!rows.length){ $('rvImportMsg').textContent='No phone numbers found.'; return; }
+      const {data,error}=await supa.rpc('rx_owner_review_import',{p_rows:rows}); if(error){ $('rvImportMsg').textContent=error.message; return; }
+      rvMsg=`${data.added} added · ${data.dup} already here · ${data.bad} bad numbers`; loadReviews(); }; }
+  $('rvSaveLink').onclick=async()=>{ const {error}=await supa.rpc('rx_owner_review_settings',{p:{review_url:$('rvUrl').value,google_place_id:$('rvPid').value}}); $('rvLinkMsg').textContent=error?error.message:'Saved.'; if(!error) loadReviews(); };
+  root.querySelectorAll('button[data-act]').forEach(b=>b.onclick=async()=>{ const {error}=await supa.rpc('rx_owner_review_action',{p_id:b.dataset.id,p_action:b.dataset.act}); if(error){ alert(error.message); return; } loadReviews(); });
 }
 
 async function loadMoney(){

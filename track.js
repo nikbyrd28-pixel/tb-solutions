@@ -1,5 +1,5 @@
 /* ============================================================================
-   TB Solutions — shared ad & conversion tracking.
+   TB Solutions: shared ad & conversion tracking.
    Edit the 4 IDs below ONCE. Loaded on every page via <script src="/track.js">.
    Blank = off (nothing loads, no console errors).
 

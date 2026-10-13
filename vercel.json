@@ -6,6 +6,12 @@
       "claude/viral-promo-video-editing-quo4bx": false
     }
   },
+  "rewrites": [
+    {
+      "source": "/r/:token",
+      "destination": "https://qgbjiqdwzgkjkmqyjsmc.supabase.co/functions/v1/rx-review-io/r/:token"
+    }
+  ],
   "redirects": [
     {
       "source": "/:path*",

@@ -8,7 +8,7 @@
 |---|---|---|---|
 | Never Miss a Call (AI receptionist) | $497 setup ($297 founding) + $197/mo | tbsol.net/receptionist/ | **LIVE** — demo (610) 998-6138 |
 | Job-Ready Website | $497 build + $47/mo care | tbsol.net/websites/ | LIVE (selling) |
-| Review Engine | $97/mo, no setup | tbsol.net/reviews/ | LIVE (selling; delivery = n8n flow, build on first sale) |
+| Review Engine | $97/mo, no setup | tbsol.net/reviews/ | LIVE (selling; delivery built: `reviews/README.md`. Job done → text at +2h via `tbsol.net/r/<token>` → day-3 reminder → stop; STOP honoured in `rx_sms_optins`. Edge fns `rx-review-engine` (pg_cron) + `rx-review-io`; tables `rx_review_requests`/`rx_review_snapshots`; owner app + HQ **Reviews** tabs. Turn on per client in HQ → Reviews) |
 | Remodel Planner (blueprint-to-quote funnel) | $697 build + $67/mo, or $297 added to a website | tbsol.net/planner/ | LIVE (selling; delivery = DNE planner templatized, de-brand on first sale) |
 | Google Guaranteed Setup (Google LSA setup + management) | $497 setup + $147/mo (lead spend paid to Google directly) | tbsol.net/leads/ | LIVE (selling; delivery = LSA application, weekly tuning, dispute filing) |
 | └ LSA migration front door (same offer, urgency angle: Google moved LSA into Google Ads, missed calls billable since Oct 1 2026) | sells Google Guaranteed Setup, upsells The Works | tbsol.net/lsa/ | LIVE — calculator + free-audit form → edge fn `lsa-intake` → table `lsa_leads` |
