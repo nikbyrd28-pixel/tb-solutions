@@ -43,9 +43,9 @@ Two tables, both shown in HQ → Agents under the SEO card:
 |---|---|---|
 | `/services/` | 4 + hub | "ai receptionist for contractors", "local services ads management", "google review automation", "websites for plumbers" |
 | `/for/` | 3 | "answering service for plumbers / HVAC / electricians" + Chester County. `/for/plumbers/` has its own title, body and FAQ written for "plumbing answering service" / "ai answering service for plumbers" (2026-10-07); `/for/electricians/` for "electrician answering service" (2026-10-08 — estimate visits vs service calls, the GFCI and breaker steps, the 911-first rule); `/for/hvac-companies/` for "hvac after hours answering service" (2026-10-10 — the phone checks before a truck rolls: thermostat batteries, furnace switch, breaker, oil in the tank, frozen coil; gas smell and CO as leave-the-house calls; the November-to-March no-heat rule). A trade gets `title / h1 / desc / body / faq` in `TRADES` only when there is a keyword behind it and 400 honest words to put under it. |
-| `/guides/` | 5 + hub | "what a missed call costs a contractor", "contractors weekend calls", "how much does an answering service cost for a plumber" (2026-10-11 — `/guides/answering-service-cost-vs-receptionist/`: per-minute vs per-call vs flat, the off-the-plan-page fees, BLS May 2025 receptionist wage, cost per booked job), "google local services ads for plumbers" (2026-10-12 — `/guides/local-services-ads-for-plumbers/`: per-lead vs per-click, ~$57/lead Feb 2026 agency dataset, the Oct 1 2026 missed-call charge and 20-second rule, manual disputes gone since July 2024 → "Rate this lead" within 30 days, PA has no statewide trade license / HICPA over $5k, the LSA ranking signals), "ai receptionist vs answering service" (2026-10-13 — `/guides/ai-receptionist-vs-answering-service/`: call center vs software on your line, the first-cold-night surge argument, the three places a human still wins, PA Wiretap Act all-party consent 18 Pa.C.S. §§ 5703–5704 / § 5725, no PA or federal inbound AI-disclosure rule yet — Maine Sept 2025 upfront, Utah when asked) |
+| `/guides/` | 6 + hub | "what a missed call costs a contractor", "contractors weekend calls", "how much does an answering service cost for a plumber" (2026-10-11 — `/guides/answering-service-cost-vs-receptionist/`: per-minute vs per-call vs flat, the off-the-plan-page fees, BLS May 2025 receptionist wage, cost per booked job), "google local services ads for plumbers" (2026-10-12 — `/guides/local-services-ads-for-plumbers/`: per-lead vs per-click, ~$57/lead Feb 2026 agency dataset, the Oct 1 2026 missed-call charge and 20-second rule, manual disputes gone since July 2024 → "Rate this lead" within 30 days, PA has no statewide trade license / HICPA over $5k, the LSA ranking signals), "ai receptionist vs answering service" (2026-10-13 — `/guides/ai-receptionist-vs-answering-service/`: call center vs software on your line, the first-cold-night surge argument, the three places a human still wins, PA Wiretap Act all-party consent 18 Pa.C.S. §§ 5703–5704 / § 5725, no PA or federal inbound AI-disclosure rule yet — Maine Sept 2025 upfront, Utah when asked), "how to get more google reviews for contractors" (2026-10-17 — `/guides/how-to-get-google-reviews-contractors/`, with "how to ask for google reviews without feeling pushy" and "review request text templates for contractors" as H2s: the ask at the handshake + text from the driveway, the GBP "Ask for reviews" short link, four SMS templates, Google's local-ranking page on review count/score, Google's Oct 2022 ban on "selectively soliciting positive reviews", FTC Consumer Reviews Rule in force Oct 21 2024 / up to $53,088 per violation / first warning letters Dec 2025, texting consent on the ticket, how to answer a bad one, pacing) |
 
-All 14 pass the gate: unique titles under 62 characters, unique descriptions, one `<h1>`,
+All 15 pass the gate: unique titles under 62 characters, unique descriptions, one `<h1>`,
 canonical, BreadcrumbList + FAQPage (+ Service / Article) schema that parses, 300+ real words,
 3+ internal links, no mobile overflow.
 
@@ -79,12 +79,25 @@ site is the kind of thing a shop owner notices and never mentions — he just do
    `TOWNS`. Only build the ones you can say something true about — a town where you have a client,
    a job, or a specific local fact. 48 generated-and-identical town pages is the exact failure mode
    that gets a site buried.
-2. **More guides.** The five that exist are the backlink earners. Candidates with real substance
-   (all have `seo_keywords` rows): how to get more Google reviews as a contractor (fold in "how to
-   ask for google reviews without feeling pushy" as an H2/FAQ); what to do when your Google profile
-   gets suspended; "best answering service for contractors" (compare-intent — only if it can say
-   something the AI-vs-answering-service guide does not). The cost guide shipped 2026-10-11, the LSA
-   guide 2026-10-12, the AI-vs-answering-service guide 2026-10-13.
+2. **More guides.** The six that exist are the backlink earners. Candidates with real substance
+   (all have `seo_keywords` rows): what to do when your Google profile gets suspended; "best
+   answering service for contractors" (compare-intent — only if it can say something the
+   AI-vs-answering-service guide does not; fold "best hvac answering service" in as an H2); "hvac
+   answering service cost" as an H2/FAQ on the cost guide, not a new page. The cost guide shipped
+   2026-10-11, the LSA guide 2026-10-12, the AI-vs-answering-service guide 2026-10-13, the reviews
+   guide 2026-10-17.
+   Head-term bookkeeping (2026-10-17): "answering service for plumbers", "hvac answering service",
+   "answering service for electricians" and "ai receptionist for contractors" were flipped to `live`
+   because the exact phrase already sits on the page each row targets. "ai receptionist for plumbers"
+   and "ai receptionist for hvac" do NOT appear on their pages yet — a future run adds an honest H2/FAQ
+   to `/for/plumbers/` and `/for/hvac-companies/` before flipping them.
+   Policy note (2026-10-17): Google's review policy prohibits "selectively soliciting positive reviews"
+   and the reviews guide says so. `/services/google-review-automation/` ("The unhappy ones come to you
+   first": asked how it went *before* anyone is pointed at Google) describes exactly that pattern, and
+   so does `/offers/` if it uses the same words. Nick decides: either the product sends every opted-in
+   customer the same link (and the copy changes to say so), or it gates and the copy is a liability.
+   The guide was written to the compliant version and does not claim either about the product beyond
+   "same text for everybody" — confirm that is how it actually behaves.
    Law note (2026-10-13): the comparison guide says the recording notice is required in PA (all-party
    consent) and that no PA/federal law yet requires an inbound AI to announce itself. If the
    receptionist records calls, the greeting Nick configures must say so — confirm it does.
