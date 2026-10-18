@@ -89,8 +89,13 @@ site is the kind of thing a shop owner notices and never mentions — he just do
    Head-term bookkeeping (2026-10-17): "answering service for plumbers", "hvac answering service",
    "answering service for electricians" and "ai receptionist for contractors" were flipped to `live`
    because the exact phrase already sits on the page each row targets. "ai receptionist for plumbers"
-   and "ai receptionist for hvac" do NOT appear on their pages yet — a future run adds an honest H2/FAQ
-   to `/for/plumbers/` and `/for/hvac-companies/` before flipping them.
+   and "ai receptionist for hvac" got their H2 + FAQ on 2026-10-18 and were flipped to `live`:
+   `/for/plumbers/` "What an AI receptionist for plumbers has to get right" (the five demo-line tests:
+   leaking tank → shut-off first, ask a tank price → fee only, out-of-area address, "are you a person",
+   hang up → text) and `/for/hvac-companies/` "What an AI receptionist for HVAC has to do on the first
+   cold night" (blank thermostat → batteries, dead furnace → switch and breaker, gas smell → out of the
+   house first, heat pump price → estimate visit, hang up → text; FAQ on maintenance-plan members).
+   Both say the demo line is not running the caller's rules — keep that true.
    Policy note (2026-10-17): Google's review policy prohibits "selectively soliciting positive reviews"
    and the reviews guide says so. `/services/google-review-automation/` ("The unhappy ones come to you
    first": asked how it went *before* anyone is pointed at Google) describes exactly that pattern, and
