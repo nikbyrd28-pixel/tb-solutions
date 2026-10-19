@@ -220,6 +220,8 @@ Hang it on the houses on both sides and across the street while he's there or ri
 
 ## Landing page edits (for whoever owns index.html; copy only, no layout changes)
 
+**Status (Oct 19):** 1, 2, 4, 5 and 7 are applied to index.html. 3 was skipped (hero sub over 20 words, assumes he works alone) and 6 was skipped (reads clunky).
+
 1. **Same-day promise in the FAQ.** It's the one line on the page that commits to timing.
    - Old: `Often the same day or the next. Pick "as soon as possible" in the form and we'll give you the first open slot.`
    - New: `Pick "as soon as possible" in the form and you'll get the first open slot. Texting a photo is the quickest way in.`

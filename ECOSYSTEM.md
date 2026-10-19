@@ -47,6 +47,7 @@
 | D N E Contracting (Mom) | www.dnecontracting.com — site, funnel, estimator, portal; `plumbing_leads`, `dne`/`planner` data; first rx client when ready (`rx` row commented in seed) | `dne-contracting/` |
 | Hubs & Babydoll | Square checkout + admin + SMS stack (`hb-*` edge functions, `hb_*` tables); lead form `/capture/?c=hubsandbabydoll` | `clients/hubsandbabydoll/`, `capture/` |
 | Voomlux | hosted page `/voomlux/` + members via legacy `/rewards/?c=voomlux` | `voomlux/` |
+| Rapid Rat Junk Removal (Coatesville) | Meta ad funnel `/clients/rapidrat/` (noindex) → `client_leads` (client `rapidrat`); ads plan, copy, video scripts, partner list, 5 ad images. Not live until merged; needs his Pixel ID + lead text alert | `clients/rapidrat/` |
 
 ## Parked (built, not selling — don't touch, don't delete)
 - **Chalk** (bar games) — `chalk/`, `chalk_*` tables, edge fns `stripe-webhook`/`weekly-report`/`tracker`/`call-status`/`dashboard`/`ops`
