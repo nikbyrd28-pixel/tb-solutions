@@ -1,0 +1,73 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<style>
+/* Source for the Rapid Rat ad images. Each .ad is screenshotted to a file in this folder. */
+:root{--bg:#1C2433;--accent:#F07A2A;--text:#EEF1F5;--muted:#A3AEBF}
+body{margin:0;background:#000;font-family:Archivo,sans-serif}
+.ad{position:relative;overflow:hidden;background:var(--bg);color:var(--text);margin-bottom:40px}
+.p45{width:1080px;height:1350px}.p916{width:1080px;height:1920px}.p11{width:1080px;height:1080px}
+h1{margin:0;font-weight:900;font-variation-settings:"wdth" 118;line-height:.98;letter-spacing:-.01em}
+.pad{padding:64px 72px}
+.photos{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 72px}
+.photos div{position:relative}
+.photos img{width:100%;height:100%;object-fit:cover;border-radius:18px;display:block}
+.lbl{font-weight:800;font-size:40px;margin-top:16px;font-variation-settings:"wdth" 110}
+.lbl.a{color:var(--accent)}
+.foot{position:absolute;left:72px;right:72px;bottom:64px;display:flex;justify-content:space-between;align-items:center}
+.pill{background:var(--accent);color:#1C1206;font-weight:900;font-size:44px;padding:18px 34px;border-radius:14px;font-variation-settings:"wdth" 112}
+.tel{font-weight:800;font-size:44px;font-variation-settings:"wdth" 110}
+.full{position:absolute;inset:0}.full img{width:100%;height:100%;object-fit:cover}
+.split{display:grid;grid-template-rows:880px 1fr;height:100%}.split .ph img{width:100%;height:880px;object-fit:cover;display:block}.shade{padding:52px 72px}
+.sub{font-size:40px;color:var(--muted);margin-top:18px;font-weight:500}
+.logo{width:300px;height:300px;border-radius:28px;object-fit:cover}
+.stars{color:#F5B83D;font-size:72px;letter-spacing:8px}
+</style></head><body>
+
+<div class="ad p45" id="01-before-after">
+  <div class="pad" style="padding-bottom:44px"><h1 style="font-size:96px">Got crap?<br>Call the Rat.</h1></div>
+  <div class="photos" style="height:760px">
+    <div><img src="../img/job-loading.jpg"><div class="lbl">Before</div></div>
+    <div><img src="../img/job-deck.jpg" style="object-position:62% 50%"><div class="lbl a">After</div></div>
+  </div>
+  <div class="foot"><span class="pill">$25 off</span><span class="tel">484-245-4967</span></div>
+</div>
+
+<div class="ad p916" id="02-before-after-story">
+  <div class="pad" style="padding-top:150px;padding-bottom:56px"><h1 style="font-size:116px">Got crap?<br>Call the Rat.</h1></div>
+  <div class="photos" style="grid-template-columns:1fr;height:1060px;gap:18px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div><img src="../img/job-loading.jpg" style="height:900px"><div class="lbl">Before</div></div>
+      <div><img src="../img/job-deck.jpg" style="height:900px;object-position:62% 50%"><div class="lbl a">After</div></div>
+    </div>
+  </div>
+  <div class="foot" style="bottom:260px"><span class="pill">$25 off</span><span class="tel">484-245-4967</span></div>
+</div>
+
+<div class="ad p45" id="03-truck-offer">
+  <div class="split"><div class="ph"><img src="../img/truck-banner.jpg" style="object-position:50% 38%"></div>
+  <div class="shade">
+    <h1 style="font-size:78px">$25 off junk removal<br>in Coatesville.</h1>
+    <p class="sub">5.0 on Google (64 reviews). Text a photo, get a price.</p>
+  </div></div>
+</div>
+
+<div class="ad p45" id="04-on-your-street">
+  <div class="split"><div class="ph"><img src="../img/job-truck.jpg" style="object-position:50% 45%"></div>
+  <div class="shade">
+    <h1 style="font-size:70px">We're hauling junk on your street this week.</h1>
+    <p class="sub">Neighbors get $25 off. Want us to grab yours while the truck's here?</p>
+  </div></div>
+</div>
+
+<div class="ad p11" id="05-reviews">
+  <div class="pad" style="display:grid;grid-template-columns:300px 1fr;gap:56px;align-items:center;height:100%;box-sizing:border-box">
+    <img class="logo" src="../img/logo.jpg">
+    <div>
+      <div class="stars">★★★★★</div>
+      <h1 style="font-size:150px;margin-top:6px">5.0</h1>
+      <p class="sub" style="margin-top:6px">64 Google reviews in our first year.</p>
+    </div>
+  </div>
+  <div class="foot"><span class="pill">$25 off</span><span class="tel">484-245-4967</span></div>
+</div>
+</body></html>
