@@ -47,6 +47,7 @@
 | D N E Contracting (Mom) | www.dnecontracting.com — site, funnel, estimator, portal; `plumbing_leads`, `dne`/`planner` data; first rx client when ready (`rx` row commented in seed) | `dne-contracting/` |
 | Hubs & Babydoll | Square checkout + admin + SMS stack (`hb-*` edge functions, `hb_*` tables); lead form `/capture/?c=hubsandbabydoll` | `clients/hubsandbabydoll/`, `capture/` |
 | Voomlux | hosted page `/voomlux/` + members via legacy `/rewards/?c=voomlux` | `voomlux/` |
+| GTFOH Junk Removal (prospect) | Coatesville junk hauler; one-page quote site `/clients/gtfoh/`, form → `client_leads` (`client=gtfoh`) → HQ pipeline; phone + review link in the config block at top | `clients/gtfoh/` |
 
 ## Parked (built, not selling — don't touch, don't delete)
 - **Chalk** (bar games) — `chalk/`, `chalk_*` tables, edge fns `stripe-webhook`/`weekly-report`/`tracker`/`call-status`/`dashboard`/`ops`
