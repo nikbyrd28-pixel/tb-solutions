@@ -105,6 +105,17 @@ site is the kind of thing a shop owner notices and never mentions — he just do
    cold night" (blank thermostat → batteries, dead furnace → switch and breaker, gas smell → out of the
    house first, heat pump price → estimate visit, hang up → text; FAQ on maintenance-plan members).
    Both say the demo line is not running the caller's rules — keep that true.
+   `/for/electricians/` got its twin on 2026-10-21 for "ai receptionist for electricians" and "ai answering
+   service for electricians" (both 70, flipped to `live`): H2 "What an AI receptionist for electricians has
+   to get right" (dead outlet → GFCI reset first, tripping breaker → leave it off, half the house dark with
+   the other half bright-and-dim → lost neutral, main off, now; service-upgrade price → estimate visit and no
+   promised date because the permit and the utility meter pull decide it; burning at the panel → out and 911
+   first; "are you a person"; hang up → text) + 2 FAQs (AI receptionist vs answering service for an
+   electrician; estimate visit vs service call is set on the setup call). Same demo-line caveat.
+   Next `new` rows by priority after that: "hvac ai answering service" / "answering service for hvac
+   companies" (65, both `/for/hvac-companies/`, phrasing variants — one FAQ line each, not a new H2),
+   "google local services ads for hvac" (65, a new guide — the HVAC twin of the plumber LSA guide, only
+   if it says what the plumber one does not: seasonality of the budget, the categories, tune-up leads).
    Policy note (2026-10-17): Google's review policy prohibits "selectively soliciting positive reviews"
    and the reviews guide says so. `/services/google-review-automation/` ("The unhappy ones come to you
    first": asked how it went *before* anyone is pointed at Google) describes exactly that pattern, and
