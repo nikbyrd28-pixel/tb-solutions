@@ -112,10 +112,20 @@ site is the kind of thing a shop owner notices and never mentions — he just do
    promised date because the permit and the utility meter pull decide it; burning at the panel → out and 911
    first; "are you a person"; hang up → text) + 2 FAQs (AI receptionist vs answering service for an
    electrician; estimate visit vs service call is set on the setup call). Same demo-line caveat.
-   Next `new` rows by priority after that: "hvac ai answering service" / "answering service for hvac
-   companies" (65, both `/for/hvac-companies/`, phrasing variants — one FAQ line each, not a new H2),
-   "google local services ads for hvac" (65, a new guide — the HVAC twin of the plumber LSA guide, only
-   if it says what the plumber one does not: seasonality of the budget, the categories, tune-up leads).
+   "hvac ai answering service" / "answering service for hvac companies" (both 65) got one FAQ each on
+   `/for/hvac-companies/` on 2026-10-22 and were flipped to `live`: "What should an HVAC AI answering
+   service ask before it books a no-cool call?" (the summer checks — outdoor unit running, ice on the
+   lines → off and fan only, blank thermostat, outdoor-unit breaker, central/heat pump/mini split/window
+   unit, plan member) and "What does an answering service for HVAC companies need from me to start?"
+   (the setup-call list: towns, do-not-touch equipment, fees, service vs estimate windows, the
+   November–March no-heat rule, plan-member rule; own line forwards, no new number). No new H2 — the
+   page already had five.
+   Next `new` rows by priority after that: "google local services ads for hvac" (65, a new guide — the
+   HVAC twin of the plumber LSA guide, only if it says what the plumber one does not: seasonality of the
+   budget, the categories, tune-up leads), then the 60s: "missed call text back for plumbers"
+   (`/services/ai-receptionist-for-contractors/` — the hang-up text, said with this phrase),
+   "review management software for contractors" (`/services/google-review-automation/`), "lsa
+   management" (`/services/local-services-ads-management/`).
    Policy note (2026-10-17): Google's review policy prohibits "selectively soliciting positive reviews"
    and the reviews guide says so. `/services/google-review-automation/` ("The unhappy ones come to you
    first": asked how it went *before* anyone is pointed at Google) describes exactly that pattern, and
