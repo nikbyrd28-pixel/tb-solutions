@@ -1,19 +1,19 @@
 {
   "agent": "seo",
   "name": "SEO build",
-  "lastBuild": "2026-10-22T11:14:05.368Z",
-  "pages": 15,
-  "sitemapUrls": 26,
+  "lastBuild": "2026-10-23T11:33:02.027Z",
+  "pages": 16,
+  "sitemapUrls": 27,
   "clusters": {
     "services": 5,
     "trades": 3,
-    "guides": 7
+    "guides": 8
   },
   "counts": {
     "services": 4,
     "trades": 3,
     "towns": 16,
-    "guides": 6
+    "guides": 7
   },
   "urls": [
     "/services/ai-receptionist-for-contractors/",
@@ -30,6 +30,7 @@
     "/guides/local-services-ads-for-plumbers/",
     "/guides/ai-receptionist-vs-answering-service/",
     "/guides/how-to-get-google-reviews-contractors/",
+    "/guides/local-services-ads-for-hvac/",
     "/guides/"
   ]
 }
