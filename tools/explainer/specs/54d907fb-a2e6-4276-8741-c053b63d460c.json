@@ -1,0 +1,41 @@
+{
+  "post_id": "54d907fb-a2e6-4276-8741-c053b63d460c",
+  "tag": "she taps, she doesn't dial",
+  "frames": [
+    {
+      "secs": 4, "side": "l", "mood": "sad",
+      "stage": "<div class='row'><div class='lbl'>11:00 PM</div><div class='box b'>💧 water on the basement floor</div></div><div class='row'><div class='box'>📱 phone in one hand</div><div class='box'>🔦 flashlight in the other</div></div>",
+      "caption": "Eleven at night. <mark>Water in the basement.</mark>"
+    },
+    {
+      "secs": 4, "side": "l", "mood": "ok",
+      "stage": "<div class='phone'><div class='bubble' style='background:#fff'>🔍 plumber</div><div class='box y' style='font-size:32px;box-shadow:none'>YOUR NAME</div><div class='box dim' style='font-size:28px'>the next guy</div><div class='box dim' style='font-size:28px'>the guy after him</div></div>",
+      "caption": "She googles plumber. <mark>Your name comes up.</mark>"
+    },
+    {
+      "secs": 5, "side": "r", "mood": "ok",
+      "stage": "<div class='row'><div class='box x'>read</div><div class='box x'>scroll</div></div><div class='arrow'>↓</div><div class='box big' style='font-size:120px'>TAP</div><div class='lbl'>her other hand is busy</div>",
+      "caption": "She doesn't read. <mark>She taps.</mark>"
+    },
+    {
+      "secs": 5, "side": "l", "mood": "ok",
+      "stage": "<div class='phone'><div class='box g' style='font-size:34px;justify-content:center'>📞 CALL NOW</div><div class='box dim' style='font-size:26px'>about us</div><div class='box dim' style='font-size:26px'>our services</div></div><div class='arrow'>→</div><div class='box y'>☎️ your phone rings</div>",
+      "caption": "Button at the top. <mark>Your phone rings.</mark>"
+    },
+    {
+      "secs": 5, "side": "r", "mood": "sad",
+      "stage": "<div class='phone'><div class='box dim' style='font-size:26px'>🚚 picture of your truck</div><div class='box dim' style='font-size:26px'>about us</div><div class='box dim' style='font-size:26px'>our services</div><div class='box x' style='font-size:24px'>(555) 019-2834 in the footer</div></div><div class='row'><div class='box x'>back</div><div class='arrow'>→</div><div class='box b'>the next guy</div></div>",
+      "caption": "Number in the footer? <mark>She taps the next guy.</mark>"
+    },
+    {
+      "secs": 5, "side": "l", "mood": "ok",
+      "stage": "<div class='row'><div class='box'>same work</div><div class='box'>same town</div></div><div class='arrow'>↓</div><div class='box g'>✓ he just had the button</div>",
+      "caption": "Same work. Same town. <mark>He had the button.</mark>"
+    },
+    {
+      "secs": 4, "side": "l", "mood": "ok",
+      "stage": "<div class='box big' style='font-size:84px'>tbsol.net</div><div class='lbl'>one page · your number at the top · tap it and it rings</div>",
+      "caption": "One page. Number at the top. <mark>tbsol.net/websites</mark>"
+    }
+  ]
+}
