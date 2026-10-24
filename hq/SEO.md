@@ -134,10 +134,20 @@ site is the kind of thing a shop owner notices and never mentions — he just do
    eyebrow/CTA and `/lsa/`. It is still what plumbers say, and the search phrase, but the badge has read
    "Google Verified" for a year and there is no guarantee any more — decide whether to keep the label and
    add one line saying so, or re-word to "Google Verified setup".
-   Next `new` rows by priority: the 60s: "missed call text back for plumbers"
-   (`/services/ai-receptionist-for-contractors/` — the hang-up text, said with this phrase),
-   "review management software for contractors" (`/services/google-review-automation/`), "lsa
-   management" (`/services/local-services-ads-management/`).
+   "missed call text back for plumbers" (60) shipped 2026-10-24 as an H2 + 2 FAQs on
+   `/services/ai-receptionist-for-contractors/` (flipped to `live`): "Missed call text back for plumbers:
+   what happens when they hang up" — text-back as the backstop, the answer as the product; on a hang-up
+   the owner gets MISSED CALL + number inside thirty seconds, and the caller is texted in the shop's name
+   only if that number has booked before and said yes to texts. **That is what `rx-agent` actually does**
+   (it checks `rx_sms_optins` before texting the caller). **Nick:** `/receptionist/` says "Texts missed
+   callers back in 30 seconds" / "Missed-call text-back in 30 seconds" and `/for/electricians/` says every
+   hang-up "gets a text in your company name inside thirty seconds" — both broader than the code. Either
+   loosen the code (a caller who just dialed you is generally fair to text back about that call) or tighten
+   the two pages to "opted-in callers"; the service page is written to the code.
+   Next `new` rows by priority: the 60s: "review management software for contractors"
+   (`/services/google-review-automation/`), "lsa management" (`/services/google-local-services-ads-management/`
+   — the row's `target_page` says `/services/local-services-ads-management/`, which does not exist; fix it
+   when the row is built).
    Policy note (2026-10-17): Google's review policy prohibits "selectively soliciting positive reviews"
    and the reviews guide says so. `/services/google-review-automation/` ("The unhappy ones come to you
    first": asked how it went *before* anyone is pointed at Google) describes exactly that pattern, and
